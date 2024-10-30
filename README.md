@@ -47,4 +47,14 @@ My primary terminal emulator. To install run:
 brew install alacritty
 ```
 
-![Alacritty screenshot](./public/alacritty.png)
+![Alacritty terminal screenshot](./public/alacritty.png)
+
+## [Kitty](https://sw.kovidgoyal.net/kitty/)
+
+My secondary terminal emulator. To install run:
+
+```shell
+curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
+```
+
+![Kitty terminal screenshot](./public/kitty.png)
