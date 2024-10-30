@@ -2,7 +2,7 @@
 
 My dofiles for apps I use for developmentm usind the _gnu stow_ on my MacOS laptop.
 
-## Requiriments
+## Requirements
 
 ### [Homebrew](https://brew.sh/)
 
@@ -24,7 +24,7 @@ brew install stow
 
 ## Setup
 
-Run the following command, to clone this dotfiles repo into your home directory. WARNING: The directory must be in $HOME
+Run the following command, to clone this dotfiles repo into your home directory. WARNING: The directory must be in `$HOME`
 
 ```shell
 git clone https://github.com/kireiiiiiiii/dotfiles.git $HOME/dotfiles
@@ -40,5 +40,11 @@ stow .
 ---
 
 ## [Alacritty](https://github.com/alacritty/alacritty)
+
+My primary terminal emulator. To install run:
+
+```shell
+brew install alacritty
+```
 
 ![Alacritty screenshot](./public/alacritty.png)
