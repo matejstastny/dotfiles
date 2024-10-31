@@ -7,11 +7,7 @@
 
 
 # ---- variables ----
-is_configured_terminal=false
-
-if [[ "$TERM_PROGRAM" == "iTerm.app" || "$TERM" == "xterm-kitty" || "$TERM" == "xterm-256color" ]]; then
-  is_configured_terminal=true
-fi
+EXECUTE_INIT_SCRIPT=false
 
 # ---- neofetch ----
 alias better-neofetch="$HOME/.config/neofetch/better-neofetch.sh"
@@ -143,7 +139,7 @@ chpwd() {
 }
 
 # ---- EXECUTE COMMANDS ----
-if [[ "$is_configured_terminal" == true ]]; then
+if [[ "$EXECUTE_INIT_SCRIPT" == true ]]; then
   setup_tmux_main
 fi
 
