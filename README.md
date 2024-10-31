@@ -60,3 +60,13 @@ curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
 ```
 
 ![Kitty terminal screenshot](./public/kitty.png)
+
+## [Neovim](https://neovim.io/)
+
+My primary code editor. To install run:
+
+```shell
+brew install neovim
+```
+
+![Neovim code editor screenshot](./public/neovim.png)
