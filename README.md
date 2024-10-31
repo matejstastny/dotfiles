@@ -1,6 +1,6 @@
 ![repository banner](./public/banner.png)
 
-# dofiles
+# dotfiles
 
 My dofiles for apps I use for development on my MacOS laptop. [_GNU Stow_](https://www.gnu.org/software/stow/manual/stow.html) was used to create symlinks of the conf files. All of the files are configured to match the [Catppuccin](https://catppuccin.com/) _Mocha_ theme. My [wallpaper](./wallpaper.png) is also included.
 
