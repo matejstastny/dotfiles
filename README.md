@@ -1,3 +1,5 @@
+![repository banner](./public/banner.png)
+
 # dofiles
 
 My dofiles for apps I use for developmentm usind the _gnu stow_ on my MacOS laptop.
