@@ -2,7 +2,7 @@
 
 # dofiles
 
-My dofiles for apps I use for developmentm usind the _gnu stow_ on my MacOS laptop.
+My dofiles for apps I use for development on my MacOS laptop. [_GNU Stow_](https://www.gnu.org/software/stow/manual/stow.html) was used to create symlinks of the conf files. All of the files are configured to match the [Catppuccin](https://catppuccin.com/) _Mocha_ theme. My [wallpaper](./wallpaper.png) is also included.
 
 ## Requirements
 
@@ -63,10 +63,20 @@ curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
 
 ## [Neovim](https://neovim.io/)
 
-My primary code editor. To install run:
+My primary code editor. It's a heavily modified version of [NVChad](https://nvchad.com/) To install run:
 
 ```shell
 brew install neovim
 ```
 
 ![Neovim code editor screenshot](./public/neovim.png)
+
+## [Tmux](https://github.com/tmux/tmux)
+
+My terminal window manager. I use terminal only with it. To install run:
+
+```shell
+brew install tmux
+```
+
+![Tmux running in Alacritty screenshot](./public/tmux.png)
