@@ -9,9 +9,6 @@
 # ---- variables ----
 EXECUTE_INIT_SCRIPT=false
 
-# ---- neofetch ----
-alias better-neofetch="$HOME/.config/neofetch/better-neofetch.sh"
-
 # ---- oh-my-posh ----
 if [[ "$TERM_PROGRAM" != "Terminal.app" ]]; then
   eval "$(oh-my-posh init zsh --config ~/.poshthemes/themes/multiverse-neon.omp.json)"
@@ -24,6 +21,7 @@ source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 alias forcesign="sudo xattr -rd com.apple.quarantine"
 eval $(thefuck --alias)
 alias run-java='cd "$(pwd)" && /usr/bin/env /Users/matejstastny/.sdkman/candidates/java/21.0.4-tem/bin/java -ea -XX:+ShowCodeDetailsInExceptionMessages -cp "/Users/matejstastny/Library/Application Support/Code/User/workspaceStorage/f9f79369a38b7cefb62b63bf2877366d/redhat.java/jdt_ws/lan_8dd94e11/bin"'
+alias launch4j='java -jar "/Applications/launch4j/launch4j.jar"'
 
 # ---- Ani-cli ----
 function anime() {
@@ -118,30 +116,26 @@ fi
 
 alias :qa!='echo "not a nvim window :3"'
 
+# Update tmux status bar whenever the directory changes
+chpwd() {
+	if [[ -n "$TMUX" ]]; then
+		tmux refresh-client -S
+	fi
+}
+
+
 # Function to create and set up the tmux 'main' session
 setup_tmux_main() {
-	tmux send-keys -t main ':qa!' Enter
-	sleep 0.05
-  tmux send-keys -t main '~/.scripts/terminal-init.sh' Enter
+	if [[ "$EXECUTE_INIT_SCRIPT" == true ]]; then
+		tmux send-keys -t main ':qa!' Enter
+		sleep 0.05
+		tmux send-keys -t main '~/.scripts/terminal-init.sh' Enter
+	fi
   tmux attach -t main
 }
 
-# Update the directory status on command executon
-# precmd() {
-#   if [[ "$is_configured_terminal" == true ]]; then
-#     tmux set -g @catppuccin_directory_text "#{b:pane_current_path}"
-#   fi
-# }
-
-# Update tmux status bar whenever the directory changes
-chpwd() {
-  tmux refresh-client -S
-}
-
 # ---- EXECUTE COMMANDS ----
-if [[ "$EXECUTE_INIT_SCRIPT" == true ]]; then
-  setup_tmux_main
-fi
+setup_tmux_main
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
