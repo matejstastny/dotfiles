@@ -22,6 +22,9 @@ alias forcesign="sudo xattr -rd com.apple.quarantine"
 eval $(thefuck --alias)
 alias run-java='cd "$(pwd)" && /usr/bin/env /Users/matejstastny/.sdkman/candidates/java/21.0.4-tem/bin/java -ea -XX:+ShowCodeDetailsInExceptionMessages -cp "/Users/matejstastny/Library/Application Support/Code/User/workspaceStorage/f9f79369a38b7cefb62b63bf2877366d/redhat.java/jdt_ws/lan_8dd94e11/bin"'
 alias launch4j='java -jar "/Applications/launch4j/launch4j.jar"'
+alias ip="ifconfig | grep 'inet ' | awk '/inet / {print \$2}' | grep -Ev '^(127\.|::)'"
+alias java8="sdk default java 8.0.432-amzn"
+alias java21="sdk default java 21.0.5-tem"
 
 # ---- Ani-cli ----
 function anime() {
@@ -131,7 +134,9 @@ setup_tmux_main() {
 		sleep 0.05
 		tmux send-keys -t main '~/.scripts/terminal-init.sh' Enter
 	fi
-  tmux attach -t main
+	if [[ "$TERM_PROGRAM" == "iTerm.app" || "$TERM_PROGRAM" == "kitty" || "$TERM_PROGRAM" == "alacritty" ]]; then
+		tmux attach -t main
+	fi
 }
 
 # ---- EXECUTE COMMANDS ----
