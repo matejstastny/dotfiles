@@ -14,7 +14,7 @@ EXECUTE_INIT_SCRIPT=false
 
 # ---- Oh-My-Posh ----
 if [[ "$TERM_PROGRAM" != "Terminal.app" ]]; then
-  eval "$(oh-my-posh init zsh --config $HOME/.poshthemes/themes/zash.omp.json)"
+  eval "$(oh-my-posh init zsh --config $HOME/.poshthemes/zash.omp.json)"
 fi
 
 # ---- Zsh Plugins ----
