@@ -29,6 +29,7 @@ alias java21="sdk default java 21.0.5-tem"
 alias ip="ifconfig | grep 'inet ' | awk '/inet / {print \$2}' | grep -Ev '^(127\.|::)'"
 alias ls="eza --color=always --long --git --no-filesize --icons=always --no-time --no-user --no-permissions"
 alias cd="z"
+alias neofetch="clear && echo && command neofetch"
 
 # ---- Ani-cli Helper Function ----
 function anime() {
