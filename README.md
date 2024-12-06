@@ -24,6 +24,12 @@ brew install git
 brew install stow
 ```
 
+### [Nerd Fonts](https://www.nerdfonts.com/)
+
+```shell
+brew install font-meslo-lg-nerd-font
+```
+
 ## Setup
 
 Run the following command, to clone this dotfiles repo into your home directory. WARNING: The directory must be in `$HOME`
@@ -43,7 +49,7 @@ stow .
 
 ## [oh-my-posh](https://ohmyposh.dev/)
 
-The prompt theme engine I use. There are a lot of themes downloaded from their website in this repo, that can be found under [`.poshthemes/`](./.poshthemes/) You can preview those themes on their [website](https://ohmyposh.dev/docs/themes). All new themes should be placed in the `.poshthemes` directory, because Stow will create a link to this directory in the `$HOME` directory. This link is then used in the `.zshrc`. I am currently using the [**Zash**](https://ohmyposh.dev/docs/themes#zash) theme. (screenshot attached below, following screenshot of terminals might not be using this theme, as I switch often) You can install oh-my-posh by running:
+This is the prompt theme engine I am using. There are a lot of themes downloaded from their website in this repo, that can be found under [`.poshthemes/`](./.poshthemes/) You can preview those themes on their [website](https://ohmyposh.dev/docs/themes). All new themes should be placed in the `.poshthemes` directory, because Stow will create a link to this directory in the `$HOME` directory. This link is then used in the `.zshrc`. I am currently using the [**Zash**](https://ohmyposh.dev/docs/themes#zash) theme (screenshot attached below, following screenshots of terminals might not be using this theme, because I switch between them fairly often). You can install _oh-my-posh_ by running:
 
 ```shell
 brew install jandedobbeleer/oh-my-posh/oh-my-posh
