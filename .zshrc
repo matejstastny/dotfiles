@@ -88,6 +88,11 @@ setup_tmux_main() {
 # ---- Zoxide (Better cd) ----
 eval "$(zoxide init zsh)"
 
+# ---- zhs-highlighting ----
+ZSH_HIGHLIGHT_STYLES[suffix-alias]=fg=blue,underline
+ZSH_HIGHLIGHT_STYLES[precommand]=fg=blue,underline
+ZSH_HIGHLIGHT_STYLES[arg0]=fg=blue
+
 # ---- SDKMAN Initialization ----
 [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
 
