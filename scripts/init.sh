@@ -34,6 +34,8 @@ TOOLS=(
   tmux
   zoxide
   gh
+	neovim
+	neofetch
   fileicon
 	lazygit
 )
