@@ -34,6 +34,8 @@ TOOLS=(
   tmux
   zoxide
   gh
+  fileicon
+	lazygit
 )
 
 echo -e "${GREEN}Installing required tools via Homebrew...${NC}"
@@ -64,6 +66,13 @@ for app in "${CASK_APPS[@]}"; do
     echo -e "${GREEN}Installed $app.${NC}"
   fi
 done
+
+# Set custom icons using fileicon
+ICON_DIR="$HOME/.custom-icons"
+
+echo -e "${GREEN}Setting custom icons for applications...${NC}"
+fileicon set /Applications/Alacritty.app "$ICON_DIR/alacritty.icns" && echo -e "${GREEN}Alacritty icon set successfully.${NC}"
+fileicon set /Applications/Visual\ Studio\ Code.app "$ICON_DIR/vs-code.icns" && echo -e "${GREEN}VS Code icon set successfully.${NC}"
 
 # Set up FZF keybindings and fuzzy completion
 echo -e "${GREEN}Setting up FZF keybindings...${NC}"
