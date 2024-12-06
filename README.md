@@ -35,13 +35,13 @@ brew install font-meslo-lg-nerd-font
 Run the following command, to clone this dotfiles repo into your home directory. WARNING: The directory must be in `$HOME`
 
 ```shell
-git clone https://github.com/kireiiiiiiii/dotfiles.git $HOME/dotfiles
+git clone https://github.com/kireiiiiiiii/dotfiles.git $HOME/.dotfiles
 ```
 
 Next step is to create the symlinks using stow. Run the following command to create symlinks from the directory you just cloned.
 
 ```shell
-cd ~/dotfiles
+cd ~/.dotfiles
 stow .
 ```
 
