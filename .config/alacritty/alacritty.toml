@@ -13,24 +13,22 @@ decorations = "Buttonless"
 opacity = 0.7
 blur = true
 
+# For a 1710x1112 resolution screen with a size 12 font
+
 [window.dimensions]
-columns = 252
-lines = 75
+columns = 236
+lines = 68
 
 [window.position]
-x = 50
+x = 40
 y= 120
 
 [font]
 normal.family = "MesloLGS Nerd Font Mono"
-size = 11
+size = 12
 
 [general]
 import = [
-  # uncomment the flavour you want below:
-  #"~/.config/alacritty/catppuccin-latte.toml"
-  # "~/.config/alacritty/catppuccin-frappe.toml"
-  # "~/.config/alacritty/catppuccin-macchiato.toml"
-  "~/.config/alacritty/catppuccin-mocha.toml"
+	"~/.config/alacritty/catppuccin-mocha.toml"
 ]
 
