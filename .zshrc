@@ -29,7 +29,7 @@ alias java21="sdk default java 21.0.5-tem"
 alias ip="ifconfig | grep 'inet ' | awk '/inet / {print \$2}' | grep -Ev '^(127\.|::)'"
 alias ls="eza --color=always --long --git --no-filesize --icons=always --no-time --no-user --no-permissions"
 alias cd="z"
-alias neofetch="clear && echo && command neofetch"
+alias n="clear && echo && command neofetch"
 
 # ---- Ani-cli Helper Function ----
 function anime() {
@@ -81,7 +81,7 @@ setup_tmux_main() {
     sleep 0.05
     tmux send-keys -t main '~/.scripts/terminal-init.sh' Enter
   fi
-  if [[ "$TERM_PROGRAM" =~ (iTerm\.app|kitty|alacritty) ]]; then
+  if [[ "$TERM_PROGRAM" =~ (iTerm\.app|kitty|alacritty|WezTerm) ]]; then
     tmux attach -t main
   fi
 }
