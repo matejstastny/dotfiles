@@ -1,0 +1,74 @@
+#!/bin/bash
+
+source "$CONFIG_DIR/colors.sh"
+
+# This is a demo config to showcase some of the most important commands.
+# It is meant to be changed and configured, as it is intentionally kept sparse.
+# For a (much) more advanced configuration example see my dotfiles:
+# https://github.com/FelixKratz/dotfiles
+
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+
+##### Bar Appearance #####
+# Configuring the general appearance of the bar.
+# These are only some of the options available. For all options see:
+# https://felixkratz.github.io/SketchyBar/config/bar
+# If you are looking for other colors, see the color picker:
+# https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
+
+sketchybar --bar position=top height=40 blur_radius=30 color=$BAR_COLOR
+
+##### Changing Defaults #####
+# We now change some default values, which are applied to all further items.
+# For a full list of all available item properties see:
+# https://felixkratz.github.io/SketchyBar/config/items
+
+default=(
+  padding_left=5
+  padding_right=5
+  icon.font="Hack Nerd Font:Bold:11.0"
+  label.font="Hack Nerd Font:Bold:11.0"
+  icon.color=$WHITE
+  label.color=$WHITE
+  icon.padding_left=4
+  icon.padding_right=4
+  label.padding_left=4
+  label.padding_right=4
+  background.corner_radius=5
+  background.height=24
+)
+sketchybar --default "${default[@]}"
+
+# --- Right Side Items ---
+
+# sketchybar --add item calendar right \
+#            --set calendar icon=􀧞 \
+#               label="$(date +'%a %d %b %I:%M %p')" \
+#               background.color=0x9024762
+
+# Define colors for clarity
+RED_COLOR=0xFFFF0000       # Red color for icon
+LIGHT_GREY=0xFFB0B0B0      # Light grey color for background
+
+# # Add the calendar item
+# sketchybar --add item calendar right \
+#            --set calendar \
+#               icon="█" \
+#               icon.color=$RED_COLOR \
+#               label="$(date +'%a %d %b')" \
+#               label.color=0xFFFFFFFF \
+#               label.padding_right=5 \
+#               background.color=$LIGHT_GREY \
+#               background.padding_left=5 \
+#               background.padding_right=5
+#
+# # Add a separator to the right
+# sketchybar --add item calendar_separator right \
+#            --set calendar_separator \
+#               icon="" \
+#               icon.color=$LIGHT_GREY \
+#               label.drawing=off
+
+##### Force all scripts to run the first time (never do this in a script) #####
+sketchybar --update
+
