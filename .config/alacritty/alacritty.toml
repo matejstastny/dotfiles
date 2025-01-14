@@ -1,4 +1,3 @@
-
 [env]
 TERM = "xterm-256color"
 TERM_PROGRAM = "alacritty"
@@ -7,25 +6,30 @@ TERM_PROGRAM = "alacritty"
 padding.x = 10
 padding.y = 10
 
+dynamic_padding=true
 dynamic_title = true
 
 decorations = "Buttonless"
-opacity = 0.7
+opacity = 0.9
 blur = true
+
+# Overrides dimensions
+startup_mode = "Maximized"
+
 
 # For a 1710x1112 resolution screen with a size 12 font
 
 [window.dimensions]
-columns = 236
-lines = 68
+columns = 239
+lines = 69
 
 [window.position]
-x = 40
-y= 120
+x = 20
+y= 100
 
 [font]
 normal.family = "MesloLGS Nerd Font Mono"
-size = 12
+size = 14
 
 [general]
 import = [

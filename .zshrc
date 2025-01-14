@@ -22,8 +22,8 @@ source $HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # ---- Aliases ----
-alias forcesign="sudo xattr -rd com.apple.quarantine"
 eval $(thefuck --alias)
+alias forcesign="sudo xattr -rd com.apple.quarantine"
 alias java8="sdk default java 8.0.432-amzn"
 alias java21="sdk default java 21.0.5-tem"
 alias ip="ifconfig | grep 'inet ' | awk '/inet / {print \$2}' | grep -Ev '^(127\.|::)'"
