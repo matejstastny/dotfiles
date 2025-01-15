@@ -10,7 +10,7 @@ local default_plugins = {
      opts = {
       ui = {
         statusline = {
-          theme = "minimal",
+          theme = "vscode",
           -- separator_style = "round",
         },
       },
