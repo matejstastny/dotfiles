@@ -10,7 +10,7 @@ dynamic_padding=true
 dynamic_title = true
 
 decorations = "Buttonless"
-opacity = 0.9
+opacity = 1
 blur = true
 
 # Overrides dimensions
