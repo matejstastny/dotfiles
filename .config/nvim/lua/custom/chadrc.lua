@@ -8,8 +8,8 @@ M.ui = {
   theme_toggle = { "catppuccin", "catppuccin" },
   transparency = true, -- Enable transparency
 	statusline = {
-		theme = "minimal",
-		separator_style = "round",
+		theme = "default",
+		-- separator_style = "arrow",
 	},
 	tabufline = {
 		enabled = false,

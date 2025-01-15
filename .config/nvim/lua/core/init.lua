@@ -38,7 +38,7 @@ opt.shortmess:append "sI"
 opt.signcolumn = "yes"
 opt.splitbelow = true
 opt.splitright = true
-opt.termguicolors = true
+opt.termguicolors = false -- default true
 opt.timeoutlen = 400
 opt.undofile = true
 
