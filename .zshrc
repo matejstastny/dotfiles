@@ -30,6 +30,8 @@ alias ip="ifconfig | grep 'inet ' | awk '/inet / {print \$2}' | grep -Ev '^(127\
 alias ls="eza --color=always --long --git --no-filesize --icons=always --no-time --no-user --no-permissions"
 alias cd="z"
 alias n="clear && echo && command fastfetch"
+alias help="tldr"
+alias lines="scc"
 
 # ---- Ani-cli Helper Function ----
 function anime() {
