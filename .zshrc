@@ -8,14 +8,14 @@
 # ---- Variables ----
 export APPDATA="$HOME/Library/Application Support"
 export SDKMAN_DIR="$HOME/.sdkman"
+export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 
 # ---- Initialization ----
 EXECUTE_INIT_SCRIPT=false
 
-# ---- Oh-My-Posh ----
-if [[ "$TERM_PROGRAM" != "Terminal.app" ]]; then
-  eval "$(oh-my-posh init zsh --config $HOME/.poshthemes/zash.omp.json)"
-fi
+# ---- Shell prompt setup ----
+#eval "$(oh-my-posh init zsh --config $HOME/.poshthemes/zash.omp.json)"
+eval "$(starship init zsh)"
 
 # ---- Zsh Plugins ----
 source $HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
@@ -69,18 +69,8 @@ _fzf_comprun() {
 # ---- Bat (Better Cat) ----
 export BAT_THEME="Catppuccin Mocha"
 
-# ---- Tmux Configuration ----
-alias :qa!='echo "not a nvim window :3"'
-chpwd() {
-  [[ -n "$TMUX" ]] && tmux refresh-client -S
-}
-
-setup_tmux_main() {
-  if [[ "$EXECUTE_INIT_SCRIPT" == true ]]; then
-    tmux send-keys -t main ':qa!' Enter
-    sleep 0.05
-    tmux send-keys -t main '~/.scripts/terminal-init.sh' Enter
-  fi
+# ---- Tmux attach method ----
+tmux_attach_to_main() {
   if [[ "$TERM_PROGRAM" =~ (iTerm\.app|kitty|alacritty|WezTerm) ]]; then
     tmux attach -t main
   fi
@@ -89,7 +79,7 @@ setup_tmux_main() {
 # ---- Zoxide (Better cd) ----
 eval "$(zoxide init zsh)"
 
-# ---- zhs-highlighting ----
+# ---- ZSH-highlighting ----
 ZSH_HIGHLIGHT_STYLES[suffix-alias]=fg=blue,underline
 ZSH_HIGHLIGHT_STYLES[precommand]=fg=blue,underline
 ZSH_HIGHLIGHT_STYLES[arg0]=fg=blue
@@ -98,5 +88,5 @@ ZSH_HIGHLIGHT_STYLES[arg0]=fg=blue
 [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
 
 # ---- Final Commands ----
-setup_tmux_main
+tmux_attach_to_main
 
