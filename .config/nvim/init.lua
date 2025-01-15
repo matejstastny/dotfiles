@@ -48,9 +48,9 @@ local function open_dashboard()
 end
 
 -- Set up the notify plugin
-require("notify").setup({
-  background_colour = "#000000",  -- Set your desired background color
-})
+-- require("notify").setup({
+  -- background_colour = "#000000",  -- Set your desired background color
+-- })
 
 -- Set the background highlight for NotifyBackground
 vim.api.nvim_set_hl(0, "NotifyBackground", { bg = "#000000" })  -- Use the same color or adjust as needed
