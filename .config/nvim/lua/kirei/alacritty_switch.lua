@@ -31,16 +31,14 @@ end
 vim.api.nvim_create_autocmd("VimEnter", {
     callback = function()
         copy_config(config1, main_config)
-        delayed_tmux_toggle(false) -- Disable tmux status bar and reclaim space
-    end,
-    desc = "Disable tmux bar and load nvim Alacritty config",
+        --delayed_tmux_toggle(false) -- Disable tmux status bar and reclaim space
+    end
 })
 
 -- Handle Neovim exit (explicit delayed handling for restore)
 vim.api.nvim_create_autocmd("VimLeavePre", {
     callback = function()
         copy_config(config2, main_config)
-        os.execute("tmux set-option status on")
-    end,
-    desc = "Enable tmux bar and load default Alacritty config",
+        --os.execute("tmux set-option status on")
+    end
 })
