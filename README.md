@@ -26,6 +26,9 @@ brew install stow
 
 ### [Dank Mono Nerd Fonts](https://www.nerdfonts.com/)
 
+> [!WARNING]
+> Run this command after cloning this repo from GitHub, as it uses custom otf files!
+
 ```shell
 cp ~/.dotfiles/assets/fonts/dankmono-nerd-font/*.otf /Library/Fonts
 ```
