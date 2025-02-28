@@ -2,7 +2,7 @@
 
 # .dotfiles
 
-My dofiles for apps I use for development on my MacOS laptop. [_GNU Stow_](https://www.gnu.org/software/stow/manual/stow.html) was used to create symlinks of the conf files. Most of the files are configured to match the [Catppuccin](https://catppuccin.com/) _Mocha_ theme. My [wallpaper](./assets/wallpaper.png) is also included.
+My dofiles for apps I use for development on MacOS. [_GNU Stow_](https://www.gnu.org/software/stow/manual/stow.html) was used to create symlinks of the conf files. Most of the files are configured to match the [Catppuccin](https://catppuccin.com/) _Mocha_ theme. My [wallpaper](./assets/wallpaper.png) is also included.
 
 ## Requirements
 
@@ -24,10 +24,10 @@ brew install git
 brew install stow
 ```
 
-### [Nerd Fonts](https://www.nerdfonts.com/)
+### [Dank Mono Nerd Fonts](https://www.nerdfonts.com/)
 
 ```shell
-brew install font-meslo-lg-nerd-font
+cp ~/.dotfiles/assets/fonts/dankmono-nerd-font/*.otf /Library/Fonts
 ```
 
 ## Setup
