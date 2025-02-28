@@ -14,8 +14,8 @@ eval "$(starship init zsh)"
 # ---- Plugin Initialization ----
 source "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
 source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-ZSH_HIGHLIGHT_STYLES[precommand]="fg=green,underline"
-ZSH_HIGHLIGHT_STYLES[arg0]="fg=green,bold"
+ZSH_HIGHLIGHT_STYLES[precommand]="fg=magenta,underline"
+ZSH_HIGHLIGHT_STYLES[arg0]="fg=magenta,bold"
 
 # ---- SDKMAN Initialization ----
 [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
