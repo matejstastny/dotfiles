@@ -149,6 +149,26 @@ vim.api.nvim_create_autocmd({"BufEnter"}, {
   end
 })
 
+-------------------
+-- HIDE TMUX BAR --
+-------------------
+
+local function toggle_tmux_status(status)
+    vim.fn.system("tmux set-option status " .. status)
+end
+
+vim.api.nvim_create_autocmd("VimEnter", {
+    callback = function()
+        toggle_tmux_status("off")
+    end,
+})
+
+vim.api.nvim_create_autocmd("VimLeave", {
+    callback = function()
+        toggle_tmux_status("on")
+    end,
+})
+
 --------------
 -- BARBECUE --
 --------------
