@@ -22,7 +22,7 @@ offset.x = 0 # For letter spacing
 offset.y = 5 # For line spacing
 
 [general]
-import = ["~/.config/alacritty/themes/monokai_charcoal.toml"]
+import = ["~/.config/alacritty/themes/moonfly.toml"]
 
 [colors]
 # Override the theme background color
