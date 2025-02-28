@@ -1,3 +1,2 @@
--- bootstrap lazy.nvim, LazyVim and your plugins
+-- require("kirei.alacritty_switch")
 require("config.lazy")
-require("kirei.alacritty_switch")
