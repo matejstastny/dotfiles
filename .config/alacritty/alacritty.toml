@@ -22,4 +22,8 @@ offset.x = 0 # For letter spacing
 offset.y = 5 # For line spacing
 
 [general]
-import = ["~/.config/alacritty/themes/omni.toml"]
+import = ["~/.config/alacritty/themes/monokai_charcoal.toml"]
+
+[colors]
+# Override the theme background color
+primary = { background = "#191521" }
