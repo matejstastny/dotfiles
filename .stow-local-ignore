@@ -1,23 +1,21 @@
 # Files & directories to be ignored when calling the stow command
 
 # Git files
+
 \.git
 \.gitignore
 \.gitmodules
 
-# Markdown files for GitHub
-^/README.*
-^/LICENSE.*
+# GitHub
+
+^/README._
+^/LICENSE._
 ^/COPYING
 
 # MacOS
+
 \.DS_Store
 
 # Other directories
-public
-scripts
-game-configs
-custom-icons
 
-wallpaper.png
-
+assets
