@@ -8,8 +8,8 @@
 
 # GitHub
 
-^/README._
-^/LICENSE._
+^/README.*
+^/LICENSE.*
 ^/COPYING
 
 # MacOS
