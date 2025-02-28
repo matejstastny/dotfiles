@@ -6,7 +6,7 @@ TERM_PROGRAM = "alacritty"
 padding.x = 20
 padding.y = 10
 
-dynamic_padding=true
+dynamic_padding = true
 dynamic_title = true
 
 decorations = "Buttonless"
@@ -15,12 +15,11 @@ blur = true
 startup_mode = "Maximized"
 
 [font]
-# normal.family = "MesloLGS Nerd Font Mono"
 normal.family = "DankMono Nerd Font Mono"
-size = 16
+size = 17
+
+offset.x = 0 # For letter spacing
+offset.y = 5 # For line spacing
 
 [general]
-import = [
-	"~/.config/alacritty/themes/omni.toml"
-]
-
+import = ["~/.config/alacritty/themes/omni.toml"]
