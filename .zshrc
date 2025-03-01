@@ -49,6 +49,10 @@ alias sign="sudo xattr -rd com.apple.quarantine"
 # Command Correction
 eval "$(thefuck --alias)"
 
+# Tmux
+alias tmain="attach_tmux_main"
+alias q="tmux detach"
+
 ################################################################
 # Helper Functions
 ################################################################
