@@ -1,7 +1,9 @@
 return {
     "nvim-lualine/lualine.nvim",
     opts = function(_, opts)
-        -- Override only one option (e.g., changing the theme)
-        opts.options.theme = "material"
+        opts.options.theme = "auto"
+        opts.options.icons_enabled = true
+        opts.options.component_separators = "|"
+        opts.options.section_separators = ""
     end,
 }
