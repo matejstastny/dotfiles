@@ -1,4 +1,4 @@
-require("kirei.alacritty_switch")
+--require("kirei.alacritty_switch")
 require("config.lazy")
 
 vim.cmd([[

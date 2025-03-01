@@ -71,4 +71,4 @@ attach_tmux_main() {
 ################################################################
 
 eval "$(zoxide init zsh)"
-
+attach_tmux_main
