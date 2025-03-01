@@ -7,6 +7,8 @@ export APPDATA="$HOME/Library/Application Support"
 export SDKMAN_DIR="$HOME/.sdkman"
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 export BAT_THEME="Dracula"
+export EDITOR="nvim"
+export SUDO_EDITOR="$EDITOR"
 
 # ---- Shell Prompt Setup ----
 eval "$(starship init zsh)"
