@@ -49,6 +49,10 @@ brew install --cask wezterm
 brew install --cask alacritty
 brew install --cask ghostty
 
+## Menubar
+brew install --cask itsycal
+brew install --cask hiddenbar
+
 ## MacOS settings
 echo "Changing macOS defaults..."
 defaults write com.apple.Dock autohide -bool TRUE
