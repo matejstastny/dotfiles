@@ -29,7 +29,6 @@ ZSH_HIGHLIGHT_STYLES[arg0]="fg=magenta,bold"
 # General Aliases
 alias n="clear && echo && command fastfetch"
 alias c="clear"
-alias help="tldr"
 alias info="scc"
 alias cat="bat"
 
@@ -47,9 +46,6 @@ alias ip="ifconfig | grep 'inet ' | awk '/inet / {print \$2}' | grep -Ev '^(127\
 
 # Security
 alias sign="sudo xattr -rd com.apple.quarantine"
-
-# Command Correction
-eval "$(thefuck --alias)"
 
 # Tmux
 alias tmain="attach_tmux_main"
