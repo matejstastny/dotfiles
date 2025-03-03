@@ -1,8 +1,32 @@
-# Colors2
+# Colors
 config-file = colors
+background = 191521
 
 # Fonts
 font-family = "DankMono Nerd Font Mono"
-font-size = 30.5
+font-size = 17.5
+font-thicken = true
 
+# Shell Integration Features
+shell-integration-features = no-cursor,sudo,no-title
+cursor-style = block
 
+# Window Settings
+adjust-cell-height = 20%
+maximize = true
+window-padding-x = 10
+window-padding-y = 10
+window-padding-balance = true
+window-save-state = always
+macos-titlebar-style = transparent
+window-colorspace = "display-p3"
+
+# Mouse Settings
+mouse-hide-while-typing = true
+
+# Shader
+# custom-shader = ~/.dotfiles/.config/ghostty/shaders/bloom.glsl
+# custom-shader = ~/.dotfiles/.config/ghostty/shaders/glitchy.glsl
+# custom-shader = ~/.dotfiles/.config/ghostty/shaders/water.glsl
+# custom-shader = ~/.dotfiles/.config/ghostty/shaders/galaxy.glsl
+# custom-shader = ~/.dotfiles/.config/ghostty/shaders/retro-terminal.glsl
