@@ -51,8 +51,8 @@ brew install --cask alacritty
 brew install --cask ghostty
 
 ## Menubar
+brew install jordanbaird-ice
 brew install --cask itsycal
-brew install --cask hiddenbar
 
 ## MacOS settings
 echo "Changing macOS defaults..."
@@ -61,7 +61,6 @@ defaults write NSGlobalDomain KeyRepeat -int 2
 defaults write InitialKeyRepeat -int 10
 defaults write com.apple.dock autohide-delay -float 0
 killall Dock
-
 csrutil status
 echo "Installation complete..."
 
@@ -90,7 +89,7 @@ else
 fi
 
 # Wallpaper
-echo "Installing npm package for wallpaper cli set..."
+echo "Installing npm package for setting wallpaper..."
 npm install --global wallpaper-cli
 echo "Running command..."
 wallpaper ~/.dotfiles/assets/wallpaper.png
