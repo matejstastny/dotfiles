@@ -1,6 +1,9 @@
 # Colors
 config-file = colors
 background = 191521
+window-theme = auto
+window-titlebar-background = 191521
+window-titlebar-foreground = 191521
 
 # Fonts
 font-family = "DankMono Nerd Font Mono"
