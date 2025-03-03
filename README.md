@@ -73,7 +73,7 @@ sh install.sh
 
 After running the script, your environment should be fully configured with the necessary tools and settings.
 
-> [!Note:]
+> [!NOTE]
 > If you are using a fresh macOS installation, you may need to manually allow permissions for certain applications in **System Preferences > Security & Privacy**.
 
 ---
