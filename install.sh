@@ -33,6 +33,7 @@ brew install eza
 brew install prettier
 brew install make
 brew install gh
+brew install npm
 
 ### Terminal
 brew install git
@@ -87,5 +88,12 @@ if [ -d "$HOME/.dotfiles/assets/fonts/" ]; then
 else
     echo "No fonts directory found."
 fi
+
+# Wallpaper
+echo "Installing npm package for wallpaper cli set..."
+npm install --global wallpaper-cli
+echo "Running command..."
+wallpaper ~/.dotfiles/assets/wallpaper.png
+echo "Wallpaper set"
 
 echo "Dotfiles setup complete!"
