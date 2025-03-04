@@ -13,10 +13,7 @@ This script automates the installation of essential tools, configurations, and s
 Run the following commands in your terminal:
 
 ```shell
-git clone https://github.com/kireiiiiiiii/dotfiles.git $HOME/.dotfiles
-cd ~/.dotfiles
-chmod +x install.sh
-sh install.sh
+curl -fsSL https://raw.githubusercontent.com/kireiiiiiiii/dotfiles/refs/heads/main/install.sh
 ```
 
 ### What the Installation Script Does:
