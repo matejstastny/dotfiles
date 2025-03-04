@@ -13,7 +13,7 @@ This script automates the installation of essential tools, configurations, and s
 Run the following commands in your terminal:
 
 ```shell
-curl -fsSL https://raw.githubusercontent.com/kireiiiiiiii/dotfiles/refs/heads/main/install.sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/kireiiiiiiii/dotfiles/refs/heads/main/install.sh)"
 ```
 
 ### What the Installation Script Does:
