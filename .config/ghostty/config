@@ -15,6 +15,7 @@ shell-integration-features = no-cursor,sudo,no-title
 cursor-style = block
 
 # Window Settings
+confirm-close-surface = false
 adjust-cell-height = 20%
 maximize = true
 window-padding-x = 10
