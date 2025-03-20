@@ -56,11 +56,13 @@ alias q="tmux detach"
 ################################################################
 
 attach_tmux_main() {
-    if [[ "$TERM_PROGRAM" =~ (iTerm\.app|kitty|alacritty|WezTerm) ]]; then
+    if [[ "$TERM_PROGRAM" =~ (iTerm\.app|kitty|alacritty|WezTerm|ghostty) ]]; then
         if ! tmux has-session -t main 2>/dev/null; then
             tmux new-session -d -s main
         fi
         tmux attach -t main
+    else
+        echo "Not supported terminal! Configure in .zshrc"
     fi
 }
 
@@ -69,4 +71,4 @@ attach_tmux_main() {
 ################################################################
 
 eval "$(zoxide init zsh)"
-attach_tmux_main
+# attach_tmux_main
