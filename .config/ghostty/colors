@@ -1,8 +1,8 @@
 # moonfly theme for Ghostty
-#
 # Upstream: github.com/bluz71/vim-moonfly-colors
+# Dark catppuccin 191521
 
-background = #191521
+background = #0d0d0d
 foreground = #bdbdbd
 selection-background = #b2ceee
 selection-foreground = #080808

@@ -1,9 +1,5 @@
 # Colors
 config-file = colors
-background = 191521
-window-theme = auto
-window-titlebar-background = 191521
-window-titlebar-foreground = 191521
 
 # Fonts
 font-family = "DankMono Nerd Font Mono"
@@ -18,8 +14,6 @@ cursor-style = block
 confirm-close-surface = false
 adjust-cell-height = 20%
 maximize = true
-window-padding-x = 10
-window-padding-y = 10
 window-padding-balance = true
 window-save-state = always
 macos-titlebar-style = transparent
