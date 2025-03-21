@@ -61,8 +61,9 @@ attach_tmux_main() {
             tmux new-session -d -s main
         fi
         tmux attach -t main
+    elif [[ "$TERM_PROGRAM" =~ (vscode|tmux) ]]; then # Don't log (not configured intentionally)
     else
-        echo "Not supported terminal! Configure in .zshrc"
+        echo "Term '$TERM_PROGRAM' is not supported terminal! Configure in .zshrc"
     fi
 }
 
@@ -71,4 +72,4 @@ attach_tmux_main() {
 ################################################################
 
 eval "$(zoxide init zsh)"
-# attach_tmux_main
+attach_tmux_main
