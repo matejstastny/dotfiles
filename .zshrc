@@ -51,6 +51,9 @@ alias sign="sudo xattr -rd com.apple.quarantine"
 alias tmain="attach_tmux_main"
 alias q="tmux detach"
 
+# Unity
+alias unity="sudo /Applications/Unity -projectPath"
+
 ################################################################
 # Helper Functions
 ################################################################
@@ -73,3 +76,9 @@ attach_tmux_main() {
 
 eval "$(zoxide init zsh)"
 attach_tmux_main
+
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=(/Users/matejstastny/.docker/completions $fpath)
+autoload -Uz compinit
+compinit
+# End of Docker CLI completions
