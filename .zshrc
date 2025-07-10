@@ -9,6 +9,7 @@ export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 export BAT_THEME="Dracula"
 export EDITOR="nvim"
 export SUDO_EDITOR="$EDITOR"
+export PATH="$HOME/go/bin:$PATH"
 
 # ---- Shell Prompt Setup ----
 eval "$(starship init zsh)"
