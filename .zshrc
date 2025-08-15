@@ -52,9 +52,6 @@ alias sign="sudo xattr -rd com.apple.quarantine"
 alias tmain="attach_tmux_main"
 alias q="tmux detach"
 
-# Unity
-alias unity="sudo /Applications/Unity -projectPath"
-
 ################################################################
 # Helper Functions
 ################################################################
@@ -65,9 +62,6 @@ attach_tmux_main() {
             tmux new-session -d -s main
         fi
         tmux attach -t main
-    elif [[ "$TERM_PROGRAM" =~ (vscode|tmux) ]]; then # Don't log (not configured intentionally)
-    else
-        echo "Term '$TERM_PROGRAM' is not supported terminal! Configure in .zshrc"
     fi
 }
 
