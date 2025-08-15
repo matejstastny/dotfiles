@@ -57,8 +57,8 @@ neovim
 proto                       # Protocol Buffers compiler (for Flaggi)
 python
 starship                    # Promt theme
-sdkman                      # SDK Manager for Java
 stow                        # Dotfiles symlinks
+scc                         # Info about source code
 tmux
 wget                        # Network downloader
 zoxide                      # Better cd
