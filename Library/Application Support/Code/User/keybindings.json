@@ -1,0 +1,83 @@
+[
+  // Sidebar --------------------------------------------------------------------------
+
+  {
+    "key": "cmd+d",
+    "command": "workbench.view.explorer",
+  },
+
+  {
+    "key": "cmd+g",
+    "command": "workbench.view.scm",
+  },
+
+  {
+    "key": "cmd+shift+e",
+    "command": "workbench.view.extensions",
+  },
+
+  {
+    // Close sidebar
+    "key": "escape",
+    "command": "workbench.action.closeSidebar",
+    "when": "sideBarFocus"
+  },
+
+  // Actions -------------------------------------------------------------------------
+
+  {
+    "key": "cmd+n",
+    "command": "extension.advancedNewFile"
+  },
+
+  {
+    // Toast clear
+    "key": "escape",
+    "command": "notifications.hideToasts",
+    "when": "notificationToastsVisible"
+  },
+
+  {
+    // Reset zoom
+    "key": "cmd+0",
+    "command": "workbench.action.zoomReset"
+  },
+
+  {
+    // Declaration
+    "key": "cmd+l",
+    "command": "editor.action.goToDeclaration",
+    "when": "editorTextFocus"
+  },
+
+  // Mini windows --------------------------------------------------------------------
+
+  {
+    // Open command panel
+    "key": "cmd+p",
+    "command": "workbench.action.showCommands"
+  },
+
+  {
+    // Line finder
+    "key": "cmd+k",
+    "command": "workbench.action.gotoLine"
+  },
+  {
+    // Method finder
+    "key": "cmd+e",
+    "command": "workbench.action.gotoSymbol"
+  },
+
+  {
+    // Quick open menu
+    "key": "cmd+o",
+    "command": "workbench.action.quickOpen"
+  }
+
+  //   {
+  //     // Global method finder
+  //     "key": "cmd+shift+e",
+  //     "command": "workbench.action.showAllSymbols"
+  //   }
+]
