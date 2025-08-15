@@ -1,105 +1,138 @@
-![repository banner](./assets/repository/banner.png)
+![Banner](./assets/repository/banner.png)
 
-# ~/.dotfiles
+# Daarlin's Dotfiles
 
-My dofiles for apps I use for development on MacOS. [_GNU Stow_](https://www.gnu.org/software/stow/manual/stow.html) was used to create symlinks of the conf files. Most of the files are configured to match the [Catppuccin](https://catppuccin.com/) _Mocha_ theme. My [wallpaper](./assets/wallpaper.png) is also included.
+Welcome to Daarlin's Dotfiles repository - a collection of configuration files and scripts tailored for development on macOS. This setup uses [_GNU Stow_](https://www.gnu.org/software/stow/manual/stow.html) to manage symlinks, ensuring a clean and maintainable configuration environment.
 
-## Installation
+This repository provides a comprehensive macOS development environment setup, including essential tools, utilities, GUI applications, system tweaks, and personalized configurations. The installation process is designed to be straightforward, either via an automated script or manual commands, depending on your preference.
 
-This script automates the installation of essential tools, configurations, and settings for macOS. It installs Homebrew, essential CLI utilities, terminal applications, menubar apps, and macOS system settings.
+## Repository Structure
 
-### Steps to Install:
-
-Run the following commands in your terminal:
-
-```shell
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/kireiiiiiiii/dotfiles/refs/heads/main/install.sh)"
+```
+.dotfiles/
+├── assets/
+│   ├── fonts/          # Dank Mono nerd font
+│   ├── repository/     # Repo assets (banner, screenshots)
+│   └── wallpapers/     # Wallpapers for mac and for a Windows VM
+├── .config/            # Configuration dotfiles
+├── Library             # VS Code settings and keybindings
+├── .zshrc
+├── install.sh          # Automated installation script
+└── README.md
 ```
 
-### What the Installation Script Does:
-
-1. **Installs Xcode CLI Tools**
-
-   - Ensures the required development tools are available
-
-2. **Installs [Homebrew](https://brew.sh/) & Disables Analytics**
-
-   - Homebrew is used for package management
-   - Turns off analytics for privacy
-
-3. **Installs Essential CLI Utilities via Homebrew**
-
-   - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
-   - [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)
-   - [stow](https://www.gnu.org/software/stow/)
-   - [bat](https://github.com/sharkdp/bat)
-   - [btop](https://github.com/aristocratos/btop)
-   - [scc](https://github.com/boyter/scc)
-   - [fd](https://github.com/sharkdp/fd)
-   - [zoxide](https://github.com/ajeetdsouza/zoxide)
-   - [eza](https://github.com/eza-community/eza)
-   - [prettier](https://github.com/prettier/prettier)
-   - [make](https://www.gnu.org/software/make/)
-   - [gh](https://github.com/cli/cli)
-   - [npm](https://github.com/npm/cli)
-
-4. **Installs GUI Applications via Homebrew Casks**
-
-   - [Raycast](https://www.raycast.com/)
-   - [Arc](https://arc.net/)
-   - [Visual Studio Code](https://code.visualstudio.com/)
-   - [WezTerm](https://wezfurlong.org/wezterm/)
-   - [Alacritty](https://alacritty.org/)
-   - [Ghostty](https://ghostty.app/)
-
-5. **Tweaks macOS System Settings**
-
-   - Configures the dock to auto-hide
-   - Reduces key repeat delays
-
-6. **Clones and Stows Dotfiles**
-
-   - Uses `stow` to symlink configuration files to the home directory
-
-7. **Installs Custom Fonts**
-
-   - All fonts from `~/.dotfiles/assets/fonts/` are installed
-
-8. **Sets Custom Wallpaper**
-   - Uses [wallpaper-cli](https://github.com/sindresorhus/wallpaper-cli) to set the desktop wallpaper
-
-After running the script, your environment should be fully configured with the necessary tools and settings.
-
-> [!NOTE]
-> If you are using a fresh macOS installation, you may need to manually allow permissions for certain applications in **System Preferences > Security & Privacy**.
-
----
-
-## Manual installation
-
-Install [Homebrew](https://brew.sh/), [Git](https://git-scm.com/) and [Stow](https://www.gnu.org/software/stow/manual/stow.html) using these commands:
+### 1. Install Homebrew
 
 ```shell
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+### 2. Install Git and GNU Stow
+
+```shell
 brew install git
 brew install stow
 ```
 
-Next, you need to clone this repository:
+### Cloning the Dotfiles Repository
 
 ```shell
-git clone https://github.com/kireiiiiiiii/dotfiles.git $HOME/.dotfiles
+git clone https://github.com/my-daarlin/dotfiles.git $HOME/.dotfiles
 ```
 
-In order for the fonts to work, you need to move font files from this repo into your system fonts folder. This is how you do it on MacOS:
+### Creating Symlinks with GNU Stow
+
+GNU Stow is a symlink manager that helps keep your dotfiles organized. Each folder inside `.dotfiles` corresponds to a set of configurations for an application or tool. To restow (create symlinks) all configurations run the following command:
+
+```shell
+stow --restow -t ~ .
+```
+
+### Font Installation
+
+The repository includes custom font, the [Dank Mono](https://philpl.gumroad.com/l/dank-mono) in it's normal and [Nerd Font](https://www.nerdfonts.com/) versions located under [`assets/fonts/`](./assets/fonts/). Installing these fonts ensures consistent typography across your terminal and applications. Use the following command to install fonts:
 
 ```shell
 find ~/.dotfiles/assets/fonts -type f -exec cp {} /Library/Fonts \;
 ```
 
-To create all the config simlings Run the following command, to clone this dotfiles repo into your home directory
+### Setting the Wallpaper
+
+Custom wallpapers from my Macbook and Widnows VM are included in the repository at [`assets/wallpapers`](./assets/wallpapers/). To set it, install [`wallpaper`](https://formulae.brew.sh/formula/wallpaper) and run:
 
 ```shell
-cd ~/.dotfiles
-stow --restow -t ~ .
+wallpaper set ~/.dotfiles/assets/mac-wallpaper.png
+```
+
+## Screenshots
+
+_TODO_
+
+---
+
+Thank you for using Daarlin's Dotfiles! For questions or contributions, please open an issue or submit a pull request on the [GitHub repository](https://github.com/kireiiiiiiii/dotfiles).
+
+---
+
+> [!CAUTION]
+> This script does not work how it's supposed to yet. Do not use it unless you know what you're doing!
+
+## Automated Installation
+
+To streamline the setup, an installation script is provided which automates the following steps:
+
+1. **Install Xcode Command Line Tools**
+   Ensures that essential development tools are available on macOS.
+
+2. **Install Homebrew & Disable Analytics**
+   Homebrew is the package manager used for installing CLI utilities and applications. Analytics are disabled for privacy.
+
+3. **Install Essential CLI Utilities via Homebrew**
+   Installs widely used command-line tools including:
+
+   - `zsh-autosuggestions`
+   - `zsh-syntax-highlighting`
+   - `stow`
+   - `bat`
+   - `btop`
+   - `scc`
+   - `fd`
+   - `zoxide`
+   - `eza`
+   - `prettier`
+   - `make`
+   - `gh` (GitHub CLI)
+   - `npm`
+
+4. **Install GUI Applications via Homebrew Casks**
+   Installs popular GUI apps such as:
+
+   - Raycast
+   - Arc Browser
+   - Visual Studio Code
+   - WezTerm Terminal
+   - Alacritty Terminal
+   - Ghostty
+
+5. **Configure macOS System Settings**
+   Applies system customizations like:
+
+   - Dock auto-hide
+   - Reduced key repeat delays
+
+6. **Clone and Stow Dotfiles**
+   Uses GNU Stow to symlink configuration files to your home directory.
+
+7. **Install Custom Fonts**
+   Installs all fonts located in `~/.dotfiles/assets/fonts/` into the system fonts directory.
+
+8. **Set Custom Wallpaper**
+   Uses [wallpaper-cli](https://github.com/sindresorhus/wallpaper-cli) to set the desktop wallpaper to the included image.
+
+### How to Run the Automated Installer
+
+Open your terminal and run:
+
+```shell
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/kireiiiiiiii/dotfiles/refs/heads/main/install.sh)"
 ```
