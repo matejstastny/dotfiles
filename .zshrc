@@ -30,13 +30,13 @@ ZSH_HIGHLIGHT_STYLES[arg0]="fg=magenta,bold"
 ################################################################
 
 # General Aliases
-alias n="command clear && echo && command fastfetch"       # Clear screen, print newline, and run fastfetch
-alias c="command clear"                                    # Clear the terminal screen
-alias info="command scc"                                   # Run scc (sloc, complexity, and code) tool
-alias cat="command bat"                                    # Use bat instead of cat for syntax highlighting
+alias n="clear && echo && fastfetch"               # Clear screen, print newline, and run fastfetch
+alias c="clear"                                    # Clear the terminal screen
+alias info="scc"                                   # Run scc (sloc, complexity, and code) tool
+alias cat="bat"                                    # Use bat instead of cat for syntax highlighting
 
 # Navigation
-alias cd="command z"
+alias cd="z"
 alias ls="echo && command eza --color=always --long --git --no-filesize --icons=always --no-time --no-user --no-permissions"
 alias lsa="echo && command eza --color=always --tree --git --no-filesize --icons=always --no-time --no-user --no-permissions"
 
