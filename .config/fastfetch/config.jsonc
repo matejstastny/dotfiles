@@ -1,8 +1,8 @@
 {
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
-  "logo": "macos_small", 
+  "logo": "macos_small",
   "display": {
-    "separator": " : ",
+    "separator": " : "
   },
   "modules": [
     {
@@ -10,14 +10,14 @@
       "key": "   OS",
       // "key": "   OS",
       // "key": "   OS",
-      "keyColor": "red",
+      "keyColor": "red"
     },
     {
       "type": "kernel",
       "key": "   Kernel",
-      "keyColor": "red",
+      "keyColor": "red"
     },
-    
+
     // {
     //     "type": "display",
     //     "key": "   Display",
@@ -27,7 +27,7 @@
       "type": "gpu",
       "format": "{2}",
       "key": "   GPU",
-      "keyColor": "blue",
+      "keyColor": "blue"
     },
     // {
     //   "type": "de",
@@ -47,30 +47,30 @@
       "type": "cpu",
       "format": "{1}",
       "key": "   CPU",
-      "keyColor": "blue",
+      "keyColor": "blue"
     },
-    
+
     //   {
     //       "type": "gpu",
     //       "format": "{3}",
     //       "key": "   GPU Driver",
     //       "keyColor": "magenta"
     //   },
-    
+
     {
       "type": "uptime",
       "key": "   Uptime",
-      "keyColor": "green",
+      "keyColor": "green"
     },
     {
       "type": "memory",
       "key": "  󰍛 Memory",
-      "keyColor": "magenta",
+      "keyColor": "magenta"
     },
     {
       "type": "colors",
       "paddingLeft": 2,
-      "symbol": "circle",
-    },
-  ],
+      "symbol": "circle"
+    }
+  ]
 }
