@@ -203,7 +203,13 @@
   },
 
   // Custom app icons
-  "customAppIcons.path": "/Users/matejstastny/Documents/devel/other/vscode.icns"
+  "customAppIcons.path": "/Users/matejstastny/Documents/devel/other/vscode.icns",
+  "github.copilot.enable": {
+    "*": false,
+    "plaintext": false,
+    "markdown": false,
+    "scminput": false
+  }
 
   // ------------------------------------------------------------
 }
