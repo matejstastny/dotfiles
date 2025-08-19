@@ -1,0 +1,46 @@
+[user]
+	email = matysta@outlook.com
+	name = Matej Stastny
+
+
+[init]
+  defaultBranch = main
+
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+
+
+[alias]
+    ls = !eza --git --group-directories-first --icons
+    ll = !eza --git --group-directories-first --icons -l
+    la = !eza --git --group-directories-first --icons -la
+
+
+########################
+# Delta
+########################
+
+[core]
+    pager = delta
+	autocrlf = input
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true
+    side-by-side = true
+
+[merge]
+    conflictstyle = diff3
+
+[diff]
+    colorMoved = default
+[init]
+	defaultBranch = main
+[pull]
+	rebase = false
