@@ -1,7 +1,5 @@
 ![Banner](./assets/repository/banner.png)
 
-# Daarlin's Dotfiles
-
 ```txt
 # --------------------------------------------------------------------------------------------
 # brew.sh — Homebrew Installer
