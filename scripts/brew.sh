@@ -1,96 +1,113 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-set -e
+# --------------------------------------------------------------------------------------------
+# brew.sh — Homebrew Installer
+# --------------------------------------------------------------------------------------------
+# Description:
+#   This script installs Homebrew on macOS if it's not already installed, updates it, upgrades
+#   existing packages, and installs a predefined list of formulae and casks.
+#
+# Features:
+#   - Installs Homebrew if missing
+#   - Updates and upgrades Homebrew packages
+#   - Installs formulae and casks from predefined lists
+#   - Logs progress with emojis for info, success, warning, and error
+#   - Cleans up outdated Homebrew packages
+#
+# Usage:
+#   ./brew.sh
+#
+# Notes:
+#   - Ensure this script is executable: chmod +x brew.sh
+#   - Suppresses normal brew output, only logs errors and progress
+#   - Compatible with both Intel (x86_64) and Apple Silicon (arm64) Macs
+# --------------------------------------------------------------------------------------------
 
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo " 🍺 Daarlin's Homebrew Setup Script"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-# Detect architecture
+IFS=$'\n\t'
 ARCH=$(uname -m)
 
-# Install Homebrew if not installed
+# --------------------------------------------------------------------------------------------
+# Logging
+# --------------------------------------------------------------------------------------------
+
+log() {
+    local level="$1"
+    local msg="$2"
+    local emoji
+    case "$level" in
+    info) emoji="📦" ;;
+    success) emoji="✅" ;;
+    warn) emoji="⚠️" ;;
+    error) emoji="❌" ;;
+    *) emoji="🔷" ;;
+    esac
+    echo -e "$emoji $msg"
+}
+
+error_exit() {
+    log error "$1"
+    exit 1
+}
+
+# --------------------------------------------------------------------------------------------
+# Homebrew installation
+# --------------------------------------------------------------------------------------------
+
 if ! command -v brew >/dev/null 2>&1; then
-    echo "🔍 Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    # Add brew to PATH for current shell
+    log info "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" ||
+        error_exit "Homebrew installation failed"
+
     if [[ $ARCH == "arm64" ]]; then
         eval "$(/opt/homebrew/bin/brew shellenv)"
     else
         eval "$(/usr/local/bin/brew shellenv)"
     fi
 else
-    echo "✅ Homebrew is already installed"
+    log success "Homebrew is already installed"
 fi
 
-echo "🔄 Updating Homebrew..."
-brew update
+log info "Updating Homebrew..."
+brew update >/dev/null || error_exit "Homebrew update failed"
 
-echo "📦 Upgrading installed packages..."
-brew upgrade
+log info "Upgrading packages..."
+brew upgrade >/dev/null || log warn "Some packages failed to upgrade, continuing..."
 
-# ========================
-# Formulae
-# ========================
+# --------------------------------------------------------------------------------------------
+# Formulae & Casks
+# --------------------------------------------------------------------------------------------
 
 FORMULAE=(
-bat                         # Output files
-btop                        # CLI activity monitor
-create-dmg                  # For creating Java DMG's
-curl                        # Download tool
-docker
-eza                         # Better ls
-fastfetch                   # Neofetch
-ffmpeg
-fileicon                    # Set custom icons
-fzf                         # Fuzzy finder
-gh                          # GitHub CLI tool
-git
-git-delta                   # Syntax-highlighting pager for git and diff output
-git-lfs                     # Large File Storage for Git
-go
-gradle
-lazygit                     # Git UI
-maven
-neovim
-proto                       # Protocol Buffers compiler (for Flaggi)
-python
-starship                    # Promt theme
-stow                        # Dotfiles symlinks
-scc                         # Info about source code
-tmux
-wget                        # Network downloader
-zoxide                      # Better cd
-zsh-syntax-highlighting
+    bat btop create-dmg curl docker eza fastfetch ffmpeg fileicon fzf gh git git-delta git-lfs go
+    gradle lazygit maven neovim proto python starship stow scc tmux wget zoxide zsh-syntax-highlighting
 )
-
-# ========================
-# Casks
-# ========================
 
 CASKS=(
-# Main apps
-ghostty               # Main Terminal emulator
-battery               # Tmux baterry indicator
-chatgpt
-mos                   # Scroll smoother
-google-chrome
-jordanbaird-ice       # Menu bar manager
-iina                  # Video player
-vesktop               # Discord
-obsidian
-visual-studio-code
-wine-stable           # Windows emulator
+    ghostty battery chatgpt mos google-chrome jordanbaird-ice iina vesktop obsidian
+    visual-studio-code wine-stable
 )
 
-echo "📥 Installing formulae..."
-brew install "${FORMULAE[@]}"
+install_packages() {
+    local packages=("$@")
+    for pkg in "${packages[@]}"; do
+        if brew list "$pkg" >/dev/null 2>&1 || brew list --cask "$pkg" >/dev/null 2>&1; then
+            log success "$pkg already installed"
+        else
+            log info "Installing $pkg..."
+            brew install "$pkg" 2>/dev/null || brew install --cask "$pkg" 2>/dev/null ||
+                log warn "Failed to install $pkg, continuing..."
+        fi
+    done
+}
 
-echo "📥 Installing casks..."
-brew install --cask "${CASKS[@]}"
+log info "Installing formulae..."
+install_packages "${FORMULAE[@]}"
 
-echo "🧹 Cleaning up..."
-brew cleanup
+log info "Installing casks..."
+install_packages "${CASKS[@]}"
 
-echo "✅ All done!"
+log info "Cleaning up..."
+brew cleanup >/dev/null || log warn "Cleanup failed, continuing..."
+
+log success "All done!"
