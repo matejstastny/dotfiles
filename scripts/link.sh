@@ -68,7 +68,7 @@ link_directory() {
             local current_target
             current_target="$(readlink "$tgt")"
             if [ "$current_target" = "$src" ]; then
-                log info "Link $tgt already points to $src, skipping"
+                log info "Link for $(basename "$src") already points to correct source, skipping"
                 return
             fi
         fi
@@ -145,6 +145,7 @@ link_config() {
 # --------------------------------------------------------------------------------------------
 # Main
 # --------------------------------------------------------------------------------------------
+
 for folder in "$CONFIGS_DIR"/*; do
     [ -d "$folder" ] || continue
     folder_name="$(basename "$folder")"
