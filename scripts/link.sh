@@ -2,7 +2,31 @@
 set -euo pipefail
 
 # --------------------------------------------------------------------------------------------
-# TODO Header
+# link.sh — Minimal Dotfiles Linker
+# --------------------------------------------------------------------------------------------
+# Description:
+#   This script creates symbolic links from your dotfiles repository to their proper locations
+#   in your home directory or system-specific paths (e.g., VSCode User settings).
+#   It functions similarly to GNU Stow, but is tailored for this repository's structure.
+#
+# Features:
+#   - Safely link entire directories or individual files.
+#   - Special handling for VSCode settings files.
+#   - Prompts before overwriting existing files, with a --force option to skip prompts.
+#   - Dry-run mode (--dry-run) to preview changes without modifying anything.
+#   - Logging with clear emoji-based statuses: info, success, warning, error.
+#
+# Usage:
+#   ./link.sh [--force] [--dry-run]
+#
+# Flags:
+#   --force     : Overwrite all existing files without prompting.
+#   --dry-run   : Show what would be linked without making changes.
+#
+# Notes:
+#   - Ensure this script is executable: chmod +x link.sh
+#   - Designed for macOS paths (especially the VSCode linking) but can work for Linux with
+#     minor tweaks.
 # --------------------------------------------------------------------------------------------
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
