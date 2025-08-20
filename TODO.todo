@@ -1,0 +1,2 @@
+Link script:
+    - Figure out why after 'no' to "Parent path /Users/matejstastny/.config/nvim is a symlink, delete it? [y/N] n" the script stops entirely @started(25-08-19 17:21)
