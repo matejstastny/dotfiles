@@ -1,13 +1,36 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Variables ------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------
+# TODO Header
+# --------------------------------------------------------------------------------------------
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CONFIGS_DIR="$REPO_ROOT/configs"
 HOME_DIR="$HOME"
 
-# Logging --------------------------------------------------------------------------------------------
+FORCE=false
+DRY_RUN=false
+
+# --------------------------------------------------------------------------------------------
+# Flags
+# --------------------------------------------------------------------------------------------
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+    --force) FORCE=true ;;
+    --dry-run) DRY_RUN=true ;;
+    *)
+        echo "Unknown option: $1"
+        exit 1
+        ;;
+    esac
+    shift
+done
+
+# --------------------------------------------------------------------------------------------
+# Logging
+# --------------------------------------------------------------------------------------------
 
 log() {
     local level="$1"
@@ -23,108 +46,109 @@ log() {
     echo -e "$emoji $msg"
 }
 
-# Helpers --------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------
+# Helpers
+# --------------------------------------------------------------------------------------------
 
-check_parent_symlinks() {
-    local tgt="$1"
-    local current="$tgt"
-    while [ "$current" != "/" ]; do
-        current="$(dirname "$current")"
-        if [ -L "$current" ]; then
-            read -p "⚠️ Parent path $current is a symlink, delete it? [y/N] " choice
-            if [[ "$choice" =~ ^[Yy]$ ]]; then
-                rm -rf "$current"
-                log success "Removed parent symlink"
-            else
-                log info "Skipped linking $(basename "$current")"
-                return 1
-            fi
-            break
-        fi
-    done
-    return 0
+prompt_or_force() {
+    local prompt_msg="$1"
+    if [ "$FORCE" = true ]; then
+        return 0
+    fi
+    read -p "$prompt_msg [y/N] " choice
+    [[ "$choice" =~ ^[Yy]$ ]]
 }
 
-link_file() {
+link_directory() {
     local src="$1"
     local tgt="$2"
 
-    if [ -L "$tgt" ]; then
-        if [ "$(readlink "$tgt")" = "$src" ]; then
-            log success "Symlink exists and is correct"
-            return 0
-        else
-            echo "⚠️ $tgt is a symlink to $(readlink "$tgt")"
-            read -p "   Overwrite with $src? [y/N] " choice
-            if [[ "$choice" =~ ^[Yy]$ ]]; then
-                rm -f "$tgt"
-            else
-                log info "Skipped overwriting $(basename "$tgt")"
-                return 0
+    if [ -e "$tgt" ] || [ -L "$tgt" ]; then
+        if [ -L "$tgt" ]; then
+            local current_target
+            current_target="$(readlink "$tgt")"
+            if [ "$current_target" = "$src" ]; then
+                log info "Link $tgt already points to $src, skipping"
+                return
             fi
         fi
-    elif [ -e "$tgt" ]; then
-        read -p "⚠️ $tgt exists (not a symlink), overwrite with $src? [y/N] " choice
-        if [[ "$choice" =~ ^[Yy]$ ]]; then
-            rm -rf "$tgt"
+        if prompt_or_force "Target $tgt exists. Overwrite?"; then
+            $DRY_RUN || rm -rf "$tgt"
+            log warn "Removed existing $tgt"
         else
-            log info "Skipped overwriting $tgt"
-            return 0
+            log info "Skipped linking $tgt"
+            return
         fi
     fi
 
-    check_parent_symlinks "$tgt" || return 0
-    mkdir -p "$(dirname "$tgt")"
-
-    if [ -d "$src" ]; then
-        [ -d "$tgt" ] && rmdir "$tgt" 2>/dev/null || true
-    fi
-
-    if ln -s "$src" "$tgt"; then
-        log info "Linked $tgt"
+    if $DRY_RUN; then
+        log info "Would link $tgt -> $src"
     else
-        log error "Failed to link $tgt -> $src"
+        ln -s "$src" "$tgt" && log success "Linked $tgt -> $src"
     fi
 }
 
-# Methods --------------------------------------------------------------------------------------------
+link_vscode_files() {
+    local src="$CONFIGS_DIR/vscode"
+    local tgt="$HOME/Library/Application Support/Code/User"
+    mkdir -p "$tgt"
+    for file in "$src"/*; do
+        [ -e "$file" ] || continue
+        local filename
+        filename="$(basename "$file")"
+        local target_file="$tgt/$filename"
+
+        if [ -e "$target_file" ] || [ -L "$target_file" ]; then
+            if [ -L "$target_file" ]; then
+                local current_target
+                current_target="$(readlink "$target_file")"
+                if [ "$current_target" = "$file" ]; then
+                    log info "Link $target_file already points to $file, skipping"
+                    continue
+                fi
+            fi
+            if prompt_or_force "Target $target_file exists. Overwrite?"; then
+                $DRY_RUN || rm -rf "$target_file"
+                log warn "Removed existing $target_file"
+            else
+                log info "Skipped linking $target_file"
+                continue
+            fi
+        fi
+
+        if $DRY_RUN; then
+            log info "Would link $target_file -> $file"
+        else
+            ln -s "$file" "$target_file" && log success "Linked $target_file -> $file"
+        fi
+    done
+}
 
 link_config() {
-    local config_folder="$1"
-    local target_base="$2"
-    log info "Creating symlinks for $(basename "$config_folder")"
+    local folder_name="$1"
+    local src="$CONFIGS_DIR/$folder_name"
+    local tgt
 
-    shopt -s nullglob dotglob # make globbing behave correctly, include hidden files
-    local items=("$config_folder"/*)
-    shopt -u nullglob dotglob
+    case "$folder_name" in
+    zsh | git) tgt="$HOME_DIR/$folder_name" ;;
+    vscode) tgt="$HOME/Library/Application Support/Code/User" ;;
+    *) tgt="$HOME_DIR/.config/$folder_name" ;;
+    esac
 
-    if [ ${#items[@]} -eq 0 ]; then
-        log warn "No files found in $config_folder"
-        return
+    if [ "$folder_name" = "vscode" ]; then
+        link_vscode_files
+    else
+        link_directory "$src" "$tgt"
     fi
-
-    for item in "${items[@]}"; do
-        local base_item
-        base_item="$(basename "$item")"
-        local target="$target_base/$base_item"
-        link_file "$item" "$target"
-    done
-    log success "Linked $(basename "$config_folder")"
 }
 
-# Main script ----------------------------------------------------------------------------------------
-
+# --------------------------------------------------------------------------------------------
+# Main
+# --------------------------------------------------------------------------------------------
 for folder in "$CONFIGS_DIR"/*; do
     [ -d "$folder" ] || continue
     folder_name="$(basename "$folder")"
-    if [[ "$folder_name" == "zsh" || "$folder_name" == "git" ]]; then
-        link_config "$folder" "$HOME_DIR"
-    elif [[ "$folder_name" == "vscode" ]]; then
-        link_config "$folder" "$HOME/Library/Application Support/Code/User"
-        continue
-    else
-        link_config "$folder" "$HOME_DIR/.config/$folder_name"
-    fi
+    link_config "$folder_name"
 done
 
 log success "All configs linked!"
