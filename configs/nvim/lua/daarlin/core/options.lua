@@ -39,4 +39,5 @@ opt.splitbelow = true
 opt.swapfile = false
 
 -- status line
-opt.laststatus = 3
+-- opt.laststatus = 3
+opt.laststatus = 0
