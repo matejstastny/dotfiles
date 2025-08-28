@@ -92,7 +92,7 @@ link_directory() {
             local current_target
             current_target="$(readlink "$tgt")"
             if [ "$current_target" = "$src" ]; then
-                log info "Link for $(basename "$src") already points to correct source, skipping"
+                log info "Link for $(basename "$src") already points to correct source"
                 return
             fi
         fi
@@ -106,7 +106,7 @@ link_directory() {
     fi
 
     if $DRY_RUN; then
-        log info "Would link $tgt -> $src"
+        log success "Would link $tgt -> $src"
     else
         ln -s "$src" "$tgt" && log success "Linked $tgt -> $src"
     fi
@@ -127,7 +127,7 @@ link_vscode_files() {
                 local current_target
                 current_target="$(readlink "$target_file")"
                 if [ "$current_target" = "$file" ]; then
-                    log info "Link $target_file already points to $file, skipping"
+                    log info "Link for $(basename "$target_file") already correct"
                     continue
                 fi
             fi
