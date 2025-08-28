@@ -5,6 +5,7 @@
   "workbench.iconTheme": "material-icon-theme",
   "workbench.activityBar.location": "hidden",
   "workbench.editor.showTabs": "single",
+  "workbench.editor.empty.hint": "hidden",
   "workbench.startupEditor": "none",
   "workbench.tips.enabled": false,
   "editor.minimap.enabled": false,
@@ -209,7 +210,8 @@
     "plaintext": false,
     "markdown": false,
     "scminput": false
-  }
+  },
+  "chat.agent.enabled": false
 
   // ------------------------------------------------------------
 }
