@@ -1,7 +1,7 @@
 -- Main ------------------------------------------------------------------------
 
-require("daarlin.core")
-require("daarlin.lazy")
+require("nekovim.core")
+require("nekovim.lazy")
 
 -- Sidebar ignoring ------------------------------------------------------------
 -- Close Neovim if the only remaining windows are "sidebars"

@@ -14,7 +14,7 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Setup plugins ---------------------------------------------------------------
 
-require("lazy").setup("daarlin.plugins", {
+require("lazy").setup({ { import = "nekovim.plugins" }, { import = "nekovim.plugins.lsp" } }, {
     change_detection = {
         notify = false,
     },
