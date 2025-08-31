@@ -428,7 +428,7 @@ set -g @resurrect-strategy-nvim 'session'
 # by default, launching tmux will update tpm and all plugins
 #   - true (default)
 #   - false
-tmux_conf_update_plugins_on_launch=false
+tmux_conf_update_plugins_on_launch=true
 
 # by default, reloading the configuration will update tpm and all plugins
 #   - true (default)
