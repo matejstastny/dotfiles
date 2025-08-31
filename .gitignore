@@ -1,20 +1,5 @@
-# macOS specific
+# macOS
 .DS_Store
 
-#########
-# TMUX #
-########
-
-# Ignore any temporary or session files tmux may generate
-.tmux.conf.local
-.tmux.conf.bak
-.tmux-resurrect/
-
-# Ignore tmuxinator project files if using tmuxinator
-.tmuxinator/
-
-# Ignore other potential plugin-generated files
-**/session/*.session
-
-# Ignore tmux plugins directory
-.config/tmux/plugins/
+# Tmux
+configs/tmux/plugins/
