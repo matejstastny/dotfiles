@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "jep-a.lua-plus", // lua for nvim config
+    "sumneko.lua", // lua for nvim con fig
+    "beryxz.rtorrent-rc-helper",
+    "foxundermoon.shell-format" // rtorrent config file syntax highlighting
+  ]
+}
