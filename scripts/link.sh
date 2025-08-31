@@ -92,7 +92,7 @@ link_directory() {
             local current_target
             current_target="$(readlink "$tgt")"
             if [ "$current_target" = "$src" ]; then
-                log info "Link for $(basename "$src") already points to correct source"
+                log info "Link for directory $(basename "$src") already points to correct source"
                 return
             fi
         fi
@@ -112,10 +112,11 @@ link_directory() {
     fi
 }
 
-link_vscode_files() {
-    local src="$CONFIGS_DIR/vscode"
-    local tgt="$HOME/Library/Application Support/Code/User"
+link_files() {
+    local src="$1"
+    local tgt="$2"
     mkdir -p "$tgt"
+    shopt -s dotglob nullglob # Enable looking for hidden files
     for file in "$src"/*; do
         [ -e "$file" ] || continue
         local filename
@@ -127,7 +128,7 @@ link_vscode_files() {
                 local current_target
                 current_target="$(readlink "$target_file")"
                 if [ "$current_target" = "$file" ]; then
-                    log info "Link for $(basename "$target_file") already correct"
+                    log info "Link for file $(basename "$target_file") already points to correct source"
                     continue
                 fi
             fi
@@ -146,6 +147,7 @@ link_vscode_files() {
             ln -s "$file" "$target_file" && log success "Linked $target_file -> $file"
         fi
     done
+    shopt -s dotglob nullglob
 }
 
 link_config() {
@@ -154,16 +156,13 @@ link_config() {
     local tgt
 
     case "$folder_name" in
-    zsh | git) tgt="$HOME_DIR/$folder_name" ;;
-    vscode) tgt="$HOME/Library/Application Support/Code/User" ;;
-    *) tgt="$HOME_DIR/.config/$folder_name" ;;
-    esac
-
-    if [ "$folder_name" = "vscode" ]; then
-        link_vscode_files
-    else
+    zsh | git | rtorrent) link_files "$src" "$HOME" ;;
+    vscode) link_files "$src" "$HOME/Library/Application Support/Code/User" ;;
+    *)
+        tgt="$HOME_DIR/.config/$folder_name"
         link_directory "$src" "$tgt"
-    fi
+        ;;
+    esac
 }
 
 # --------------------------------------------------------------------------------------------
