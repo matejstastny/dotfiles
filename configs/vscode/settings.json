@@ -211,7 +211,10 @@
     "markdown": false,
     "scminput": false
   },
-  "chat.agent.enabled": false
+  "chat.agent.enabled": false,
+  "[shellscript]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  }
 
   // ------------------------------------------------------------
 }
