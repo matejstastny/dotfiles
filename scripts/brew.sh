@@ -79,7 +79,7 @@ brew upgrade >/dev/null || log warn "Some packages failed to upgrade, continuing
 # --------------------------------------------------------------------------------------------
 
 FORMULAE=(
-    bat btop create-dmg curl docker eza fastfetch ffmpeg fileicon fzf gh git git-delta git-lfs go
+    bash bat btop create-dmg curl docker eza fastfetch ffmpeg fileicon fzf gh git git-delta git-lfs go
     gradle lazygit maven neovim proto python starship stow scc tmux wget zoxide zsh-syntax-highlighting
 )
 
