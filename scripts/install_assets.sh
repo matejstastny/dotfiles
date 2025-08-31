@@ -58,7 +58,7 @@ if [ -f "$HOME/.dotfiles/assets/wallpapers/mac-wallpaper.png" ]; then
         if [[ "$(uname)" == "Darwin" ]]; then
             osascript -e '
             tell application "System Events"
-                set picture of every desktop to "'"$HOME/.dotfiles/assets/wallpaper.png"'"
+                set picture of every desktop to "'"$HOME/.dotfiles/assets/mac-wallpaper.png"'"
             end tell' && log success "Wallpaper set via AppleScript." || log warn "Failed to set wallpaper via AppleScript."
         else
             log warn "wallpaper-cli not installed and no macOS fallback available. Skipping setting wallpaper."
