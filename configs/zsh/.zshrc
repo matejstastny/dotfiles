@@ -56,6 +56,9 @@ alias q="tmux detach"
 # Veracrypt
 alias vc="veracrypt -t"
 
+# Docker
+alias dockerc="docker system prune --all --volumes"
+
 ################################################################
 # Helper Functions
 ################################################################
