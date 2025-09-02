@@ -13,6 +13,7 @@
 
   // Sidebar & file explorer
 
+  "workbench.secondarySideBar.defaultVisibility": "hidden",
   "workbench.sideBar.location": "right",
   "explorer.sortOrder": "type",
   "material-icon-theme.hidesExplorerArrows": true,
