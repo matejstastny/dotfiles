@@ -23,10 +23,11 @@
   "explorer.confirmDelete": false,
   "explorer.decorations.badges": false,
   "git.decorations.enabled": false,
-  // "explorer.compactFolders": false,
+  "explorer.compactFolders": false,
 
   // Custom UI Style extension
 
+  "window.newWindowDimensions": "maximized",
   "window.zoomLevel": 0.8,
   "window.customTitleBarVisibility": "never",
   "window.titleBarStyle": "native",
@@ -205,13 +206,11 @@
 
   // Custom app icons
   "customAppIcons.path": "/Users/matejstastny/Documents/devel/other/vscode.icns",
-  "github.copilot.enable": {
-    "*": false,
-    "plaintext": false,
-    "markdown": false,
-    "scminput": false
-  },
+
+  // Hide chat sidebar
   "chat.agent.enabled": false,
+
+  // Shellscript
   "[shellscript]": {
     "editor.defaultFormatter": "foxundermoon.shell-format"
   }
