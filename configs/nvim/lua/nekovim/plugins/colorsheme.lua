@@ -1,13 +1,15 @@
--- https://github.com/bluz71/vim-moonfly-colors (current)
+-- https://github.com/ellisonleao/gruvbox.nvim (current)
 
 return {
-    "bluz71/vim-moonfly-colors",
-    name = "moonfly",
+    "ellisonleao/gruvbox.nvim",
+    name = "gruvbox",
     lazy = false,
     priority = 1000,
 
     config = function()
-        vim.g.moonflyTransparent = true
-        vim.cmd([[colorscheme moonfly]])
+        require("gruvbox").setup({
+            transparent_mode = true
+        })
+        vim.cmd("colorscheme gruvbox")
     end,
 }

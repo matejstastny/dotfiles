@@ -3,17 +3,17 @@
 
   {
     "key": "cmd+d",
-    "command": "workbench.view.explorer",
+    "command": "workbench.view.explorer"
   },
 
   {
     "key": "cmd+g",
-    "command": "workbench.view.scm",
+    "command": "workbench.view.scm"
   },
 
   {
     "key": "cmd+shift+e",
-    "command": "workbench.view.extensions",
+    "command": "workbench.view.extensions"
   },
 
   {
@@ -74,10 +74,4 @@
     "key": "cmd+o",
     "command": "workbench.action.quickOpen"
   }
-
-  //   {
-  //     // Global method finder
-  //     "key": "cmd+shift+e",
-  //     "command": "workbench.action.showAllSymbols"
-  //   }
 ]
