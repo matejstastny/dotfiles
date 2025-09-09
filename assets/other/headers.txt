@@ -1,0 +1,37 @@
+# --------------------------------------------------------------------------------------------
+# file.smt - description
+# --------------------------------------------------------------------------------------------
+# Author: Matej Stastny
+# Date: 2025-09-08 (YYYY-MM-DD)
+# License: MIT
+# Link: https://github.com/matejstastny/dotfiles
+# --------------------------------------------------------------------------------------------
+
+
+
+
+# --------------------------------------------------------------------------------------------
+# script.sh - description
+# --------------------------------------------------------------------------------------------
+# Author: Matej Stastny
+# Date: 2025-09-08 (YYYY-MM-DD)
+# License: MIT
+# Link: https://github.com/matejstastny/dotfiles
+#
+# Description:
+#   This script...
+#
+# Features:
+#   - ...
+#
+# Usage:
+#   ./script.sh [--flag] ...
+#
+# Flags:
+#   --flag      : Desc....
+#   --flag2     : Desc....
+#
+# Notes:
+#   - Ensure this script is executable: chmod +x script.sh
+#   - Any other warnings...
+# --------------------------------------------------------------------------------------------
