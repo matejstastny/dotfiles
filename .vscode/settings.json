@@ -1,3 +1,8 @@
 {
-  "Lua.diagnostics.globals": ["vim"]
+  "Lua.diagnostics.globals": ["vim"],
+
+  "files.associations": {
+    "config": "properties",
+    "configs/ghostty/themes/*": "properties"
+  }
 }
