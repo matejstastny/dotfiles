@@ -26,6 +26,7 @@ set -euo pipefail
 
 IFS=$'\n\t'
 ARCH=$(uname -m)
+OUTPUT=""
 
 # --------------------------------------------------------------------------------------------
 # Logging
@@ -34,20 +35,44 @@ ARCH=$(uname -m)
 log() {
     local level="$1"
     local msg="$2"
-    local emoji
+    local emoji color
     case "$level" in
-    info) emoji="📦" ;;
-    success) emoji="✅" ;;
-    warn) emoji="⚠️" ;;
-    error) emoji="❌" ;;
-    *) emoji="🔷" ;;
+    info)
+        emoji="📋"
+        color=""
+        ;; # Cyan
+    done)
+        emoji="📦"
+        color="\033[36m"
+        ;; # Cyan
+    success)
+        emoji="✅"
+        color="\033[32m"
+        ;; # Green
+    warn)
+        emoji="⚠️"
+        color="\033[33m"
+        ;; # Yellow
+    error)
+        emoji="❌"
+        color="\033[31m"
+        ;; # Red
+    *)
+        emoji=""
+        color="\033[0m"
+        ;;
     esac
-    echo -e "$emoji $msg"
+    echo -e " ${color} ${emoji} ${msg}\033[0m"
 }
 
 error_exit() {
-    log error "$1"
-    exit 1
+    if [ -n $2 ]; then
+        log error "$1"
+        exit $2
+    else
+        log error "$1"
+        exit 1
+    fi
 }
 
 # --------------------------------------------------------------------------------------------
@@ -69,10 +94,26 @@ else
 fi
 
 log info "Updating Homebrew..."
-brew update >/dev/null || error_exit "Homebrew update failed"
+if OUTPUT=$(brew update 2>&1); then
+    if echo "$OUTPUT" | grep -q "Already up-to-date"; then
+        log done "Homebrew is already up-to-date"
+    else
+        log success "Homebrew updated successfully"
+    fi
+else
+    error_exit "Homebrew update failed" 11
+fi
 
 log info "Upgrading packages..."
-brew upgrade >/dev/null || log warn "Some packages failed to upgrade, continuing..."
+if OUTPUT=$(brew upgrade 2>&1); then
+    if [ -z "$OUTPUT" ]; then
+        log done "No packages to upgrade"
+    else
+        log success "Packages upgraded successfully"
+    fi
+else
+    log warn "Some packages failed to upgrade, continuing..."
+fi
 
 # --------------------------------------------------------------------------------------------
 # Formulae & Casks
