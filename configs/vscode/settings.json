@@ -1,7 +1,16 @@
+// --------------------------------------------------------------------------------------------
+// settings.json - my visual studio code settings
+// --------------------------------------------------------------------------------------------
+// Author: Matej Stastny
+// Date: 2025-07-15 (YYYY-MM-DD)
+// License: MIT
+// Link: https://github.com/matejstastny/dotfiles
+// --------------------------------------------------------------------------------------------
+
 {
   // Workbench interface
 
-  "workbench.colorTheme": "Jellyfish",
+  "workbench.colorTheme": "Dark GruvBoxer",
   "workbench.iconTheme": "material-icon-theme",
   "workbench.activityBar.location": "hidden",
   "workbench.editor.showTabs": "single",
@@ -57,8 +66,7 @@
     ".title.show-file-icons .label-container .monaco-icon-label.file-icon": "justify-content: center; padding: 0 !important",
     ".title .monaco-icon-label:after": "margin-right: 0",
     ".monaco-workbench .part.editor > .content .editor-group-container > .title > .label-container > .title-label": "padding-left: 60px",
-    ".title .monaco-icon-label.file-icon": "margin: 0 60px",
-    ".monaco-editor .cursors-layer .cursor": "background-image: linear-gradient(135deg, #ffaffc 10%, #DA70D6 100%)"
+    ".title .monaco-icon-label.file-icon": "margin: 0 60px"
   },
   "custom-ui-style.font.sansSerif": "DankMono Nerd Font Mono",
 
@@ -69,8 +77,13 @@
   "editor.cursorStyle": "line",
   "editor.cursorWidth": 2,
   "workbench.colorCustomizations": {
-    // "editor.background": "",
-    "editorCursor.background": "#000000",
+    "editor.background": "#282828",
+    "sideBar.background": "#282828",
+    "sideBarSectionHeader.background": "#282828",
+    "statusBar.background": "#282828",
+    "statusBar.noFolderBackground": "#282828",
+    "sideBar.border": "#282828",
+
     "statusBar.border": "#0000",
     "editorOverviewRuler.wordHighlightStrongForeground": "#0000",
     "editorOverviewRuler.selectionHighlightForeground": "#0000",
