@@ -1,3 +1,8 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+add_newline = true
+
+# Nerd font symbols --------------------------------------------------------------------------
+
 [aws]
 symbol = "  "
 
@@ -21,6 +26,7 @@ symbol = " "
 
 [directory]
 read_only = " 󰌾"
+style = "bold yellow"
 
 [docker_context]
 symbol = " "
@@ -39,9 +45,14 @@ symbol = " "
 
 [git_branch]
 symbol = " "
+style = "bold blue"
 
 [git_commit]
 tag_symbol = '  '
+style = "bold blue"
+
+[git_status]
+style = "bold green"
 
 [golang]
 symbol = " "
