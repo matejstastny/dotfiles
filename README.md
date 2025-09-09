@@ -1,4 +1,4 @@
-![Banner](./assets/repository/banner.png)
+![Banner](./assets/repo/banner.png)
 
 ```txt
 # --------------------------------------------------------------------------------------------
