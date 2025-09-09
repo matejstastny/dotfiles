@@ -1,30 +1,49 @@
-# Colors
-config-file = colors
+# --------------------------------------------------------------------------------------------
+# config - my ghostty terminal config
+# --------------------------------------------------------------------------------------------
+# Author: Matej Stastny
+# Date: 2025-03-02 (YYYY-MM-DD)
+# License: MIT
+# Link: https://github.com/matejstastny/dotfiles
+# --------------------------------------------------------------------------------------------
 
-# Fonts
+# Color theme --------------------------------------------------------------------------------
+
+config-file = themes/gruvbox
+
+# Fonts --------------------------------------------------------------------------------------
+
 font-family = "DankMono Nerd Font Mono"
-font-size = 17.5
+font-size = 16
 font-thicken = true
 
-# Shell Integration Features
-shell-integration-features = no-cursor,sudo,no-title
-cursor-style = block
+# Window -------------------------------------------------------------------------------------
 
-# Window Settings
-confirm-close-surface = false
-adjust-cell-height = 20%
 maximize = true
-window-padding-balance = true
 window-save-state = always
+confirm-close-surface = false
+
 macos-titlebar-style = transparent
+macos-titlebar-proxy-icon = hidden
+title = " "
 window-colorspace = "display-p3"
 
-# Mouse Settings
-mouse-hide-while-typing = true
+window-padding-balance = true
+window-padding-x = 10
+adjust-cell-height = 20%
 
-# Shader
-# custom-shader = ~/.dotfiles/.config/ghostty/shaders/bloom.glsl
-# custom-shader = ~/.dotfiles/.config/ghostty/shaders/glitchy.glsl
-# custom-shader = ~/.dotfiles/.config/ghostty/shaders/water.glsl
-# custom-shader = ~/.dotfiles/.config/ghostty/shaders/galaxy.glsl
-# custom-shader = ~/.dotfiles/.config/ghostty/shaders/retro-terminal.glsl
+# Miscellaneous ------------------------------------------------------------------------------
+
+shell-integration-features = no-cursor,sudo,no-title
+mouse-hide-while-typing = true
+copy-on-select = clipboard
+cursor-style = block
+
+# Shaders ------------------------------------------------------------------------------------
+# Uncomment to enable
+
+# custom-shader = ~/.config/ghostty/shaders/retro-terminal.glsl
+# custom-shader = ~/.config/ghostty/shaders/glitchy.glsl
+# custom-shader = ~/.config/ghostty/shaders/galaxy.glsl
+# custom-shader = ~/.config/ghostty/shaders/water.glsl
+# custom-shader = ~/.config/ghostty/shaders/bloom.glsl
