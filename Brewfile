@@ -1,0 +1,50 @@
+# --------------------------------------------------------------------------------------------
+# Brewfile — Homebrew package manifest
+# --------------------------------------------------------------------------------------------
+# Usage:
+#   brew bundle --file=Brewfile
+# --------------------------------------------------------------------------------------------
+
+# Formulae
+brew "bash"
+brew "bat"
+brew "btop"
+brew "create-dmg"
+brew "curl"
+brew "docker"
+brew "eza"
+brew "fastfetch"
+brew "ffmpeg"
+brew "fileicon"
+brew "fzf"
+brew "gh"
+brew "git"
+brew "git-delta"
+brew "git-lfs"
+brew "go"
+brew "gradle"
+brew "lazygit"
+brew "maven"
+brew "neovim"
+brew "proto"
+brew "python"
+brew "scc"
+brew "starship"
+brew "stow"
+brew "tmux"
+brew "wget"
+brew "zoxide"
+brew "zsh-syntax-highlighting"
+
+# Casks
+cask "battery"
+cask "chatgpt"
+cask "ghostty"
+cask "google-chrome"
+cask "iina"
+cask "jordanbaird-ice"
+cask "mos"
+cask "obsidian"
+cask "visual-studio-code"
+cask "vesktop"
+cask "wine-stable"
