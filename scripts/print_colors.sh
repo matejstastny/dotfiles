@@ -1,5 +1,17 @@
 #!/usr/bin/env sh
 
+# --------------------------------------------------------------------------------------------
+# print_colors.sh — Terminal Colors Reference
+# --------------------------------------------------------------------------------------------
+# Author: Matej Stastny
+# Date: 2025-02-27 (YYYY-MM-DD)
+# License: MIT
+# Link: https://github.com/matejstastny/dotfiles
+# --------------------------------------------------------------------------------------------
+# Description:
+#   This script prints a reference chart of terminal colors using ANSI escape codes.
+# --------------------------------------------------------------------------------------------
+
 printf "|039| \033[39mDefault \033[m  |049| \033[49mDefault \033[m  |037| \033[37mLight gray \033[m     |047| \033[47mLight gray \033[m\n"
 printf "|030| \033[30mBlack \033[m    |040| \033[40mBlack \033[m    |090| \033[90mDark gray \033[m      |100| \033[100mDark gray \033[m\n"
 printf "|031| \033[31mRed \033[m      |041| \033[41mRed \033[m      |091| \033[91mLight red \033[m      |101| \033[101mLight red \033[m\n"

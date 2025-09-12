@@ -6,6 +6,11 @@ source "$(dirname "$0")/logging.sh"
 # --------------------------------------------------------------------------------------------
 # link.sh — Minimal Dotfiles Linker
 # --------------------------------------------------------------------------------------------
+# Author: Matej Stastny
+# Date: 2025-08-19 (YYYY-MM-DD)
+# License: MIT
+# Link: https://github.com/matejstastny/dotfiles
+# --------------------------------------------------------------------------------------------
 # Description:
 #   This script creates symbolic links from your dotfiles repository to their proper locations
 #   in your home directory or system-specific paths (e.g., VSCode User settings).
@@ -34,6 +39,8 @@ source "$(dirname "$0")/logging.sh"
 FORCE=false
 DRY_RUN=false
 
+# These will not be linked as directories, but all of their
+# contents will be linked to the specified target directory
 declare -A EXCEPTIONS=(
     [zsh]="$HOME"
     [git]="$HOME"
@@ -146,4 +153,4 @@ for folder in "$CONFIGS_DIR"/*; do
     link_config "$folder_name"
 done
 
-log success "All configs linked!"
+log celebrate "All done!"

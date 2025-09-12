@@ -17,7 +17,7 @@
 # Date: 2025-09-08 (YYYY-MM-DD)
 # License: MIT
 # Link: https://github.com/matejstastny/dotfiles
-#
+# --------------------------------------------------------------------------------------------
 # Description:
 #   This script...
 #

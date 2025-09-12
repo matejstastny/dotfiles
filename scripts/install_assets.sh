@@ -6,6 +6,11 @@ source "$(dirname "$0")/logging.sh"
 # --------------------------------------------------------------------------------------------
 # install_assets.sh — Dotfiles Fonts and Wallpapers Installer
 # --------------------------------------------------------------------------------------------
+# Author: Matej Stastny
+# Date: 2025-08-19 (YYYY-MM-DD)
+# License: MIT
+# Link: https://github.com/matejstastny/dotfiles
+# --------------------------------------------------------------------------------------------
 # Description:
 #   This script installs fonts and wallpapers.
 #
@@ -86,4 +91,4 @@ else
     log warn "Wallpaper not found at $WALLPAPER"
 fi
 
-log success "Asset installation completed."
+log celebrate "All done!"

@@ -4,6 +4,11 @@ set -euo pipefail
 # --------------------------------------------------------------------------------------------
 # logging.sh — Logging Functions
 # --------------------------------------------------------------------------------------------
+# Author: Matej Stastny
+# Date: 2025-09-12 (YYYY-MM-DD)
+# License: MIT
+# Link: https://github.com/matejstastny/dotfiles
+# --------------------------------------------------------------------------------------------
 # Description:
 #   This script provides logging functions with different levels (info, success, warn, error)
 #   and corresponding emojis and colors for better readability in terminal output.
@@ -34,6 +39,10 @@ log() {
     success-done)
         emoji="☑️"
         color="$purple"
+        ;;
+    celebrate)
+        emoji="🎉"
+        color="$cyan"
         ;;
     warn)
         emoji="⚠️"

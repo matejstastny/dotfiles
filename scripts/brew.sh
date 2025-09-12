@@ -6,6 +6,11 @@ source "$(dirname "$0")/config.sh"
 # --------------------------------------------------------------------------------------------
 # brew.sh — Homebrew Installer
 # --------------------------------------------------------------------------------------------
+# Author: Matej Stastny
+# Date: 2025-08-19 (YYYY-MM-DD)
+# License: MIT
+# Link: https://github.com/matejstastny/dotfiles
+# --------------------------------------------------------------------------------------------
 # Description:
 #   This script installs Homebrew if not already installed, updates it, upgrades installed
 #   packages, installs packages from a Brewfile, and cleans up.
@@ -37,7 +42,7 @@ update_homebrew() {
             log success "Homebrew updated successfully"
         fi
     else
-        error_exit "Homebrew update failed"
+        error_exit "Homebrew update failed with error: $output"
     fi
 }
 
@@ -59,12 +64,17 @@ install_brewfile() {
         log info "Installing packages from Brewfile..."
         output=$(brew bundle --file="$BREWFILE" 2>&1) || status=$?
         while IFS= read -r line; do
-            [[ "$line" == Installing* ]] && log success "$(awk '{print $2}' <<<"$line") installed"
+            if [[ "$line" == Installing* ]]; then
+                if [[ "$line" == *"has failed!" ]]; then
+                    log error "$(awk '{print $2}' <<<"$line") installation failed"
+                else
+                    log success "Installing $(awk '{print $2}' <<<"$line")..."
+                fi
+            fi
             [[ "$line" == Using* ]] && log success-done "$(awk '{print $2}' <<<"$line") already installed"
         done <<<"$output"
         if [[ ${status:-0} -ne 0 ]]; then
             log warn "Some packages from Brewfile failed to install, continuing..."
-            echo "$output"
         else
             log success "Brewfile packages installed successfully"
         fi
@@ -89,4 +99,4 @@ update_homebrew
 upgrade_packages
 install_brewfile
 cleanup
-log success "All done!"
+log celebrate "All done!"
