@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
+source "$(dirname "$0")/config.sh"
+source "$(dirname "$0")/logging.sh"
 
 # --------------------------------------------------------------------------------------------
-# install_assets.sh — Dotfiles Assets Installer
+# install_assets.sh — Dotfiles Fonts and Wallpapers Installer
+# --------------------------------------------------------------------------------------------
+# Author: Matej Stastny
+# Date: 2025-08-19 (YYYY-MM-DD)
+# License: MIT
+# Link: https://github.com/matejstastny/dotfiles
 # --------------------------------------------------------------------------------------------
 # Description:
-#   This script installs fonts, wallpapers, and clones the dotfiles repository.
+#   This script installs fonts and wallpapers.
 #
 # Usage:
 #   install_assets.sh
@@ -14,58 +21,74 @@ set -euo pipefail
 #   - Ensure this script is executable: chmod +x install_assets.sh
 # --------------------------------------------------------------------------------------------
 
-log() {
-    local level="$1"
-    local msg="$2"
-    local emoji
-    case "$level" in
-    info) emoji="📦" ;;
-    success) emoji="✅" ;;
-    warn) emoji="⚠️" ;;
-    error) emoji="❌" ;;
-    *) emoji="🔷" ;;
-    esac
-    echo -e "$emoji $msg"
-}
-
-# --------------------------------------------------------------------------------------------
-# Main
-# --------------------------------------------------------------------------------------------
-
-if [ ! -d "$HOME/.dotfiles" ]; then
-    git clone https://github.com/my-daarlin/dotfiles.git "$HOME/.dotfiles"
-fi
-
-# Fonts
-log info "Installing fonts..."
-if [ -d "$HOME/.dotfiles/assets/fonts/" ]; then
-    find "$HOME/.dotfiles/assets/fonts/" \( -name "*.ttf" -o -name "*.otf" \) -print0 | while IFS= read -r -d '' font; do
-        cp "$font" "$HOME/Library/Fonts/"
-    done
-    log success "Fonts installed."
+if [[ "$OS_TYPE" == "Darwin" ]]; then
+    TARGET_FONT_DIR="$HOME/Library/Fonts"
+elif [[ "$OS_TYPE" == "Linux" ]]; then
+    TARGET_FONT_DIR="$HOME/.local/share/fonts"
 else
-    log warn "No fonts directory found."
+    log warn "Unsupported OS: $OS_TYPE. Font installation skipped."
+    TARGET_FONT_DIR=""
 fi
 
-# Wallpaper
-if [ -f "$HOME/.dotfiles/assets/wallpapers/mac-wallpaper.png" ]; then
-    log info "Setting wallpaper..."
-    if command -v wallpaper >/dev/null 2>&1; then
-        wallpaper "$HOME/.dotfiles/assets/wallpapers/mac-wallpaper.png"
-        log success "Wallpaper set."
-    else
-        # Fallback to AppleScript for macOS
-        if [[ "$(uname)" == "Darwin" ]]; then
-            osascript -e '
-            tell application "System Events"
-                set picture of every desktop to "'"$HOME/.dotfiles/assets/mac-wallpaper.png"'"
-            end tell' && log success "Wallpaper set via AppleScript." || log warn "Failed to set wallpaper via AppleScript."
+# --------------------------------------------------------------------------------------------
+# Fonts
+# --------------------------------------------------------------------------------------------
+
+if [[ -n "$TARGET_FONT_DIR" ]]; then
+    log info "Installing fonts ..."
+    log info "Font source directory: $FONT_DIR"
+    log info "Target font directory: $TARGET_FONT_DIR"
+    mkdir -p "$TARGET_FONT_DIR"
+    if [ -d "$FONT_DIR" ]; then
+        mapfile -d '' fonts < <(find "$FONT_DIR" \( -name "*.ttf" -o -name "*.otf" \) -print0)
+        font_count=${#fonts[@]}
+        if ((font_count > 0)); then
+            log info "Found $font_count font(s) to install."
+            for font in "${fonts[@]}"; do
+                if cp "$font" "$TARGET_FONT_DIR/"; then
+                    log success "Installed font: $(basename "$font")"
+                else
+                    log warn "Failed to install font: $(basename "$font")"
+                fi
+            done
         else
-            log warn "wallpaper-cli not installed and no macOS fallback available. Skipping setting wallpaper."
+            log warn "No font files found in $FONT_DIR."
         fi
+    else
+        log warn "No fonts directory found at $FONT_DIR."
+    fi
+fi
+
+# --------------------------------------------------------------------------------------------
+# Wallpapers
+# --------------------------------------------------------------------------------------------
+
+if [ -f "$WALLPAPER" ]; then
+    log info "Setting wallpaper using file: $WALLPAPER"
+    if [[ "$OS_TYPE" == "Darwin" ]]; then
+        if command -v wallpaper >/dev/null 2>&1; then
+            if wallpaper "$WALLPAPER"; then
+                log success "Wallpaper set using wallpaper-cli."
+            else
+                log warn "Failed to set wallpaper using wallpaper-cli."
+            fi
+        else
+            if osascript -e '
+            tell application "System Events"
+                set picture of every desktop to "'"$WALLPAPER"'"
+            end tell'; then
+                log success "Wallpaper set via AppleScript."
+            else
+                log warn "Failed to set wallpaper via AppleScript."
+            fi
+        fi
+    elif [[ "$OS_TYPE" == "Linux" ]]; then
+        log warn "Linux wallpaper setting not implemented. Skipped setting wallpaper file: $WALLPAPER"
+    else
+        log warn "Unsupported OS: $OS_TYPE. Skipped setting wallpaper."
     fi
 else
-    log warn "Wallpaper not found."
+    log warn "Wallpaper not found at $WALLPAPER"
 fi
 
-log success "Asset installation complete!"
+log celebrate "All done!"

@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
+source "$(dirname "$0")/config.sh"
+source "$(dirname "$0")/logging.sh"
 
 # --------------------------------------------------------------------------------------------
 # link.sh — Minimal Dotfiles Linker
+# --------------------------------------------------------------------------------------------
+# Author: Matej Stastny
+# Date: 2025-08-19 (YYYY-MM-DD)
+# License: MIT
+# Link: https://github.com/matejstastny/dotfiles
 # --------------------------------------------------------------------------------------------
 # Description:
 #   This script creates symbolic links from your dotfiles repository to their proper locations
@@ -29,12 +36,17 @@ set -euo pipefail
 #     minor tweaks.
 # --------------------------------------------------------------------------------------------
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CONFIGS_DIR="$REPO_ROOT/configs"
-HOME_DIR="$HOME"
-
 FORCE=false
 DRY_RUN=false
+
+# These will not be linked as directories, but all of their
+# contents will be linked to the specified target directory
+declare -A EXCEPTIONS=(
+    [zsh]="$HOME"
+    [git]="$HOME"
+    [rtorrent]="$HOME"
+    [vscode]="$HOME/Library/Application Support/Code/User"
+)
 
 # --------------------------------------------------------------------------------------------
 # Flags
@@ -53,24 +65,6 @@ while [[ $# -gt 0 ]]; do
 done
 
 # --------------------------------------------------------------------------------------------
-# Logging
-# --------------------------------------------------------------------------------------------
-
-log() {
-    local level="$1"
-    local msg="$2"
-    local emoji
-    case "$level" in
-    info) emoji="📦" ;;
-    success) emoji="✅" ;;
-    warn) emoji="⚠️" ;;
-    error) emoji="❌" ;;
-    *) emoji="🔷" ;;
-    esac
-    echo -e "$emoji $msg"
-}
-
-# --------------------------------------------------------------------------------------------
 # Helpers
 # --------------------------------------------------------------------------------------------
 
@@ -79,26 +73,31 @@ prompt_or_force() {
     if [ "$FORCE" = true ]; then
         return 0
     fi
-    read -p "$prompt_msg [y/N] " choice
+    read -rp "$prompt_msg [y/N] " choice
     [[ "$choice" =~ ^[Yy]$ ]]
 }
 
-link_directory() {
+remove_target() {
+    local target="$1"
+    if $DRY_RUN; then
+        log warn "Would remove existing $target"
+    else
+        rm -rf "$target"
+        log warn "Removed existing $target"
+    fi
+}
+
+link_symlink() {
     local src="$1"
     local tgt="$2"
 
     if [ -e "$tgt" ] || [ -L "$tgt" ]; then
-        if [ -L "$tgt" ]; then
-            local current_target
-            current_target="$(readlink "$tgt")"
-            if [ "$current_target" = "$src" ]; then
-                log info "Link for directory $(basename "$src") already points to correct source"
-                return
-            fi
+        if [ -L "$tgt" ] && [ "$(readlink "$tgt")" = "$src" ]; then
+            log success-done "$(basename "$tgt") already points to correct source"
+            return
         fi
         if prompt_or_force "Target $tgt exists. Overwrite?"; then
-            $DRY_RUN || rm -rf "$tgt"
-            log warn "Removed existing $tgt"
+            remove_target "$tgt"
         else
             log info "Skipped linking $tgt"
             return
@@ -113,56 +112,35 @@ link_directory() {
 }
 
 link_files() {
-    local src="$1"
-    local tgt="$2"
-    mkdir -p "$tgt"
-    shopt -s dotglob nullglob # Enable looking for hidden files
-    for file in "$src"/*; do
+    local src_dir="$1"
+    local tgt_dir="$2"
+    mkdir -p "$tgt_dir"
+    shopt -s dotglob nullglob
+    for file in "$src_dir"/*; do
         [ -e "$file" ] || continue
         local filename
         filename="$(basename "$file")"
-        local target_file="$tgt/$filename"
-
-        if [ -e "$target_file" ] || [ -L "$target_file" ]; then
-            if [ -L "$target_file" ]; then
-                local current_target
-                current_target="$(readlink "$target_file")"
-                if [ "$current_target" = "$file" ]; then
-                    log info "Link for file $(basename "$target_file") already points to correct source"
-                    continue
-                fi
-            fi
-            if prompt_or_force "Target $target_file exists. Overwrite?"; then
-                $DRY_RUN || rm -rf "$target_file"
-                log warn "Removed existing $target_file"
-            else
-                log info "Skipped linking $target_file"
-                continue
-            fi
-        fi
-
-        if $DRY_RUN; then
-            log info "Would link $target_file -> $file"
-        else
-            ln -s "$file" "$target_file" && log success "Linked $target_file -> $file"
-        fi
+        link_symlink "$file" "$tgt_dir/$filename"
     done
-    shopt -s dotglob nullglob
+    shopt -u dotglob nullglob
+}
+
+link_directory() {
+    local src_dir="$1"
+    local tgt_dir="$2"
+    link_symlink "$src_dir" "$tgt_dir"
 }
 
 link_config() {
     local folder_name="$1"
     local src="$CONFIGS_DIR/$folder_name"
-    local tgt
 
-    case "$folder_name" in
-    zsh | git | rtorrent) link_files "$src" "$HOME" ;;
-    vscode) link_files "$src" "$HOME/Library/Application Support/Code/User" ;;
-    *)
-        tgt="$HOME_DIR/.config/$folder_name"
+    if [[ -v EXCEPTIONS[$folder_name] ]]; then
+        link_files "$src" "${EXCEPTIONS[$folder_name]}"
+    else
+        local tgt="$HOME/.config/$folder_name"
         link_directory "$src" "$tgt"
-        ;;
-    esac
+    fi
 }
 
 # --------------------------------------------------------------------------------------------
@@ -175,4 +153,4 @@ for folder in "$CONFIGS_DIR"/*; do
     link_config "$folder_name"
 done
 
-log success "All configs linked!"
+log celebrate "All done!"
