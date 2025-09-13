@@ -159,7 +159,6 @@
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -197,7 +196,7 @@
   "C_Cpp.vcFormat.newLine.beforeCatch": false,
   "C_Cpp.doxygen.generatedStyle": "/**",
 
-  // Stow file is not a markdown!
+  // File associations
   "files.associations": {
     ".stow-local-ignore": "plaintext",
     ".packwizignore": "ignore"
@@ -227,7 +226,10 @@
   // Shellscript
   "[shellscript]": {
     "editor.defaultFormatter": "foxundermoon.shell-format"
-  }
+  },
+
+  // Python
+  "python.analysis.typeCheckingMode": "standard"
 
   // ------------------------------------------------------------
 }
