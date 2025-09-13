@@ -6,34 +6,39 @@ source "$(dirname "$0")/logging.sh"
 # --------------------------------------------------------------------------------------------
 # link.sh — Minimal Dotfiles Linker
 # --------------------------------------------------------------------------------------------
-# Author: Matej Stastny
-# Date: 2025-08-19 (YYYY-MM-DD)
-# License: MIT
-# Link: https://github.com/matejstastny/dotfiles
-# --------------------------------------------------------------------------------------------
-# Description:
-#   This script creates symbolic links from your dotfiles repository to their proper locations
-#   in your home directory or system-specific paths (e.g., VSCode User settings).
-#   It functions similarly to GNU Stow, but is tailored for this repository's structure.
+# Purpose:
+#   This script automates the process of linking dotfiles from the repository into the home
+#   directory or other system-specific locations. It ensures that configuration files are
+#   properly symlinked, facilitating easy management and portability of your environment
+#
+# Repository Structure:
+#   Assumes a CONFIGS_DIR containing subfolders for each configuration (e.g., zsh, git, vscode)
+#   Each subfolder contains the relevant dotfiles or directories to be linked
+#
+# Exceptions:
+#   Certain config folders (zsh, git, rtorrent, vscode) do not link the entire folder as a
+#   symlink. Instead, their contents are linked individually to specified target directories:
+#     - zsh, git, rtorrent: linked directly into $HOME
+#     - vscode: linked into macOS-specific VSCode User settings directory
 #
 # Features:
-#   - Safely link entire directories or individual files.
-#   - Special handling for VSCode settings files.
-#   - Prompts before overwriting existing files, with a --force option to skip prompts.
-#   - Dry-run mode (--dry-run) to preview changes without modifying anything.
-#   - Logging with clear emoji-based statuses: info, success, warning, error.
+#   - Links entire directories (except for exceptions)
+#   - Handles existing files with prompts or forced overwrite
+#   - Supports a dry-run mode to preview actions without making changes
+#   - Logs operations with clear emoji-based status messages
 #
 # Usage:
 #   ./link.sh [--force] [--dry-run]
 #
-# Flags:
-#   --force     : Overwrite all existing files without prompting.
-#   --dry-run   : Show what would be linked without making changes.
+# Examples:
+#   ./link.sh
+#       Prompts before overwriting existing files and links dotfiles.
 #
-# Notes:
-#   - Ensure this script is executable: chmod +x link.sh
-#   - Designed for macOS paths (especially the VSCode linking) but can work for Linux with
-#     minor tweaks.
+#   ./link.sh --force
+#       Overwrites all existing files without prompting.
+#
+#   ./link.sh --dry-run
+#       Shows what would be linked without making any changes.
 # --------------------------------------------------------------------------------------------
 
 FORCE=false

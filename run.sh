@@ -2,17 +2,26 @@
 set -euo pipefail
 
 # --------------------------------------------------------------------------------------------
-# run.sh — Configuration Installer
+# run.sh — Dotfiles Setup Orchestrator
 # --------------------------------------------------------------------------------------------
 # Description:
-#   This script runs individual installation scripts for linking dotfiles, installing Homebrew
-#   packages, and installing assets. It accepts one or more arguments to run specific scripts.
+#   Orchestrates the execution of dotfiles setup scripts, such as linking configuration files,
+#   installing Homebrew packages, and installing additional assets. The script validates all
+#   arguments, and can run one or more specified tasks, or the special task "all" to perform
+#   every setup step in sequence
+#
 # Usage:
 #   ./run.sh [link|brew|assets|all]...
-#   - link: Runs the linking script to create symlinks for dotfiles.
-#   - brew: Runs the Homebrew installation and update script.
-#   - assets: Runs the asset installation script.
-#   - all (default): Runs all scripts in sequence.
+#   - link   : Run the linking script to create symlinks for dotfiles.
+#   - brew   : Run the Homebrew installation and update script.
+#   - assets : Run the asset installation script.
+#   - all    : Run all scripts in sequence (default if no arguments provided).
+#
+#
+# Examples:
+#   ./run.sh brew assets
+#   ./run.sh link
+#   ./run.sh all
 # --------------------------------------------------------------------------------------------
 
 line() {

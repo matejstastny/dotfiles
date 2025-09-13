@@ -12,13 +12,26 @@ source "$(dirname "$0")/logging.sh"
 # Link: https://github.com/matejstastny/dotfiles
 # --------------------------------------------------------------------------------------------
 # Description:
-#   This script installs fonts and wallpapers.
+#   This script automates the installation of fonts and the setting of wallpapers as part of
+#   the dotfiles setup
 #
-# Usage:
-#   install_assets.sh
+# Actions performed:
+#   1. OS Detection & Font Directory:
+#       The script determines the appropriate target font directory based on the detected OS:
+#         * On macOS (Darwin), it uses "$HOME/Library/Fonts"
+#         * On Linux, it uses "$HOME/.local/share/fonts"
+#         * On unsupported OSes, font installation is skipped
 #
-# Notes:
-#   - Ensure this script is executable: chmod +x install_assets.sh
+#   2. Font Installation:
+#       On Linux and MacOS the script finds all .ttf and .otf files and copies them into the
+#       target system font directory
+#
+#   3. Wallpaper Setting:
+#       If the wallpaper file ($WALLPAPER) exists:
+#         * On macOS: Attempts to use wallpaper-cli (https://github.com/sindresorhus/wallpaper-cli)
+#           if available, otherwise falls back to AppleScript via osascript.
+#         * On Linux: Wallpaper setting is not implemented
+#         * On other OSes: Skipped
 # --------------------------------------------------------------------------------------------
 
 if [[ "$OS_TYPE" == "Darwin" ]]; then

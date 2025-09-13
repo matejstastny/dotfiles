@@ -12,8 +12,14 @@ source "$(dirname "$0")/config.sh"
 # Link: https://github.com/matejstastny/dotfiles
 # --------------------------------------------------------------------------------------------
 # Description:
-#   This script installs Homebrew if not already installed, updates it, upgrades installed
-#   packages, installs packages from a Brewfile, and cleans up.
+#   This script automates the setup and maintenance of Homebrew and its packages
+#
+# Actions performed:
+#     1. Checks if Homebrew is installed; if not, installs it for the detected architecture
+#     2. Updates Homebrew to fetch the latest formulae and casks
+#     3. Upgrades all currently installed Homebrew packages to their latest versions
+#     4. Installs additional packages as listed in a Brewfile, reporting on success or failure of each package
+#     5. Cleans up outdated versions and removes unnecessary files to free disk space
 # --------------------------------------------------------------------------------------------
 
 install_homebrew() {
