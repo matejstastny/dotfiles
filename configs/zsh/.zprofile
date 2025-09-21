@@ -14,7 +14,7 @@
 export EDITOR="nvim"
 export TERM="ghostty"
 export TERMINAL="ghostty"
-export BROWSER="firefox"
+export BROWSER="vivaldi"
 
 # 🌐 Locale ---------------------------------------------------------------------------------
 
