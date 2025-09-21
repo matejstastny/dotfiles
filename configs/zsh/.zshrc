@@ -29,6 +29,7 @@ alias qa='tmux kill-server'
 
 alias vc='veracrypt -t'
 alias dockerc='docker system prune --all --volumes'
+alias vivaldi="/Applications/Vivaldi.app/Contents/MacOS/Vivaldi"
 
 # Functions ----------------------------------------------------------------------------------
 
