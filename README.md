@@ -4,6 +4,11 @@
 # --------------------------------------------------------------------------------------------
 # run.sh — Dotfiles Setup Orchestrator
 # --------------------------------------------------------------------------------------------
+# Author: Matej Stastny
+# Date: 2025-09-12 (YYYY-MM-DD)
+# License: MIT
+# Link: https://github.com/matejstastny/dotfiles
+# --------------------------------------------------------------------------------------------
 # Description:
 #   Orchestrates the execution of dotfiles setup scripts, such as linking configuration files,
 #   installing Homebrew packages, and installing additional assets. The script validates all
