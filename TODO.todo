@@ -3,3 +3,4 @@ Bugs:
 
 Features:
     ✔ Add bash to homebrew.sh @done(25-08-31 10:35)
+    - Add extension headers to settings.json instead of names (@ext microsoft.python insted of Python)
