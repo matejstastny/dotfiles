@@ -6,6 +6,11 @@ source "$(dirname "$0")/logging.sh"
 # --------------------------------------------------------------------------------------------
 # link.sh — Minimal Dotfiles Linker
 # --------------------------------------------------------------------------------------------
+# Author: Matej Stastny
+# Date: 2025-09-12 (YYYY-MM-DD)
+# License: MIT
+# Link: https://github.com/matejstastny/dotfiles
+# --------------------------------------------------------------------------------------------
 # Purpose:
 #   This script automates the process of linking dotfiles from the repository into the home
 #   directory or other system-specific locations. It ensures that configuration files are
