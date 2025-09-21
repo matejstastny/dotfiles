@@ -5,44 +5,59 @@
 #   brew bundle --file=Brewfile
 # --------------------------------------------------------------------------------------------
 
-# Formulae
+# Formulae -----------------------------------------------------------------------------------
+
+# Core
+brew "coreutils"
+brew "curl"
 brew "bash"
 brew "bat"
 brew "btop"
-brew "create-dmg"
-brew "curl"
-brew "docker"
 brew "eza"
 brew "fastfetch"
-brew "ffmpeg"
-brew "fileicon"
 brew "fzf"
+brew "zoxide"
+brew "wget"
+brew "neovim"
+brew "tmux"
+brew "zsh-syntax-highlighting"
+
+# Git
 brew "gh"
 brew "git"
 brew "git-delta"
 brew "git-lfs"
-brew "go"
-brew "gradle"
 brew "lazygit"
+
+# Apps
+brew "create-dmg"
+brew "docker"
+brew "ffmpeg"
+
+# Java
 brew "maven"
-brew "neovim"
+brew "gradle"
+
+# Other langs
+brew "go"
 brew "proto"
 brew "python"
 brew "scc"
-brew "starship"
-brew "stow"
-brew "tmux"
-brew "wget"
-brew "zoxide"
-brew "zsh-syntax-highlighting"
 
-# Casks
+
+# Casks --------------------------------------------------------------------------------------
+
+# Munubar
 cask "battery"
+cask "itsycal"
+cask "istat-menus"
+
+# Apps
+cask "raycast"
 cask "chatgpt"
 cask "ghostty"
-cask "google-chrome"
+cask "vivaldi"
 cask "iina"
-cask "jordanbaird-ice"
 cask "mos"
 cask "obsidian"
 cask "visual-studio-code"
