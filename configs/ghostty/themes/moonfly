@@ -2,7 +2,7 @@
 # Upstream: https://github.com/bluz71/vim-moonfly-colors
 # Dark catppuccin 191521
 
-background =           #0d0d0d
+background =           #212121
 foreground =           #bdbdbd
 selection-background = #b2ceee
 selection-foreground = #080808

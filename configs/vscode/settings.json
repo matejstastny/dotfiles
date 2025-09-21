@@ -10,7 +10,7 @@
 {
   // Workbench interface
 
-  "workbench.colorTheme": "Dark GruvBoxer",
+  "workbench.colorTheme": "Vira Graphene",
   "workbench.iconTheme": "material-icon-theme",
   "workbench.activityBar.location": "hidden",
   "workbench.editor.showTabs": "single",
@@ -77,13 +77,6 @@
   "editor.cursorStyle": "line",
   "editor.cursorWidth": 2,
   "workbench.colorCustomizations": {
-    "editor.background": "#282828",
-    "sideBar.background": "#282828",
-    "sideBarSectionHeader.background": "#282828",
-    "statusBar.background": "#282828",
-    "statusBar.noFolderBackground": "#282828",
-    "sideBar.border": "#282828",
-
     "statusBar.border": "#0000",
     "editorOverviewRuler.wordHighlightStrongForeground": "#0000",
     "editorOverviewRuler.selectionHighlightForeground": "#0000",
@@ -96,7 +89,60 @@
     "editorOverviewRuler.addedForeground": "#0000",
     "editorOverviewRuler.infoForeground": "#0000",
     "editorOverviewRuler.border": "#0000",
-    "editorSuggestWidget.selectedBackground": "#3A334B"
+    "editorSuggestWidget.selectedBackground": "#3A334B",
+    "[Vira*]": {
+      "statusBar.debuggingBackground": "#FFFFFF33",
+      "statusBar.debuggingForeground": "#FFFFFF",
+      "toolbar.activeBackground": "#FFFFFF26",
+      "button.background": "#FFFFFF",
+      "button.hoverBackground": "#FFFFFFcc",
+      "extensionButton.separator": "#FFFFFF33",
+      "extensionButton.background": "#FFFFFF14",
+      "extensionButton.foreground": "#FFFFFF",
+      "extensionButton.hoverBackground": "#FFFFFF33",
+      "extensionButton.prominentForeground": "#FFFFFF",
+      "extensionButton.prominentBackground": "#FFFFFF14",
+      "extensionButton.prominentHoverBackground": "#FFFFFF33",
+      "activityBarBadge.background": "#FFFFFF",
+      "activityBar.activeBorder": "#FFFFFF",
+      "activityBarTop.activeBorder": "#FFFFFF",
+      "list.inactiveSelectionIconForeground": "#FFFFFF",
+      "list.activeSelectionForeground": "#FFFFFF",
+      "list.inactiveSelectionForeground": "#FFFFFF",
+      "list.highlightForeground": "#FFFFFF",
+      "sash.hoverBorder": "#FFFFFF80",
+      "list.activeSelectionIconForeground": "#FFFFFF",
+      "scrollbarSlider.activeBackground": "#FFFFFF80",
+      "editorSuggestWidget.highlightForeground": "#FFFFFF",
+      "textLink.foreground": "#FFFFFF",
+      "progressBar.background": "#FFFFFF",
+      "pickerGroup.foreground": "#FFFFFF",
+      "tab.activeBorder": "#FFFFFF",
+      "tab.activeBorderTop": "#FFFFFF00",
+      "tab.unfocusedActiveBorder": "#FFFFFF",
+      "tab.unfocusedActiveBorderTop": "#FFFFFF00",
+      "tab.activeModifiedBorder": "#FFFFFF00",
+      "notificationLink.foreground": "#FFFFFF",
+      "editorWidget.resizeBorder": "#FFFFFF",
+      "editorWidget.border": "#FFFFFF",
+      "settings.modifiedItemIndicator": "#FFFFFF",
+      "panelTitle.activeBorder": "#FFFFFF",
+      "breadcrumb.activeSelectionForeground": "#FFFFFF",
+      "menu.selectionForeground": "#FFFFFF",
+      "menubar.selectionForeground": "#FFFFFF",
+      "editor.findMatchBorder": "#FFFFFF",
+      "selection.background": "#FFFFFF40",
+      "statusBarItem.remoteBackground": "#FFFFFF14",
+      "statusBarItem.remoteHoverBackground": "#FFFFFF",
+      "statusBarItem.remoteForeground": "#FFFFFF",
+      "notebook.inactiveFocusedCellBorder": "#FFFFFF80",
+      "commandCenter.activeBorder": "#FFFFFF80",
+      "chat.slashCommandForeground": "#FFFFFF",
+      "chat.avatarForeground": "#FFFFFF",
+      "activityBarBadge.foreground": "#000000",
+      "button.foreground": "#000000",
+      "statusBarItem.remoteHoverForeground": "#000000"
+    }
   },
 
   // Typography
@@ -229,7 +275,8 @@
   },
 
   // Python
-  "python.analysis.typeCheckingMode": "standard"
+  "python.analysis.typeCheckingMode": "standard",
+  "viraTheme.accent": "White"
 
   // ------------------------------------------------------------
 }
