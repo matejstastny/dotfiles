@@ -50,6 +50,13 @@
     "when": "editorTextFocus"
   },
 
+  {
+    // Insert date string
+    "key": "cmd+shift+d",
+    "command": "insertDateString.insertDate",
+    "when": "editorTextFocus"
+  },
+
   // Mini windows --------------------------------------------------------------------
 
   {
