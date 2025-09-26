@@ -86,8 +86,7 @@
   "editor.fontFamily": "DankMono Nerd Font Mono",
   "editor.fontSize": 13.5,
   "editor.fontLigatures": false,
-  "editor.lineHeight": 1.7, // Line spacing
-  "editor.wordWrap": "on",
+  "editor.lineHeight": 1.7,
 
   "editor.tokenColorCustomizations": {
     "textMateRules": [
