@@ -1,5 +1,7 @@
 Bugs:
     ✔ Figure out why after 'no' to "Parent path /Users/matejstastny/.config/nvim is a symlink, delete it? [y/N] n" the script stops entirely @started(25-08-19 17:21) @done(24-08-20 23:34) @lasted(6h13m42s)
+    - Fix tmux continuum not saving state periodically
+    - Fix tmux not carrying current path when creating a split
 
 Features:
     ✔ Add bash to homebrew.sh @done(25-08-31 10:35)
