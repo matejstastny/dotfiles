@@ -100,3 +100,8 @@ HISTCONTROL=ignoreboth
 # Tmux auto-attach ---------------------------------------------------------------------------
 
 [[ "$TERM_PROGRAM" == *ghostty* ]] && tmain
+
+# Gazebo
+export DISPLAY=:0
+/opt/X11/bin/xhost +127.0.0.1 >/dev/null 2>&1
+/opt/X11/bin/xhost +localhost >/dev/null 2>&1
