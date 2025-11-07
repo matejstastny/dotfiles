@@ -10,6 +10,8 @@
 # Aliases ------------------------------------------------------------------------------------
 
 alias n='clear && echo && fastfetch'
+alias nc='clear && fastfetch -c $HOME/.config/fastfetch/themes/fastcat.jsonc'
+
 alias c='clear'
 alias info='scc'
 alias cat='bat --paging=never'
