@@ -56,6 +56,7 @@ declare -A EXCEPTIONS=(
     [git]="$HOME"
     [rtorrent]="$HOME"
     [vscode]="$HOME/Library/Application Support/Code/User"
+    [vesktop]="$HOME/Library/Application Support/vesktop/themes"
 )
 
 # --------------------------------------------------------------------------------------------
