@@ -6,216 +6,183 @@
 // License: MIT
 // Link: https://github.com/matejstastny/dotfiles
 // --------------------------------------------------------------------------------------------
-
 {
-  // Workbench interface
-
-  "workbench.colorTheme": "Material Theme Darker",
-  "workbench.iconTheme": "material-icon-theme",
-  "workbench.activityBar.location": "hidden",
-  "workbench.editor.showTabs": "single",
-  "workbench.editor.empty.hint": "hidden",
-  "workbench.startupEditor": "none",
-  "workbench.tips.enabled": false,
-  "editor.minimap.enabled": false,
-  "breadcrumbs.enabled": false,
-
-  // Sidebar & file explorer
-
-  "workbench.secondarySideBar.defaultVisibility": "hidden",
-  "workbench.sideBar.location": "right",
-  "explorer.sortOrder": "type",
-  "material-icon-theme.hidesExplorerArrows": true,
-  "workbench.tree.enableStickyScroll": false,
-  "workbench.tree.renderIndentGuides": "none",
-  "workbench.tree.indent": 16,
-  "explorer.confirmDragAndDrop": false,
-  "explorer.confirmDelete": false,
-  "explorer.decorations.badges": false,
-  "git.decorations.enabled": false,
-  "explorer.compactFolders": false,
-
-  // Custom UI Style extension
-
-  "window.newWindowDimensions": "maximized",
-  "window.zoomLevel": 0.8,
-  "window.customTitleBarVisibility": "never",
-  "window.titleBarStyle": "native",
-  "custom-ui-style.electron": {
-    "titleBarStyle": "hiddenInset", // Hide topbar
-    "trafficLightPosition": {
-      // MacOS app buttons
-      "x": 16,
-      "y": 12
-    }
-  },
-  "custom-ui-style.stylesheet": {
-    ".quick-input-widget": "top: 25vh !important",
-    ".quick-input-list .scrollbar": "display: none",
-    ".monaco-action-bar.quick-input-inline-action-bar": "display: none",
-    ".editor-widget.find-widget": "box-shadow: none; border-radius: 4px",
-    ".quick-input-titlebar": "background: #100B15 !important",
-    ".monaco-workbench .part.editor > .content .editor-group-container > .title.title-border-bottom:after": "display: none",
-    ".monaco-scrollable-element > .shadow.top": "display: none",
-    ".sidebar .title-label": "padding: 0 !important",
-    ".sidebar": "border: none !important",
-    ".monaco-workbench .monaco-list:not(.element-focused):focus:before": "outline: none !important",
-    ".monaco-list-row.focused": "outline: none !important",
-    ".monaco-editor .scroll-decoration": "display: none",
-    ".title-actions": "display: none !important",
-    ".title.show-file-icons .label-container .monaco-icon-label.file-icon": "justify-content: center; padding: 0 !important",
-    ".title .monaco-icon-label:after": "margin-right: 0",
-    ".monaco-workbench .part.editor > .content .editor-group-container > .title > .label-container > .title-label": "padding-left: 60px",
-    ".title .monaco-icon-label.file-icon": "margin: 0 60px"
-  },
-  "custom-ui-style.font.sansSerif": "DankMono Nerd Font Mono",
-
-  // Cursor
-
-  "editor.multiCursorModifier": "ctrlCmd",
-  "editor.cursorBlinking": "phase",
-  "editor.cursorStyle": "line",
-  "editor.cursorWidth": 2,
-  "workbench.colorCustomizations": {
-    "editorCursor.foreground": "#FFFFFF",
-    "editor.lineHighlightBackground": "#00000000"
-  },
-
-  // Typography
-
-  "editor.fontFamily": "DankMono Nerd Font Mono",
-  "editor.fontSize": 13.5,
-  "editor.fontLigatures": false,
-  "editor.lineHeight": 1.7,
-
-  "editor.tokenColorCustomizations": {
-    "textMateRules": [
-      {
-        "scope": "comment",
-        "settings": {
-          "fontStyle": "italic"
+    // Workbench interface
+    "workbench.colorTheme": "Material Theme Darker",
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.activityBar.location": "hidden",
+    "workbench.editor.showTabs": "single",
+    "workbench.editor.empty.hint": "hidden",
+    "workbench.startupEditor": "none",
+    "workbench.tips.enabled": false,
+    "editor.minimap.enabled": false,
+    "breadcrumbs.enabled": false,
+    // Sidebar & file explorer
+    "workbench.secondarySideBar.defaultVisibility": "hidden",
+    "workbench.sideBar.location": "right",
+    "explorer.sortOrder": "type",
+    "material-icon-theme.hidesExplorerArrows": true,
+    "workbench.tree.enableStickyScroll": false,
+    "workbench.tree.renderIndentGuides": "none",
+    "workbench.tree.indent": 16,
+    "explorer.confirmDragAndDrop": false,
+    "explorer.confirmDelete": false,
+    "explorer.decorations.badges": false,
+    "git.decorations.enabled": false,
+    "explorer.compactFolders": false,
+    // Custom UI Style extension
+    "window.newWindowDimensions": "maximized",
+    "window.zoomLevel": 0.8,
+    "window.customTitleBarVisibility": "never",
+    "window.titleBarStyle": "native",
+    "custom-ui-style.electron": {
+        "titleBarStyle": "hiddenInset", // Hide topbar
+        "trafficLightPosition": {
+            // MacOS app buttons
+            "x": 16,
+            "y": 12
         }
-      }
-    ]
-  },
-
-  // Decorations & hints
-
-  "editor.stickyScroll.enabled": false,
-  "editor.colorDecorators": false,
-  "editor.codeLens": false,
-  "editor.lightbulb.enabled": "off",
-  "editor.matchBrackets": "never",
-  "files.trimTrailingWhitespace": true,
-  "files.insertFinalNewline": true,
-
-  // Guides & highlights
-
-  "editor.tabSize": 4,
-  "editor.inlayHints.enabled": "off",
-  "editor.detectIndentation": false,
-  "editor.showFoldingControls": "mouseover",
-  "editor.guides.indentation": false,
-  "editor.renderWhitespace": "none",
-  "editor.selectionHighlight": false,
-
-  // Scrollbars
-
-  "editor.scrollbar.horizontal": "hidden",
-  "editor.scrollbar.vertical": "hidden",
-  "editor.overviewRulerBorder": false,
-  "editor.hideCursorInOverviewRuler": true,
-
-  // Other
-
-  "editor.snippetSuggestions": "top",
-  "files.autoSave": "afterDelay",
-  "update.mode": "none",
-  "editor.formatOnSave": true,
-  "editor.formatOnPaste": true,
-
-  // ------------------------------------------------------------
-
-  // JSON
-  "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-
-  // RedHat (Java)
-  "redhat.telemetry.enabled": true,
-
-  // Menu bar
-  "workbench.productIconTheme": "bongocat",
-
-  // Git
-  "git.confirmSync": false,
-  "git.autofetch": true,
-  "git.openRepositoryInParentFolders": "always",
-  "git.suggestSmartCommit": false,
-
-  // VSCord
-  "vscord.app.name": "Visual Studio Code",
-  "vscord.behaviour.suppressNotifications": true,
-
-  // Security
-  "security.workspace.trust.untrustedFiles": "open",
-
-  // C++ formatting
-  "C_Cpp.vcFormat.newLine.beforeOpenBrace.type": "sameLine",
-  "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
-  "C_Cpp.formatting": "vcFormat",
-  "C_Cpp.vcFormat.indent.accessSpecifiers": true,
-  "C_Cpp.vcFormat.newLine.beforeElse": false,
-  "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "sameLine",
-  "C_Cpp.vcFormat.newLine.beforeOpenBrace.function": "sameLine",
-  "C_Cpp.vcFormat.newLine.beforeOpenBrace.lambda": "sameLine",
-  "C_Cpp.vcFormat.newLine.beforeOpenBrace.namespace": "sameLine",
-  "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyFunction": true,
-  "C_Cpp.vcFormat.newLine.beforeCatch": false,
-  "C_Cpp.doxygen.generatedStyle": "/**",
-
-  // File associations
-  "files.associations": {
-    ".stow-local-ignore": "plaintext",
-    ".packwizignore": "ignore"
-  },
-
-  // Godot
-  "godotTools.editorPath.godot4": "/Applications/Godot.app/Contents/MacOS/Godot",
-
-  // Vex
-  "vexrobotics.vexcode.Project.Home": "/Users/matejstastny/Documents/vex-vscode-projects",
-  "vexrobotics.vexcode.Cpp.Sdk.Home": "/Users/matejstastny/Library/Application Support/Code/User/globalStorage/vexrobotics.vexcode/sdk/cpp",
-  "vexrobotics.vexcode.General.EnableUserTerminal": "Disable",
-  "makefile.configureOnOpen": true,
-  "vexrobotics.vexcode.Cpp.Toolchain.Path": "/Users/matejstastny/Library/Application Support/Code/User/globalStorage/vexrobotics.vexcode/tools/cpp/toolchain_osxarm64",
-
-  // Docker
-  "[dockerfile]": {
-    "editor.defaultFormatter": "ms-azuretools.vscode-containers"
-  },
-
-  // Custom app icons
-  "customAppIcons.path": "/Users/matejstastny/Documents/devel/other/vscode.icns",
-
-  // Hide chat sidebar
-  "chat.agent.enabled": false,
-
-  // Shellscript
-  "[shellscript]": {
-    "editor.defaultFormatter": "foxundermoon.shell-format"
-  },
-
-  // Python
-  "python.analysis.typeCheckingMode": "standard",
-
-  // @ext jsynowiec.vscode-insertdatestring
-  "insertDateString.format": "YYYY-MM-DD hh:mm:ss",
-  "insertDateString.formatDate": "YYYY-MM-DD",
-  "insertDateString.formatTime": "hh:mm:ss"
-
-  // ------------------------------------------------------------
+    },
+    "custom-ui-style.stylesheet": {
+        ".quick-input-widget": "top: 25vh !important",
+        ".quick-input-list .scrollbar": "display: none",
+        ".monaco-action-bar.quick-input-inline-action-bar": "display: none",
+        ".editor-widget.find-widget": "box-shadow: none; border-radius: 4px",
+        ".quick-input-titlebar": "background: #100B15 !important",
+        ".monaco-workbench .part.editor > .content .editor-group-container > .title.title-border-bottom:after": "display: none",
+        ".monaco-scrollable-element > .shadow.top": "display: none",
+        ".sidebar .title-label": "padding: 0 !important",
+        ".sidebar": "border: none !important",
+        ".monaco-workbench .monaco-list:not(.element-focused):focus:before": "outline: none !important",
+        ".monaco-list-row.focused": "outline: none !important",
+        ".monaco-editor .scroll-decoration": "display: none",
+        ".title-actions": "display: none !important",
+        ".title.show-file-icons .label-container .monaco-icon-label.file-icon": "justify-content: center; padding: 0 !important",
+        ".title .monaco-icon-label:after": "margin-right: 0",
+        ".monaco-workbench .part.editor > .content .editor-group-container > .title > .label-container > .title-label": "padding-left: 60px",
+        ".title .monaco-icon-label.file-icon": "margin: 0 60px"
+    },
+    "custom-ui-style.font.sansSerif": "DankMono Nerd Font Mono",
+    // Cursor
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.cursorBlinking": "phase",
+    "editor.cursorStyle": "line",
+    "editor.cursorWidth": 2,
+    "workbench.colorCustomizations": {
+        "editorCursor.foreground": "#FFFFFF",
+        "editor.lineHighlightBackground": "#00000000",
+        "statusBarItem.remoteBackground": "#00000000",
+        "statusBarItem.remoteForeground": "#696969",
+        "editorRuler.foreground": "#00000000"
+    },
+    // Typography
+    "editor.fontFamily": "DankMono Nerd Font Mono",
+    "editor.fontSize": 13.5,
+    "editor.fontLigatures": false,
+    "editor.lineHeight": 1.7,
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope": "comment",
+                "settings": {
+                    "fontStyle": "italic"
+                }
+            }
+        ]
+    },
+    // Decorations & hints
+    "editor.stickyScroll.enabled": false,
+    "editor.colorDecorators": false,
+    "editor.codeLens": false,
+    "editor.lightbulb.enabled": "off",
+    "editor.matchBrackets": "never",
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    // Guides & highlights
+    "editor.tabSize": 4,
+    "editor.inlayHints.enabled": "off",
+    "editor.detectIndentation": false,
+    "editor.showFoldingControls": "mouseover",
+    "editor.guides.indentation": false,
+    "editor.renderWhitespace": "none",
+    "editor.selectionHighlight": false,
+    // Scrollbars
+    "editor.scrollbar.horizontal": "hidden",
+    "editor.scrollbar.vertical": "hidden",
+    "editor.overviewRulerBorder": false,
+    "editor.hideCursorInOverviewRuler": true,
+    // Other
+    "editor.snippetSuggestions": "top",
+    "files.autoSave": "afterDelay",
+    "update.mode": "none",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    // ------------------------------------------------------------
+    // JSON
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    // RedHat (Java)
+    "redhat.telemetry.enabled": true,
+    // Menu bar
+    "workbench.productIconTheme": "bongocat",
+    // Git
+    "git.confirmSync": false,
+    "git.autofetch": true,
+    "git.openRepositoryInParentFolders": "always",
+    "git.suggestSmartCommit": false,
+    // VSCord
+    "vscord.app.name": "Visual Studio Code",
+    "vscord.behaviour.suppressNotifications": true,
+    // Security
+    "security.workspace.trust.untrustedFiles": "open",
+    // C++ formatting
+    "C_Cpp.vcFormat.newLine.beforeOpenBrace.type": "sameLine",
+    "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
+    "C_Cpp.formatting": "vcFormat",
+    "C_Cpp.vcFormat.indent.accessSpecifiers": true,
+    "C_Cpp.vcFormat.newLine.beforeElse": false,
+    "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "sameLine",
+    "C_Cpp.vcFormat.newLine.beforeOpenBrace.function": "sameLine",
+    "C_Cpp.vcFormat.newLine.beforeOpenBrace.lambda": "sameLine",
+    "C_Cpp.vcFormat.newLine.beforeOpenBrace.namespace": "sameLine",
+    "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyFunction": true,
+    "C_Cpp.vcFormat.newLine.beforeCatch": false,
+    "C_Cpp.doxygen.generatedStyle": "/**",
+    // File associations
+    "files.associations": {
+        ".stow-local-ignore": "plaintext",
+        ".packwizignore": "ignore"
+    },
+    // Godot
+    "godotTools.editorPath.godot4": "/Applications/Godot.app/Contents/MacOS/Godot",
+    // Vex
+    "vexrobotics.vexcode.Project.Home": "/Users/matejstastny/Documents/vex-vscode-projects",
+    "vexrobotics.vexcode.Cpp.Sdk.Home": "/Users/matejstastny/Library/Application Support/Code/User/globalStorage/vexrobotics.vexcode/sdk/cpp",
+    "vexrobotics.vexcode.General.EnableUserTerminal": "Disable",
+    "makefile.configureOnOpen": true,
+    "vexrobotics.vexcode.Cpp.Toolchain.Path": "/Users/matejstastny/Library/Application Support/Code/User/globalStorage/vexrobotics.vexcode/tools/cpp/toolchain_osxarm64",
+    // Docker
+    "[dockerfile]": {
+        "editor.defaultFormatter": "ms-azuretools.vscode-containers"
+    },
+    // Custom app icons
+    "customAppIcons.path": "/Users/matejstastny/Documents/devel/other/vscode.icns",
+    // Hide chat sidebar
+    "chat.agent.enabled": false,
+    // Shellscript
+    "[shellscript]": {
+        "editor.defaultFormatter": "foxundermoon.shell-format"
+    },
+    // Python
+    "python.analysis.typeCheckingMode": "standard",
+    // @ext jsynowiec.vscode-insertdatestring
+    "insertDateString.format": "YYYY-MM-DD hh:mm:ss",
+    "insertDateString.formatDate": "YYYY-MM-DD",
+    "insertDateString.formatTime": "hh:mm:ss",
+    "editor.scrollbar.verticalScrollbarSize": 0
+    // ------------------------------------------------------------
 }
