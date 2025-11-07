@@ -12,6 +12,7 @@
 alias n='clear && echo && fastfetch'
 alias nm='clear && fastfetch -c $HOME/.config/fastfetch/themes/fastcat.jsonc'
 alias nc='clear && fastfetch -c $HOME/.config/fastfetch/themes/cat.jsonc'
+alias nd='clear && fastfetch -c $HOME/.config/fastfetch/themes/detailed.jsonc'
 
 alias c='clear'
 alias info='scc'
