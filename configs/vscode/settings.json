@@ -41,7 +41,10 @@
             // MacOS app buttons
             "x": 16,
             "y": 12
-        }
+        },
+        "frame": false,
+        "transparent": true,
+        "opacity": 0.93
     },
     "custom-ui-style.stylesheet": {
         ".quick-input-widget": "top: 25vh !important",
@@ -73,7 +76,7 @@
         "editor.lineHighlightBackground": "#00000000",
         "statusBarItem.remoteBackground": "#00000000",
         "statusBarItem.remoteForeground": "#696969",
-        "editorRuler.foreground": "#00000000"
+        "editorRuler.foreground": "#00000000",
     },
     // Typography
     "editor.fontFamily": "DankMono Nerd Font Mono",
@@ -183,6 +186,7 @@
     "insertDateString.format": "YYYY-MM-DD hh:mm:ss",
     "insertDateString.formatDate": "YYYY-MM-DD",
     "insertDateString.formatTime": "hh:mm:ss",
-    "editor.scrollbar.verticalScrollbarSize": 0
+    "editor.scrollbar.verticalScrollbarSize": 0,
+    "vscode_vibrancy.type": "fullscreen-ui",
     // ------------------------------------------------------------
 }
