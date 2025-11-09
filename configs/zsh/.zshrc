@@ -46,9 +46,8 @@ tmain() {
 
 # Prompt & Plugins ---------------------------------------------------------------------------
 
-# Starship prompt
-export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
-eval "$(starship init zsh)"
+# Oh My Posh
+eval "$(oh-my-posh init zsh --config 'robbyrussell')"
 
 # Zoxide
 eval "$(zoxide init zsh)"
