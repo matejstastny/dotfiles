@@ -84,7 +84,7 @@ prompt_or_force() {
     if [ "$FORCE" = true ]; then
         return 0
     fi
-    read -rp "$prompt_msg [y/N] " choice
+    read -rp "$(log prompt "$prompt_msg") [y/N] " choice
     [[ "$choice" =~ ^[Yy]$ ]]
 }
 
@@ -94,7 +94,6 @@ remove_target() {
         log warn "Would remove existing $target"
     else
         rm -rf "$target"
-        log warn "Removed existing $target"
     fi
 }
 

@@ -58,10 +58,15 @@ if [[ -n "$TARGET_FONT_DIR" ]]; then
         if ((font_count > 0)); then
             log info "Found $font_count font(s) to install."
             for font in "${fonts[@]}"; do
-                if cp "$font" "$TARGET_FONT_DIR/"; then
-                    log success "Installed font: $(basename "$font")"
+                target_font="$TARGET_FONT_DIR/$(basename "$font")"
+                if [[ -f "$target_font" ]]; then
+                    log success-done "Font already exists: $(basename "$font")"
                 else
-                    log warn "Failed to install font: $(basename "$font")"
+                    if cp "$font" "$TARGET_FONT_DIR/"; then
+                        log success "Installed font: $(basename "$font")"
+                    else
+                        log warn "Failed to install font: $(basename "$font")"
+                    fi
                 fi
             done
         else
