@@ -101,11 +101,7 @@ SAVEHIST=1000000
 HISTFILE="$XDG_CACHE_HOME/zsh_history"
 HISTCONTROL=ignoreboth
 
-# Tmux auto-attach ---------------------------------------------------------------------------
-
-[[ "$TERM_PROGRAM" == *ghostty* ]] && tmain
-
-# Gazebo
+# Gazebo -------------------------------------------------------------------------------------
 export DISPLAY=:0
 /opt/X11/bin/xhost +127.0.0.1 >/dev/null 2>&1
 /opt/X11/bin/xhost +localhost >/dev/null 2>&1
