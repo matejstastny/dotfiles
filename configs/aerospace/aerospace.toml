@@ -128,9 +128,16 @@ alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 alt-shift-semicolon = 'mode service'
 alt-shift-enter = 'mode apps'
 
+# Apps
 alt-o = 'exec-and-forget open -a /Applications/Obsidian.app'
 alt-v = 'exec-and-forget open -a /Applications/Vivaldi.app'
 alt-g = 'exec-and-forget open -n /Applications/Ghostty.app'
+alt-d = 'exec-and-forget open -a /Applications/Vesktop.app'
+alt-m = 'exec-and-forget open -a /System/Applications/Music.app'
+
+# Scripts
+alt-shift-c = 'exec-and-forget ~/bin/close-all'
+alt-shift-o = 'exec-and-forget ~/bin/aerospace-open'
 
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 [mode.service.binding]
