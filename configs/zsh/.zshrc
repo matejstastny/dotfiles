@@ -35,15 +35,6 @@ alias vc='veracrypt -t'
 alias dockerc='docker system prune --all --volumes'
 alias vivaldi="/Applications/Vivaldi.app/Contents/MacOS/Vivaldi"
 
-# Functions ----------------------------------------------------------------------------------
-
-tmain() {
-    if ! tmux has-session -t main 2>/dev/null; then
-        tmux new-session -d -s main
-    fi
-    tmux attach -t main
-}
-
 # Prompt & Plugins ---------------------------------------------------------------------------
 
 # Oh My Posh
@@ -66,6 +57,7 @@ export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08
 
 # Fzf
 source <(fzf --zsh)
+export FZF_DEFAULT_COMMAND="find -L"
 
 # Completions ---------------------------------------------------------------------------------
 
