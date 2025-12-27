@@ -23,13 +23,16 @@ maximize = true
 window-save-state = always
 confirm-close-surface = false
 
+background-opacity = 0.9
+
 macos-titlebar-style = transparent
 macos-titlebar-proxy-icon = hidden
 title = " "
 window-colorspace = "display-p3"
 
 window-padding-balance = true
-window-padding-x = 10
+window-padding-x = 20
+window-padding-y = 10
 adjust-cell-height = 20%
 
 # Miscellaneous ------------------------------------------------------------------------------

@@ -10,6 +10,10 @@
 # Aliases ------------------------------------------------------------------------------------
 
 alias n='clear && echo && fastfetch'
+alias nm='clear && fastfetch -c $HOME/.config/fastfetch/themes/fastcat.jsonc'
+alias nc='clear && fastfetch -c $HOME/.config/fastfetch/themes/cat.jsonc'
+alias nd='clear && fastfetch -c $HOME/.config/fastfetch/themes/detailed.jsonc'
+
 alias c='clear'
 alias info='scc'
 alias cat='bat --paging=never'
@@ -31,20 +35,10 @@ alias vc='veracrypt -t'
 alias dockerc='docker system prune --all --volumes'
 alias vivaldi="/Applications/Vivaldi.app/Contents/MacOS/Vivaldi"
 
-# Functions ----------------------------------------------------------------------------------
-
-tmain() {
-    if ! tmux has-session -t main 2>/dev/null; then
-        tmux new-session -d -s main
-    fi
-    tmux attach -t main
-}
-
 # Prompt & Plugins ---------------------------------------------------------------------------
 
-# Starship prompt
-export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
-eval "$(starship init zsh)"
+# Oh My Posh
+eval "$(oh-my-posh init zsh --config 'robbyrussell')"
 
 # Zoxide
 eval "$(zoxide init zsh)"
@@ -63,6 +57,7 @@ export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08
 
 # Fzf
 source <(fzf --zsh)
+export FZF_DEFAULT_COMMAND="find -L"
 
 # Completions ---------------------------------------------------------------------------------
 
@@ -97,11 +92,16 @@ SAVEHIST=1000000
 HISTFILE="$XDG_CACHE_HOME/zsh_history"
 HISTCONTROL=ignoreboth
 
-# Tmux auto-attach ---------------------------------------------------------------------------
+if [[ -n $TMUX_PANE ]]; then
+  HISTDIR="$HOME/.zsh_tmux_hist"
+  mkdir -p "$HISTDIR"
+  HISTFILE="$HISTDIR/.zsh_history_${TMUX_PANE:1}"
+  if [[ ! -f $HISTFILE ]]; then
+    cp "$HOME/.zsh_history" "$HISTFILE" 2>/dev/null
+  fi
+fi
 
-[[ "$TERM_PROGRAM" == *ghostty* ]] && tmain
-
-# Gazebo
+# Gazebo -------------------------------------------------------------------------------------
 export DISPLAY=:0
 /opt/X11/bin/xhost +127.0.0.1 >/dev/null 2>&1
 /opt/X11/bin/xhost +localhost >/dev/null 2>&1

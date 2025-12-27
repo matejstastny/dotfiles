@@ -42,6 +42,10 @@ log() {
         ;;
     celebrate)
         emoji="🎉"
+        color="$blue"
+        ;;
+    prompt)
+        emoji="⁉️"
         color="$cyan"
         ;;
     warn)

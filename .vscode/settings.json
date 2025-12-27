@@ -1,8 +1,15 @@
 {
-  "Lua.diagnostics.globals": ["vim"],
+    "Lua.diagnostics.globals": ["vim"],
 
-  "files.associations": {
-    "config": "properties",
-    "configs/ghostty/themes/*": "properties"
-  }
+    "files.associations": {
+        "config": "properties",
+        "configs/ghostty/themes/*": "properties"
+    },
+
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }
