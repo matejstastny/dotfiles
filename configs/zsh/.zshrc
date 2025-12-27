@@ -92,6 +92,15 @@ SAVEHIST=1000000
 HISTFILE="$XDG_CACHE_HOME/zsh_history"
 HISTCONTROL=ignoreboth
 
+if [[ -n $TMUX_PANE ]]; then
+  HISTDIR="$HOME/.zsh_tmux_hist"
+  mkdir -p "$HISTDIR"
+  HISTFILE="$HISTDIR/.zsh_history_${TMUX_PANE:1}"
+  if [[ ! -f $HISTFILE ]]; then
+    cp "$HOME/.zsh_history" "$HISTFILE" 2>/dev/null
+  fi
+fi
+
 # Gazebo -------------------------------------------------------------------------------------
 export DISPLAY=:0
 /opt/X11/bin/xhost +127.0.0.1 >/dev/null 2>&1
