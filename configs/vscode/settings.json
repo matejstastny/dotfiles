@@ -6,6 +6,7 @@
 // License: MIT
 // Link: https://github.com/matejstastny/dotfiles
 // --------------------------------------------------------------------------------------------
+
 {
     // Workbench interface
     "workbench.colorTheme": "Material Theme Darker",
@@ -17,6 +18,7 @@
     "workbench.tips.enabled": false,
     "editor.minimap.enabled": false,
     "breadcrumbs.enabled": false,
+
     // Sidebar & file explorer
     "workbench.secondarySideBar.defaultVisibility": "hidden",
     "workbench.sideBar.location": "right",
@@ -30,6 +32,7 @@
     "explorer.decorations.badges": false,
     "git.decorations.enabled": false,
     "explorer.compactFolders": false,
+
     // Custom UI Style extension
     "window.newWindowDimensions": "maximized",
     "window.zoomLevel": 0.8,
@@ -66,6 +69,7 @@
         ".title .monaco-icon-label.file-icon": "margin: 0 60px"
     },
     "custom-ui-style.font.sansSerif": "DankMono Nerd Font Mono",
+
     // Cursor
     "editor.multiCursorModifier": "ctrlCmd",
     "editor.cursorBlinking": "phase",
@@ -76,8 +80,9 @@
         "editor.lineHighlightBackground": "#00000000",
         "statusBarItem.remoteBackground": "#00000000",
         "statusBarItem.remoteForeground": "#696969",
-        "editorRuler.foreground": "#00000000",
+        "editorRuler.foreground": "#00000000"
     },
+
     // Typography
     "editor.fontFamily": "DankMono Nerd Font Mono",
     "editor.fontSize": 13.5,
@@ -93,6 +98,7 @@
             }
         ]
     },
+
     // Decorations & hints
     "editor.stickyScroll.enabled": false,
     "editor.colorDecorators": false,
@@ -101,6 +107,7 @@
     "editor.matchBrackets": "never",
     "files.trimTrailingWhitespace": true,
     "files.insertFinalNewline": true,
+
     // Guides & highlights
     "editor.tabSize": 4,
     "editor.inlayHints.enabled": "off",
@@ -109,40 +116,61 @@
     "editor.guides.indentation": false,
     "editor.renderWhitespace": "none",
     "editor.selectionHighlight": false,
+
     // Scrollbars
     "editor.scrollbar.horizontal": "hidden",
     "editor.scrollbar.vertical": "hidden",
     "editor.overviewRulerBorder": false,
     "editor.hideCursorInOverviewRuler": true,
+
     // Other
     "editor.snippetSuggestions": "top",
     "files.autoSave": "afterDelay",
     "update.mode": "none",
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
+
+    // Disable AI slop
+    "chat.agent.enabled": false,
+    "github.copilot.enable": {
+        "*": false,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false
+    },
+
     // ------------------------------------------------------------
-    // JSON
+    // USER SPECIFIC STUFF, REMOVE IF YOU WANT TO USE THIS CONFIG
+    // ------------------------------------------------------------
+
+    // File associations
+    "files.associations": {
+        ".stow-local-ignore": "plaintext",
+        ".packwizignore": "ignore",
+        "*.env": "config-definition"
+    },
+
+    // Formatters
     "[jsonc]": {
-        "editor.defaultFormatter": "vscode.json-language-features"
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "[json]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    // RedHat (Java)
-    "redhat.telemetry.enabled": true,
-    // Menu bar
-    "workbench.productIconTheme": "bongocat",
+    "[shellscript]": {
+        "editor.defaultFormatter": "mkhl.shfmt"
+    },
+
     // Git
-    "git.confirmSync": false,
     "git.autofetch": true,
-    "git.openRepositoryInParentFolders": "always",
+    "git.confirmSync": false,
     "git.suggestSmartCommit": false,
-    // VSCord
-    "vscord.app.name": "Visual Studio Code",
-    "vscord.behaviour.suppressNotifications": true,
-    // Security
+    "git.openRepositoryInParentFolders": "always",
+
+    // Trust all files, I know what I'm doing VSCode
     "security.workspace.trust.untrustedFiles": "open",
-    // C++ formatting
+
+    // C++
     "C_Cpp.vcFormat.newLine.beforeOpenBrace.type": "sameLine",
     "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
     "C_Cpp.formatting": "vcFormat",
@@ -155,38 +183,19 @@
     "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyFunction": true,
     "C_Cpp.vcFormat.newLine.beforeCatch": false,
     "C_Cpp.doxygen.generatedStyle": "/**",
-    // File associations
-    "files.associations": {
-        ".stow-local-ignore": "plaintext",
-        ".packwizignore": "ignore"
-    },
-    // Godot
+
+    // @ext geequlim.godot-tools
     "godotTools.editorPath.godot4": "/Applications/Godot.app/Contents/MacOS/Godot",
-    // Vex
-    "vexrobotics.vexcode.Project.Home": "/Users/matejstastny/Documents/vex-vscode-projects",
-    "vexrobotics.vexcode.Cpp.Sdk.Home": "/Users/matejstastny/Library/Application Support/Code/User/globalStorage/vexrobotics.vexcode/sdk/cpp",
-    "vexrobotics.vexcode.General.EnableUserTerminal": "Disable",
-    "makefile.configureOnOpen": true,
-    "vexrobotics.vexcode.Cpp.Toolchain.Path": "/Users/matejstastny/Library/Application Support/Code/User/globalStorage/vexrobotics.vexcode/tools/cpp/toolchain_osxarm64",
-    // Docker
-    "[dockerfile]": {
-        "editor.defaultFormatter": "ms-azuretools.vscode-containers"
-    },
-    // Custom app icons
-    "customAppIcons.path": "/Users/matejstastny/Documents/devel/other/vscode.icns",
-    // Hide chat sidebar
-    "chat.agent.enabled": false,
-    // Shellscript
-    "[shellscript]": {
-        "editor.defaultFormatter": "foxundermoon.shell-format"
-    },
-    // Python
-    "python.analysis.typeCheckingMode": "standard",
+
     // @ext jsynowiec.vscode-insertdatestring
     "insertDateString.format": "YYYY-MM-DD hh:mm:ss",
     "insertDateString.formatDate": "YYYY-MM-DD",
     "insertDateString.formatTime": "hh:mm:ss",
     "editor.scrollbar.verticalScrollbarSize": 0,
     "vscode_vibrancy.type": "fullscreen-ui",
+
+    // @ext pixl-garden.BongoCat
+    "workbench.productIconTheme": "bongocat"
+
     // ------------------------------------------------------------
 }
