@@ -1,5 +1,14 @@
+# --------------------------------------------------------------------------------------------
+# flake.nix - my macbook nix-darwin system flake
+# --------------------------------------------------------------------------------------------
+# Author: Matej Stastny
+# Date: 2025-12-27 (YYYY-MM-DD)
+# License: MIT
+# Link: https://github.com/matejstastny/dotfiles
+# --------------------------------------------------------------------------------------------
+
 {
-  description = "Example nix-darwin system flake";
+  description = "🌸 my-daarlin's nix-darwin system flake 🌸";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -15,35 +24,82 @@
     }:
     let
       configuration =
-        { pkgs, ... }:
+        { pkgs, config, ... }:
         {
-          # List packages installed in system profile. To search by name, run:
-          # $ nix-env -qaP | grep wget
-          environment.systemPackages = [
-            pkgs.vim
+          environment.systemPackages = with pkgs; [
+            ## 🌱 Core utilities
+            mkalias
+            coreutils
+            curl
+            wget
+            bash
+            zsh-syntax-highlighting
+
+            ## 🐱 CLI tools
+            bat
+            btop
+            eza
+            fastfetch
+            fzf
+            zoxide
+            tmux
+            neovim
+
+            ## 🌳 Git & version control
+            gh
+            git
+            git-lfs
+            lazygit
+
+            ## 🛠 Tools
+            docker
+            nixfmt
+
+            ## 💻 UI and WM
+            sketchybar
+            aerospace
           ];
 
-          # Necessary for using flakes on this system.
+          system.primaryUser = "matejstastny";
+
+          # 🧁 Services
+          services.sketchybar.enable = true;
+
+          # ----------------------------------------------------
+          # 🍎 macOS Applications integration
+          # Creates /Applications/Nix Apps with Finder aliases
+          # ----------------------------------------------------
+
+          system.activationScripts.applications.text =
+            let
+              env = pkgs.buildEnv {
+                name = "system-applications";
+                paths = config.environment.systemPackages;
+                pathsToLink = [ "/Applications" ];
+              };
+            in
+            pkgs.lib.mkForce ''
+              echo "🌸 setting up /Applications/Nix Apps..." >&2
+              rm -rf /Applications/Nix\ Apps
+              mkdir -p /Applications/Nix\ Apps
+
+              find ${env}/Applications -maxdepth 1 -type l -exec readlink '{}' + |
+              while read -r src; do
+                app_name=$(basename "$src")
+                echo "✨ linking $app_name" >&2
+                ${pkgs.mkalias}/bin/mkalias "$src" "/Applications/Nix Apps/$app_name"
+              done
+            '';
+
+          # ⚙️ Nix & system settings
           nix.settings.experimental-features = "nix-command flakes";
-
-          # Enable alternative shell support in nix-darwin.
-          # programs.fish.enable = true;
-
-          # Set Git commit hash for darwin-version.
           system.configurationRevision = self.rev or self.dirtyRev or null;
-
-          # Used for backwards compatibility, please read the changelog before changing.
-          # $ darwin-rebuild changelog
           system.stateVersion = 6;
-
-          # The platform the configuration will be used on.
           nixpkgs.hostPlatform = "aarch64-darwin";
         };
     in
     {
-      # Build darwin flake using:
-      # $ darwin-rebuild build --flake .#simple
-      darwinConfigurations."simple" = nix-darwin.lib.darwinSystem {
+      darwinConfigurations."macbook" = nix-darwin.lib.darwinSystem {
         modules = [ configuration ];
       };
     };
