@@ -21,6 +21,7 @@ brew "wget"
 brew "neovim"
 brew "tmux"
 brew "zsh-syntax-highlighting"
+brew "oh-my-posh"
 
 # Git
 brew "gh"
@@ -63,3 +64,4 @@ cask "obsidian"
 cask "visual-studio-code"
 cask "vesktop"
 cask "wine-stable"
+cask "aerospace"
