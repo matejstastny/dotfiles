@@ -38,7 +38,7 @@ alias vivaldi="/Applications/Vivaldi.app/Contents/MacOS/Vivaldi"
 # Prompt & Plugins ---------------------------------------------------------------------------
 
 # Oh My Posh
-eval "$(oh-my-posh init zsh --config 'robbyrussell')"
+eval "$(oh-my-posh init zsh --config 'json')"
 
 # Zoxide
 eval "$(zoxide init zsh)"
@@ -100,8 +100,3 @@ if [[ -n $TMUX_PANE ]]; then
     cp "$HOME/.zsh_history" "$HISTFILE" 2>/dev/null
   fi
 fi
-
-# Gazebo -------------------------------------------------------------------------------------
-export DISPLAY=:0
-/opt/X11/bin/xhost +127.0.0.1 >/dev/null 2>&1
-/opt/X11/bin/xhost +localhost >/dev/null 2>&1
