@@ -9,7 +9,10 @@
 
 # Color theme --------------------------------------------------------------------------------
 
-config-file = themes/moonfly
+# config-file = themes/moonfly
+theme=ayu
+background=#212121
+cursor-color=#8e8e8e
 
 # Fonts --------------------------------------------------------------------------------------
 

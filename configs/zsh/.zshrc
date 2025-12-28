@@ -37,8 +37,9 @@ alias vivaldi="/Applications/Vivaldi.app/Contents/MacOS/Vivaldi"
 
 # Prompt & Plugins ---------------------------------------------------------------------------
 
-# Oh My Posh
-eval "$(oh-my-posh init zsh --config 'json')"
+# Starship
+export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
+eval "$(starship init zsh)"
 
 # Zoxide
 eval "$(zoxide init zsh)"
@@ -48,8 +49,11 @@ source "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 # Zsh syntax highlighting
 source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-ZSH_HIGHLIGHT_STYLES[pre]='fg=magenta,underline'
-ZSH_HIGHLIGHT_STYLES[arg0]='fg=magenta,bold'
+ZSH_HIGHLIGHT_STYLES[command]='fg=green,bold'
+ZSH_HIGHLIGHT_STYLES[builtin]='fg=green,bold'
+ZSH_HIGHLIGHT_STYLES[alias]='fg=green,bold'
+ZSH_HIGHLIGHT_STYLES[function]='fg=green,bold'
+ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=white,underline'
 
 # Bat pager
 export BAT_THEME='gruvbox-dark'

@@ -21,7 +21,7 @@ brew "wget"
 brew "neovim"
 brew "tmux"
 brew "zsh-syntax-highlighting"
-brew "oh-my-posh"
+brew "starship"
 
 # Git
 brew "gh"
