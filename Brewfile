@@ -52,7 +52,6 @@ brew "scc"
 # Munubar
 cask "battery"
 cask "itsycal"
-cask "istat-menus"
 
 # Apps
 cask "raycast"
