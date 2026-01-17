@@ -49,9 +49,13 @@ source "$(dirname "$0")/logging.sh"
 FORCE=false
 DRY_RUN=false
 
-# These will not be linked as directories, but all of their
-# contents will be linked to the specified target directory
-declare -A EXCEPTIONS=(
+# Directories that should be linked as whole directories to custom locations
+declare -A DIR_EXCEPTIONS=(
+    [prism]="$HOME/Library/Application Support/PrismLauncher"
+)
+
+# Directories whose *contents* should be linked file-by-file to custom locations
+declare -A FILE_EXCEPTIONS=(
     [zsh]="$HOME"
     [git]="$HOME"
     [rtorrent]="$HOME"
@@ -145,8 +149,10 @@ link_config() {
     local folder_name="$1"
     local src="$CONFIGS_DIR/$folder_name"
 
-    if [[ -v EXCEPTIONS[$folder_name] ]]; then
-        link_files "$src" "${EXCEPTIONS[$folder_name]}"
+    if [[ -v FILE_EXCEPTIONS[$folder_name] ]]; then
+        link_files "$src" "${FILE_EXCEPTIONS[$folder_name]}"
+    elif [[ -v DIR_EXCEPTIONS[$folder_name] ]]; then
+        link_directory "$src" "${DIR_EXCEPTIONS[$folder_name]}"
     else
         local tgt="$HOME/.config/$folder_name"
         link_directory "$src" "$tgt"
