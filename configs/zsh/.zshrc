@@ -62,6 +62,10 @@ export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08
 source <(fzf --zsh)
 export FZF_DEFAULT_COMMAND="find -L"
 
+# SDKMAN
+export SDKMAN_DIR="/Users/matejstastny/.sdkman"
+[[ -s "/Users/matejstastny/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/matejstastny/.sdkman/bin/sdkman-init.sh"
+
 # Completions ---------------------------------------------------------------------------------
 
 fpath=($HOME/.docker/completions $fpath)

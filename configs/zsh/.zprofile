@@ -43,16 +43,6 @@ export DYLD_LIBRARY_PATH="$VULKAN_SDK/lib${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PAT
 export VK_ICD_FILENAMES="$VULKAN_SDK/etc/vulkan/icd.d/MoltenVK_icd.json"
 export VK_LAYER_PATH="$VULKAN_SDK/etc/vulkan/explicit_layer.d"
 
-# ☕ sdkman ----------------------------------------------------------------------------------
-
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
-
-# If SDKMAN Java is set, export JAVA_HOME session-wide
-if [[ -n "$SDKMAN_CANDIDATES_DIR" && -d "$SDKMAN_CANDIDATES_DIR/java/current" ]]; then
-    export JAVA_HOME="$SDKMAN_CANDIDATES_DIR/java/current"
-fi
-
 # 🔍 fzf defaults ---------------------------------------------------------------------------
 
 export FZF_DEFAULT_OPTS="--style minimal --color 16 --layout=reverse --height 30% --preview='bat -p --color=always {}'"
