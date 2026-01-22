@@ -14,5 +14,8 @@
     },
     "[lua]": {
         "editor.defaultFormatter": "sumneko.lua"
+    },
+    "[shellscript]": {
+        "editor.defaultFormatter": "mads-hartmann.bash-ide-vscode"
     }
 }
