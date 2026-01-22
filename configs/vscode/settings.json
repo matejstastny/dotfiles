@@ -160,6 +160,9 @@
     "[shellscript]": {
         "editor.defaultFormatter": "mads-hartmann.bash-ide-vscode"
     },
+    "[dockerfile]": {
+        "editor.semanticHighlighting.enabled": false
+    },
 
     // Git
     "git.autofetch": true,
