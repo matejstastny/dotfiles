@@ -63,6 +63,10 @@ if.app-name-regex-substring = 'quicktime'
 run = 'layout floating'
 
 [[on-window-detected]]
+if.app-name-regex-substring = 'AddressBook'
+run = 'layout floating'
+
+[[on-window-detected]]
 if.app-name-regex-substring = 'java'
 run = 'layout floating'
 
