@@ -15,7 +15,6 @@ alias nd='clear && fastfetch -c $HOME/.config/fastfetch/themes/detailed.jsonc'
 
 alias c='clear'
 alias info='scc'
-alias cat='bat --paging=never'
 
 alias cd='z'
 alias ls='echo && eza --color=always --long --git --no-filesize --icons=always --no-time --no-user --no-permissions'
@@ -52,7 +51,7 @@ ZSH_HIGHLIGHT_STYLES[command]='fg=green,bold'
 ZSH_HIGHLIGHT_STYLES[builtin]='fg=green,bold'
 ZSH_HIGHLIGHT_STYLES[alias]='fg=green,bold'
 ZSH_HIGHLIGHT_STYLES[function]='fg=green,bold'
-ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=white,underline'
+ZSH_HIGHLIGHT_STYLES[unknown - token]='fg=white,underline'
 
 # Bat pager
 export BAT_THEME='gruvbox-dark'
@@ -100,10 +99,10 @@ HISTFILE="$XDG_CACHE_HOME/zsh_history"
 HISTCONTROL=ignoreboth
 
 if [[ -n $TMUX_PANE ]]; then
-  HISTDIR="$HOME/.zsh_tmux_hist"
-  mkdir -p "$HISTDIR"
-  HISTFILE="$HISTDIR/.zsh_history_${TMUX_PANE:1}"
-  if [[ ! -f $HISTFILE ]]; then
-    cp "$HOME/.zsh_history" "$HISTFILE" 2>/dev/null
-  fi
+    HISTDIR="$HOME/.zsh_tmux_hist"
+    mkdir -p "$HISTDIR"
+    HISTFILE="$HISTDIR/.zsh_history_${TMUX_PANE:1}"
+    if [[ ! -f $HISTFILE ]]; then
+        cp "$HOME/.zsh_history" "$HISTFILE" 2>/dev/null
+    fi
 fi
