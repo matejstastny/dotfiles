@@ -3,6 +3,7 @@
         "jep-a.lua-plus", // lua for nvim config
         "sumneko.lua", // lua for nvim config
         "malmaud.tmux",
-        "esbenp.prettier-vscode"
+        "esbenp.prettier-vscode",
+        "mads-hartmann.bash-ide-vscode"
     ]
 }
