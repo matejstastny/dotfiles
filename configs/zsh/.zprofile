@@ -57,7 +57,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 typeset -U path
 path=(
-    "$HOME/bin"
+    "$HOME/bin/bin"
     "$GOPATH/bin"
     "$VULKAN_SDK/bin"
     "/opt/homebrew/bin"
