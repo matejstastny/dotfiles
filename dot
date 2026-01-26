@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 set -euo pipefail
 
 # --------------------------------------------------------------------------------------------
@@ -31,10 +32,6 @@ set -euo pipefail
 # Note:
 #   This script is added in path in .zprofile if you used my dotfiles and linked them correctly.
 # --------------------------------------------------------------------------------------------
-
-pwd
-realpath "../scripts/link.sh"
-exit 1
 
 line() {
     local char="${1:-—}"
@@ -97,18 +94,18 @@ done
 for arg in "$@"; do
     case "$arg" in
     link)
-        run_script "link" ../scripts/link.sh
+        run_script "link" ./scripts/link.sh
         ;;
     brew)
-        run_script "brew" ../scripts/brew.sh
+        run_script "brew" ./scripts/brew.sh
         ;;
     assets)
-        run_script "assets" ../scripts/install_assets.sh
+        run_script "assets" ./scripts/install_assets.sh
         ;;
     all)
-        run_script "link" ../scripts/link.sh
-        run_script "brew" ../scripts/brew.sh
-        run_script "assets" ../scripts/install_assets.sh
+        run_script "link" ./scripts/link.sh
+        run_script "brew" ./scripts/brew.sh
+        run_script "assets" ./scripts/install_assets.sh
         ;;
     esac
 done
