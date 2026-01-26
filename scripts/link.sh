@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
+
 set -euo pipefail
+
 source "$(dirname "$0")/config.sh"
 source "$(dirname "$0")/logging.sh"
 
@@ -56,7 +58,6 @@ declare -A DIR_EXCEPTIONS=()
 declare -A FILE_EXCEPTIONS=(
     [zsh]="$HOME"
     [git]="$HOME"
-    [rtorrent]="$HOME"
     [vscode]="$HOME/Library/Application Support/Code/User"
     [vesktop]="$HOME/Library/Application Support/vesktop/themes"
 )
