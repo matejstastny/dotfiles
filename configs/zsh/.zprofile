@@ -36,7 +36,7 @@ export APP_DATA="$HOME/Library/Application Support"
 export GOPATH="$HOME/go"
 export PROTO_HOME="$HOME/.proto"
 
-# 🐉 Vulkan SDK -----------------------------------------------------------------------------
+# 🐉 Vulkan  --------------------------------------------------------------------------------
 
 export VULKAN_SDK="$HOME/VulkanSDK/1.4.321.0/macOS"
 export DYLD_LIBRARY_PATH="$VULKAN_SDK/lib${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PATH}"
