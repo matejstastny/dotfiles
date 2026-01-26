@@ -51,7 +51,6 @@ ZSH_HIGHLIGHT_STYLES[command]='fg=green,bold'
 ZSH_HIGHLIGHT_STYLES[builtin]='fg=green,bold'
 ZSH_HIGHLIGHT_STYLES[alias]='fg=green,bold'
 ZSH_HIGHLIGHT_STYLES[function]='fg=green,bold'
-ZSH_HIGHLIGHT_STYLES[unknown - token]='fg=white,underline'
 
 # Bat pager
 export BAT_THEME='gruvbox-dark'
@@ -61,9 +60,9 @@ export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08
 source <(fzf --zsh)
 export FZF_DEFAULT_COMMAND="find -L"
 
-# SDKMAN
-export SDKMAN_DIR="/Users/matejstastny/.sdkman"
-[[ -s "/Users/matejstastny/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/matejstastny/.sdkman/bin/sdkman-init.sh"
+# Jenv
+export PATH="$HOME/.jenv/bin:$PATH"
+eval "$(jenv init -)"
 
 # Completions ---------------------------------------------------------------------------------
 

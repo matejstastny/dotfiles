@@ -41,6 +41,7 @@ brew "ffmpeg"
 # Java
 brew "maven"
 brew "gradle"
+brew "jenv"
 
 # Other langs
 brew "go"
