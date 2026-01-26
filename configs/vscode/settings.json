@@ -200,7 +200,8 @@
     // @ext pixl-garden.BongoCat
     "workbench.productIconTheme": "bongocat",
     "docker.extension.enableComposeLanguageServer": false,
-    "docker.extension.dockerEngineAvailabilityPrompt": false
 
+    // Docker
+    "docker.extension.dockerEngineAvailabilityPrompt": false
     // ------------------------------------------------------------
 }
