@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # --------------------------------------------------------------------------------------------
-# run.sh — Dotfiles Setup Orchestrator
+# dot — Dotfiles manager
 # --------------------------------------------------------------------------------------------
 # Author: Matej Stastny
 # Date: 2025-09-12 (YYYY-MM-DD)
@@ -16,7 +16,7 @@ set -euo pipefail
 #   every setup step in sequence
 #
 # Usage:
-#   ./run.sh [link|brew|assets|all]...
+#   dot [link|brew|assets|all]...
 #   - link   : Run the linking script to create symlinks for dotfiles.
 #   - brew   : Run the Homebrew installation and update script.
 #   - assets : Run the asset installation script.
@@ -27,7 +27,14 @@ set -euo pipefail
 #   ./run.sh brew assets
 #   ./run.sh link
 #   ./run.sh all
+#
+# Note:
+#   This script is added in path in .zprofile if you used my dotfiles and linked them correctly.
 # --------------------------------------------------------------------------------------------
+
+pwd
+realpath "../scripts/link.sh"
+exit 1
 
 line() {
     local char="${1:-—}"
@@ -45,11 +52,14 @@ run_script() {
 
 usage() {
     cat <<EOF
-Usage: $0 [link|brew|assets|all]...
-    - link   : Run the linking script to create symlinks for dotfiles.
-    - brew   : Run the Homebrew installation and update script.
-    - assets : Run the asset installation script.
-    - all    : Run all scripts in sequence (default).
+⠀∧ ⑅ ∧
+( >  ̫ < )    DOT - dotfiles manager
+
+Usage: dot [link|brew|assets|all]...
+    - link   : Run the linking script to create symlinks for dotfiles
+    - brew   : Run the Homebrew installation and update script
+    - assets : Run the asset installation script
+    - all    : Run all scripts in sequence
 EOF
 }
 
@@ -58,7 +68,8 @@ EOF
 # --------------------------------------------------------------------------------------------
 
 if [ $# -eq 0 ]; then
-    set -- all
+    usage
+    exit 1
 fi
 
 args=("$@")
@@ -86,18 +97,18 @@ done
 for arg in "$@"; do
     case "$arg" in
     link)
-        run_script "link" ./scripts/link.sh
+        run_script "link" ../scripts/link.sh
         ;;
     brew)
-        run_script "brew" ./scripts/brew.sh
+        run_script "brew" ../scripts/brew.sh
         ;;
     assets)
-        run_script "assets" ./scripts/install_assets.sh
+        run_script "assets" ../scripts/install_assets.sh
         ;;
     all)
-        run_script "link" ./scripts/link.sh
-        run_script "brew" ./scripts/brew.sh
-        run_script "assets" ./scripts/install_assets.sh
+        run_script "link" ../scripts/link.sh
+        run_script "brew" ../scripts/brew.sh
+        run_script "assets" ../scripts/install_assets.sh
         ;;
     esac
 done

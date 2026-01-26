@@ -3,7 +3,8 @@
 
     "files.associations": {
         "config": "properties",
-        "configs/ghostty/themes/*": "properties"
+        "configs/ghostty/themes/*": "properties",
+        "dot": "shellscript"
     },
 
     "[json]": {
