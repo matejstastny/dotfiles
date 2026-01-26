@@ -62,7 +62,7 @@ log() {
         ;;
     esac
     [[ -z $color ]] || color="\033[${color}m"
-    echo -e " ${color} ${emoji} ${msg}\033[0m"
+    echo -e "${color}${emoji} ${msg}\033[0m"
 }
 
 error_exit() {
