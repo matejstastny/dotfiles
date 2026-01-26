@@ -50,11 +50,9 @@ FORCE=false
 DRY_RUN=false
 
 # Directories that should be linked as whole directories to custom locations
-declare -A DIR_EXCEPTIONS=(
-    [prism]="$HOME/Library/Application Support/PrismLauncher"
-)
+declare -A DIR_EXCEPTIONS=()
 
-# Directories whose *contents* should be linked file-by-file to custom locations
+# Directories whose contents should be linked file-by-file to custom locations
 declare -A FILE_EXCEPTIONS=(
     [zsh]="$HOME"
     [git]="$HOME"
