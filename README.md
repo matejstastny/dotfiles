@@ -1,10 +1,12 @@
 <h1 align="center">dotfiles</h1>
 
 <p align="center">
-    <img width="200" src="./assets/repo/screenshots/1.png" alt="screenshot 1">
-    <img width="200" src="./assets/repo/screenshots/2.png" alt="screenshot 2">
-    <img width="200" src="./assets/repo/screenshots/3.png" alt="screenshot 3">
+    <img src="./assets/screenshots/1.png" alt="screenshot 1">
+    <img width="49%" src="./assets/screenshots/2.png" alt="screenshot 2">
+    <img width="49%" src="./assets/screenshots/3.png" alt="screenshot 3">
 </p>
+
+---
 
 Personal dotfiles with custom scripts to manage it, like for example a symlinker script.
 
