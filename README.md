@@ -2,7 +2,7 @@
 
 ```bash
 # --------------------------------------------------------------------------------------------
-# run.sh — Dotfiles Setup Orchestrator
+# dot — Dotfiles Setup Orchestrator
 # --------------------------------------------------------------------------------------------
 # Author: Matej Stastny
 # Date: 2025-09-12 (YYYY-MM-DD)
@@ -16,7 +16,7 @@
 #   every setup step in sequence
 #
 # Usage:
-#   ./run.sh [link|brew|assets|all]...
+#   ./dot [link|brew|assets|all]...
 #   - link   : Run the linking script to create symlinks for dotfiles.
 #   - brew   : Run the Homebrew installation and update script.
 #   - assets : Run the asset installation script.
@@ -24,9 +24,9 @@
 #
 #
 # Examples:
-#   ./run.sh brew assets
-#   ./run.sh link
-#   ./run.sh all
+#   ./dot brew assets
+#   ./dot link
+#   ./dot all
 # --------------------------------------------------------------------------------------------
 ```
 
