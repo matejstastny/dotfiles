@@ -1,29 +1,119 @@
+# --------------------------------------------------------------------------------------------
+# starship.toml
+# --------------------------------------------------------------------------------------------
+# Author: Matej Stastny
+# Date: 2026-02-01 (YYYY-MM-DD)
+# License: MIT
+# Link: https://github.com/matejstastny/dotfiles
+# --------------------------------------------------------------------------------------------
+
 add_newline = true
-format = """
-$directory\
-$character"""
-right_format = """$git_branch $git_status $git_state $cmd_duration"""
+command_timeout = 2000
 
-[directory]
-truncation_length = 2
+format = """$env_var$os$hostname$kubernetes$directory$git_branch$git_status$python
+$character
+"""
 
+[character]
+success_symbol = "╰⎯"
+error_symbol = "╰⎯"
+
+
+[env_var]
+symbol = "╭╴"
+variable = 'SHELL'
+format = "$symbol"
+disabled = false
+
+# ---
+
+[os]
+format = '[$symbol](bold white) '
+disabled = false
+
+[os.symbols]
+Windows = ' '
+Arch = '󰣇'
+Ubuntu = ''
+Macos = '󰀵'
+Unknown = '󰠥'
+
+# ---
+
+# Shows the username
+[username]
+style_user = 'yellow bold'
+style_root = 'black bold'
+format = '[//](black bold) [$user](#2883ff) ' # 2883ff
+disabled = false
+show_always = true
+
+# Shows the hostname
 [hostname]
-ssh_symbol = " "
-format = "[$ssh_symbol $hostname]($style) "
+ssh_only = false
+format = '[//](black bold) [$hostname](bold blue) '
+disabled = false
 
+# Shows current directory
+[directory]
+truncation_length = 0
+truncation_symbol = ''
+home_symbol = '~'
+read_only = '  '
+format = '[//](black bold) [$path]($style)[$read_only]($read_only_style) '
+style = '#7ed1fb'
+
+
+# Shows current git branch
 [git_branch]
-symbol = ""
-format = "[$symbol $branch (:$remote_branch)]($style)"
+# symbol = ''
+symbol = ''
+format = '[//](black bold) [$symbol\[$branch\]]($style) '
+style = 'bold purple'
 
+# Shows current git status
 [git_status]
-style = "bold blue"
-format = "[$modified$deleted$untracked$ahead_behind]($style) "
-modified = " "
-deleted = " "
-untracked = " "
-ahead = " "
-behind = " "
-up_to_date = " "
+disabled = true
+format = '[ $all_status $ahead_behind]($style) '
+style = 'bold green'
+conflicted = '🏳'
+up_to_date = ''
+untracked = ' '
+ahead = '⇡${count}'
+diverged = '⇕⇡${ahead_count}⇣${behind_count}'
+behind = '⇣${count}'
+stashed = ' '
+modified = ' '
+staged = '[++\($count\)](green)'
+renamed = '襁 '
+deleted = ' '
 
-[cmd_duration]
-min_time = 20_000
+# Shows kubernetes context and namespace
+[kubernetes]
+format = 'via [󱃾 $context\($namespace\)](bold purple) '
+disabled = false
+
+# ---
+
+[vagrant]
+disabled = true
+
+[docker_context]
+disabled = true
+
+[helm]
+disabled = true
+
+[python]
+symbol = '󰌠'
+python_binary = ['./venv/bin/python', 'python', 'python3', 'python2']
+format = '[//](black bold) [${symbol} ${pyenv_prefix}(${version} )(\($virtualenv\) )]($style) '
+
+[nodejs]
+disabled = true
+
+[ruby]
+disabled = true
+
+[terraform]
+disabled = true

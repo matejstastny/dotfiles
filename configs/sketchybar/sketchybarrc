@@ -43,13 +43,13 @@ sketchybar --add item clock right \
     --subscribe battery system_woke power_source_change
 
 sketchybar -m \
-  --add event music_change "com.apple.Music.playerInfo" \
-  --add item musicIndicator right \
-  --set musicIndicator \
+    --add event music_change "com.apple.Music.playerInfo" \
+    --add item musicIndicator right \
+    --set musicIndicator \
     icon=󰝚 \
-    script="$CONFIG_DIR/plugins/nowplaying.sh" \
+    script="$CONFIG_DIR/plugins/music.sh" \
     click_script="osascript -e 'tell application \"Music\" to playpause'" \
-  --subscribe musicIndicator music_change
+    --subscribe musicIndicator music_change
 
 source $ITEM_DIR/front_app.sh
 

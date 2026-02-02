@@ -11,7 +11,7 @@
 
 # config-file = themes/moonfly
 theme=ayu
-background=#212121
+background=#1A1A1A
 cursor-color=#8e8e8e
 
 # Fonts --------------------------------------------------------------------------------------

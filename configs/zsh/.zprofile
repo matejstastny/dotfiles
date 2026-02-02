@@ -64,5 +64,6 @@ path=(
     "$PROTO_HOME/shims"
     "$PROTO_HOME/bin"
     "$HOME/Library/Application Support/JetBrains/Toolbox/scripts"
+    "$HOME/.local/bin:"
     $path
 )

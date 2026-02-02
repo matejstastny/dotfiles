@@ -100,22 +100,22 @@ body {
     --text-5: #808080; /* muted channels/chats and timestamps */
 
     /* background and dark colors */
-    --bg-1: #303030; /* dark buttons when clicked */
-    --bg-2: #303030; /* dark buttons */
-    --bg-3: hsla(0, 0%, 10%, 1); /* spacing, secondary elements */
-    --bg-4: hsla(0, 0%, 13%, 1); /* main background color */
-    --hover: #303030; /* channels and buttons when hovered */
-    --active: #303030; /* channels and buttons when clicked or selected */
-    --active-2: #303030; /* extra state for transparent buttons */
-    --message-hover: #303030; /* messages when hovered */
+    --bg-1: #1F1F22; /* dark buttons when clicked */
+    --bg-2: #1F1F22; /* dark buttons */
+    --bg-3: hsla(0, 0%, 8.6%, 1); /* spacing, secondary elements */
+    --bg-4: hsla(0, 0%, 10.2%, 1); /* main background color */
+    --hover: #1F1F22; /* channels and buttons when hovered */
+    --active: #1F1F22; /* channels and buttons when clicked or selected */
+    --active-2: #1F1F22; /* extra state for transparent buttons */
+    --message-hover: #1F1F22; /* messages when hovered */
 
     /* accent colors */
-    --accent-1: #808080; /* links and other accent text */
-    --accent-2: #808080; /* small accent elements */
-    --accent-3: #808080; /* accent buttons */
-    --accent-4: #808080; /* accent buttons when hovered */
-    --accent-5: #808080; /* accent buttons when clicked */
-    --accent-new: #808080; /* stuff that's normally red like mute/deafen buttons */
+    --accent-1: #455A9D; /* links and other accent text */
+    --accent-2: #455A9D; /* small accent elements */
+    --accent-3: #455A9D; /* accent buttons */
+    --accent-4: #455A9D; /* accent buttons when hovered */
+    --accent-5: #455A9D; /* accent buttons when clicked */
+    --accent-new: #455A9D; /* stuff that's normally red like mute/deafen buttons */
     --mention: linear-gradient(to right, color-mix(in hsl, var(--accent-2), transparent 90%) 40%, transparent); /* background of messages that mention you */
     --mention-hover: linear-gradient(to right, color-mix(in hsl, var(--accent-2), transparent 95%) 40%, transparent); /* background of messages that mention you when hovered */
     --reply: linear-gradient(to right, color-mix(in hsl, var(--text-3), transparent 90%) 40%, transparent); /* background of messages that reply to you */

@@ -12,16 +12,15 @@
 alias n='clear && fastfetch -c $HOME/.config/fastfetch/themes/cat.jsonc'
 alias nm='clear && fastfetch -c $HOME/.config/fastfetch/themes/fastcat.jsonc'
 alias nd='clear && fastfetch -c $HOME/.config/fastfetch/themes/detailed.jsonc'
+alias nj='clear && fastfetch -c $HOME/.config/fastfetch/themes/jellyfish.jsonc'
 
 alias c='clear'
 alias info='scc'
 
 alias cd='z'
 alias ls='echo && eza --color=always --long --git --no-filesize --icons=always --no-time --no-user --no-permissions'
-alias lsa='echo && eza --color=always --tree --git --no-filesize --icons=always --no-time --no-user --no-permissions'
-
-alias java21='sdk default java 21.0.5-tem'
-alias java8='sdk default java 8.0.432-amzn'
+alias lsa='echo && eza --color=always --long --git --icons=always -a'
+alias lst='echo && eza --color=always --tree --git --no-filesize --icons=always --no-time --no-user --no-permissions'
 
 alias ip="ifconfig | grep 'inet ' | awk '/inet / {print \$2}' | grep -Ev '^(127\.|::)'"
 alias sign='sudo xattr -rd com.apple.quarantine'
@@ -31,7 +30,6 @@ alias qa='tmux kill-server'
 
 alias vc='veracrypt -t'
 alias dockerc='docker system prune --all --volumes'
-alias vivaldi="/Applications/Vivaldi.app/Contents/MacOS/Vivaldi"
 
 # Prompt & Plugins ---------------------------------------------------------------------------
 
@@ -47,13 +45,14 @@ source "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 # Zsh syntax highlighting
 source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-ZSH_HIGHLIGHT_STYLES[command]='fg=green,bold'
-ZSH_HIGHLIGHT_STYLES[builtin]='fg=green,bold'
-ZSH_HIGHLIGHT_STYLES[alias]='fg=green,bold'
-ZSH_HIGHLIGHT_STYLES[function]='fg=green,bold'
+ZSH_HIGHLIGHT_STYLES[command]='fg=blue,bold'
+ZSH_HIGHLIGHT_STYLES[builtin]='fg=blue,bold'
+ZSH_HIGHLIGHT_STYLES[alias]='fg=blue,bold'
+ZSH_HIGHLIGHT_STYLES[function]='fg=blue,bold'
 
-# Bat pager
-export BAT_THEME='gruvbox-dark'
+# Bat
+BAT_THEME="tokyonight_night"
+"$HOME/dotfiles/configs/bat/bat-into-tokyonight/bat-into-tokyonight" >/dev/null 2>&1
 export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08/, \"\", \$0); print }'\'' | bat -p -lman'"
 
 # Fzf
@@ -89,6 +88,7 @@ setopt extended_glob
 setopt interactive_comments
 unsetopt prompt_sp
 stty stop undef
+bindkey -e
 
 # History ------------------------------------------------------------------------------------
 
@@ -105,3 +105,7 @@ if [[ -n $TMUX_PANE ]]; then
         cp "$HOME/.zsh_history" "$HISTFILE" 2>/dev/null
     fi
 fi
+
+# Init ---------------------------------------------------------------------------------------
+
+(clear && fastfetch -c $HOME/.config/fastfetch/themes/cat.jsonc) 2>/dev/null
