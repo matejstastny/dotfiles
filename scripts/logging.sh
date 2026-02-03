@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-set -euo pipefail
+
+set -e
 
 # --------------------------------------------------------------------------------------------
 # logging.sh — Logging Functions
@@ -65,12 +66,7 @@ log() {
     echo -e "${color}${emoji} ${msg}\033[0m"
 }
 
-error_exit() {
-    if [ -n $2 ]; then
-        log error "$1"
-        exit $2
-    else
-        log error "$1"
-        exit 1
-    fi
+log_fatal() {
+    log error "$1"
+    exit 1
 }

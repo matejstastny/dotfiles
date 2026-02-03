@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
-
+set -eu
 source "$(dirname "$0")/config.sh"
 source "$(dirname "$0")/logging.sh"
 
@@ -13,48 +12,11 @@ source "$(dirname "$0")/logging.sh"
 # License: MIT
 # Link: https://github.com/matejstastny/dotfiles
 # --------------------------------------------------------------------------------------------
-# Purpose:
-#   This script automates the process of linking dotfiles from the repository into the home
-#   directory or other system-specific locations. It ensures that configuration files are
-#   properly symlinked, facilitating easy management and portability of your environment
-#
-# Repository Structure:
-#   Assumes a CONFIGS_DIR containing subfolders for each configuration (e.g., zsh, git, vscode)
-#   Each subfolder contains the relevant dotfiles or directories to be linked
-#
-# Exceptions:
-#   Certain config folders (zsh, git, rtorrent, vscode) do not link the entire folder as a
-#   symlink. Instead, their contents are linked individually to specified target directories:
-#     - zsh, git, rtorrent: linked directly into $HOME
-#     - vscode: linked into macOS-specific VSCode User settings directory
-#
-# Features:
-#   - Links entire directories (except for exceptions)
-#   - Handles existing files with prompts or forced overwrite
-#   - Supports a dry-run mode to preview actions without making changes
-#   - Logs operations with clear emoji-based status messages
-#
-# Usage:
-#   ./link.sh [--force] [--dry-run]
-#
-# Examples:
-#   ./link.sh
-#       Prompts before overwriting existing files and links dotfiles.
-#
-#   ./link.sh --force
-#       Overwrites all existing files without prompting.
-#
-#   ./link.sh --dry-run
-#       Shows what would be linked without making any changes.
-# --------------------------------------------------------------------------------------------
-
-FORCE=false
-DRY_RUN=false
 
 # Directories that should be linked as whole directories to custom locations
 declare -A DIR_EXCEPTIONS=()
 
-# Directories whose contents should be linked file-by-file to custom locations
+# Directories whose contents should be linked file-by-file to defined locations
 declare -A FILE_EXCEPTIONS=(
     [zsh]="$HOME"
     [git]="$HOME"
@@ -62,10 +24,10 @@ declare -A FILE_EXCEPTIONS=(
     [vesktop]="$HOME/Library/Application Support/vesktop/themes"
 )
 
-# --------------------------------------------------------------------------------------------
-# Flags
-# --------------------------------------------------------------------------------------------
+# Flags --------------------------------------------------------------------------------------
 
+FORCE=false
+DRY_RUN=false
 while [[ $# -gt 0 ]]; do
     case "$1" in
     --force) FORCE=true ;;
@@ -78,9 +40,7 @@ while [[ $# -gt 0 ]]; do
     shift
 done
 
-# --------------------------------------------------------------------------------------------
-# Helpers
-# --------------------------------------------------------------------------------------------
+# Helpers ------------------------------------------------------------------------------------
 
 prompt_or_force() {
     local prompt_msg="$1"
@@ -151,16 +111,14 @@ link_config() {
     if [[ -v FILE_EXCEPTIONS[$folder_name] ]]; then
         link_files "$src" "${FILE_EXCEPTIONS[$folder_name]}"
     elif [[ -v DIR_EXCEPTIONS[$folder_name] ]]; then
-        link_directory "$src" "${DIR_EXCEPTIONS[$folder_name]}"
+        link_directory "$src" "${DIR_EXCEPTIONS[$folder_name]}/$(basename $src)"
     else
         local tgt="$HOME/.config/$folder_name"
         link_directory "$src" "$tgt"
     fi
 }
 
-# --------------------------------------------------------------------------------------------
-# Main
-# --------------------------------------------------------------------------------------------
+# Main ---------------------------------------------------------------------------------------
 
 for folder in "$CONFIGS_DIR"/*; do
     [ -d "$folder" ] || continue
