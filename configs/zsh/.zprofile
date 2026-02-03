@@ -12,9 +12,7 @@
 # 🖥️ Defaults -------------------------------------------------------------------------------
 
 export EDITOR="nvim"
-export TERM="ghostty"
-export TERMINAL="ghostty"
-export BROWSER="vivaldi"
+export BROWSER="librewolf"
 
 # 🌐 Locale ---------------------------------------------------------------------------------
 

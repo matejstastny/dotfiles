@@ -9,17 +9,14 @@
 
 # Aliases ------------------------------------------------------------------------------------
 
-alias n='clear && fastfetch -c $HOME/.config/fastfetch/themes/cat.jsonc'
-alias nm='clear && fastfetch -c $HOME/.config/fastfetch/themes/fastcat.jsonc'
-alias nd='clear && fastfetch -c $HOME/.config/fastfetch/themes/detailed.jsonc'
-alias nj='clear && fastfetch -c $HOME/.config/fastfetch/themes/jellyfish.jsonc'
-
+alias d='trash'
 alias c='clear'
 alias info='scc'
 
 alias cd='z'
 alias ls='echo && eza --color=always --long --git --no-filesize --icons=always --no-time --no-user --no-permissions'
-alias lsa='echo && eza --color=always --long --git --icons=always -a'
+alias lsa='echo && eza --color=always --long --git --icons=always'
+alias lsaa='echo && eza --color=always --long --git --icons=always -a'
 alias lst='echo && eza --color=always --tree --git --no-filesize --icons=always --no-time --no-user --no-permissions'
 
 alias ip="ifconfig | grep 'inet ' | awk '/inet / {print \$2}' | grep -Ev '^(127\.|::)'"
@@ -30,6 +27,11 @@ alias qa='tmux kill-server'
 
 alias vc='veracrypt -t'
 alias dockerc='docker system prune --all --volumes'
+
+alias n='clear && fastfetch -c $HOME/.config/fastfetch/themes/cat.jsonc'
+alias nm='clear && fastfetch -c $HOME/.config/fastfetch/themes/fastcat.jsonc'
+alias nd='clear && fastfetch -c $HOME/.config/fastfetch/themes/detailed.jsonc'
+alias nj='clear && fastfetch -c $HOME/.config/fastfetch/themes/jellyfish.jsonc'
 
 # Prompt & Plugins ---------------------------------------------------------------------------
 
