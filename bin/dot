@@ -15,9 +15,9 @@ set -eu
 # Hiii, if you're using my dots, you can define more tasks here :3
 
 declare -A TASKS=(
-    [link]="./scripts/link.sh"
-    [brew]="./scripts/brew.sh"
-    [assets]="./scripts/assets.sh"
+    [link]="$HOME/dotfiles/scripts/link.sh"
+    [brew]="$HOME/dotfiles/scripts/brew.sh"
+    [assets]="$HOME/dotfiles/scripts/assets.sh"
 )
 
 # Methods ------------------------------------------------------------------------------------
