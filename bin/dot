@@ -29,10 +29,8 @@ run_task() {
     local path="$2"
     echo -e "\nRunning $name..."
     line
-    if "$path"; then
-        line && echo "Task $name completed successfully"
-    else
-        line && echo "Task $name failed"
+    if ! "$path"; then
+        echo "dot: Task '$name' failed"
         return 1
     fi
 }
