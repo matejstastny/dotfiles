@@ -54,7 +54,6 @@ ZSH_HIGHLIGHT_STYLES[function]='fg=blue,bold'
 
 # Bat
 BAT_THEME="tokyonight_night"
-"$HOME/dotfiles/configs/bat/bat-into-tokyonight/bat-into-tokyonight" >/dev/null 2>&1
 export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08/, \"\", \$0); print }'\'' | bat -p -lman'"
 
 # Fzf
