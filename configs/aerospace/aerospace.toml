@@ -38,9 +38,8 @@ outer.left = 20
 outer.bottom = 20
 outer.right = 20
 outer.top = [
-    { monitor."^LS27A800U$" = 60 },
     { monitor."^Built-in Retina Display$" = 20 },
-    24,
+    60,
 ]
 
 # Exceptions ---------------------------------------------------------------------------------
