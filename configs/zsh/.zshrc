@@ -24,6 +24,7 @@ alias sign='sudo xattr -rd com.apple.quarantine'
 
 alias q='tmux detach'
 alias qa='tmux kill-server'
+alias tl='tmux display-message -p "#{window_layout}"'
 
 alias vc='veracrypt -t'
 alias dockerc='docker system prune --all --volumes'
@@ -47,10 +48,10 @@ source "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 # Zsh syntax highlighting
 source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-ZSH_HIGHLIGHT_STYLES[command]='fg=blue,bold'
-ZSH_HIGHLIGHT_STYLES[builtin]='fg=blue,bold'
-ZSH_HIGHLIGHT_STYLES[alias]='fg=blue,bold'
-ZSH_HIGHLIGHT_STYLES[function]='fg=blue,bold'
+ZSH_HIGHLIGHT_STYLES[command]='fg=magenta,bold'
+ZSH_HIGHLIGHT_STYLES[builtin]='fg=magenta,bold'
+ZSH_HIGHLIGHT_STYLES[alias]='fg=magenta,bold'
+ZSH_HIGHLIGHT_STYLES[function]='fg=magenta,bold'
 
 # Bat
 BAT_THEME="tokyonight_night"
