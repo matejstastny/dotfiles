@@ -8,205 +8,231 @@
 // --------------------------------------------------------------------------------------------
 
 {
-    // Workbench interface
-    "workbench.colorTheme": "Frozen Embers",
-    "workbench.iconTheme": "material-icon-theme",
-    "workbench.activityBar.location": "hidden",
-    "workbench.editor.showTabs": "single",
-    "workbench.editor.empty.hint": "hidden",
-    "workbench.startupEditor": "none",
-    "workbench.tips.enabled": false,
-    "editor.minimap.enabled": false,
-    "breadcrumbs.enabled": false,
+  // Workbench interface
+  "workbench.colorTheme": "Jellyfish",
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.activityBar.location": "hidden",
+  "workbench.editor.showTabs": "single",
+  "workbench.editor.empty.hint": "hidden",
+  "workbench.startupEditor": "none",
+  "workbench.tips.enabled": false,
+  "editor.minimap.enabled": false,
+  "breadcrumbs.enabled": false,
 
-    // Sidebar & file explorer
-    "workbench.secondarySideBar.defaultVisibility": "hidden",
-    "workbench.sideBar.location": "right",
-    "explorer.sortOrder": "type",
-    "material-icon-theme.hidesExplorerArrows": true,
-    "workbench.tree.enableStickyScroll": false,
-    "workbench.tree.renderIndentGuides": "none",
-    "workbench.tree.indent": 16,
-    "explorer.confirmDragAndDrop": false,
-    "explorer.confirmDelete": false,
-    "explorer.decorations.badges": false,
-    "git.decorations.enabled": false,
-    "explorer.compactFolders": false,
+  // Sidebar & file explorer
+  "workbench.secondarySideBar.defaultVisibility": "hidden",
+  "workbench.sideBar.location": "right",
+  "explorer.sortOrder": "type",
+  "material-icon-theme.hidesExplorerArrows": true,
+  "workbench.tree.enableStickyScroll": false,
+  "workbench.tree.renderIndentGuides": "none",
+  "workbench.tree.indent": 16,
+  "explorer.confirmDragAndDrop": false,
+  "explorer.confirmDelete": false,
+  "explorer.decorations.badges": false,
+  "git.decorations.enabled": false,
+  "explorer.compactFolders": false,
 
-    // Custom UI Style extension
-    "window.newWindowDimensions": "maximized",
-    "window.zoomLevel": 0.8,
-    "window.customTitleBarVisibility": "never",
-    "window.titleBarStyle": "native",
-    "custom-ui-style.electron": {
-        "titleBarStyle": "hiddenInset", // Hide topbar
-        "trafficLightPosition": {
-            // MacOS app buttons
-            "x": 16,
-            "y": 12
-        },
-        "frame": false,
-        "transparent": true,
-        "opacity": 0.9
+  // Custom UI Style extension
+  "window.newWindowDimensions": "maximized",
+  "window.zoomLevel": 0.8,
+  "window.customTitleBarVisibility": "never",
+  "window.titleBarStyle": "native",
+  "custom-ui-style.electron": {
+    "titleBarStyle": "hiddenInset",
+    "trafficLightPosition": {
+      "x": 16,
+      "y": 12
     },
-    "custom-ui-style.stylesheet": {
-        ".quick-input-widget": "top: 25vh !important",
-        ".quick-input-list .scrollbar": "display: none",
-        ".monaco-action-bar.quick-input-inline-action-bar": "display: none",
-        ".editor-widget.find-widget": "box-shadow: none; border-radius: 4px",
-        ".quick-input-titlebar": "background: #100B15 !important",
-        ".monaco-workbench .part.editor > .content .editor-group-container > .title.title-border-bottom:after": "display: none",
-        ".monaco-scrollable-element > .shadow.top": "display: none",
-        ".sidebar .title-label": "padding: 0 !important",
-        ".sidebar": "border: none !important",
-        ".monaco-workbench .monaco-list:not(.element-focused):focus:before": "outline: none !important",
-        ".monaco-list-row.focused": "outline: none !important",
-        ".monaco-editor .scroll-decoration": "display: none",
-        ".title-actions": "display: none !important",
-        ".title.show-file-icons .label-container .monaco-icon-label.file-icon": "justify-content: center; padding: 0 !important",
-        ".title .monaco-icon-label:after": "margin-right: 0",
-        ".monaco-workbench .part.editor > .content .editor-group-container > .title > .label-container > .title-label": "padding-left: 60px",
-        ".title .monaco-icon-label.file-icon": "margin: 0 60px"
-    },
-    "custom-ui-style.font.sansSerif": "DankMono Nerd Font Mono",
+    "opacity": 1
+  },
+  "custom-ui-style.stylesheet": {
+    ".quick-input-widget": "top: 25vh !important",
+    ".quick-input-list .scrollbar": "display: none",
+    ".monaco-action-bar.quick-input-inline-action-bar": "display: none",
+    ".editor-widget.find-widget": "box-shadow: none; border-radius: 4px",
+    ".quick-input-titlebar": "background: #100B15 !important",
+    ".monaco-workbench .part.editor > .content .editor-group-container > .title.title-border-bottom:after": "display: none",
+    ".monaco-scrollable-element > .shadow.top": "display: none",
+    ".sidebar .title-label": "padding: 0 !important",
+    ".sidebar": "border: none !important",
+    ".monaco-workbench .monaco-list:not(.element-focused):focus:before": "outline: none !important",
+    ".monaco-list-row.focused": "outline: none !important",
+    ".monaco-editor .scroll-decoration": "display: none",
+    ".title-actions": "display: none !important",
+    ".title.show-file-icons .label-container .monaco-icon-label.file-icon": "justify-content: center; padding: 0 !important",
+    ".title .monaco-icon-label:after": "margin-right: 0",
+    ".monaco-workbench .part.editor > .content .editor-group-container > .title > .label-container > .title-label": "padding-left: 60px",
+    ".title .monaco-icon-label.file-icon": "margin: 0 60px"
+  },
+  "custom-ui-style.font.sansSerif": "DankMono Nerd Font Mono",
 
-    // Cursor
-    "editor.multiCursorModifier": "ctrlCmd",
-    "editor.cursorBlinking": "phase",
-    "editor.cursorStyle": "line",
-    "editor.cursorWidth": 2,
-    "workbench.colorCustomizations": {
-        "editorLineNumber.foreground": "#6173A2",
-        "editorLineNumber.activeForeground": "#ffffff",
-        "terminalCursor.foreground": "#ffffff",
-        "editorCursor.foreground": "#ffffff",
-        "editorGutter.background": "#1A1A1A",
-        "sideBar.background": "#1A1A1A"
-    },
+  // Cursor
+  "editor.multiCursorModifier": "ctrlCmd",
+  "editor.cursorBlinking": "phase",
+  "editor.cursorStyle": "line",
+  "editor.cursorWidth": 2,
+  "workbench.colorCustomizations": {
+    "editorGutter.background": "#141318",
+    "statusBar.background": "#141318",
+    "sideBar.background": "#141318",
+    "editor.background": "#141318",
+    "menu.background": "#141318",
+    "terminal.background": "#141318",
+    "welcomePage.background": "#141318",
+    "welcomePage.tileBackground": "#141318",
+    "editorGroup.dropBackground": "#141318",
+    "editorGroup.emptyBackground": "#141318",
+    "titleBar.activeBackground": "#141318",
+    "panel.background": "#141318",
+    "scrollbar.background": "#141318",
+    "scrollbarSlider.activeBackground": "#141318",
+    "editorStickyScroll.background": "#141318",
+    "tab.unfocusedInactiveBackground": "#141318",
+    "tab.inactiveBackground": "#141318",
+    "input.background": "#151517",
+    "errorLens.errorBackground": "#00000000",
+    "errorLens.hintBackground": "#00000000",
+    "errorLens.warningBackground": "#00000000"
+  },
 
-    // Typography
-    "editor.fontFamily": "DankMono Nerd Font Mono",
-    "editor.fontSize": 13.5,
-    "editor.fontLigatures": false,
-    "editor.lineHeight": 1.7,
-    "editor.tokenColorCustomizations": {
-        "textMateRules": [
-            {
-                "scope": "comment",
-                "settings": {
-                    "fontStyle": "italic"
-                }
-            }
-        ]
-    },
+  // Typography
+  "editor.fontFamily": "DankMono Nerd Font Mono",
+  "editor.fontSize": 13.5,
+  "editor.fontLigatures": false,
+  "editor.lineHeight": 1.7,
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        "scope": "comment",
+        "settings": {
+          "fontStyle": "italic"
+        }
+      }
+    ]
+  },
 
-    // Decorations & hints
-    "editor.stickyScroll.enabled": false,
-    "editor.colorDecorators": false,
-    "editor.codeLens": false,
-    "editor.lightbulb.enabled": "off",
-    "editor.matchBrackets": "never",
-    "files.trimTrailingWhitespace": true,
-    "files.insertFinalNewline": true,
+  // Decorations & hints
+  "editor.stickyScroll.enabled": false,
+  "editor.colorDecorators": false,
+  "editor.codeLens": false,
+  "editor.lightbulb.enabled": "off",
+  "editor.matchBrackets": "never",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
 
-    // Guides & highlights
-    "editor.tabSize": 4,
-    "editor.inlayHints.enabled": "off",
-    "editor.detectIndentation": false,
-    "editor.showFoldingControls": "mouseover",
-    "editor.guides.indentation": false,
-    "editor.renderWhitespace": "none",
-    "editor.selectionHighlight": false,
+  // Guides & highlights
+  "editor.tabSize": 4,
+  "editor.inlayHints.enabled": "off",
+  "editor.detectIndentation": false,
+  "editor.showFoldingControls": "mouseover",
+  "editor.guides.indentation": false,
+  "editor.renderWhitespace": "none",
+  "editor.selectionHighlight": false,
 
-    // Scrollbars
-    "editor.scrollbar.horizontal": "hidden",
-    "editor.scrollbar.vertical": "hidden",
-    "editor.overviewRulerBorder": false,
-    "editor.hideCursorInOverviewRuler": true,
+  // Scrollbars
+  "editor.scrollbar.horizontal": "hidden",
+  "editor.scrollbar.vertical": "hidden",
+  "editor.overviewRulerBorder": false,
+  "editor.hideCursorInOverviewRuler": true,
 
-    // Other
-    "editor.snippetSuggestions": "top",
-    "files.autoSave": "afterDelay",
-    "update.mode": "none",
-    "editor.formatOnSave": true,
-    "editor.formatOnPaste": true,
-    "workbench.settings.editor": "json",
+  // Other
+  "editor.snippetSuggestions": "top",
+  "files.autoSave": "afterDelay",
+  "update.mode": "none",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "workbench.settings.editor": "json",
 
-    // Disable AI slop
-    "chat.agent.enabled": false,
-    "github.copilot.enable": {
-        "*": false,
-        "plaintext": false,
-        "markdown": false,
-        "scminput": false
-    },
+  // Disable AI slop
+  "chat.agent.enabled": false,
+  "github.copilot.enable": {
+    "*": false,
+    "plaintext": false,
+    "markdown": false,
+    "scminput": false
+  },
 
-    // ------------------------------------------------------------
-    // USER SPECIFIC STUFF, REMOVE IF YOU WANT TO USE THIS CONFIG
-    // ------------------------------------------------------------
+  // ------------------------------------------------------------
+  // USER SPECIFIC STUFF, REMOVE IF YOU WANT TO USE THIS CONFIG
+  // ------------------------------------------------------------
 
-    // File associations
-    "files.associations": {
-        ".stow-local-ignore": "plaintext",
-        ".packwizignore": "ignore",
-        "*.env": "config-definition"
-    },
+  // File associations
+  "files.associations": {
+    ".stow-local-ignore": "plaintext",
+    ".packwizignore": "ignore",
+    "*.env": "config-definition"
+  },
 
-    // Formatters
-    "[jsonc]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[json]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[shellscript]": {
-        "editor.defaultFormatter": "mads-hartmann.bash-ide-vscode"
-    },
-    "[dockerfile]": {
-        "editor.semanticHighlighting.enabled": false
-    },
+  // Formatters
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[shellscript]": {
+    "editor.defaultFormatter": "mkhl.shfmt"
+  },
+  "[dockerfile]": {
+    "editor.semanticHighlighting.enabled": false,
+    "editor.defaultFormatter": "ms-azuretools.vscode-containers"
+  },
 
-    // Git
-    "git.autofetch": true,
-    "git.confirmSync": false,
-    "git.suggestSmartCommit": false,
-    "git.openRepositoryInParentFolders": "always",
+  // Git
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.replaceTagsWhenPull": true,
+  "git.suggestSmartCommit": false,
+  "git.openRepositoryInParentFolders": "always",
 
-    // Trust all files, I know what I'm doing VSCode
-    "security.workspace.trust.untrustedFiles": "open",
+  // Trust all files, I know what I'm doing VSCode
+  "security.workspace.trust.untrustedFiles": "open",
 
-    // C++
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.type": "sameLine",
-    "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
-    "C_Cpp.formatting": "vcFormat",
-    "C_Cpp.vcFormat.indent.accessSpecifiers": true,
-    "C_Cpp.vcFormat.newLine.beforeElse": false,
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "sameLine",
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.function": "sameLine",
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.lambda": "sameLine",
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.namespace": "sameLine",
-    "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyFunction": true,
-    "C_Cpp.vcFormat.newLine.beforeCatch": false,
-    "C_Cpp.doxygen.generatedStyle": "/**",
+  // C++
+  "C_Cpp.vcFormat.newLine.beforeOpenBrace.type": "sameLine",
+  "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
+  "C_Cpp.formatting": "vcFormat",
+  "C_Cpp.vcFormat.indent.accessSpecifiers": true,
+  "C_Cpp.vcFormat.newLine.beforeElse": false,
+  "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "sameLine",
+  "C_Cpp.vcFormat.newLine.beforeOpenBrace.function": "sameLine",
+  "C_Cpp.vcFormat.newLine.beforeOpenBrace.lambda": "sameLine",
+  "C_Cpp.vcFormat.newLine.beforeOpenBrace.namespace": "sameLine",
+  "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyFunction": true,
+  "C_Cpp.vcFormat.newLine.beforeCatch": false,
+  "C_Cpp.doxygen.generatedStyle": "/**",
 
-    // @ext geequlim.godot-tools
-    "godotTools.editorPath.godot4": "/Applications/Godot.app/Contents/MacOS/Godot",
+  // @ext geequlim.godot-tools
+  "godotTools.editorPath.godot4": "/Applications/Godot.app/Contents/MacOS/Godot",
 
-    // @ext jsynowiec.vscode-insertdatestring
-    "insertDateString.format": "YYYY-MM-DD hh:mm:ss",
-    "insertDateString.formatDate": "YYYY-MM-DD",
-    "insertDateString.formatTime": "hh:mm:ss",
-    "editor.scrollbar.verticalScrollbarSize": 0,
-    "vscode_vibrancy.type": "fullscreen-ui",
+  // @ext jsynowiec.vscode-insertdatestring
+  "insertDateString.format": "YYYY-MM-DD hh:mm:ss",
+  "insertDateString.formatDate": "YYYY-MM-DD",
+  "insertDateString.formatTime": "hh:mm:ss",
+  "editor.scrollbar.verticalScrollbarSize": 0,
+  "vscode_vibrancy.type": "fullscreen-ui",
 
-    // @ext pixl-garden.BongoCat
-    "workbench.productIconTheme": "bongocat",
-    "docker.extension.enableComposeLanguageServer": false,
+  // @ext pixl-garden.BongoCat
+  "workbench.productIconTheme": "bongocat",
+  "docker.extension.enableComposeLanguageServer": false,
 
-    // Docker
-    "docker.extension.dockerEngineAvailabilityPrompt": false,
-    "git.replaceTagsWhenPull": true,
-    "remote.autoForwardPortsSource": "hybrid"
-
-    // ------------------------------------------------------------
+  // Docker
+  "docker.extension.dockerEngineAvailabilityPrompt": false,
+  "[proto]": {
+    "editor.defaultFormatter": "DrBlury.protobuf-vsc"
+  },
+  "[kotlin]": {
+    "editor.defaultFormatter": "mskelton.ktlint"
+  },
+  "[java]": {
+    "editor.defaultFormatter": "redhat.java"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[github-actions-workflow]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+  // ------------------------------------------------------------
 }
