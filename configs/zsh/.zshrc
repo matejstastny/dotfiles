@@ -34,6 +34,9 @@ alias nm='clear && fastfetch -c $HOME/.config/fastfetch/themes/fastcat.jsonc'
 alias nd='clear && fastfetch -c $HOME/.config/fastfetch/themes/detailed.jsonc'
 alias nj='clear && fastfetch -c $HOME/.config/fastfetch/themes/jellyfish.jsonc'
 
+alias cl='clear && claude'
+alias claude='clear && claude'
+
 # Prompt & Plugins ---------------------------------------------------------------------------
 
 # Starship
