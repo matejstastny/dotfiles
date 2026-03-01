@@ -51,7 +51,7 @@ show_always = true
 # Shows the hostname
 [hostname]
 ssh_only = false
-format = '[//](black bold) [$hostname](bold blue) '
+format = '[//](black bold) [$hostname](bold purple) '
 disabled = false
 
 # Shows current directory
@@ -95,25 +95,8 @@ disabled = false
 
 # ---
 
-[vagrant]
-disabled = true
-
-[docker_context]
-disabled = true
-
-[helm]
-disabled = true
 
 [python]
 symbol = '󰌠'
 python_binary = ['./venv/bin/python', 'python', 'python3', 'python2']
 format = '[//](black bold) [${symbol} ${pyenv_prefix}(${version} )(\($virtualenv\) )]($style) '
-
-[nodejs]
-disabled = true
-
-[ruby]
-disabled = true
-
-[terraform]
-disabled = true
