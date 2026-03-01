@@ -25,7 +25,7 @@ maximize = true
 window-save-state = always
 confirm-close-surface = false
 
-background-opacity = 0
+background-opacity = 0.8
 
 macos-titlebar-style = transparent
 macos-titlebar-proxy-icon = hidden
