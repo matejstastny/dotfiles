@@ -15,16 +15,17 @@ if [ "$(osascript -e 'if application "Music" is running then tell application "M
     TRACK=$(osascript -e 'tell application "Music" to get name of current track')
     ARTIST=$(osascript -e 'tell application "Music" to get artist of current track')
     ALBUM=$(osascript -e 'tell application "Music" to get album of current track')
-    MAX_LEN=40
+    MAX_LEN=22
     LABEL=""
 fi
 
 if [ $RUNNING -eq 0 ] && [ $PLAYING -eq 0 ]; then
-    if [ "$ARTIST" == "" ]; then
-        LABEL="$TRACK - $ALBUM"
-    else
-        LABEL="$TRACK - $ARTIST"
-    fi
+    # if [ "$ARTIST" == "" ]; then
+    #     LABEL="$TRACK - $ALBUM"
+    # else
+    #     LABEL="$TRACK - $ARTIST"
+    # fi
+    LABEL="$TRACK"
 
     # Truncate label if too long (prevents notch overlap)
     if [ ${#LABEL} -gt $MAX_LEN ]; then
