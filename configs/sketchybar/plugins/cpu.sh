@@ -36,7 +36,7 @@ for i in range(ncpu):
     curr.extend([ticks[base + j] for j in range(CPU_STATE_MAX)])
 
 state_file = f'/tmp/sketchybar_cpu_{ncpu}'
-blocks = ' ▁▂▃▄▅▆▇█'
+blocks = '▁▁▂▃▄▅▆▇█'
 
 try:
     with open(state_file) as f:
