@@ -57,6 +57,14 @@
     "when": "editorTextFocus"
   },
 
+  {
+    "command": "runCommands",
+    "key": "cmd+k",
+    "args": {
+      "commands": ["workbench.files.action.collapseExplorerFolders", "openEditors.closeAll"]
+    }
+  },
+
   // Mini windows --------------------------------------------------------------------
 
   {
@@ -67,7 +75,7 @@
 
   {
     // Line finder
-    "key": "cmd+k",
+    "key": "cmd+m",
     "command": "workbench.action.gotoLine"
   },
   {
