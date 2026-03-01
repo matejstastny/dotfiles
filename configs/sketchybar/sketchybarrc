@@ -30,17 +30,17 @@ default=(
 
 sketchybar --default "${default[@]}"
 
-sketchybar --add item kitty right
-sketchybar --set kitty icon=󰄛
-
 sketchybar --add item clock right \
     --set clock update_freq=10 icon= script="$PLUGIN_DIR/clock.sh" \
-    --add item volume right \
-    --set volume script="$PLUGIN_DIR/volume.sh" \
-    --subscribe volume volume_change \
     --add item battery right \
     --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
-    --subscribe battery system_woke power_source_change
+    --subscribe battery system_woke power_source_change \
+    --add item disk right \
+    --set disk update_freq=60 icon=󰋊 script="$PLUGIN_DIR/disk.sh" \
+    --add item ram right \
+    --set ram update_freq=5 icon=󰍛 script="$PLUGIN_DIR/ram.sh" \
+    --add item cpu right \
+    --set cpu update_freq=2 icon=󰻠 script="$PLUGIN_DIR/cpu.sh"
 
 sketchybar -m \
     --add event music_change "com.apple.Music.playerInfo" \
