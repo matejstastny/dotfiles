@@ -70,6 +70,12 @@ if [[ "$OS_TYPE" == "Darwin" ]]; then
     else
         log warn "Failed to set wallpaper via AppleScript."
     fi
+elif [[ "$OS_TYPE" == "Linux" ]]; then
+    log info "On Linux, wallpaper is managed by hyprpaper via ~/.config/hyprpaper/hyprpaper.conf"
+    log info "Edit configs/hyprpaper/hyprpaper.conf to set your wallpaper path."
+    if command -v hyprctl >/dev/null 2>&1; then
+        hyprctl hyprpaper wallpaper ",${WALLPAPER}" 2>/dev/null && log success "Wallpaper applied via hyprpaper." || true
+    fi
 fi
 
 log celebrate "All done!"

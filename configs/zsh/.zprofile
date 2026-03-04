@@ -9,60 +9,80 @@
 # Link: https://github.com/matejstastny/dotfiles
 # --------------------------------------------------------------------------------------------
 
-# 🖥️ Defaults -------------------------------------------------------------------------------
+# Defaults ----------------------------------------------------------------------------------
 
 export EDITOR="nvim"
 export BROWSER="librewolf"
 
-# 🌐 Locale ---------------------------------------------------------------------------------
+# Locale ------------------------------------------------------------------------------------
 
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 
-# 📂 XDG Base Directories -------------------------------------------------------------------
+# XDG Base Directories ----------------------------------------------------------------------
 
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_DATA_HOME="$HOME/.local/share"
 
-# 📦 Environment Variables -------------------------------------------------------------------
-
-export APP_DATA="$HOME/Library/Application Support"
-
-# ☕ SDKs ------------------------------------------------------------------------------------
-
-export GOPATH="$HOME/go"
-export PROTO_HOME="$HOME/.proto"
-
-# 🐉 Vulkan  --------------------------------------------------------------------------------
-
-export VULKAN_SDK="$HOME/VulkanSDK/1.4.321.0/macOS"
-export DYLD_LIBRARY_PATH="$VULKAN_SDK/lib${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PATH}"
-export VK_ICD_FILENAMES="$VULKAN_SDK/etc/vulkan/icd.d/MoltenVK_icd.json"
-export VK_LAYER_PATH="$VULKAN_SDK/etc/vulkan/explicit_layer.d"
-
-# 🔍 fzf defaults ---------------------------------------------------------------------------
+# fzf defaults ------------------------------------------------------------------------------
 
 export FZF_DEFAULT_OPTS="--style minimal --color 16 --layout=reverse --height 30% --preview='bat -p --color=always {}'"
 export FZF_CTRL_R_OPTS="--style minimal --color 16 --info inline --no-sort --no-preview"
 export MANPAGER="less -R --use-color -Dd+r -Du+b"
 
-# 🍺 Homebrew ------------------------------------------------------------------------------
+# SDKs --------------------------------------------------------------------------------------
 
-eval "$(/opt/homebrew/bin/brew shellenv)"
+export GOPATH="$HOME/go"
+export PROTO_HOME="$HOME/.proto"
 
-# 🛣️ PATH setup -----------------------------------------------------------------------------
+# PATH setup --------------------------------------------------------------------------------
 
 typeset -U path
-path=(
-    "$HOME/dotfiles/bin"
-    "$HOME/bin/bin"
-    "$GOPATH/bin"
-    "$VULKAN_SDK/bin"
-    "/opt/homebrew/bin"
-    "$PROTO_HOME/shims"
-    "$PROTO_HOME/bin"
-    "$HOME/Library/Application Support/JetBrains/Toolbox/scripts"
-    "$HOME/.local/bin:"
-    $path
-)
+
+if [[ "$(uname)" == "Darwin" ]]; then
+    # macOS ---------------------------------------------------------------------------------
+
+    export APP_DATA="$HOME/Library/Application Support"
+
+    # Vulkan SDK (macOS MoltenVK)
+    export VULKAN_SDK="$HOME/VulkanSDK/1.4.321.0/macOS"
+    export DYLD_LIBRARY_PATH="$VULKAN_SDK/lib${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PATH}"
+    export VK_ICD_FILENAMES="$VULKAN_SDK/etc/vulkan/icd.d/MoltenVK_icd.json"
+    export VK_LAYER_PATH="$VULKAN_SDK/etc/vulkan/explicit_layer.d"
+
+    # Homebrew
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+
+    path=(
+        "$HOME/dotfiles/bin"
+        "$HOME/bin/bin"
+        "$GOPATH/bin"
+        "$VULKAN_SDK/bin"
+        "/opt/homebrew/bin"
+        "$PROTO_HOME/shims"
+        "$PROTO_HOME/bin"
+        "$HOME/Library/Application Support/JetBrains/Toolbox/scripts"
+        "$HOME/.local/bin"
+        $path
+    )
+
+else
+    # Linux ---------------------------------------------------------------------------------
+
+    path=(
+        "$HOME/dotfiles/bin"
+        "$HOME/.local/bin"
+        "$GOPATH/bin"
+        "$PROTO_HOME/shims"
+        "$PROTO_HOME/bin"
+        "/usr/local/bin"
+        $path
+    )
+
+    # Auto-start Hyprland on TTY login (tty1)
+    if [ -z "${WAYLAND_DISPLAY}" ] && [ "${XDG_VTNR:-0}" -eq 1 ]; then
+        exec Hyprland
+    fi
+
+fi

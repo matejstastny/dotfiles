@@ -19,8 +19,12 @@ alias lsa='echo && eza --color=always --long --git --icons=always'
 alias lsaa='echo && eza --color=always --long --git --icons=always -a'
 alias lst='echo && eza --color=always --tree --git --no-filesize --icons=always --no-time --no-user --no-permissions'
 
-alias ip="ifconfig | grep 'inet ' | awk '/inet / {print \$2}' | grep -Ev '^(127\.|::)'"
-alias sign='sudo xattr -rd com.apple.quarantine'
+if [[ "$(uname)" == "Darwin" ]]; then
+    alias ip="ifconfig | grep 'inet ' | awk '/inet / {print \$2}' | grep -Ev '^(127\.|::)'"
+    alias sign='sudo xattr -rd com.apple.quarantine'
+else
+    alias ip="ip -4 addr show | grep inet | awk '{print \$2}' | cut -d/ -f1 | grep -v 127"
+fi
 
 alias q='tmux detach'
 alias qa='tmux kill-server'
@@ -47,10 +51,18 @@ eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
 # Zsh autosuggestions
-source "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
+if [[ "$(uname)" == "Darwin" ]]; then
+    source "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
+else
+    source "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+fi
 
 # Zsh syntax highlighting
-source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+if [[ "$(uname)" == "Darwin" ]]; then
+    source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+else
+    source "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+fi
 ZSH_HIGHLIGHT_STYLES[command]='fg=magenta,bold'
 ZSH_HIGHLIGHT_STYLES[builtin]='fg=magenta,bold'
 ZSH_HIGHLIGHT_STYLES[alias]='fg=magenta,bold'
@@ -65,8 +77,10 @@ source <(fzf --zsh)
 export FZF_DEFAULT_COMMAND="find -L"
 
 # Jenv
-export PATH="$HOME/.jenv/bin:$PATH"
-eval "$(jenv init -)"
+if command -v jenv >/dev/null 2>&1; then
+    export PATH="$HOME/.jenv/bin:$PATH"
+    eval "$(jenv init -)"
+fi
 
 # Completions ---------------------------------------------------------------------------------
 

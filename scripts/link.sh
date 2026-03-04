@@ -17,12 +17,21 @@ source "$(dirname "$0")/logging.sh"
 declare -A DIR_EXCEPTIONS=()
 
 # Directories whose contents should be linked file-by-file to defined locations
-declare -A FILE_EXCEPTIONS=(
-    [zsh]="$HOME"
-    [git]="$HOME"
-    [vscode]="$HOME/Library/Application Support/Code/User"
-    [vesktop]="$HOME/Library/Application Support/vesktop/themes"
-)
+if [[ "$OS_TYPE" == "Darwin" ]]; then
+    declare -A FILE_EXCEPTIONS=(
+        [zsh]="$HOME"
+        [git]="$HOME"
+        [vscode]="$HOME/Library/Application Support/Code/User"
+        [vesktop]="$HOME/Library/Application Support/vesktop/themes"
+    )
+else
+    declare -A FILE_EXCEPTIONS=(
+        [zsh]="$HOME"
+        [git]="$HOME"
+        [vscode]="$HOME/.config/Code/User"
+        [vesktop]="$HOME/.config/vesktop/themes"
+    )
+fi
 
 # Flags --------------------------------------------------------------------------------------
 

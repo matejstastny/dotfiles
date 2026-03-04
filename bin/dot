@@ -17,6 +17,7 @@ set -eu
 declare -A TASKS=(
     [link]="$HOME/dotfiles/scripts/link.sh"
     [brew]="$HOME/dotfiles/scripts/brew.sh"
+    [pacman]="$HOME/dotfiles/scripts/pacman.sh"
     [assets]="$HOME/dotfiles/scripts/assets.sh"
     [other]="$HOME/dotfiles/scripts/other.sh"
 )

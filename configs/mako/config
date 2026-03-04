@@ -1,0 +1,44 @@
+# --------------------------------------------------------------------------------------------
+# config - my Mako config (notification daemon)
+# --------------------------------------------------------------------------------------------
+# Author: Matej Stastny
+# License: MIT
+# Link: https://github.com/matejstastny/dotfiles
+# --------------------------------------------------------------------------------------------
+
+# Layout
+max-visible=5
+sort=-time
+layer=overlay
+anchor=top-right
+width=300
+height=110
+margin=12
+padding=12,16
+
+# Style (Tokyo Night)
+border-size=2
+border-radius=8
+default-timeout=5000
+background-color=#24283b
+text-color=#c0caf5
+border-color=#7aa2f7
+progress-color=over #414868
+
+# Font
+font=DankMono Nerd Font Mono Bold 13
+
+# Icons
+icon-path=/usr/share/icons/Papirus-Dark
+max-icon-size=48
+
+# Criteria overrides
+[urgency=low]
+border-color=#414868
+
+[urgency=normal]
+border-color=#7aa2f7
+
+[urgency=high]
+border-color=#f7768e
+default-timeout=0

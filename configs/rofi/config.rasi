@@ -1,0 +1,20 @@
+// --------------------------------------------------------------------------------------------
+// config.rasi - my Rofi config
+// --------------------------------------------------------------------------------------------
+// Author: Matej Stastny
+// License: MIT
+// Link: https://github.com/matejstastny/dotfiles
+// --------------------------------------------------------------------------------------------
+
+configuration {
+    modi:           "drun,run,window";
+    show-icons:     true;
+    icon-theme:     "Papirus-Dark";
+    terminal:       "ghostty";
+    drun-display-format: "{name}";
+    hover-select:   true;
+    me-select-entry: "";
+    me-accept-entry: "MousePrimary";
+}
+
+@theme "~/.config/rofi/themes/tokyonight.rasi"
