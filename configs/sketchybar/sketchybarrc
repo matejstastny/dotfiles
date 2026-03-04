@@ -18,38 +18,39 @@ sketchybar --add event aerospace_workspace_change
 source $ITEM_DIR/aerospace.sh
 
 default=(
-    padding_left=4
-    padding_right=4
-    icon.font="DankMono Nerd Font Mono:Bold:20.0"
-    label.font="DankMono Nerd Font Mono:Bold:15.0"
-    icon.padding_left=4
-    icon.padding_right=4
-    label.padding_left=4
-    label.padding_right=4
+	padding_left=4
+	padding_right=4
+	icon.font="DankMono Nerd Font Mono:Bold:20.0"
+	label.font="DankMono Nerd Font Mono:Bold:15.0"
+	icon.padding_left=4
+	icon.padding_right=4
+	label.padding_left=4
+	label.padding_right=4
 )
 
 sketchybar --default "${default[@]}"
 
 sketchybar --add item clock right \
-    --set clock update_freq=10 icon= script="$PLUGIN_DIR/clock.sh" \
-    --add item battery right \
-    --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
-    --subscribe battery system_woke power_source_change \
-    --add item disk right \
-    --set disk update_freq=60 icon=󰋊 script="$PLUGIN_DIR/disk.sh" \
-    --add item ram right \
-    --set ram update_freq=5 icon=󰍛 script="$PLUGIN_DIR/ram.sh" \
-    --add item cpu right \
-    --set cpu update_freq=2 icon=󰻠 script="$PLUGIN_DIR/cpu.sh"
+	--set clock update_freq=10 icon= script="$PLUGIN_DIR/clock.sh" \
+	--add item battery right \
+	--set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
+	--subscribe battery system_woke power_source_change \
+	--add item disk right \
+	--set disk update_freq=60 icon=󰋊 script="$PLUGIN_DIR/disk.sh" \
+	--add item ram right \
+	--set ram update_freq=5 icon=󰍛 script="$PLUGIN_DIR/ram.sh" \
+	--add item cpu right \
+	--set cpu update_freq=2 icon=󰻠 script="$PLUGIN_DIR/cpu.sh"
 
-sketchybar -m \
-    --add event music_change "com.apple.Music.playerInfo" \
-    --add item musicIndicator right \
-    --set musicIndicator \
-    icon=󰝚 \
-    script="$CONFIG_DIR/plugins/music.sh" \
-    click_script="osascript -e 'tell application \"Music\" to playpause'" \
-    --subscribe musicIndicator music_change
+# Disabled because its buggy af
+# sketchybar -m \
+# 	--add event music_change "com.apple.Music.playerInfo" \
+# 	--add item musicIndicator right \
+# 	--set musicIndicator \
+# 	icon=󰝚 \
+# 	script="$CONFIG_DIR/plugins/music.sh" \
+# 	click_script="osascript -e 'tell application \"Music\" to playpause'" \
+# 	--subscribe musicIndicator music_change
 
 source $ITEM_DIR/front_app.sh
 
