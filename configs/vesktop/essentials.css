@@ -1,0 +1,28 @@
+/**
+ * @name Essentials
+ * @description My essentials, meant to be used with other themes, hiding annoying elements
+ * @author matejstastny
+ * @version 0.1.0
+ * @website https://github.com/matejstastny/dotfiles
+ * @source https://github.com/matejstastny/dotfiles/blob/main/configs/vesktop/essentials.css
+ * @authorLink https://github.com/matejstastny
+*/
+
+/* Hide Discord Premium Trial Badge */
+.premiumTrialBadge__4c1e4.premiumOfferUnackedBadge__4c1e4 {
+    display: none !important;
+}
+
+/* Hide new badge with multiple classes */
+.newBadge__4ed1a.eyebrow__4ed1a.textBadge__2b1f5.base__2b1f5.eyebrow__2b1f5.baseShapeRound__2b1f5 {
+    display: none !important;
+}
+
+/* Hide all scrollbars */
+* {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+*::-webkit-scrollbar {
+    display: none !important;
+}
