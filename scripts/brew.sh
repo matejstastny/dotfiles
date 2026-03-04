@@ -17,7 +17,7 @@ brew_failed() { log_fatal "Homebrew command failed!"; }
 
 # Check for brew
 if ! command -v brew >/dev/null 2>&1; then
-    error_exit "Homebrew not installed!"
+    log_fatal "Homebrew not installed!"
 fi
 
 # Update brew
@@ -30,7 +30,7 @@ brew upgrade -q || brew_failed
 
 # brewfile
 if [[ ! -f "$BREWFILE" ]]; then
-    error_exit "Brewfile not found at $BREWFILE!"
+    log_fatal "Brewfile not found at $BREWFILE!"
 fi
 
 log info "Installing packages from Brewfile..."

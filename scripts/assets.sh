@@ -56,12 +56,11 @@ fi
 
 # Wallpaper ----------------------------------------------------------------------------------
 
-if [ ! -f "$WALLPAPER" ]; then
-    log_fatal "Wallpaper not found at $WALLPAPER"
-fi
-
-log info "Setting wallpaper using file: $WALLPAPER"
 if [[ "$OS_TYPE" == "Darwin" ]]; then
+    if [ ! -f "$WALLPAPER" ]; then
+        log_fatal "Wallpaper not found at $WALLPAPER"
+    fi
+    log info "Setting wallpaper using file: $WALLPAPER"
     if osascript -e '
         tell application "System Events"
             set picture of every desktop to "'"$WALLPAPER"'"

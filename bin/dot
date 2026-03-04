@@ -11,84 +11,111 @@ set -eu
 # Link: https://github.com/matejstastny/dotfiles
 # --------------------------------------------------------------------------------------------
 
+DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+OS_TYPE="$(uname)"
+
 # Task registry -----------------------------------------------------------------------------
 # Hiii, if you're using my dots, you can define more tasks here :3
+# OS field: "any" | "darwin" | "linux"
 
-declare -A TASKS=(
-    [link]="$HOME/dotfiles/scripts/link.sh"
-    [brew]="$HOME/dotfiles/scripts/brew.sh"
-    [pacman]="$HOME/dotfiles/scripts/pacman.sh"
-    [assets]="$HOME/dotfiles/scripts/assets.sh"
-    [other]="$HOME/dotfiles/scripts/other.sh"
+TASK_ORDER=(link brew pacman assets other)
+
+declare -A TASK_SCRIPTS=(
+	[link]="$DOTFILES_DIR/scripts/link.sh"
+	[brew]="$DOTFILES_DIR/scripts/brew.sh"
+	[pacman]="$DOTFILES_DIR/scripts/pacman.sh"
+	[assets]="$DOTFILES_DIR/scripts/assets.sh"
+	[other]="$DOTFILES_DIR/scripts/other.sh"
+)
+
+declare -A TASK_OS=(
+	[link]="any"
+	[brew]="darwin"
+	[pacman]="linux"
+	[assets]="any"
+	[other]="darwin"
+)
+
+declare -A TASK_DESC=(
+	[link]="Symlink configs to system locations"
+	[brew]="Install/update Homebrew packages"
+	[pacman]="Install/update pacman/paru packages"
+	[assets]="Install fonts and set wallpaper"
+	[other]="Additional setup (bat theme, etc.)"
 )
 
 # Methods ------------------------------------------------------------------------------------
 
 line() { printf '%*s\n' 40 '' | tr ' ' "-"; }
 
+task_matches_os() {
+	local os="${TASK_OS[$1]}"
+	[[ "$os" == "any" ]] ||
+		[[ "$os" == "darwin" && "$OS_TYPE" == "Darwin" ]] ||
+		[[ "$os" == "linux" && "$OS_TYPE" == "Linux" ]]
+}
+
 run_task() {
-    local name="$1"
-    local path="$2"
-    echo -e "\nRunning $name..."
-    line
-    if ! "$path"; then
-        echo "dot: Task '$name' failed"
-        return 1
-    fi
+	local name="$1"
+	local path="$2"
+	echo -e "\nRunning $name..."
+	line
+	if ! "$path"; then
+		echo "dot: Task '$name' failed"
+		return 1
+	fi
 }
 
 usage() {
-    echo
-    echo "⠀∧ ⑅ ∧"
-    echo "( >  ̫ < )    DOT — dotfiles task manager"
-    echo
-    echo "Usage: dot [task...]"
-    echo
-    echo "Available tasks:"
-
-    for key in "${!TASKS[@]}"; do
-        printf "  %-10s %s\n" "$key" "${TASKS[$key]}"
-    done
-
-    echo "  all        Run all tasks in above order"
-    echo
-    exit 1
+	echo
+	echo "⠀∧ ⑅ ∧"
+	echo "( >  ̫ < )    DOT — dotfiles task manager"
+	echo
+	echo "Usage: dot [task...]"
+	echo
+	echo "Available tasks:"
+	for name in "${TASK_ORDER[@]}"; do
+		printf "  %-10s %-10s %s\n" "$name" "[${TASK_OS[$name]}]" "${TASK_DESC[$name]}"
+	done
+	echo "  all        [current OS: $OS_TYPE]  Run all tasks matching current OS"
+	echo
+	exit 1
 }
 
 # Argument parsing --------------------------------------------------------------------------
 
 if [ $# -eq 0 ]; then
-    usage
+	usage
 fi
 
 requested=("$@")
 final=()
 
-valid_tasks=()
-for key in "${!TASKS[@]}"; do
-    valid_tasks+=("$key")
-done
-
 for arg in "${requested[@]}"; do
-    if [ "$arg" = "all" ]; then
-        final=(all)
-        break
-    fi
-    if [[ " ${valid_tasks[*]} " == *" $arg "* ]]; then
-        final+=("$arg")
-    else
-        usage
-    fi
+	if [ "$arg" = "all" ]; then
+		final=(all)
+		break
+	fi
+	if [[ -v TASK_SCRIPTS[$arg] ]]; then
+		final+=("$arg")
+	else
+		echo "dot: Unknown task '$arg'"
+		usage
+	fi
 done
 
 # Execution ----------------------------------------------------------------------------------
 
 for task in "${final[@]}"; do
-    if [ "$task" = "all" ]; then
-        for name in "${valid_tasks[@]}"; do
-            run_task "$name" "${TASKS[$name]}"
-        done
-    else
-        run_task "$task" "${TASKS[$task]}"
-    fi
+	if [ "$task" = "all" ]; then
+		for name in "${TASK_ORDER[@]}"; do
+			if task_matches_os "$name"; then
+				run_task "$name" "${TASK_SCRIPTS[$name]}"
+			else
+				echo -e "\nSkipping $name [${TASK_OS[$name]} only]"
+			fi
+		done
+	else
+		run_task "$task" "${TASK_SCRIPTS[$task]}"
+	fi
 done

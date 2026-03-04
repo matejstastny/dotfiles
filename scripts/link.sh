@@ -120,7 +120,7 @@ link_config() {
     if [[ -v FILE_EXCEPTIONS[$folder_name] ]]; then
         link_files "$src" "${FILE_EXCEPTIONS[$folder_name]}"
     elif [[ -v DIR_EXCEPTIONS[$folder_name] ]]; then
-        link_directory "$src" "${DIR_EXCEPTIONS[$folder_name]}/$(basename $src)"
+        link_directory "$src" "${DIR_EXCEPTIONS[$folder_name]}/$(basename "$src")"
     else
         local tgt="$HOME/.config/$folder_name"
         link_directory "$src" "$tgt"

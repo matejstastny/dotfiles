@@ -20,10 +20,10 @@ alias lsaa='echo && eza --color=always --long --git --icons=always -a'
 alias lst='echo && eza --color=always --tree --git --no-filesize --icons=always --no-time --no-user --no-permissions'
 
 if [[ "$(uname)" == "Darwin" ]]; then
-    alias ip="ifconfig | grep 'inet ' | awk '/inet / {print \$2}' | grep -Ev '^(127\.|::)'"
-    alias sign='sudo xattr -rd com.apple.quarantine'
+	alias ip="ifconfig | grep 'inet ' | awk '/inet / {print \$2}' | grep -Ev '^(127\.|::)'"
+	alias sign='sudo xattr -rd com.apple.quarantine'
 else
-    alias ip="ip -4 addr show | grep inet | awk '{print \$2}' | cut -d/ -f1 | grep -v 127"
+	alias ip="ip -4 addr show | grep inet | awk '{print \$2}' | cut -d/ -f1 | grep -v 127"
 fi
 
 alias q='tmux detach'
@@ -52,16 +52,16 @@ eval "$(zoxide init zsh)"
 
 # Zsh autosuggestions
 if [[ "$(uname)" == "Darwin" ]]; then
-    source "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
+	source "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
 else
-    source "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+	source "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
 fi
 
 # Zsh syntax highlighting
 if [[ "$(uname)" == "Darwin" ]]; then
-    source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+	source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 else
-    source "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+	source "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 fi
 ZSH_HIGHLIGHT_STYLES[command]='fg=magenta,bold'
 ZSH_HIGHLIGHT_STYLES[builtin]='fg=magenta,bold'
@@ -78,8 +78,8 @@ export FZF_DEFAULT_COMMAND="find -L"
 
 # Jenv
 if command -v jenv >/dev/null 2>&1; then
-    export PATH="$HOME/.jenv/bin:$PATH"
-    eval "$(jenv init -)"
+	export PATH="$HOME/.jenv/bin:$PATH"
+	eval "$(jenv init -)"
 fi
 
 # Completions ---------------------------------------------------------------------------------
@@ -97,7 +97,7 @@ zstyle ':completion:*' squeeze-slashes false
 
 # Shell Options ------------------------------------------------------------------------------
 
-setopt append_history inc_append_history share_history
+setopt append_history inc_append_history share_history hist_ignore_dups hist_ignore_space
 setopt auto_menu menu_complete
 setopt autocd
 setopt auto_param_slash
@@ -114,17 +114,12 @@ bindkey -e
 HISTSIZE=1000000
 SAVEHIST=1000000
 HISTFILE="$XDG_CACHE_HOME/zsh_history"
-HISTCONTROL=ignoreboth
 
 if [[ -n $TMUX_PANE ]]; then
-    HISTDIR="$HOME/.zsh_tmux_hist"
-    mkdir -p "$HISTDIR"
-    HISTFILE="$HISTDIR/.zsh_history_${TMUX_PANE:1}"
-    if [[ ! -f $HISTFILE ]]; then
-        cp "$HOME/.zsh_history" "$HISTFILE" 2>/dev/null
-    fi
+	HISTDIR="$HOME/.zsh_tmux_hist"
+	mkdir -p "$HISTDIR"
+	HISTFILE="$HISTDIR/.zsh_history_${TMUX_PANE:1}"
+	if [[ ! -f $HISTFILE ]]; then
+		cp "$HOME/.zsh_history" "$HISTFILE" 2>/dev/null
+	fi
 fi
-
-# Init ---------------------------------------------------------------------------------------
-
-(clear && fastfetch -c $HOME/.config/fastfetch/themes/cat.jsonc) 2>/dev/null
