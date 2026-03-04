@@ -17,6 +17,7 @@
     "workbench.tips.enabled": false,
     "editor.minimap.enabled": false,
     "breadcrumbs.enabled": false,
+
     // Sidebar & file explorer
     "workbench.secondarySideBar.defaultVisibility": "hidden",
     "workbench.sideBar.location": "right",
@@ -30,6 +31,7 @@
     "explorer.decorations.badges": false,
     "git.decorations.enabled": false,
     "explorer.compactFolders": false,
+
     // Custom UI Style extension
     "window.newWindowDimensions": "maximized",
     "window.zoomLevel": 0.8,
@@ -63,6 +65,7 @@
         ".title .monaco-icon-label.file-icon": "margin: 0 60px"
     },
     "custom-ui-style.font.sansSerif": "DankMono Nerd Font Mono",
+
     // Cursor
     "editor.multiCursorModifier": "ctrlCmd",
     "editor.cursorBlinking": "phase",
@@ -91,6 +94,7 @@
         "errorLens.hintBackground": "#00000000",
         "errorLens.warningBackground": "#00000000"
     },
+
     // Typography
     "editor.fontFamily": "DankMono Nerd Font Mono",
     "editor.fontSize": 13.5,
@@ -106,6 +110,7 @@
             }
         ]
     },
+
     // Decorations & hints
     "editor.stickyScroll.enabled": false,
     "editor.colorDecorators": false,
@@ -114,6 +119,7 @@
     "editor.matchBrackets": "never",
     "files.trimTrailingWhitespace": true,
     "files.insertFinalNewline": true,
+
     // Guides & highlights
     "editor.tabSize": 4,
     "editor.inlayHints.enabled": "off",
@@ -122,11 +128,13 @@
     "editor.guides.indentation": false,
     "editor.renderWhitespace": "none",
     "editor.selectionHighlight": false,
+
     // Scrollbars
     "editor.scrollbar.horizontal": "hidden",
     "editor.scrollbar.vertical": "hidden",
     "editor.overviewRulerBorder": false,
     "editor.hideCursorInOverviewRuler": true,
+
     // Other
     "editor.snippetSuggestions": "top",
     "files.autoSave": "afterDelay",
@@ -134,6 +142,7 @@
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
     "workbench.settings.editor": "json",
+
     // Disable AI slop
     "chat.agent.enabled": false,
     "github.copilot.enable": {
@@ -145,34 +154,22 @@
     // ------------------------------------------------------------
     // USER SPECIFIC STUFF, REMOVE IF YOU WANT TO USE THIS CONFIG
     // ------------------------------------------------------------
-    // File associations
-    "files.associations": {
-        ".stow-local-ignore": "plaintext",
-        ".packwizignore": "ignore",
-        "*.env": "config-definition"
-    },
-    // Formatters
-    "[jsonc]": {
-        "editor.defaultFormatter": "vscode.json-language-features"
-    },
-    "[json]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[shellscript]": {
-        "editor.defaultFormatter": "mkhl.shfmt"
-    },
+
+    // For better highliting by an extension
     "[dockerfile]": {
-        "editor.semanticHighlighting.enabled": false,
-        "editor.defaultFormatter": "ms-azuretools.vscode-containers"
+        "editor.semanticHighlighting.enabled": false
     },
+
     // Git
     "git.autofetch": true,
     "git.confirmSync": false,
     "git.replaceTagsWhenPull": true,
     "git.suggestSmartCommit": false,
     "git.openRepositoryInParentFolders": "always",
+
     // Trust all files, I know what I'm doing VSCode
     "security.workspace.trust.untrustedFiles": "open",
+
     // C++
     "C_Cpp.vcFormat.newLine.beforeOpenBrace.type": "sameLine",
     "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
@@ -186,33 +183,23 @@
     "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyFunction": true,
     "C_Cpp.vcFormat.newLine.beforeCatch": false,
     "C_Cpp.doxygen.generatedStyle": "/**",
+
     // @ext geequlim.godot-tools
     "godotTools.editorPath.godot4": "/Applications/Godot.app/Contents/MacOS/Godot",
+
     // @ext jsynowiec.vscode-insertdatestring
     "insertDateString.format": "YYYY-MM-DD hh:mm:ss",
     "insertDateString.formatDate": "YYYY-MM-DD",
     "insertDateString.formatTime": "hh:mm:ss",
     "editor.scrollbar.verticalScrollbarSize": 0,
     "vscode_vibrancy.type": "fullscreen-ui",
+
     // @ext pixl-garden.BongoCat
     "workbench.productIconTheme": "bongocat",
     "docker.extension.enableComposeLanguageServer": false,
+
     // Docker
-    "docker.extension.dockerEngineAvailabilityPrompt": false,
-    "[proto]": {
-        "editor.defaultFormatter": "DrBlury.protobuf-vsc"
-    },
-    "[kotlin]": {
-        "editor.defaultFormatter": "mskelton.ktlint"
-    },
-    "[java]": {
-        "editor.defaultFormatter": "redhat.java"
-    },
-    "[javascript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[github-actions-workflow]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
+    "docker.extension.dockerEngineAvailabilityPrompt": false
+
     // ------------------------------------------------------------
 }
