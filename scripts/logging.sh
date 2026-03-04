@@ -25,48 +25,48 @@ cyan=36
 light_gray=37
 
 log() {
-    local level="$1"
-    local msg="$2"
-    local emoji color
-    case "$level" in
-    info)
-        emoji="📦"
-        color="$blue"
-        ;;
-    success)
-        emoji="✅"
-        color="$green"
-        ;;
-    success-done)
-        emoji="☑️"
-        color="$purple"
-        ;;
-    celebrate)
-        emoji="🎉"
-        color="$blue"
-        ;;
-    prompt)
-        emoji="⁉️"
-        color="$cyan"
-        ;;
-    warn)
-        emoji="⚠️"
-        color="$yellow"
-        ;;
-    error)
-        emoji="❌"
-        color="$red"
-        ;;
-    *)
-        emoji=" "
-        color=""
-        ;;
-    esac
-    [[ -z $color ]] || color="\033[${color}m"
-    echo -e "${color}${emoji} ${msg}\033[0m"
+	local level="$1"
+	local msg="$2"
+	local emoji color
+	case "$level" in
+	info)
+		emoji="📦"
+		color="$blue"
+		;;
+	success)
+		emoji="✅"
+		color="$green"
+		;;
+	success-done)
+		emoji="☑️"
+		color="$purple"
+		;;
+	celebrate)
+		emoji="🎉"
+		color="$blue"
+		;;
+	prompt)
+		emoji="⁉️"
+		color="$cyan"
+		;;
+	warn)
+		emoji="⚠️"
+		color="$yellow"
+		;;
+	error)
+		emoji="❌"
+		color="$red"
+		;;
+	*)
+		emoji=" "
+		color=""
+		;;
+	esac
+	[[ -z $color ]] || color="\033[${color}m"
+	echo -e "${color}${emoji} ${msg}\033[0m"
 }
 
 log_fatal() {
-    log error "$1"
-    exit 1
+	log error "$1"
+	exit 1
 }

@@ -22,8 +22,4 @@ WALLPAPER_DIR="$ASSETS_DIR/wallpapers"
 
 BREWFILE="$DOTFILES_DIR/Brewfile"
 
-if [[ "$OS_TYPE" == "Darwin" ]]; then
-    WALLPAPER="$WALLPAPER_DIR/mac-wallpaper.jpg"
-else
-    WALLPAPER="$WALLPAPER_DIR/win-wallpaper.jpg"
-fi
+WALLPAPER="$(find $WALLPAPER_DIR/wallpaper.*)"
