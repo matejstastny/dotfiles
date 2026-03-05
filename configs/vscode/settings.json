@@ -6,6 +6,7 @@
 // License: MIT
 // Link: https://github.com/matejstastny/dotfiles
 // --------------------------------------------------------------------------------------------
+
 {
     // Workbench interface
     "workbench.colorTheme": "Jellyfish",
@@ -151,14 +152,9 @@
         "markdown": false,
         "scminput": false
     },
-    // ------------------------------------------------------------
-    // USER SPECIFIC STUFF, REMOVE IF YOU WANT TO USE THIS CONFIG
-    // ------------------------------------------------------------
 
-    // For better highliting by an extension
-    "[dockerfile]": {
-        "editor.semanticHighlighting.enabled": false
-    },
+    // Trust all files, I know what I'm doing VSCode
+    "security.workspace.trust.untrustedFiles": "open",
 
     // Git
     "git.autofetch": true,
@@ -167,10 +163,19 @@
     "git.suggestSmartCommit": false,
     "git.openRepositoryInParentFolders": "always",
 
-    // Trust all files, I know what I'm doing VSCode
-    "security.workspace.trust.untrustedFiles": "open",
+    // ------------------------------------------------------------
+    // EXTENSIONS CONFIG
+    // ------------------------------------------------------------
 
-    // C++
+
+    // @ext ms-azuretools.vscode-docker
+    "docker.extension.dockerEngineAvailabilityPrompt": false,
+    "[dockerfile]": {
+        "editor.semanticHighlighting.enabled": false
+    },
+
+
+    // @ext ms-vscode.cpptools-extension-pack
     "C_Cpp.vcFormat.newLine.beforeOpenBrace.type": "sameLine",
     "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
     "C_Cpp.formatting": "vcFormat",
@@ -196,10 +201,6 @@
 
     // @ext pixl-garden.BongoCat
     "workbench.productIconTheme": "bongocat",
-    "docker.extension.enableComposeLanguageServer": false,
+    "docker.extension.enableComposeLanguageServer": false
 
-    // Docker
-    "docker.extension.dockerEngineAvailabilityPrompt": false
-
-    // ------------------------------------------------------------
 }
