@@ -9,6 +9,23 @@
 
 # Aliases ------------------------------------------------------------------------------------
 
+alias ..='cd ..'
+alias ...='cd ../..'
+alias dots='cd ~/dotfiles'
+alias gs='git status -sb'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git log --oneline --graph --decorate -20'
+alias gd='git diff'
+alias lg='lazygit'
+alias copy='pbcopy'
+alias paste='pbpaste'
+alias ppath='echo $PATH | tr ":" "\n"'
+alias ports='lsof -iTCP -sTCP:LISTEN -n -P'
+alias zrc='${EDITOR} ~/.zshrc'
+alias zpr='${EDITOR} ~/.zprofile'
+
 alias d='trash'
 alias c='clear'
 alias info='scc'
@@ -28,6 +45,7 @@ alias qa='tmux kill-server'
 alias tl='tmux display-message -p "#{window_layout}"'
 
 alias vc='veracrypt -t'
+
 alias dockerc='docker system prune --all --volumes'
 
 alias n='clear && fastfetch -c $HOME/.config/fastfetch/themes/cat.jsonc'
@@ -35,25 +53,8 @@ alias nm='clear && fastfetch -c $HOME/.config/fastfetch/themes/fastcat.jsonc'
 alias nd='clear && fastfetch -c $HOME/.config/fastfetch/themes/detailed.jsonc'
 alias nj='clear && fastfetch -c $HOME/.config/fastfetch/themes/jellyfish.jsonc'
 
-alias cl='clear && claude'
+alias cc='clear && claude'
 alias claude='clear && claude'
-
-alias ..='cd ..'
-alias ...='cd ../..'
-alias dots='cd ~/dotfiles'
-alias gs='git status -sb'
-alias ga='git add'
-alias gc='git commit'
-alias gp='git push'
-alias gl='git log --oneline --graph --decorate -20'
-alias gd='git diff'
-alias lg='lazygit'
-alias copy='pbcopy'
-alias paste='pbpaste'
-alias ppath='echo $PATH | tr ":" "\n"'
-alias ports='lsof -iTCP -sTCP:LISTEN -n -P'
-alias zrc='${EDITOR} ~/.zshrc'
-alias zpr='${EDITOR} ~/.zprofile'
 
 # Prompt & Plugins ---------------------------------------------------------------------------
 
