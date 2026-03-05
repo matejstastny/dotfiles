@@ -12,7 +12,7 @@
 # Defaults ----------------------------------------------------------------------------------
 
 export EDITOR="nvim"
-export BROWSER="librewolf"
+export BROWSER="firefox"
 export DOTFILES_DIR="$HOME/dotfiles"
 
 # Locale ------------------------------------------------------------------------------------
