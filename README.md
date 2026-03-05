@@ -1,11 +1,5 @@
 <h1 align="center">dotfiles</h1>
 
-<p align="center">
-    <img src="./assets/screenshots/1.png" alt="screenshot 1">
-    <img width="49%" src="./assets/screenshots/2.png" alt="screenshot 2">
-    <img width="49%" src="./assets/screenshots/3.png" alt="screenshot 3">
-</p>
-
 ## Quick start
 
 Make sure you have `git`, `homebrew` and `bash >= 5.2` installed. Other things should be installed for you.
