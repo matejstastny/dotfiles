@@ -6,116 +6,437 @@ set -eu
 # dot — dotfiles task manager
 # --------------------------------------------------------------------------------------------
 # Author: Matej Stastny
-# Date: 2025-09-12 (YYYY-MM-DD)
 # License: MIT
 # Link: https://github.com/matejstastny/dotfiles
 # --------------------------------------------------------------------------------------------
 
+# Constants ----------------------------------------------------------------------------------
+
 DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-OS_TYPE="$(uname)"
+ASSETS_DIR="$DOTFILES_DIR/assets"
+FONT_DIR="$ASSETS_DIR/fonts"
+CONFIGS_DIR="$DOTFILES_DIR/configs"
+WALLPAPER_DIR="$ASSETS_DIR/wallpapers"
+BREWFILE="$DOTFILES_DIR/Brewfile"
+WALLPAPER="${WALLPAPER_DIR}/wallpaper.png"
+FONT_INSTALL_DIR="$HOME/Library/Fonts"
 
-# Task registry -----------------------------------------------------------------------------
-# Hiii, if you're using my dots, you can define more tasks here :3
-# OS field: "any" | "darwin" | "linux"
+# Colors (Tokyo Night)
+TN_GREEN='\033[38;2;158;206;106m'  # #9ece6a
+TN_YELLOW='\033[38;2;224;175;104m' # #e0af68
+TN_RED='\033[38;2;247;118;142m'    # #f7768e
+TN_ORANGE='\033[38;2;255;158;100m' # #ff9e64
+TN_BLUE='\033[38;2;122;162;247m'   # #7aa2f7
+TN_CYAN='\033[38;2;125;207;255m'   # #7dcfff
+TN_PURPLE='\033[38;2;187;154;247m' # #bb9af7
+TN_DIM='\033[38;2;65;72;104m'      # #414868
+RESET='\033[0m'
+BOLD='\033[1m'
 
-TASK_ORDER=(link brew pacman assets other)
+# Logging ------------------------------------------------------------------------------------
 
-declare -A TASK_SCRIPTS=(
-	[link]="$DOTFILES_DIR/scripts/link.sh"
-	[brew]="$DOTFILES_DIR/scripts/brew.sh"
-	[pacman]="$DOTFILES_DIR/scripts/pacman.sh"
-	[assets]="$DOTFILES_DIR/scripts/assets.sh"
-	[other]="$DOTFILES_DIR/scripts/other.sh"
-)
+log() {
+	local level="$1"
+	local msg="$2"
+	local emoji color
+	case "$level" in
+	info)
+		emoji=""
+		color="$TN_BLUE"
+		;;
+	success)
+		emoji=""
+		color="$TN_GREEN"
+		;;
+	success-done)
+		emoji="󰄭"
+		color="$TN_PURPLE"
+		;;
+	celebrate)
+		emoji="󰄛"
+		color="$TN_BLUE"
+		;;
+	prompt)
+		emoji=""
+		color="$TN_CYAN"
+		;;
+	warn)
+		emoji=""
+		color="$TN_YELLOW"
+		;;
+	error)
+		emoji=""
+		color="$TN_RED"
+		;;
+	*)
+		emoji=" 󱗜"
+		color=""
+		;;
+	esac
+	echo -e "${color}${emoji} ${msg}${RESET}"
+}
 
-declare -A TASK_OS=(
-	[link]="any"
-	[brew]="darwin"
-	[pacman]="linux"
-	[assets]="any"
-	[other]="darwin"
-)
+log_fatal() {
+	log error "$1"
+	exit 1
+}
+
+# Task registry ------------------------------------------------------------------------------
+
+TASK_ORDER=(link brew assets)
 
 declare -A TASK_DESC=(
 	[link]="Symlink configs to system locations"
 	[brew]="Install/update Homebrew packages"
-	[pacman]="Install/update pacman/paru packages"
 	[assets]="Install fonts and set wallpaper"
-	[other]="Additional setup (bat theme, etc.)"
 )
 
-# Methods ------------------------------------------------------------------------------------
+# link() -------------------------------------------------------------------------------------
 
-line() { printf '%*s\n' 40 '' | tr ' ' "-"; }
+link() {
+	declare -A FILE_EXCEPTIONS=(
+		[zsh]="$HOME"
+		[git]="$HOME"
+		[vscode]="$HOME/Library/Application Support/Code/User"
+		[vesktop]="$HOME/Library/Application Support/vesktop/themes"
+	)
 
-task_matches_os() {
-	local os="${TASK_OS[$1]}"
-	[[ "$os" == "any" ]] ||
-		[[ "$os" == "darwin" && "$OS_TYPE" == "Darwin" ]] ||
-		[[ "$os" == "linux" && "$OS_TYPE" == "Linux" ]]
+	FORCE=false
+	DRY_RUN=false
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+		--force) FORCE=true ;;
+		--dry-run) DRY_RUN=true ;;
+		*)
+			echo "Unknown option: $1"
+			exit 1
+			;;
+		esac
+		shift
+	done
+
+	prompt_or_force() {
+		local prompt_msg="$1"
+		if [ "$FORCE" = true ]; then return 0; fi
+		read -rp "$(log prompt "$prompt_msg") [y/N] " choice
+		[[ "$choice" =~ ^[Yy]$ ]]
+	}
+
+	remove_target() {
+		local target="$1"
+		if $DRY_RUN; then
+			log warn "Would remove existing $target"
+		else
+			rm -rf "$target"
+		fi
+	}
+
+	link_symlink() {
+		local src="$1"
+		local tgt="$2"
+		if [ -e "$tgt" ] || [ -L "$tgt" ]; then
+			if [ -L "$tgt" ] && [ "$(readlink "$tgt")" = "$src" ]; then
+				log success-done "$(basename "$tgt") already points to correct source"
+				return
+			fi
+			if prompt_or_force "Target $tgt exists. Overwrite?"; then
+				remove_target "$tgt"
+			else
+				log info "Skipped linking $tgt"
+				return
+			fi
+		fi
+		if $DRY_RUN; then
+			log success "Would link $tgt -> $src"
+		else
+			ln -s "$src" "$tgt" && log success "Linked $tgt -> $src"
+		fi
+	}
+
+	link_files() {
+		local src_dir="$1"
+		local tgt_dir="$2"
+		mkdir -p "$tgt_dir"
+		shopt -s dotglob nullglob
+		for file in "$src_dir"/*; do
+			[ -e "$file" ] || continue
+			local filename
+			filename="$(basename "$file")"
+			link_symlink "$file" "$tgt_dir/$filename"
+		done
+		shopt -u dotglob nullglob
+	}
+
+	link_config() {
+		local folder_name="$1"
+		local src="$CONFIGS_DIR/$folder_name"
+		if [[ -v FILE_EXCEPTIONS[$folder_name] ]]; then
+			link_files "$src" "${FILE_EXCEPTIONS[$folder_name]}"
+		else
+			local tgt="$HOME/.config/$folder_name"
+			link_symlink "$src" "$tgt"
+		fi
+	}
+
+	for folder in "$CONFIGS_DIR"/*; do
+		[ -d "$folder" ] || continue
+		folder_name="$(basename "$folder")"
+		link_config "$folder_name"
+	done
+
+	log celebrate "All done!"
 }
 
-run_task() {
-	local name="$1"
-	local path="$2"
-	echo -e "\nRunning $name..."
-	line
-	if ! "$path"; then
-		echo "dot: Task '$name' failed"
-		return 1
+# brew() -------------------------------------------------------------------------------------
+
+brew_task() {
+	if ! command -v brew >/dev/null 2>&1; then
+		log_fatal "Homebrew not installed!"
 	fi
+
+	brew_failed() { log_fatal "Homebrew command failed!"; }
+
+	if [[ ! -f "$BREWFILE" ]]; then
+		log_fatal "Brewfile not found at $BREWFILE!"
+	fi
+
+	log info "Updating Homebrew..."
+	brew update -q || brew_failed
+
+	log info "Upgrading packages..."
+	brew upgrade -q || brew_failed
+
+	log info "Installing packages from Brewfile..."
+	brew bundle --file="$BREWFILE" -q || brew_failed
+
+	log info "Uninstalling packages not in Brewfile..."
+	brew bundle cleanup --file="$BREWFILE" --force -q || brew_failed
+
+	log info "Cleaning up..."
+	brew cleanup || brew_failed
+
+	log celebrate "All done!"
 }
+
+# assets() -----------------------------------------------------------------------------------
+
+assets() {
+	# Fonts
+	log info "Installing fonts..."
+	log info "Font source: $FONT_DIR"
+	log info "Target: $FONT_INSTALL_DIR"
+	mkdir -p "$FONT_INSTALL_DIR"
+
+	if [ -d "$FONT_DIR" ]; then
+		mapfile -d '' fonts < <(find "$FONT_DIR" \( -name "*.ttf" -o -name "*.otf" \) -print0)
+		font_count=${#fonts[@]}
+		if ((font_count > 0)); then
+			log info "Found $font_count font(s) to install."
+			for font in "${fonts[@]}"; do
+				target_font="$FONT_INSTALL_DIR/$(basename "$font")"
+				if [[ -f "$target_font" ]]; then
+					log success-done "Font already exists: $(basename "$font")"
+				else
+					if cp "$font" "$FONT_INSTALL_DIR/"; then
+						log success "Installed font: $(basename "$font")"
+					else
+						log warn "Failed to install font: $(basename "$font")"
+					fi
+				fi
+			done
+		else
+			log warn "No font files found in $FONT_DIR."
+		fi
+	else
+		log warn "No fonts directory found at $FONT_DIR."
+	fi
+
+	# Wallpaper
+	if [ ! -f "$WALLPAPER" ]; then
+		log_fatal "Wallpaper not found at $WALLPAPER"
+	fi
+	log info "Setting wallpaper: $WALLPAPER"
+	if osascript -e "tell application \"System Events\" to set picture of every desktop to \"${WALLPAPER}\""; then
+		log success "Wallpaper set."
+	else
+		log warn "Failed to set wallpaper via AppleScript."
+	fi
+
+	# bat Tokyo Night theme
+	log info "Installing bat Tokyo Night theme..."
+	"$CONFIGS_DIR/bat/bat-into-tokyonight/bat-into-tokyonight"
+
+	log celebrate "All done!"
+}
+
+# check() ------------------------------------------------------------------------------------
+
+check() {
+	declare -A FILE_EXCEPTIONS=(
+		[zsh]="$HOME"
+		[git]="$HOME"
+		[vscode]="$HOME/Library/Application Support/Code/User"
+		[vesktop]="$HOME/Library/Application Support/vesktop/themes"
+	)
+
+	echo
+	echo -e "  ${BOLD}dot check${RESET} — symlink status"
+	echo -e "  ${TN_DIM}──────────────────────────────────────${RESET}"
+
+	for folder in "$CONFIGS_DIR"/*; do
+		[ -d "$folder" ] || continue
+		name="$(basename "$folder")"
+
+		if [[ -v FILE_EXCEPTIONS[$name] ]]; then
+			# Check each file in the directory
+			shopt -s dotglob nullglob
+			for file in "$folder"/*; do
+				[ -e "$file" ] || continue
+				filename="$(basename "$file")"
+				tgt="${FILE_EXCEPTIONS[$name]}/$filename"
+				rel_tgt="${tgt/$HOME/\~}"
+				label="$name/$filename"
+
+				if [ ! -e "$tgt" ] && [ ! -L "$tgt" ]; then
+					printf "  ${TN_RED}✗${RESET}  %-28s → not linked\n" "$label"
+				elif [ -L "$tgt" ]; then
+					actual="$(readlink "$tgt")"
+					if [ "$actual" = "$file" ]; then
+						printf "  ${TN_GREEN}✓${RESET}  %-28s → %s\n" "$label" "$rel_tgt"
+					else
+						printf "  ${TN_YELLOW}~${RESET}  %-28s → wrong target\n" "$label"
+					fi
+				else
+					printf "  ${TN_ORANGE}!${RESET}  %-28s → exists but not a symlink\n" "$label"
+				fi
+			done
+			shopt -u dotglob nullglob
+		else
+			tgt="$HOME/.config/$name"
+			rel_tgt="~/.config/$name"
+
+			if [ ! -e "$tgt" ] && [ ! -L "$tgt" ]; then
+				printf "  ${TN_RED}✗${RESET}  %-28s → not linked\n" "$name"
+			elif [ -L "$tgt" ]; then
+				actual="$(readlink "$tgt")"
+				if [ "$actual" = "$folder" ]; then
+					printf "  ${TN_GREEN}✓${RESET}  %-28s → %s\n" "$name" "$rel_tgt"
+				else
+					printf "  ${TN_YELLOW}~${RESET}  %-28s → wrong target\n" "$name"
+				fi
+			else
+				printf "  ${TN_ORANGE}!${RESET}  %-28s → exists but not a symlink\n" "$name"
+			fi
+		fi
+	done
+	echo
+}
+
+# diff() -------------------------------------------------------------------------------------
+
+diff_task() {
+	if ! command -v brew >/dev/null 2>&1; then
+		log_fatal "Homebrew not installed!"
+	fi
+	if [[ ! -f "$BREWFILE" ]]; then
+		log_fatal "Brewfile not found at $BREWFILE!"
+	fi
+
+	echo
+	echo -e "  ${BOLD}dot diff${RESET} — Brewfile vs installed"
+	echo -e "  ${TN_DIM}──────────────────────────────────────${RESET}"
+
+	echo -e "\n  Missing (in Brewfile, not installed):"
+	missing=$(brew bundle check --file="$BREWFILE" --verbose 2>&1 | grep -v "^✓" || true)
+	if [[ -z "$missing" ]]; then
+		echo -e "  ${TN_GREEN}  (none)${RESET}"
+	else
+		while IFS= read -r line; do
+			pkg=$(echo "$line" | sed 's/^[^[:alnum:]]*//' | awk '{print $NF}')
+			printf "  ${TN_RED}  ✗  %s${RESET}\n" "$pkg"
+		done <<<"$missing"
+	fi
+
+	echo -e "\n  Extra (installed, not in Brewfile):"
+	extra=$(brew bundle cleanup --file="$BREWFILE" --dry-run 2>/dev/null | grep "^Would uninstall" || true)
+	if [[ -z "$extra" ]]; then
+		echo -e "  ${TN_GREEN}  (none)${RESET}"
+	else
+		while IFS= read -r line; do
+			pkg=$(echo "$line" | awk '{print $NF}')
+			printf "  ${TN_YELLOW}  ~  %s${RESET}\n" "$pkg"
+		done <<<"$extra"
+	fi
+	echo
+}
+
+# usage() ------------------------------------------------------------------------------------
 
 usage() {
 	echo
-	echo "⠀∧ ⑅ ∧"
-	echo "( >  ̫ < )    DOT — dotfiles task manager"
+	echo -e "  ${BOLD}dot${RESET} — dotfiles task manager"
 	echo
-	echo "Usage: dot [task...]"
+	echo -e "  Usage: ${TN_CYAN}dot <command>${RESET}"
 	echo
-	echo "Available tasks:"
-	for name in "${TASK_ORDER[@]}"; do
-		printf "  %-10s %-10s %s\n" "$name" "[${TASK_OS[$name]}]" "${TASK_DESC[$name]}"
-	done
-	echo "  all        [current OS: $OS_TYPE]  Run all tasks matching current OS"
+	echo -e "  ${TN_DIM}Tasks:${RESET}"
+	echo -e "    ${TN_BLUE}link${RESET}      ${TASK_DESC[link]}"
+	echo -e "    ${TN_BLUE}brew${RESET}      ${TASK_DESC[brew]}"
+	echo -e "    ${TN_BLUE}assets${RESET}    ${TASK_DESC[assets]}"
+	echo -e "    ${TN_BLUE}update${RESET}    Sync: brew + link"
+	echo -e "    ${TN_BLUE}all${RESET}       Run all tasks"
+	echo
+	echo -e "  ${TN_DIM}Info:${RESET}"
+	echo -e "    ${TN_PURPLE}check${RESET}     Show symlink status for all configs"
+	echo -e "    ${TN_PURPLE}diff${RESET}      Show Brewfile vs installed packages"
 	echo
 	exit 1
 }
 
-# Argument parsing --------------------------------------------------------------------------
+# run_task() ---------------------------------------------------------------------------------
+
+run_task() {
+	local name="$1"
+	shift
+	echo
+	echo -e "${BOLD}Running ${TN_BLUE}${name}${RESET}${BOLD}...${RESET}"
+	echo -e "${TN_DIM}──────────────────────────────────────${RESET}"
+	case "$name" in
+	link) link "$@" ;;
+	brew) brew_task ;;
+	assets) assets ;;
+	esac
+}
+
+# Argument parsing ---------------------------------------------------------------------------
 
 if [ $# -eq 0 ]; then
 	usage
 fi
 
-requested=("$@")
-final=()
+arg="$1"
+shift
 
-for arg in "${requested[@]}"; do
-	if [ "$arg" = "all" ]; then
-		final=(all)
-		break
-	fi
-	if [[ -v TASK_SCRIPTS[$arg] ]]; then
-		final+=("$arg")
-	else
-		echo "dot: Unknown task '$arg'"
-		usage
-	fi
-done
-
-# Execution ----------------------------------------------------------------------------------
-
-for task in "${final[@]}"; do
-	if [ "$task" = "all" ]; then
-		for name in "${TASK_ORDER[@]}"; do
-			if task_matches_os "$name"; then
-				run_task "$name" "${TASK_SCRIPTS[$name]}"
-			else
-				echo -e "\nSkipping $name [${TASK_OS[$name]} only]"
-			fi
-		done
-	else
-		run_task "$task" "${TASK_SCRIPTS[$task]}"
-	fi
-done
+case "$arg" in
+check)
+	check
+	;;
+diff)
+	diff_task
+	;;
+update)
+	run_task brew
+	run_task link "$@"
+	;;
+all)
+	for name in "${TASK_ORDER[@]}"; do
+		run_task "$name"
+	done
+	;;
+link | brew | assets)
+	run_task "$arg" "$@"
+	;;
+*)
+	echo "dot: Unknown command '$arg'"
+	usage
+	;;
+esac

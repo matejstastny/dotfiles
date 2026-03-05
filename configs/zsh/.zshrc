@@ -20,12 +20,8 @@ alias lsa='echo && eza --color=always --long --git --icons=always'
 alias lsaa='echo && eza --color=always --long --git --icons=always -a'
 alias lst='echo && eza --color=always --tree --git --no-filesize --icons=always --no-time --no-user --no-permissions'
 
-if [[ "$(uname)" == "Darwin" ]]; then
-	alias ip="ifconfig | grep 'inet ' | awk '/inet / {print \$2}' | grep -Ev '^(127\.|::)'"
-	alias sign='sudo xattr -rd com.apple.quarantine'
-else
-	alias ip="ip -4 addr show | grep inet | awk '{print \$2}' | cut -d/ -f1 | grep -v 127"
-fi
+alias ip="ifconfig | grep 'inet ' | awk '/inet / {print \$2}' | grep -Ev '^(127\.|::)'"
+alias sign='sudo xattr -rd com.apple.quarantine'
 
 alias q='tmux detach'
 alias qa='tmux kill-server'
@@ -42,6 +38,23 @@ alias nj='clear && fastfetch -c $HOME/.config/fastfetch/themes/jellyfish.jsonc'
 alias cl='clear && claude'
 alias claude='clear && claude'
 
+alias ..='cd ..'
+alias ...='cd ../..'
+alias dots='cd ~/dotfiles'
+alias gs='git status -sb'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git log --oneline --graph --decorate -20'
+alias gd='git diff'
+alias lg='lazygit'
+alias copy='pbcopy'
+alias paste='pbpaste'
+alias ppath='echo $PATH | tr ":" "\n"'
+alias ports='lsof -iTCP -sTCP:LISTEN -n -P'
+alias zrc='${EDITOR} ~/.zshrc'
+alias zpr='${EDITOR} ~/.zprofile'
+
 # Prompt & Plugins ---------------------------------------------------------------------------
 
 # Starship
@@ -52,25 +65,17 @@ eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
 # Zsh autosuggestions
-if [[ "$(uname)" == "Darwin" ]]; then
-	source "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
-else
-	source "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
-fi
+source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 # Zsh syntax highlighting
-if [[ "$(uname)" == "Darwin" ]]; then
-	source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-else
-	source "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-fi
+source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 ZSH_HIGHLIGHT_STYLES[command]='fg=magenta,bold'
 ZSH_HIGHLIGHT_STYLES[builtin]='fg=magenta,bold'
 ZSH_HIGHLIGHT_STYLES[alias]='fg=magenta,bold'
 ZSH_HIGHLIGHT_STYLES[function]='fg=magenta,bold'
 
 # Bat
-BAT_THEME="tokyonight_night"
+export BAT_THEME="tokyonight_night"
 export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08/, \"\", \$0); print }'\'' | bat -p -lman'"
 
 # Fzf

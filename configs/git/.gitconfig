@@ -34,6 +34,8 @@
 [delta]
     navigate = true
     side-by-side = true
+    syntax-theme = tokyonight_night
+    line-numbers = true
 
 [merge]
     conflictstyle = diff3
