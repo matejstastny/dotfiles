@@ -1,5 +1,40 @@
 return {
     {
+        "folke/noice.nvim",
+        event = "VeryLazy",
+        dependencies = {
+            "MunifTanjim/nui.nvim",
+        },
+        opts = {
+            cmdline = {
+                view = "cmdline_popup",
+                format = {
+                    cmdline   = { icon = ">" },
+                    search_up = { icon = "/" },
+                    search_down = { icon = "?" },
+                },
+            },
+            messages = { enabled = false },
+            notify   = { enabled = false },
+            lsp = {
+                progress = { enabled = false },
+                hover    = { enabled = false },
+                signature = { enabled = false },
+            },
+            views = {
+                cmdline_popup = {
+                    position = { row = "40%", col = "50%" },
+                    size     = { width = 60, height = "auto" },
+                    border   = { style = "rounded" },
+                    win_options = {
+                        winhighlight = "Normal:Normal,FloatBorder:FloatBorder",
+                    },
+                },
+            },
+        },
+    },
+
+    {
         "folke/tokyonight.nvim",
         lazy = false,
         priority = 1000,
