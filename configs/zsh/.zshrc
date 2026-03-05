@@ -12,6 +12,7 @@
 alias d='trash'
 alias c='clear'
 alias info='scc'
+alias aria='aria2c'
 
 alias cd='z'
 alias ls='echo && eza --color=always --long --git --no-filesize --icons=always --no-time --no-user --no-permissions'

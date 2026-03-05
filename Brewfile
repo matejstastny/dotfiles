@@ -4,6 +4,7 @@ tap "nikitabobko/tap"
 tap "olets/tap"
 
 # -------------------- Homebrew Formulae --------------------
+brew "aria"
 brew "bash"
 brew "bat"
 brew "btop"
