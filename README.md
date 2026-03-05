@@ -1,46 +1,41 @@
-<h1 align="center">dotfiles</h1>
+<div align="center">
 
-## Quick start
 
-Make sure you have `git`, `homebrew` and `bash >= 5.2` installed. Other things should be installed for you.
+# dotfiles
+`macOS` configuration managed with a custom `dot` script.
 
-```bash
+</div>
+
+
+<br>
+
+<img src="./assets/repo/banner.jpg" alt="banner" align="right" width="18%" />
+
+```sh
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/matejstastny/dotfiles/main/bootstrap.sh)"
+```
+
+```sh
+# manual install
 git clone https://github.com/matejstastny/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-chmod +x ./bin/dot
-./bin/dot all
+~/dotfiles/bin/dot all
 ```
 
-## Usage
+<br>
 
-If you sourced my `.zprofile` the `dot` script should be in path, allowing you to call `dot` from anywhere. These are the default tasks, but you can add your own tasks by editing `./bin/dot`. There is an array of tasks on the very top of the scripts, its super easy to add your own. Just make sure you're using absolute paths!
-
-```bash
-
-dot [link|brew|assets|all]...
-
-- link    - Symlinks configs
-- brew    - Install & update Homebrew packages
-- assets  - Install fonts and set wallpaper
-- other   - Other random stuff
-- all     - Run everything
+### `dot`
 
 ```
+dot <command>
 
-### Link script
+  link      symlink configs to system locations
+  brew      install & update homebrew packages
+  assets    install fonts and set wallpaper
+  update    brew + link
+  all       run everything
 
-Most configs are linked as whole directories into `~/.config` Some configs are linked as files and/or into different locations. The script will ask if it finds a file to override it. If ran with `--force` it just does it. It's kinda cool I am proud of this script. Could i use `stow`? Yeah but this is more fun. If you want to just see what changed _would_ be made use the `--dry-run` flag. You can define exception on the top of the `./scripts/link.sh` script. Its very easy to add an exception. Heres the default ones:
-
+  check     show symlink status for all configs
+  diff      show brewfile vs installed packages
 ```
-- zsh    - contents linked as files into $HOME
-- git    - contents linked as files into $HOME
-- vscode - vscode user config directory, linked as files into `Application Support/VSCode`
-```
 
-### Homebrew script
-
-This script updates `homebrew`, updates all installed packages and then installs packages from the `Brewfile` that are not installed, and uninstalls those that are not defined in the `Brewfile` but installed. I do this to keep my system clean without trash packages I needed once.
-
-### Asset script
-
-Installs the `Dank Mono Nerd Font` that I use for my mono font, the `Atkinson Hyperlegible Next` font that I use for `Obsidian` and sets wallpaper to [this](./assets/wallpapers/mac-wallpaper.jpg).
+flags for `link`: `--force`, `--dry-run`
