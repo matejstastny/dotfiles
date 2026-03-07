@@ -74,21 +74,21 @@ body {
 
     /* text colors */
     --text-0: var(--bg-3);
-    --text-1: hsl(40, 18%, 90%);
+    --text-1: #E6E0D0;
     --text-2: #DCD7BA;
     --text-3: #C8C093;
-    --text-4: hsl(40, 6%, 48%);
-    --text-5: #363646;
+    --text-4: #8A8270;
+    --text-5: #54546D;
 
     /* background and dark colors */
-    --bg-1: hsl(240, 10%, 22%);
-    --bg-2: hsl(240, 10%, 16%);
+    --bg-1: #2A2A37;
+    --bg-2: #1F1F28;
     --bg-3: #16161D;
-    --bg-4: #1a1a22;
-    --hover: hsla(240, 10%, 35%, 0.125);
-    --active: hsla(240, 10%, 35%, 0.267);
-    --active-2: hsla(240, 10%, 35%, 0.333);
-    --message-hover: hsla(240, 0%, 0%, 0.1);
+    --bg-4: #1A1A22;
+    --hover: hsla(240, 12%, 40%, 0.18);
+    --active: hsla(240, 12%, 40%, 0.30);
+    --active-2: hsla(240, 12%, 40%, 0.40);
+    --message-hover: hsla(240, 0%, 0%, 0.12);
 
     /* accent colors */
     --accent-1: var(--blue-1);
@@ -103,10 +103,10 @@ body {
     --reply-hover: linear-gradient(to right, color-mix(in hsl, var(--text-3), transparent 95%) 40%, transparent);
 
     /* status indicator colors */
-    --online: var(--green-2);
-    --dnd: var(--red-2);
-    --idle: var(--yellow-2);
-    --streaming: var(--purple-2);
+    --online: var(--green-1);
+    --dnd: var(--red-1);
+    --idle: var(--yellow-1);
+    --streaming: var(--purple-1);
     --offline: var(--text-4);
 
     /* border colors */
@@ -116,35 +116,35 @@ body {
     --button-border: hsl(240, 0%, 0%, 0);
 
     /* base colors — kanagawa mapped */
-    --red-1: hsl(6, 70%, 72%);
-    --red-2: hsl(6, 65%, 66%);
-    --red-3: hsl(6, 60%, 60%);
-    --red-4: hsl(6, 55%, 54%);
-    --red-5: hsl(6, 50%, 48%);
+    --red-1: #E46876;
+    --red-2: #C34043;
+    --red-3: #AB3640;
+    --red-4: #8C2D36;
+    --red-5: #6E242C;
 
-    --green-1: hsl(96, 30%, 62%);
-    --green-2: hsl(96, 28%, 56%);
-    --green-3: hsl(96, 26%, 50%);
-    --green-4: hsl(96, 24%, 44%);
-    --green-5: hsl(96, 22%, 38%);
+    --green-1: #98BB6C;
+    --green-2: #87A75E;
+    --green-3: #769350;
+    --green-4: #657F44;
+    --green-5: #546B38;
 
-    --blue-1: hsl(223, 50%, 72%);
-    --blue-2: hsl(223, 47%, 67%);
-    --blue-3: hsl(223, 44%, 62%);
-    --blue-4: hsl(223, 41%, 57%);
-    --blue-5: hsl(223, 38%, 52%);
+    --blue-1: #7FB4CA;
+    --blue-2: #7E9CD8;
+    --blue-3: #6A89C4;
+    --blue-4: #5673A8;
+    --blue-5: #425D8C;
 
-    --yellow-1: hsl(40, 67%, 72%);
-    --yellow-2: hsl(40, 62%, 66%);
-    --yellow-3: hsl(40, 57%, 60%);
-    --yellow-4: hsl(40, 52%, 54%);
-    --yellow-5: hsl(40, 47%, 48%);
+    --yellow-1: #E6C384;
+    --yellow-2: #DCA561;
+    --yellow-3: #C49252;
+    --yellow-4: #AC7F44;
+    --yellow-5: #946C36;
 
-    --purple-1: hsl(267, 35%, 70%);
-    --purple-2: hsl(267, 32%, 64%);
-    --purple-3: hsl(267, 29%, 58%);
-    --purple-4: hsl(267, 26%, 52%);
-    --purple-5: hsl(267, 23%, 46%);
+    --purple-1: #957FB8;
+    --purple-2: #836FAA;
+    --purple-3: #715F9C;
+    --purple-4: #5F4F8E;
+    --purple-5: #4D3F80;
 }
 
 .divider__908e2:not(.isUnread__908e2) {
