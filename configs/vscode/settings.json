@@ -93,6 +93,8 @@
     "errorLens.errorBackground": "#00000000",
     "errorLens.hintBackground": "#00000000",
     "errorLens.warningBackground": "#00000000",
+    "editorSuggestWidget.background": "#1a1a22",
+    "editorSuggestWidget.selectedBackground": "#2a2a3d",
   },
 
   // Typography
@@ -144,13 +146,13 @@
   "workbench.settings.editor": "json",
 
   // Disable AI slop
-  "chat.agent.enabled": false,
-  "github.copilot.enable": {
-    "*": false,
-    "plaintext": false,
-    "markdown": false,
-    "scminput": false,
-  },
+  //   "chat.agent.enabled": false,
+  //   "github.copilot.enable": {
+  //     "*": false,
+  //     "plaintext": false,
+  //     "markdown": false,
+  //     "scminput": false,
+  //   }
 
   // Trust all files, I know what I'm doing VSCode
   "security.workspace.trust.untrustedFiles": "open",
