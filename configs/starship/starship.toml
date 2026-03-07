@@ -10,7 +10,7 @@
 add_newline = true
 command_timeout = 2000
 
-format = """$env_var$os$username$hostname$kubernetes$directory$git_branch$git_status$python$nodejs$rust$golang$java$kotlin$lua$ruby$php$swift$zig$dart$elixir$crystal$nim$scala$haskell$julia$ocaml$perl$erlang$c$dotnet$bun$deno$terraform$docker_context$package
+format = """$env_var$os$hostname$kubernetes$directory$git_branch$git_status$python$nodejs$rust$golang$java$kotlin$lua$ruby$php$swift$zig$dart$elixir$crystal$nim$scala$haskell$julia$ocaml$perl$erlang$c$dotnet$bun$deno$terraform$docker_context$package
 $character
 """
 
