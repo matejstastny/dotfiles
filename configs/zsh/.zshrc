@@ -58,7 +58,7 @@ alias claude='clear && claude'
 
 alias y='yazi'
 alias bonsai='cbonsai -l -t 0.02'
-alias pipes='pipes-rs'
+alias pipes='pipes-rs --transparent'
 
 # Prompt & Plugins ---------------------------------------------------------------------------
 
