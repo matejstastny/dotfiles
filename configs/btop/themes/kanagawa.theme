@@ -1,0 +1,68 @@
+# Kanagawa theme for btop
+# Based on the kanagawa.nvim color palette
+
+# Main background and foreground
+theme[main_bg]="#1F1F28"
+theme[main_fg]="#DCD7BA"
+
+# Title color
+theme[title]="#DCD7BA"
+
+# Highlight color
+theme[hi_fg]="#7E9CD8"
+
+# Selected item
+theme[selected_bg]="#2A2A37"
+theme[selected_fg]="#DCD7BA"
+
+# Inactive text
+theme[inactive_fg]="#727169"
+
+# Graph colors
+theme[proc_misc]="#7E9CD8"
+
+# Box outline
+theme[cpu_box]="#727169"
+theme[mem_box]="#727169"
+theme[net_box]="#727169"
+theme[proc_box]="#727169"
+
+# Meter and graph colors
+theme[cpu_start]="#98BB6C"
+theme[cpu_mid]="#E6C384"
+theme[cpu_end]="#E46876"
+
+theme[free_start]="#957FB8"
+theme[free_mid]="#7E9CD8"
+theme[free_end]="#7FB4CA"
+
+theme[cached_start]="#98BB6C"
+theme[cached_mid]="#E6C384"
+theme[cached_end]="#FFA066"
+
+theme[available_start]="#7FB4CA"
+theme[available_mid]="#7E9CD8"
+theme[available_end]="#957FB8"
+
+theme[used_start]="#E46876"
+theme[used_mid]="#FFA066"
+theme[used_end]="#E6C384"
+
+# Download and upload colors
+theme[download_start]="#7E9CD8"
+theme[download_mid]="#7FB4CA"
+theme[download_end]="#98BB6C"
+
+theme[upload_start]="#957FB8"
+theme[upload_mid]="#E46876"
+theme[upload_end]="#FFA066"
+
+# Process colors
+theme[process_start]="#7E9CD8"
+theme[process_mid]="#957FB8"
+theme[process_end]="#E46876"
+
+# Temperature colors
+theme[temp_start]="#98BB6C"
+theme[temp_mid]="#E6C384"
+theme[temp_end]="#E46876"
