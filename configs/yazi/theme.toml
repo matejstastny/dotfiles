@@ -1,0 +1,67 @@
+[manager]
+cwd = { fg = "#7FB4CA" }
+hovered = { fg = "#DCD7BA", bg = "#2A2A37" }
+preview_hovered = { underline = true }
+find_keyword = { fg = "#E6C384", bold = true }
+find_position = { fg = "#D27E99", italic = true }
+marker_selected = { fg = "#98BB6C", bg = "#98BB6C" }
+marker_copied = { fg = "#E6C384", bg = "#E6C384" }
+marker_cut = { fg = "#E46876", bg = "#E46876" }
+tab_active = { fg = "#DCD7BA", bg = "#2A2A37" }
+tab_inactive = { fg = "#727169", bg = "#1a1a22" }
+border_symbol = "│"
+border_style = { fg = "#727169" }
+
+[status]
+separator_open = ""
+separator_close = ""
+separator_style = { fg = "#2A2A37", bg = "#2A2A37" }
+mode_normal = { fg = "#16161D", bg = "#7E9CD8", bold = true }
+mode_select = { fg = "#16161D", bg = "#98BB6C", bold = true }
+mode_unset = { fg = "#16161D", bg = "#E46876", bold = true }
+progress_label = { fg = "#DCD7BA", bold = true }
+progress_normal = { fg = "#727169", bg = "#2A2A37" }
+progress_error = { fg = "#C34043", bg = "#2A2A37" }
+permissions_t = { fg = "#7E9CD8" }
+permissions_r = { fg = "#E6C384" }
+permissions_w = { fg = "#E46876" }
+permissions_x = { fg = "#98BB6C" }
+permissions_s = { fg = "#727169" }
+
+[input]
+border = { fg = "#7E9CD8" }
+title = {}
+value = {}
+selected = { reversed = true }
+
+[select]
+border = { fg = "#7E9CD8" }
+active = { fg = "#D27E99" }
+inactive = {}
+
+[filetype]
+rules = [
+    { mime = "image/*", fg = "#D27E99" },
+    { mime = "video/*", fg = "#E6C384" },
+    { mime = "audio/*", fg = "#957FB8" },
+    { mime = "application/zip", fg = "#FFA066" },
+    { mime = "application/gzip", fg = "#FFA066" },
+    { mime = "application/x-tar", fg = "#FFA066" },
+    { mime = "application/x-bzip2", fg = "#FFA066" },
+    { mime = "application/x-7z-compressed", fg = "#FFA066" },
+    { mime = "application/x-rar", fg = "#FFA066" },
+    { name = "*.md", fg = "#7FB4CA" },
+    { name = "*.rs", fg = "#FFA066" },
+    { name = "*.go", fg = "#7AA89F" },
+    { name = "*.py", fg = "#E6C384" },
+    { name = "*.js", fg = "#E6C384" },
+    { name = "*.ts", fg = "#7E9CD8" },
+    { name = "*.lua", fg = "#7E9CD8" },
+    { name = "*.sh", fg = "#98BB6C" },
+    { name = "*.toml", fg = "#C0A36E" },
+    { name = "*.yml", fg = "#C0A36E" },
+    { name = "*.yaml", fg = "#C0A36E" },
+    { name = "*.json", fg = "#C0A36E" },
+    { name = "*", fg = "#DCD7BA" },
+    { name = "*/", fg = "#7E9CD8" },
+]

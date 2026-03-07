@@ -32,12 +32,12 @@ automatically-unhide-macos-hidden-apps = true
 # Gaps ------------------------------------------------------------------------------------
 
 [gaps]
-inner.horizontal = 20
-inner.vertical = 20
-outer.left = 20
-outer.bottom = 20
-outer.right = 20
-outer.top = [{ monitor."^Built-in Retina Display$" = 20 }, 60]
+inner.horizontal = 9
+inner.vertical = 9
+outer.left = 9
+outer.bottom = 9
+outer.right = 9
+outer.top = [{ monitor."^Built-in Retina Display$" = 9 }, 49]
 
 # Exceptions ---------------------------------------------------------------------------------
 
