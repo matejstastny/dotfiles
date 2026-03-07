@@ -1,6 +1,7 @@
 bold = true
 color_mode = "rgb" # ansi, rgb or none
-palette = "pastel" # default, darker, pastel or matrix
+palette = "custom" # default, darker, pastel or matrix
+custom = ["#7E9CD8", "#957FB8", "#E46876", "#98BB6C", "#E6C384", "#7FB4CA", "#FFA066"]
 rainbow = 0 # 0-255
 delay_ms = 20
 inherit_style = false
