@@ -28,7 +28,7 @@ disabled = false
 # ---
 
 [os]
-format = '[$symbol](bold white) '
+format = '[$symbol](bold #DCD7BA) '
 disabled = false
 
 [os.symbols]
@@ -44,14 +44,14 @@ Unknown = '󰠥'
 [username]
 style_user = 'yellow bold'
 style_root = 'black bold'
-format = '[//](black bold) [$user](#2883ff) ' # 2883ff
+format = '[//](#727169) [$user](#7E9CD8) '
 disabled = false
 show_always = true
 
 # Shows the hostname
 [hostname]
 ssh_only = false
-format = '[//](black bold) [$hostname](bold purple) '
+format = '[//](#727169) [$hostname](bold #957FB8) '
 disabled = false
 
 # Shows current directory
@@ -60,22 +60,22 @@ truncation_length = 0
 truncation_symbol = ''
 home_symbol = '~'
 read_only = '  '
-format = '[//](black bold) [$path]($style)[$read_only]($read_only_style) '
-style = '#7ed1fb'
+format = '[//](#727169) [$path]($style)[$read_only]($read_only_style) '
+style = '#7FB4CA'
 
 
 # Shows current git branch
 [git_branch]
 # symbol = ''
 symbol = ''
-format = '[//](black bold) [$symbol\[$branch\]]($style) '
-style = 'bold purple'
+format = '[//](#727169) [$symbol\[$branch\]]($style) '
+style = 'bold #957FB8'
 
 # Shows current git status
 [git_status]
 disabled = true
 format = '[ $all_status $ahead_behind]($style) '
-style = 'bold green'
+style = 'bold #98BB6C'
 conflicted = '🏳'
 up_to_date = ''
 untracked = ' '
@@ -90,7 +90,7 @@ deleted = ' '
 
 # Shows kubernetes context and namespace
 [kubernetes]
-format = 'via [󱃾 $context\($namespace\)](bold purple) '
+format = 'via [󱃾 $context\($namespace\)](bold #957FB8) '
 disabled = false
 
 # ---
@@ -99,4 +99,4 @@ disabled = false
 [python]
 symbol = '󰌠'
 python_binary = ['./venv/bin/python', 'python', 'python3', 'python2']
-format = '[//](black bold) [${symbol} ${pyenv_prefix}(${version} )(\($virtualenv\) )]($style) '
+format = '[//](#727169) [${symbol} ${pyenv_prefix}(${version} )(\($virtualenv\) )]($style) '

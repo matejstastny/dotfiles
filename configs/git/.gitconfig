@@ -34,7 +34,7 @@
 [delta]
     navigate = true
     side-by-side = true
-    syntax-theme = tokyonight_night
+    syntax-theme = kanagawa
     line-numbers = true
 
 [merge]

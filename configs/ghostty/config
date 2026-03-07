@@ -9,9 +9,8 @@
 
 # Color theme --------------------------------------------------------------------------------
 
-config-file = themes/moonfly
-# theme=ayu
-cursor-color=#8e8e8e
+config-file = themes/kanagawa
+cursor-color=#C8C093
 
 # Fonts --------------------------------------------------------------------------------------
 
