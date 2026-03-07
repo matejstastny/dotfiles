@@ -84,6 +84,9 @@ ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=#98BB6C'
 ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=#98BB6C'
 ZSH_HIGHLIGHT_STYLES[dollar-quoted-argument]='fg=#E6C384'
 
+# Ripgrep
+export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/.ripgreprc"
+
 # Bat
 export BAT_THEME="kanagawa"
 export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08/, \"\", \$0); print }'\'' | bat -p -lman'"
