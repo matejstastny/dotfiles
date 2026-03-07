@@ -59,6 +59,13 @@ return {
                         TelescopeResultsBorder = { bg = "none" },
                         TelescopePreviewNormal = { bg = "none" },
                         TelescopePreviewBorder = { bg = "none" },
+                        LineNr = { bg = "none" },
+                        CursorLineNr = { bg = "none" },
+                        SignColumn = { bg = "none" },
+                        FoldColumn = { bg = "none" },
+                        GitSignsAdd = { bg = "none" },
+                        GitSignsChange = { bg = "none" },
+                        GitSignsDelete = { bg = "none" },
                     }
                 end,
             })
