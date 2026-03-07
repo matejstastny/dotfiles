@@ -10,7 +10,7 @@
 add_newline = true
 command_timeout = 2000
 
-format = """$env_var$os$hostname$kubernetes$directory$git_branch$git_status$python
+format = """$env_var$os$username$hostname$kubernetes$directory$git_branch$git_status$python$nodejs$rust$golang$java$kotlin$lua$ruby$php$swift$zig$dart$elixir$crystal$nim$scala$haskell$julia$ocaml$perl$erlang$c$dotnet$bun$deno$terraform$docker_context$package
 $character
 """
 
@@ -44,7 +44,7 @@ Unknown = '󰠥'
 [username]
 style_user = 'yellow bold'
 style_root = 'black bold'
-format = '[//](#727169) [$user](#7E9CD8) '
+format = '[//](#727169) [$user](#D73B3E) '
 disabled = false
 show_always = true
 
@@ -69,7 +69,7 @@ style = '#7FB4CA'
 # symbol = ''
 symbol = ''
 format = '[//](#727169) [$symbol\[$branch\]]($style) '
-style = 'bold #957FB8'
+style = 'bold #D73B3E'
 
 # Shows current git status
 [git_status]
@@ -100,3 +100,137 @@ disabled = false
 symbol = '󰌠'
 python_binary = ['./venv/bin/python', 'python', 'python3', 'python2']
 format = '[//](#727169) [${symbol} ${pyenv_prefix}(${version} )(\($virtualenv\) )]($style) '
+
+[nodejs]
+symbol = '󰎙'
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#98BB6C'
+
+[rust]
+symbol = '󱘗'
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#E46876'
+
+[golang]
+symbol = '󰟓'
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#7FB4CA'
+
+[java]
+symbol = '󰬷'
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#E46876'
+
+[kotlin]
+symbol = '󱈙'
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#957FB8'
+
+[lua]
+symbol = '󰢱'
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#7E9CD8'
+
+[ruby]
+symbol = '󰴭'
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#E46876'
+
+[php]
+symbol = '󰌟'
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#957FB8'
+
+[swift]
+symbol = '󰛥'
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#FFA066'
+
+[zig]
+symbol = ''
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#E6C384'
+
+[dart]
+symbol = ''
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#7FB4CA'
+
+[elixir]
+symbol = ''
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#957FB8'
+
+[crystal]
+symbol = ''
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#DCD7BA'
+
+[nim]
+symbol = '󰆥'
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#E6C384'
+
+[scala]
+symbol = ''
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#E46876'
+
+[haskell]
+symbol = '󰲒'
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#957FB8'
+
+[julia]
+symbol = ''
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#98BB6C'
+
+[ocaml]
+symbol = ''
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#E6C384'
+
+[perl]
+symbol = ''
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#7FB4CA'
+
+[erlang]
+symbol = ''
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#E46876'
+
+[c]
+symbol = ''
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#7E9CD8'
+
+[dotnet]
+symbol = '󰪮'
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#957FB8'
+
+[bun]
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#DCD7BA'
+
+[deno]
+symbol = '🦕'
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#DCD7BA'
+
+[terraform]
+symbol = '󱁢'
+format = '[//](#727169) [$symbol ($version)]($style) '
+style = '#957FB8'
+
+[docker_context]
+symbol = '󰡨'
+format = '[//](#727169) [$symbol $context]($style) '
+style = '#7FB4CA'
+
+[package]
+symbol = '󰏗'
+format = '[//](#727169) [$symbol $version]($style) '
+style = '#FFA066'
