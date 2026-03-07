@@ -75,6 +75,7 @@
     "editorGutter.background": "#1a1a22",
     "statusBar.background": "#1a1a22",
     "sideBar.background": "#1a1a22",
+    "sideBarSectionHeader.background": "#00000000",
     "editor.background": "#1a1a22",
     "menu.background": "#1a1a22",
     "terminal.background": "#1a1a22",
@@ -196,11 +197,11 @@
   "insertDateString.formatDate": "YYYY-MM-DD",
   "insertDateString.formatTime": "hh:mm:ss",
   "editor.scrollbar.verticalScrollbarSize": 0,
-  "vscode_vibrancy.type": "fullscreen-ui",
 
   // @ext pixl-garden.BongoCat
   "workbench.productIconTheme": "bongocat",
   "docker.extension.enableComposeLanguageServer": false,
+
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
