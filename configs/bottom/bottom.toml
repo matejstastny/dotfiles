@@ -1,5 +1,4 @@
 [styles]
-theme = "custom"
 
 [styles.cpu]
 all_entry_color = "#7E9CD8"
