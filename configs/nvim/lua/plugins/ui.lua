@@ -66,6 +66,8 @@ return {
                         GitSignsAdd = { bg = "none" },
                         GitSignsChange = { bg = "none" },
                         GitSignsDelete = { bg = "none" },
+                        StatusLine = { bg = "none" },
+                        StatusLineNC = { bg = "none" },
                     }
                 end,
             })
@@ -81,7 +83,7 @@ return {
             local dim    = "#727169"
             local text   = "#DCD7BA"
             local accent = "#7E9CD8"
-            local mid    = "#2A2A37"
+            local mid    = "NONE"
             local bg     = "NONE"
             local dark   = "#16161D"
 
@@ -105,7 +107,6 @@ return {
             require("lualine").setup({
                 options = {
                     theme                = theme,
-                    transparent          = true,
                     component_separators = { left = "·", right = "·" },
                     section_separators   = { left = "", right = "" },
                     globalstatus         = true,
