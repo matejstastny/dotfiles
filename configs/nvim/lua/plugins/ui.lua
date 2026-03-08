@@ -92,9 +92,9 @@ return {
                     c = { fg = text, bg = bg },
                 },
                 insert   = { a = { fg = dark, bg = "#98BB6C", gui = "bold" }, b = { fg = text, bg = mid }, c = { fg = text, bg = bg } },
-                visual   = { a = { fg = dark, bg = "#E6C384", gui = "bold" }, b = { fg = text, bg = mid }, c = { fg = text, bg = bg } },
+                visual   = { a = { fg = dark, bg = "#957FB8", gui = "bold" }, b = { fg = text, bg = mid }, c = { fg = text, bg = bg } },
                 replace  = { a = { fg = dark, bg = "#E46876", gui = "bold" }, b = { fg = text, bg = mid }, c = { fg = text, bg = bg } },
-                command  = { a = { fg = dark, bg = "#957FB8", gui = "bold" }, b = { fg = text, bg = mid }, c = { fg = text, bg = bg } },
+                command  = { a = { fg = dark, bg = "#E6C384", gui = "bold" }, b = { fg = text, bg = mid }, c = { fg = text, bg = bg } },
                 inactive = {
                     a = { fg = dim, bg = bg },
                     b = { fg = dim, bg = bg },
@@ -105,6 +105,7 @@ return {
             require("lualine").setup({
                 options = {
                     theme                = theme,
+                    transparent          = true,
                     component_separators = { left = "·", right = "·" },
                     section_separators   = { left = "", right = "" },
                     globalstatus         = true,
