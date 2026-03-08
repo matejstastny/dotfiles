@@ -1,5 +1,20 @@
 return {
     {
+        "xiyaowong/transparent.nvim",
+        lazy = false,
+        opts = {
+            groups = {
+                'Normal', 'NormalNC', 'Comment', 'Constant', 'Special', 'Identifier',
+                'Statement', 'PreProc', 'Type', 'Underlined', 'Todo', 'String', 'Function',
+                'Conditional', 'Repeat', 'Operator', 'Structure', 'LineNr', 'NonText',
+                'SignColumn', 'CursorLine', 'CursorLineNr', 'StatusLine', 'StatusLineNC',
+                'EndOfBuffer',
+            },
+            extra_groups = { "StatusLine", "StatusLineNC", "NormalFloat", "FloatBorder", "NoiceCmdlinePopup", "NoiceCmdlinePopupBorder" },
+        },
+    },
+
+    {
         "folke/noice.nvim",
         cond = not vim.g.neovide,
         event = "VeryLazy",
@@ -28,7 +43,7 @@ return {
                     size        = { width = 60, height = "auto" },
                     border      = { style = "rounded" },
                     win_options = {
-                        winhighlight = "Normal:Normal,FloatBorder:FloatBorder",
+                        winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder",
                     },
                 },
             },
@@ -46,28 +61,11 @@ return {
                 commentStyle = { italic = true },
                 keywordStyle = { italic = false },
                 overrides = function(colors)
-                    local theme = colors.theme
                     return {
                         NormalFloat = { bg = "none" },
                         FloatBorder = { bg = "none" },
-                        FloatTitle = { bg = "none" },
-                        TelescopeNormal = { bg = "none" },
-                        TelescopeBorder = { bg = "none" },
-                        TelescopePromptNormal = { bg = "none" },
-                        TelescopePromptBorder = { bg = "none" },
-                        TelescopeResultsNormal = { bg = "none" },
-                        TelescopeResultsBorder = { bg = "none" },
-                        TelescopePreviewNormal = { bg = "none" },
-                        TelescopePreviewBorder = { bg = "none" },
-                        LineNr = { bg = "none" },
-                        CursorLineNr = { bg = "none" },
-                        SignColumn = { bg = "none" },
-                        FoldColumn = { bg = "none" },
-                        GitSignsAdd = { bg = "none" },
-                        GitSignsChange = { bg = "none" },
-                        GitSignsDelete = { bg = "none" },
-                        StatusLine = { bg = "none" },
-                        StatusLineNC = { bg = "none" },
+                        NoiceCmdlinePopup = { bg = "none" },
+                        NoiceCmdlinePopupBorder = { bg = "none" },
                     }
                 end,
             })
