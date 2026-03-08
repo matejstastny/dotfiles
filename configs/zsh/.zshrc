@@ -12,6 +12,7 @@
 alias ..='cd ..'
 alias ...='cd ../..'
 alias dots='cd ~/dotfiles'
+alias scr='ls ~/bin/bin'
 alias gs='git status -sb'
 alias ga='git add'
 alias gc='git commit'
@@ -56,7 +57,9 @@ alias nj='clear && fastfetch -c $HOME/.config/fastfetch/themes/jellyfish.jsonc'
 alias cc='clear && claude'
 alias claude='clear && claude'
 
+alias nv='nvim'
 alias y='yazi'
+
 alias bonsai='cbonsai -l -t 0.02'
 alias pipes='pipes-rs --transparent'
 
