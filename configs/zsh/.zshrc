@@ -26,6 +26,7 @@ alias ppath='echo $PATH | tr ":" "\n"'
 alias ports='lsof -iTCP -sTCP:LISTEN -n -P'
 alias zrc='${EDITOR} ~/.zshrc'
 alias zpr='${EDITOR} ~/.zprofile'
+alias watchlist='${EDITOR} ls ~/OneDrive/notes/Books/Watchlist.md'
 
 alias d='trash'
 alias c='clear'
