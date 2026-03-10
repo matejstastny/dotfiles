@@ -15,6 +15,7 @@ require("keys")
 
 require("lazy").setup({
     { import = "plugins.ui" },
+    { import = "plugins.dashboard" },
     { import = "plugins.editor" },
     { import = "plugins.nav" },
     { import = "plugins.lsp" },

@@ -20,7 +20,6 @@
 
   // Sidebar & file explorer
   "workbench.secondarySideBar.defaultVisibility": "hidden",
-  "workbench.sideBar.location": "right",
   "explorer.sortOrder": "type",
   "material-icon-theme.hidesExplorerArrows": true,
   "workbench.tree.enableStickyScroll": false,
@@ -205,4 +204,6 @@
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "workbench.sideBar.location": "right",
 }
