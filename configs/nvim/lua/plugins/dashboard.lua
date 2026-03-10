@@ -9,7 +9,7 @@ return {
                     header = [[
 
       ∧＿∧
-    (｡•́ω•̀｡)  ♡
+     (｡•́ω•̀｡)  ♡
       づ ♡
      ～   ～
 
@@ -19,7 +19,7 @@ return {
                         { icon = " ", key = "r", desc = "Recent Files", action = ":Telescope oldfiles" },
                         { icon = " ", key = "g", desc = "Grep Text",    action = ":Telescope live_grep" },
                         { icon = " ", key = "n", desc = "New File",     action = ":ene | startinsert" },
-                        { icon = "󰒲 ", key = "l", desc = "Lazy",        action = ":Lazy" },
+                        { icon = " ", key = "l", desc = "Lazy",        action = ":Lazy" },
                         { icon = " ", key = "q", desc = "Quit",        action = ":qa" },
                     },
                 },
