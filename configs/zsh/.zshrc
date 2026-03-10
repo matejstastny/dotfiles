@@ -57,6 +57,8 @@ alias nj='clear && fastfetch -c $HOME/.config/fastfetch/themes/jellyfish.jsonc'
 
 alias cc='clear && claude'
 alias claude='clear && claude'
+alias co='clear && copilot'
+alias copilot='clear && copilot'
 
 alias nv='nvim'
 alias y='yazi'
