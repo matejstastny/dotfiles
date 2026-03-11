@@ -84,7 +84,7 @@ Windows = " "
 
 [character]
 success_symbol = "[](fg:arrow)"
-error_symbol = "[](fg:red)"
+error_symbol = "[](fg:arrow)"
 
 [directory]
 format = "[$path](bold $style)[$read_only]($read_only_style) "
