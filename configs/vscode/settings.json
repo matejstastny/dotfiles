@@ -147,12 +147,12 @@
 
   // Disable AI slop
   //   "chat.agent.enabled": false,
-  //   "github.copilot.enable": {
-  //     "*": false,
-  //     "plaintext": false,
-  //     "markdown": false,
-  //     "scminput": false,
-  //   }
+  "github.copilot.enable": {
+    "*": false,
+    "plaintext": false,
+    "markdown": false,
+    "scminput": false,
+  },
 
   // Trust all files, I know what I'm doing VSCode
   "security.workspace.trust.untrustedFiles": "open",
