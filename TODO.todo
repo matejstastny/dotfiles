@@ -3,5 +3,5 @@ Bugs:
     - Background in `git` changes is still not transparent
 
 Improvements:
-    - Remove stuff from the `starship` prompt
+    ✔ Remove stuff from the `starship` prompt @started(26-03-11 12:19) @done(26-03-11 12:35) @lasted(16m53s)
     ✔ Fix neovim dashboard ASCII (old version?) @started(26-03-11 12:13) @done(26-03-11 12:19) @lasted(6m37s)
