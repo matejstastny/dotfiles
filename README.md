@@ -39,3 +39,4 @@ dot <command>
 ```
 
 flags for `link`: `--force`, `--dry-run`
+
