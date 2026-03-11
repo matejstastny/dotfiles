@@ -1,0 +1,7 @@
+Bugs:
+    - Although I was able to remove background from the `noice` command prompt in `neovim` I was not able to remove it from other `noice` windows, like search etc
+    - Background in `git` changes is still not transparent
+
+Improvements:
+    - Remove stuff from the `starship` prompt
+    ✔ Fix neovim dashboard ASCII (old version?) @started(26-03-11 12:13) @done(26-03-11 12:19) @lasted(6m37s)
