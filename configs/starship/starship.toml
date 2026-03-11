@@ -56,7 +56,7 @@ text_light = "#1F1F28"
 [username]
 style_user = 'bold os'
 style_root = 'bold os_admin'
-format = '[ $user](fg:$style) '
+format = '[  $user](fg:$style) '
 disabled = false
 show_always = true
 
@@ -154,7 +154,7 @@ symbol = " "
 format = "[ $symbol$version ]($style)"
 style = "fg:java"
 version_format = "${raw}"
-symbol = " "
+symbol = " "
 disabled = false
 
 [c]
