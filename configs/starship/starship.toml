@@ -7,230 +7,166 @@
 # Link: https://github.com/matejstastny/dotfiles
 # --------------------------------------------------------------------------------------------
 
-add_newline = true
-command_timeout = 2000
-
-format = """$env_var$os$hostname$kubernetes$directory$git_branch$git_status$python$nodejs$rust$golang$java$kotlin$lua$ruby$php$swift$zig$dart$elixir$crystal$nim$scala$haskell$julia$ocaml$perl$erlang$c$dotnet$bun$deno$terraform$docker_context$package
-$character
+format = """\
+[╭╴](fg:arrow)\
+$username\
+$os\
+$git_branch\
+(\
+    at \
+    $directory\
+)\
+$fill $cmd_duration $time\
+(\
+    via \
+    $python\
+    $conda\
+    $nodejs\
+    $c\
+    $rust\
+    $java\
+)
+[╰─](fg:arrow)$character\
 """
+# Add the modules you need
 
-[character]
-success_symbol = "╰⎯"
-error_symbol = "╰⎯"
+# Disable the blank line at the start of the prompt
+add_newline = true
 
+palette = "normal"
 
-[env_var]
-symbol = "╭╴"
-variable = 'SHELL'
-format = "$symbol"
-disabled = false
+[palettes.normal]
+arrow = "#B3BCFD"
+os = "#B3BCFD"
+os_admin = "#B3BCFD"
+directory = "#B3BCFD"
+time = "#B3BCFD"
+node = "#a5e6ba"
+git = "#f17f29"
+git_status = "#DFEBED"
+python = "#edf67d"
+conda = "#70e000"
+java = "#F86279"
+rust = "#ffdac6"
+clang = "#caf0f8"
+duration = "#ce4257"
+text_color = "#EDF2F4"
+text_light = "#26272A"
 
-# ---
-
-[os]
-format = '[$symbol](bold #DCD7BA) '
-disabled = false
-
-[os.symbols]
-Windows = ' '
-Arch = '󰣇'
-Ubuntu = ''
-Macos = '󰀵'
-Unknown = '󰠥'
-
-# ---
-
-# Shows the username
 [username]
-style_user = 'yellow bold'
-style_root = 'black bold'
-format = '[//](#727169) [$user](#D73B3E) '
+style_user = 'bold os'
+style_root = 'bold os_admin'
+format = '[ $user](fg:$style) '
 disabled = false
 show_always = true
 
-# Shows the hostname
-[hostname]
-ssh_only = false
-format = '[//](#727169) [$hostname](bold #957FB8) '
-disabled = false
-
-# Shows current directory
-[directory]
-truncation_length = 0
-truncation_symbol = ''
-home_symbol = '~'
-read_only = '  '
-format = '[//](#727169) [$path]($style)[$read_only]($read_only_style) '
-style = '#7FB4CA'
-
-
-# Shows current git branch
-[git_branch]
-# symbol = ''
-symbol = ''
-format = '[//](#727169) [$symbol\[$branch\]]($style) '
-style = 'bold #D73B3E'
-
-# Shows current git status
-[git_status]
+[os]
+format = "on [($name)]($style) "
+style = "bold blue"
 disabled = true
-format = '[ $all_status $ahead_behind]($style) '
-style = 'bold #98BB6C'
-conflicted = '🏳'
-up_to_date = ''
-untracked = ' '
-ahead = '⇡${count}'
-diverged = '⇕⇡${ahead_count}⇣${behind_count}'
-behind = '⇣${count}'
-stashed = ' '
-modified = ' '
-staged = '[++\($count\)](green)'
-renamed = '襁 '
-deleted = ' '
 
-# Shows kubernetes context and namespace
-[kubernetes]
-format = 'via [󱃾 $context\($namespace\)](bold #957FB8) '
-disabled = false
+[os.symbols]
+Alpine = " "
+Arch = " "
+Debian = " "
+EndeavourOS = " "
+Fedora = " "
+Linux = " "
+Macos = " "
+Manjaro = " "
+Mint = " "
+NixOS = " "
+openSUSE = " "
+Pop = " "
+SUSE = " "
+Ubuntu = " "
+Windows = " "
 
-# ---
+[character]
+success_symbol = "[](fg:arrow)"
+error_symbol = "[](fg:red)"
+
+[directory]
+format = "[$path](bold $style)[$read_only]($read_only_style) "
+truncation_length = 2
+style = "fg:directory"
+read_only_style = "fg:directory"
+before_repo_root_style = "fg:directory"
+truncation_symbol = "…/"
+truncate_to_repo = true
+read_only = "  "
+
+[time]
+disabled = true
+format = "[󱑈 $time]($style)"
+time_format = "%H:%M"
+style = "bold fg:time"
 
 
-[python]
-symbol = '󰌠'
-python_binary = ['./venv/bin/python', 'python', 'python3', 'python2']
-format = '[//](#727169) [${symbol} ${pyenv_prefix}(${version} )(\($virtualenv\) )]($style) '
+[cmd_duration]
+disabled = true
+format = "took [ $duration]($style) "
+style = "bold fg:duration"
+min_time = 500
 
-[nodejs]
-symbol = '󰎙'
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#98BB6C'
+[git_branch]
+format = "via [$symbol$branch]($style) "
+style = "bold fg:git"
+symbol = " "
 
-[rust]
-symbol = '󱘗'
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#E46876'
-
-[golang]
-symbol = '󰟓'
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#7FB4CA'
-
-[java]
-symbol = '󰬷'
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#E46876'
-
-[kotlin]
-symbol = '󱈙'
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#957FB8'
-
-[lua]
-symbol = '󰢱'
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#7E9CD8'
-
-[ruby]
-symbol = '󰴭'
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#E46876'
-
-[php]
-symbol = '󰌟'
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#957FB8'
-
-[swift]
-symbol = '󰛥'
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#FFA066'
-
-[zig]
-symbol = ''
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#E6C384'
-
-[dart]
-symbol = ''
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#7FB4CA'
-
-[elixir]
-symbol = ''
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#957FB8'
-
-[crystal]
-symbol = ''
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#DCD7BA'
-
-[nim]
-symbol = '󰆥'
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#E6C384'
-
-[scala]
-symbol = ''
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#E46876'
-
-[haskell]
-symbol = '󰲒'
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#957FB8'
-
-[julia]
-symbol = ''
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#98BB6C'
-
-[ocaml]
-symbol = ''
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#E6C384'
-
-[perl]
-symbol = ''
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#7FB4CA'
-
-[erlang]
-symbol = ''
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#E46876'
-
-[c]
-symbol = ''
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#7E9CD8'
-
-[dotnet]
-symbol = '󰪮'
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#957FB8'
-
-[bun]
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#DCD7BA'
-
-[deno]
-symbol = '🦕'
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#DCD7BA'
-
-[terraform]
-symbol = '󱁢'
-format = '[//](#727169) [$symbol ($version)]($style) '
-style = '#957FB8'
+[git_status]
+format = '[ $all_status$ahead_behind ]($style)'
+style = "fg:text_color bg:git"
+disabled = true
 
 [docker_context]
-symbol = '󰡨'
-format = '[//](#727169) [$symbol $context]($style) '
-style = '#7FB4CA'
+disabled = false
+symbol = " "
 
 [package]
-symbol = '󰏗'
-format = '[//](#727169) [$symbol $version]($style) '
-style = '#FFA066'
+disabled = false
+
+[fill]
+symbol = " "
+
+[nodejs]
+format = "[ $symbol$version ]($style)"
+style = "bg:node fg:text_light"
+symbol = " "
+version_format = "${raw}"
+disabled = false
+
+[python]
+disabled = false
+format = '[ ${symbol}${pyenv_prefix}(${version})( \($virtualenv\)) ]($style)'
+symbol = " "
+version_format = "${raw}"
+style = "bg:python fg:text_light"
+
+[conda]
+format = "[ $symbol$environment ]($style)"
+style = "bg:conda fg:text_light"
+ignore_base = false
+disabled = false
+symbol = " "
+
+[java]
+format = "[ $symbol$version ]($style)"
+style = "bg:java fg:text_light"
+version_format = "${raw}"
+symbol = " "
+disabled = false
+
+[c]
+format = "[ $symbol($version(-$name)) ]($style)"
+style = "bg:clang fg:text_light"
+symbol = " "
+version_format = "${raw}"
+disabled = false
+
+[rust]
+format = "[ $symbol$version ]($style)"
+style = "bg:rust fg:text_light"
+symbol = " "
+version_format = "${raw}"
+disabled = false
