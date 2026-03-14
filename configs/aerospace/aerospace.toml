@@ -65,6 +65,36 @@ run = 'layout floating'
 if.app-name-regex-substring = 'java'
 run = 'layout floating'
 
+# Assigments ---------------------------------------------------------------------------------
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'ghostty'
+run = 'move-node-to-workspace 1'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'VSCode'
+run = 'move-node-to-workspace 1'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'firefox'
+run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'firefox'
+run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'claude'
+run = 'move-node-to-workspace 4'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'Music'
+run = 'move-node-to-workspace 9'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'vesktop'
+run = 'move-node-to-workspace 10'
+
 # Keymapping ---------------------------------------------------------------------------------
 
 [key-mapping]
@@ -129,8 +159,7 @@ alt-m = 'exec-and-forget open -a /System/Applications/Music.app'
 alt-v = 'exec-and-forget open -a /System/Applications/Visual Studio Code.app'
 
 # Scripts
-alt-shift-c = 'exec-and-forget ~/bin/close-all'
-alt-shift-o = 'exec-and-forget ~/bin/aerospace-open'
+alt-shift-c = 'exec-and-forget ~/bin/bin/cloaseall'
 
 [mode.service.binding]
 esc = ['reload-config', 'mode main']

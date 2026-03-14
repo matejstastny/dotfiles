@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# Ensure it's executable:
-# chmod +x ~/.config/sketchybar/plugins/aerospace.sh
-
-# DEFAULT_ICONS=(":code:" ":discord:" ":spotify:" ":arc:")
 FOCUSED_WORKSPACE=$(aerospace list-workspaces --focused)
 
 update_workspace_icon() {
