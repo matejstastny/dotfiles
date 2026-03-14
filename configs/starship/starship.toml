@@ -8,7 +8,7 @@
 # --------------------------------------------------------------------------------------------
 
 format = """\
-[╭╴](fg:arrow)\
+[╭  ](fg:arrow)\
 $username\
 $os\
  $directory\
@@ -52,7 +52,7 @@ text_light = "#1F1F28"
 [username]
 style_user = 'bold os'
 style_root = 'bold os_admin'
-format = '[  $user](fg:$style) '
+format = '[$user](fg:$style) '
 disabled = true
 show_always = true
 
