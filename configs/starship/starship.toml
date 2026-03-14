@@ -11,14 +11,10 @@ format = """\
 [╭╴](fg:arrow)\
 $username\
 $os\
+ $directory\
 $git_branch\
-(\
-    at \
-    $directory\
-)\
 $fill $cmd_duration $time\
 (\
-    via \
     $python\
     $conda\
     $nodejs\
@@ -26,7 +22,7 @@ $fill $cmd_duration $time\
     $rust\
     $java\
 )
-[╰─](fg:arrow)$character\
+[╰](fg:arrow)$character\
 """
 # Add the modules you need
 
@@ -39,10 +35,10 @@ palette = "normal"
 arrow = "#7E9CD8"
 os = "#7E9CD8"
 os_admin = "#FF5D62"
-directory = "#98BB6C"
+directory = "#997EBC"
 time = "#9CABCA"
 node = "#7AA89F"
-git = "#FFA066"
+git = "#F05257"
 git_status = "#DCD7BA"
 python = "#E6C384"
 conda = "#76946A"
@@ -57,7 +53,7 @@ text_light = "#1F1F28"
 style_user = 'bold os'
 style_root = 'bold os_admin'
 format = '[  $user](fg:$style) '
-disabled = false
+disabled = true
 show_always = true
 
 [os]
@@ -92,7 +88,7 @@ truncation_length = 2
 style = "fg:directory"
 read_only_style = "fg:directory"
 before_repo_root_style = "fg:directory"
-truncation_symbol = "…/"
+truncation_symbol = ""
 truncate_to_repo = true
 read_only = "  "
 
