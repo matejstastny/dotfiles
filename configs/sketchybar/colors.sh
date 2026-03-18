@@ -5,7 +5,7 @@ export BAR_BG=0xFF0a0a0a
 
 # Backgrounds
 export BG_PRIMARY=0xFF0a0a0a
-export BG_SECONDARY=0xFF161616
+export BG_SECONDARY=0xFF101017
 export BG_TERTIARY=0xFF252525
 export BG_HIGHLIGHT=0xFF2a2a2a
 

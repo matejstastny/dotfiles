@@ -7,16 +7,12 @@ WORKSPACES=$(aerospace list-workspaces --all)
 for sid in $WORKSPACES; do
     sketchybar --add item space.$sid left \
         --set space.$sid \
-            icon="$sid" \
-            icon.font="SF Pro:Bold:13.0" \
+            icon="●" \
+            icon.font="DankMono Nerd Font Mono:Regular:18.0" \
             icon.color=$FG_MUTED \
-            icon.padding_left=8 \
-            icon.padding_right=2 \
-            label.font="sketchybar-app-font:Regular:14.0" \
-            label.color=$FG_MUTED \
-            label.padding_left=2 \
-            label.padding_right=8 \
-            label.y_offset=1 \
+            icon.padding_left=6 \
+            icon.padding_right=6 \
+            label.drawing=off \
             background.color=$BG_HIGHLIGHT \
             background.corner_radius=8 \
             background.height=26 \

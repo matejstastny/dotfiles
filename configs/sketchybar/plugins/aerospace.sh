@@ -17,21 +17,39 @@ if [ -n "$APPS" ]; then
 fi
 
 if [ "$SID" = "$FOCUSED" ]; then
-    sketchybar --set "space.$SID" \
-        icon.color=$FG_PRIMARY \
-        label="${ICON_LIST:- }" \
-        label.color=$FG_PRIMARY \
-        background.drawing=on \
-        background.color=$BG_HIGHLIGHT
+    if [ -n "$ICON_LIST" ]; then
+        sketchybar --set "space.$SID" \
+            icon="$ICON_LIST" \
+            icon.font="sketchybar-app-font:Regular:14.0" \
+            icon.color=$FG_PRIMARY \
+            icon.padding_left=8 \
+            icon.padding_right=8 \
+            background.drawing=on \
+            background.color=$BG_HIGHLIGHT
+    else
+        sketchybar --set "space.$SID" \
+            icon="●" \
+            icon.font="DankMono Nerd Font Mono:Regular:18.0" \
+            icon.color=$FG_PRIMARY \
+            icon.padding_left=6 \
+            icon.padding_right=6 \
+            background.drawing=on \
+            background.color=$BG_HIGHLIGHT
+    fi
 elif [ -n "$ICON_LIST" ]; then
     sketchybar --set "space.$SID" \
-        icon.color=$FG_SECONDARY \
-        label="$ICON_LIST" \
-        label.color=$FG_MUTED \
+        icon="$ICON_LIST" \
+        icon.font="sketchybar-app-font:Regular:14.0" \
+        icon.color=$FG_MUTED \
+        icon.padding_left=8 \
+        icon.padding_right=8 \
         background.drawing=off
 else
     sketchybar --set "space.$SID" \
+        icon="●" \
+        icon.font="DankMono Nerd Font Mono:Regular:15.0" \
         icon.color=$FG_MUTED \
-        label="" \
+        icon.padding_left=6 \
+        icon.padding_right=6 \
         background.drawing=off
 fi

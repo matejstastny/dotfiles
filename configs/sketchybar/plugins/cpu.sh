@@ -41,19 +41,24 @@ blocks = '▁▁▂▃▄▅▆▇█'
 try:
     with open(state_file) as f:
         prev = list(map(int, f.read().split()))
-    result = ''
+    usages = []
     for i in range(ncpu):
         base = i * CPU_STATE_MAX
         dc = [curr[base + j] - prev[base + j] for j in range(CPU_STATE_MAX)]
         total = sum(dc)
         idle = dc[CPU_STATE_IDLE]
         usage = (total - idle) / total * 100 if total > 0 else 0.0
-        usage = max(0.0, min(100.0, usage))
-        idx = min(int(usage / 100 * 8 + 0.5), 8)
+        usages.append(max(0.0, min(100.0, usage)))
+    # Group cores in pairs to halve the display width
+    result = ''
+    for i in range(0, ncpu, 2):
+        pair = usages[i:i+2]
+        avg = sum(pair) / len(pair)
+        idx = min(int(avg / 100 * 8 + 0.5), 8)
         result += blocks[idx]
     print(result)
 except FileNotFoundError:
-    print('▁' * ncpu)
+    print('▁' * ((ncpu + 1) // 2))
 
 with open(state_file, 'w') as f:
     f.write(' '.join(map(str, curr)))
