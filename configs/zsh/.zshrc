@@ -53,9 +53,8 @@ alias nv='nvim'
 
 # Prompt & Plugins ---------------------------------------------------------------------------
 
-# Starship
-export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
-eval "$(starship init zsh)"
+# Oh My Posh
+eval "$(oh-my-posh init zsh --config $HOME/.config/oh-my-posh/tokyonight_storm.omp.json)"
 
 # Zoxide
 eval "$(zoxide init zsh)"
