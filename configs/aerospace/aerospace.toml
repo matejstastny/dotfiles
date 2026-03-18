@@ -159,7 +159,7 @@ alt-m = 'exec-and-forget open -a /System/Applications/Music.app'
 alt-v = 'exec-and-forget open -a /System/Applications/Visual Studio Code.app'
 
 # Scripts
-alt-shift-c = 'exec-and-forget ~/bin/bin/cloaseall'
+alt-shift-c = 'exec-and-forget ~/bin/bin/closeall'
 
 [mode.service.binding]
 esc = ['reload-config', 'mode main']
