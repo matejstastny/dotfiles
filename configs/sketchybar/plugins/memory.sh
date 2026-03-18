@@ -9,4 +9,4 @@ USED=$(vm_stat 2>/dev/null | awk '
 
 TOTAL=$(sysctl -n hw.memsize | awk '{printf "%d", $1/1073741824}')
 
-sketchybar --set "$NAME" label="${USED:-0}/${TOTAL}G"
+sketchybar --set "$NAME" label="${USED:-0}G / ${TOTAL}G"
