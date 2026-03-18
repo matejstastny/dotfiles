@@ -19,30 +19,28 @@
     ll = !eza --git --group-directories-first --icons -l
     la = !eza --git --group-directories-first --icons -la
 
-
-########################
-# Delta
-########################
-
 [core]
-    pager = delta
+  pager = delta
 	autocrlf = input
+	editor = code --wait
 
 [interactive]
-    diffFilter = delta --color-only
+  diffFilter = delta --color-only
 
 [delta]
-    navigate = true
-    side-by-side = true
-    syntax-theme = kanagawa
-    line-numbers = true
+  navigate = true
+  side-by-side = true
+  syntax-theme = base16
+  line-numbers = true
 
 [merge]
-    conflictstyle = diff3
+  conflictstyle = diff3
 
 [diff]
-    colorMoved = default
+  colorMoved = default
+
 [init]
 	defaultBranch = main
+
 [pull]
 	rebase = false

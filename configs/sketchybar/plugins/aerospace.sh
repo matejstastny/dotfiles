@@ -12,13 +12,13 @@ update_workspace_icon() {
         done | tr '\n' ' ')
 
     if [ -z "$APP_ICONS" ]; then
-        APP_ICONS="⏺︎"
+        APP_ICONS="—"
     fi
 
     if [ "$workspace_id" == "$FOCUSED_WORKSPACE" ]; then
-        sketchybar --set $NAME label="$APP_ICONS" background.drawing=on
+        sketchybar --set $NAME label="$APP_ICONS" label.color=0xFFe0e0e0 background.drawing=on
     else
-        sketchybar --set $NAME label="$APP_ICONS" background.drawing=off
+        sketchybar --set $NAME label="$APP_ICONS" label.color=0xFF555555 background.drawing=off
     fi
 }
 

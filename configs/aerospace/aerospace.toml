@@ -1,11 +1,4 @@
-# --------------------------------------------------------------------------------------------
-# aerospace.toml - my AeroSpace config
-# --------------------------------------------------------------------------------------------
-# Author: Matej Stastny
-# Date: 2025-11-08 (YYYY-MM-DD)
-# License: MIT
-# Link: https://github.com/matejstastny/dotfiles
-# --------------------------------------------------------------------------------------------
+# Matej Stastny | https://github.com/matejstastny/dotfiles
 
 start-at-login = true
 

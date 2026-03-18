@@ -1,73 +1,42 @@
+// Matej Stastny | https://github.com/matejstastny/dotfiles
+
 {
-    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
-    "logo": "macos_small",
-    "display": {
-        "separator": " : "
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "color": {
+      "1": "bright_blue"
     },
-    "modules": [
-        {
-            "type": "os",
-            "key": "   OS",
-            // "key": "   OS",
-            // "key": "   OS",
-            "keyColor": "red"
-        },
-        {
-            "type": "kernel",
-            "key": "   Kernel",
-            "keyColor": "red"
-        },
-        // {
-        //     "type": "display",
-        //     "key": "   Display",
-        //     "keyColor": "green"
-        // },
-        {
-            "type": "gpu",
-            "format": "{2}",
-            "key": "   GPU",
-            "keyColor": "blue"
-        },
-        // {
-        //   "type": "de",
-        //   "key": "   WM",
-        //   "keyColor": "yellow",
-        // },
-        // {
-        //   "type": "terminal",
-        //   "key": "   Terminal",
-        //   "keyColor": "yellow",
-        // },
-        // {
-        //   "type": "title",
-        //   "key": "   Host",
-        // },
-        {
-            "type": "cpu",
-            "format": "{1}",
-            "key": "   CPU",
-            "keyColor": "blue"
-        },
-        //   {
-        //       "type": "gpu",
-        //       "format": "{3}",
-        //       "key": "   GPU Driver",
-        //       "keyColor": "magenta"
-        //   },
-        {
-            "type": "uptime",
-            "key": "   Uptime",
-            "keyColor": "green"
-        },
-        {
-            "type": "memory",
-            "key": "  󰍛 Memory",
-            "keyColor": "magenta"
-        },
-        {
-            "type": "colors",
-            "paddingLeft": 2,
-            "symbol": "circle"
-        }
-    ]
+    "source": "~/dotfiles/configs/fastfetch/cat.txt",
+    "type": "auto",
+    "height": 3,
+    "width": 12,
+    "padding": {
+      "top": 0,
+      "left": 2,
+      "right": 0
+    }
+  },
+  "modules": [
+    {
+      "type": "os",
+      "key": " OS",
+      "keyColor": "green"
+    },
+    {
+      "type": "packages",
+      "key": " Packages",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "uptime",
+      "key": " Uptime",
+      "keyColor": "blue"
+    },
+    {
+      "type": "title",
+      "key": " User",
+      "format": "{user-name}@{host-name}",
+      "keyColor": "magenta"
+    }
+  ]
 }

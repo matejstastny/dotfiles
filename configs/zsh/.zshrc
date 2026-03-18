@@ -1,10 +1,5 @@
 # --------------------------------------------------------------------------------------------
-# .zshrc - my zsh configuration file
-# --------------------------------------------------------------------------------------------
-# Author: Matej Stastny
-# Date: 2025-03-02 (YYYY-MM-DD)
-# License: MIT
-# Link: https://github.com/matejstastny/dotfiles
+# .zshrc
 # --------------------------------------------------------------------------------------------
 
 # Aliases ------------------------------------------------------------------------------------
@@ -13,20 +8,19 @@ alias ..='cd ..'
 alias ...='cd ../..'
 alias dots='cd ~/dotfiles'
 alias scr='ls ~/bin/bin'
+
+alias lg='lazygit'
 alias gs='git status -sb'
 alias ga='git add'
 alias gc='git commit'
 alias gp='git push'
 alias gl='git log --oneline --graph --decorate -20'
 alias gd='git diff'
-alias lg='lazygit'
+
 alias copy='pbcopy'
 alias paste='pbpaste'
-alias ppath='echo $PATH | tr ":" "\n"'
+alias path='echo $PATH | tr ":" "\n"'
 alias ports='lsof -iTCP -sTCP:LISTEN -n -P'
-alias zrc='${EDITOR} ~/.zshrc'
-alias zpr='${EDITOR} ~/.zprofile'
-alias watchlist='${EDITOR} ~/OneDrive/notes/Books/Watchlist.md'
 
 alias d='trash'
 alias c='clear'
@@ -50,21 +44,12 @@ alias vc='veracrypt -t'
 
 alias dockerc='docker system prune --all --volumes'
 
-alias n='clear && fastfetch -c $HOME/.config/fastfetch/themes/cat.jsonc'
-alias nm='clear && fastfetch -c $HOME/.config/fastfetch/themes/fastcat.jsonc'
-alias nd='clear && fastfetch -c $HOME/.config/fastfetch/themes/detailed.jsonc'
-alias nj='clear && fastfetch -c $HOME/.config/fastfetch/themes/jellyfish.jsonc'
+alias n='clear && fastfetch'
 
 alias cc='clear && claude'
 alias claude='clear && claude'
-alias co='clear && copilot'
-alias copilot='clear && copilot'
 
 alias nv='nvim'
-alias y='yazi'
-
-alias bonsai='cbonsai -l -t 0.02'
-alias pipes='pipes-rs --transparent'
 
 # Prompt & Plugins ---------------------------------------------------------------------------
 
@@ -80,31 +65,31 @@ source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 # Zsh syntax highlighting
 source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-ZSH_HIGHLIGHT_STYLES[command]='fg=#7E9CD8,bold'
-ZSH_HIGHLIGHT_STYLES[builtin]='fg=#957FB8,bold'
-ZSH_HIGHLIGHT_STYLES[alias]='fg=#7E9CD8,bold'
-ZSH_HIGHLIGHT_STYLES[function]='fg=#7FB4CA,bold'
-ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=#C34043'
-ZSH_HIGHLIGHT_STYLES[path]='fg=#98BB6C,underline'
-ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=#98BB6C'
-ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=#98BB6C'
-ZSH_HIGHLIGHT_STYLES[dollar-quoted-argument]='fg=#E6C384'
+ZSH_HIGHLIGHT_STYLES[command]='fg=cyan,bold'
+ZSH_HIGHLIGHT_STYLES[builtin]='fg=cyan,bold'
+ZSH_HIGHLIGHT_STYLES[alias]='fg=cyan,bold'
+ZSH_HIGHLIGHT_STYLES[function]='fg=blue,bold'
+ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=red'
+ZSH_HIGHLIGHT_STYLES[path]='fg=green,underline'
+ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=green'
+ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=green'
+ZSH_HIGHLIGHT_STYLES[dollar-quoted-argument]='fg=yellow'
 
 # Ripgrep
 export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/.ripgreprc"
 
 # Bat
-export BAT_THEME="kanagawa"
+export BAT_THEME="base16"
 export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08/, \"\", \$0); print }'\'' | bat -p -lman'"
 
 # Fzf
 source <(fzf --zsh)
 export FZF_DEFAULT_COMMAND="find -L"
 export FZF_DEFAULT_OPTS=" \
-  --color=bg+:#2A2A37,bg:-1,fg:#DCD7BA,fg+:#DCD7BA \
-  --color=hl:#7E9CD8,hl+:#7E9CD8,info:#E6C384,marker:#98BB6C \
-  --color=prompt:#957FB8,spinner:#957FB8,pointer:#957FB8,border:#727169 \
-  --color=header:#7E9CD8,gutter:-1,separator:#727169"
+  --color=bg+:#252525,bg:-1,fg:#e0e0e0,fg+:#e0e0e0 \
+  --color=hl:#6c9ef8,hl+:#6c9ef8,info:#e5c07b,marker:#73c991 \
+  --color=prompt:#888888,spinner:#888888,pointer:#e0e0e0,border:#333333 \
+  --color=header:#6c9ef8,gutter:-1,separator:#333333"
 
 # Jenv
 if command -v jenv >/dev/null 2>&1; then
@@ -145,6 +130,7 @@ HISTSIZE=1000000
 SAVEHIST=1000000
 HISTFILE="$XDG_CACHE_HOME/zsh_history"
 
+# Tmux separate history
 if [[ -n $TMUX_PANE ]]; then
 	HISTDIR="$HOME/.zsh_tmux_hist"
 	mkdir -p "$HISTDIR"
@@ -152,4 +138,9 @@ if [[ -n $TMUX_PANE ]]; then
 	if [[ ! -f $HISTFILE ]]; then
 		cp "$HOME/.zsh_history" "$HISTFILE" 2>/dev/null
 	fi
+fi
+
+# Attach to tmux session
+if [[ $TERM == "xterm-ghostty" ]]; then
+	tm
 fi

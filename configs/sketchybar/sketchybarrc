@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
 
-# --------------------------------------------------------------------------------------------
-# .sketchybarrc - my sketchybar config
-# --------------------------------------------------------------------------------------------
-# Author: Matej Stastny
-# License: MIT
-# Link: https://github.com/matejstastny/dotfiles
-# --------------------------------------------------------------------------------------------
-
 PLUGIN_DIR="$CONFIG_DIR/plugins"
 ITEM_DIR="$CONFIG_DIR/items"
 
@@ -15,14 +7,13 @@ source "$CONFIG_DIR/colors.sh"
 
 sketchybar --bar \
     position=top \
-    height=36 \
-    y_offset=4 \
-    margin=8 \
-    corner_radius=15 \
-    blur_radius=30 \
+    height=32 \
+    y_offset=0 \
+    margin=0 \
+    corner_radius=0 \
+    blur_radius=0 \
     color=$BAR_BG \
-    border_width=1 \
-	border_color=0xFF7E9CD8
+    border_width=0 \
     shadow=off
 
 sketchybar --add event aerospace_workspace_change
@@ -32,10 +23,10 @@ source $ITEM_DIR/aerospace.sh
 default=(
     padding_left=4
     padding_right=4
-    icon.font="DankMono Nerd Font Mono:Bold:17.0"
-    label.font="DankMono Nerd Font Mono:Bold:13.0"
-    icon.color=$FUJI_WHITE
-    label.color=$OLD_WHITE
+    icon.font="SF Pro:Semibold:14.0"
+    label.font="SF Pro:Medium:13.0"
+    icon.color=$FG_PRIMARY
+    label.color=$FG_SECONDARY
     icon.padding_left=4
     icon.padding_right=4
     label.padding_left=4
@@ -45,28 +36,10 @@ default=(
 sketchybar --default "${default[@]}"
 
 sketchybar --add item clock right \
-    --set clock update_freq=10 icon= icon.color=$CRYSTAL_BLUE script="$PLUGIN_DIR/clock.sh" \
+    --set clock update_freq=10 icon= icon.color=$FG_SECONDARY script="$PLUGIN_DIR/clock.sh" \
     --add item battery right \
-    --set battery update_freq=120 icon.color=$SPRING_GREEN script="$PLUGIN_DIR/battery.sh" \
-    --subscribe battery system_woke power_source_change \
-    --add item volume right \
-    --set volume icon.color=$ONI_VIOLET icon=󰕾 script="$PLUGIN_DIR/volume.sh" \
-    --subscribe volume volume_change \
-    --add item disk right \
-    --set disk update_freq=60 icon=󰋊 icon.color=$WAVE_AQUA2 script="$PLUGIN_DIR/disk.sh" \
-    --add item ram right \
-    --set ram update_freq=5 icon=󰍛 icon.color=$CARP_YELLOW script="$PLUGIN_DIR/ram.sh" \
-    --add item cpu right \
-    --set cpu update_freq=2 icon=󰻠 icon.color=$SURIMI_ORANGE script="$PLUGIN_DIR/cpu.sh"
-
-# sketchybar -m \
-# 	--add event music_change "com.apple.Music.playerInfo" \
-# 	--add item musicIndicator right \
-# 	--set musicIndicator \
-# 	icon=󰝚 \
-# 	script="$CONFIG_DIR/plugins/music.sh" \
-# 	click_script="osascript -e 'tell application \"Music\" to playpause'" \
-# 	--subscribe musicIndicator music_change
+    --set battery update_freq=120 icon.color=$FG_SECONDARY script="$PLUGIN_DIR/battery.sh" \
+    --subscribe battery system_woke power_source_change
 
 source $ITEM_DIR/front_app.sh
 

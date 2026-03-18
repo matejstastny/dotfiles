@@ -18,7 +18,7 @@ FONT_DIR="$ASSETS_DIR/fonts"
 CONFIGS_DIR="$DOTFILES_DIR/configs"
 WALLPAPER_DIR="$ASSETS_DIR/wallpapers"
 BREWFILE="$DOTFILES_DIR/Brewfile"
-WALLPAPER="${WALLPAPER_DIR}/wallpaper.jpg"
+WALLPAPER="${WALLPAPER_DIR}/wallpaper.png"
 FONT_INSTALL_DIR="$HOME/Library/Fonts"
 
 # Colors (Kanagawa)

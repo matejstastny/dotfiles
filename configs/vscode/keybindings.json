@@ -3,63 +3,60 @@
 
   {
     "key": "cmd+d",
-    "command": "workbench.view.explorer",
+    "command": "workbench.view.explorer"
   },
 
   {
     "key": "cmd+r",
-    "command": "copilot-chat.open",
+    "command": "copilot-chat.open"
   },
 
   {
     "key": "cmd+g",
-    "command": "workbench.view.scm",
+    "command": "workbench.view.scm"
   },
 
   {
     "key": "cmd+shift+e",
-    "command": "workbench.view.extensions",
+    "command": "workbench.view.extensions"
   },
 
   {
     // Close sidebar
-    "key": "escape",
-    "command": "workbench.action.closeSidebar",
-    "when": "sideBarFocus",
+    "key": "cmd+b",
+    "command": "workbench.action.closeSidebar"
   },
-
-  // Actions -------------------------------------------------------------------------
 
   {
     "key": "cmd+n",
-    "command": "extension.advancedNewFile",
+    "command": "extension.advancedNewFile"
   },
 
   {
     // Toast clear
     "key": "escape",
     "command": "notifications.hideToasts",
-    "when": "notificationToastsVisible",
+    "when": "notificationToastsVisible"
   },
 
   {
     // Reset zoom
     "key": "cmd+0",
-    "command": "workbench.action.zoomReset",
+    "command": "workbench.action.zoomReset"
   },
 
   {
     // Declaration
     "key": "cmd+l",
     "command": "editor.action.goToDeclaration",
-    "when": "editorTextFocus",
+    "when": "editorTextFocus"
   },
 
   {
     // Insert date string
     "key": "cmd+shift+d",
     "command": "insertDateString.insertDate",
-    "when": "editorTextFocus",
+    "when": "editorTextFocus"
   },
 
   {
@@ -68,9 +65,9 @@
     "args": {
       "commands": [
         "workbench.files.action.collapseExplorerFolders",
-        "openEditors.closeAll",
-      ],
-    },
+        "openEditors.closeAll"
+      ]
+    }
   },
 
   // Mini windows --------------------------------------------------------------------
@@ -78,23 +75,28 @@
   {
     // Open command panel
     "key": "cmd+p",
-    "command": "workbench.action.showCommands",
+    "command": "workbench.action.showCommands"
   },
 
   {
     // Line finder
     "key": "cmd+m",
-    "command": "workbench.action.gotoLine",
+    "command": "workbench.action.gotoLine"
   },
   {
     // Method finder
     "key": "cmd+e",
-    "command": "workbench.action.gotoSymbol",
+    "command": "workbench.action.gotoSymbol"
   },
 
   {
     // Quick open menu
     "key": "cmd+o",
-    "command": "workbench.action.quickOpen",
+    "command": "workbench.action.quickOpen"
   },
+  {
+    "key": "shift+cmd+i",
+    "command": "-insertDateString.insertDateTime",
+    "when": "editorTextFocus"
+  }
 ]

@@ -1,168 +1,53 @@
 # --------------------------------------------------------------------------------------------
-# starship.toml
-# --------------------------------------------------------------------------------------------
-# Author: Matej Stastny
-# Date: 2026-02-01 (YYYY-MM-DD)
-# License: MIT
-# Link: https://github.com/matejstastny/dotfiles
+# starship.toml - clean prompt
 # --------------------------------------------------------------------------------------------
 
 format = """\
-[╭  ](fg:arrow)\
-$username\
-$os\
- $directory\
+$directory\
 $git_branch\
-$fill $cmd_duration $time\
-(\
-    $python\
-    $conda\
-    $nodejs\
-    $c\
-    $rust\
-    $java\
-)
-[╰](fg:arrow)$character\
+$git_status\
+$character\
 """
-# Add the modules you need
 
-# Disable the blank line at the start of the prompt
 add_newline = true
 
-palette = "normal"
-
-[palettes.normal]
-arrow = "#7E9CD8"
-os = "#7E9CD8"
-os_admin = "#FF5D62"
-directory = "#997EBC"
-time = "#9CABCA"
-node = "#7AA89F"
-git = "#F05257"
-git_status = "#DCD7BA"
-python = "#E6C384"
-conda = "#76946A"
-java = "#D27E99"
-rust = "#C0A36E"
-clang = "#A3D4D5"
-duration = "#E46876"
-text_color = "#DCD7BA"
-text_light = "#1F1F28"
-
-[username]
-style_user = 'bold os'
-style_root = 'bold os_admin'
-format = '[$user](fg:$style) '
-disabled = true
-show_always = true
-
-[os]
-format = "on [($name)]($style) "
-style = "bold blue"
-disabled = true
-
-[os.symbols]
-Alpine = " "
-Arch = " "
-Debian = " "
-EndeavourOS = " "
-Fedora = " "
-Linux = " "
-Macos = " "
-Manjaro = " "
-Mint = " "
-NixOS = " "
-openSUSE = " "
-Pop = " "
-SUSE = " "
-Ubuntu = " "
-Windows = " "
-
 [character]
-success_symbol = "[](fg:arrow)"
-error_symbol = "[](fg:arrow)"
+success_symbol = "[>](bold white)"
+error_symbol = "[>](bold red)"
 
 [directory]
-format = "[$path](bold $style)[$read_only]($read_only_style) "
-truncation_length = 2
-style = "fg:directory"
-read_only_style = "fg:directory"
-before_repo_root_style = "fg:directory"
-truncation_symbol = ""
+format = "[$path]($style) "
+truncation_length = 3
+style = "bold cyan"
 truncate_to_repo = true
-read_only = "  "
-
-[time]
-disabled = true
-format = "[󱑈 $time]($style)"
-time_format = "%H:%M"
-style = "bold fg:time"
-
-
-[cmd_duration]
-disabled = true
-format = "took [ $duration]($style) "
-style = "bold fg:duration"
-min_time = 500
 
 [git_branch]
-format = "via [$symbol$branch]($style) "
-style = "bold fg:git"
-symbol = " "
+format = "[$symbol$branch]($style) "
+style = "bold purple"
+symbol = ""
 
 [git_status]
-format = '[ $all_status$ahead_behind ]($style)'
-style = "fg:text_color bg:git"
+format = '([$all_status$ahead_behind]($style) )'
+style = "bold yellow"
+disabled = false
+
+[nodejs]
+disabled = true
+
+[python]
+disabled = true
+
+[java]
+disabled = true
+
+[c]
+disabled = true
+
+[rust]
+disabled = true
+
+[package]
 disabled = true
 
 [docker_context]
-disabled = false
-symbol = " "
-
-[package]
-disabled = false
-
-[fill]
-symbol = " "
-
-[nodejs]
-format = "[ $symbol$version ]($style)"
-style = "fg:node"
-symbol = " "
-version_format = "${raw}"
-disabled = false
-
-[python]
-disabled = false
-format = '[ ${symbol}${pyenv_prefix}(${version})( \($virtualenv\)) ]($style)'
-symbol = " "
-version_format = "${raw}"
-style = "fg:python"
-
-[conda]
-format = "[ $symbol$environment ]($style)"
-style = "fg:conda"
-ignore_base = false
-disabled = false
-symbol = " "
-
-[java]
-format = "[ $symbol$version ]($style)"
-style = "fg:java"
-version_format = "${raw}"
-symbol = " "
-disabled = false
-
-[c]
-format = "[ $symbol($version(-$name)) ]($style)"
-style = "fg:clang"
-symbol = " "
-version_format = "${raw}"
-disabled = false
-
-[rust]
-format = "[ $symbol$version ]($style)"
-style = "fg:rust"
-symbol = " "
-version_format = "${raw}"
-disabled = false
+disabled = true

@@ -8,11 +8,11 @@
 // --------------------------------------------------------------------------------------------
 
 {
-  "workbench.colorTheme": "Kanagawa",
+  "workbench.colorTheme": "Noir Poimandres Darker",
   "workbench.iconTheme": "material-icon-theme",
-  "workbench.activityBar.location": "hidden",
   "workbench.editor.showTabs": "single",
   "workbench.editor.empty.hint": "hidden",
+  "workbench.sideBar.location": "right",
   "workbench.startupEditor": "none",
   "workbench.tips.enabled": false,
   "editor.minimap.enabled": false,
@@ -40,28 +40,28 @@
     "titleBarStyle": "hiddenInset",
     "trafficLightPosition": {
       "x": 16,
-      "y": 12,
+      "y": 12
     },
-    "opacity": 0.95,
+    "opacity": 1
   },
   "custom-ui-style.stylesheet": {
     ".quick-input-widget": "top: 25vh !important",
-    ".quick-input-list .scrollbar": "display: none",
-    ".monaco-action-bar.quick-input-inline-action-bar": "display: none",
-    ".editor-widget.find-widget": "box-shadow: none; border-radius: 4px",
-    ".quick-input-titlebar": "background: #16161D !important",
-    ".monaco-workbench .part.editor > .content .editor-group-container > .title.title-border-bottom:after": "display: none",
+    // ".quick-input-list .scrollbar": "display: none",
+    // ".monaco-action-bar.quick-input-inline-action-bar": "display: none",
+    // ".editor-widget.find-widget": "box-shadow: none; border-radius: 4px",
+    // ".quick-input-titlebar": "background: #16161D !important",
+    // ".monaco-workbench .part.editor > .content .editor-group-container > .title.title-border-bottom:after": "display: none",
     ".monaco-scrollable-element > .shadow.top": "display: none",
     ".sidebar .title-label": "padding: 0 !important",
-    ".sidebar": "border: none !important",
-    ".monaco-workbench .monaco-list:not(.element-focused):focus:before": "outline: none !important",
-    ".monaco-list-row.focused": "outline: none !important",
+    // ".sidebar": "border: none !important",
+    // ".monaco-workbench .monaco-list:not(.element-focused):focus:before": "outline: none !important",
+    // ".monaco-list-row.focused": "outline: none !important",
     ".monaco-editor .scroll-decoration": "display: none",
-    ".title-actions": "display: none !important",
+    // ".title-actions": "display: none !important",
     ".title.show-file-icons .label-container .monaco-icon-label.file-icon": "justify-content: center; padding: 0 !important",
-    ".title .monaco-icon-label:after": "margin-right: 0",
-    ".monaco-workbench .part.editor > .content .editor-group-container > .title > .label-container > .title-label": "padding-left: 60px",
-    ".title .monaco-icon-label.file-icon": "margin: 0 60px",
+    ".title .monaco-icon-label:after": "margin-rightw: 0",
+    ".monaco-workbench .part.editor > .content .editor-group-container > .title > .label-container > .title-label": "padding-left: 80px",
+    ".title .monaco-icon-label.file-icon": "margin: 0 60px"
   },
   "custom-ui-style.font.sansSerif": "DankMono Nerd Font Mono",
 
@@ -71,30 +71,8 @@
   "editor.cursorStyle": "line",
   "editor.cursorWidth": 2,
   "workbench.colorCustomizations": {
-    "editorGutter.background": "#1a1a22",
-    "statusBar.background": "#1a1a22",
-    "sideBar.background": "#1a1a22",
-    "sideBarSectionHeader.background": "#00000000",
-    "editor.background": "#1a1a22",
-    "menu.background": "#1a1a22",
-    "terminal.background": "#1a1a22",
-    "welcomePage.background": "#1a1a22",
-    "welcomePage.tileBackground": "#1a1a22",
-    "editorGroup.dropBackground": "#1a1a22",
-    "editorGroup.emptyBackground": "#1a1a22",
-    "titleBar.activeBackground": "#1a1a22",
-    "panel.background": "#1a1a22",
-    "scrollbar.background": "#1a1a22",
-    "scrollbarSlider.activeBackground": "#1a1a22",
-    "editorStickyScroll.background": "#1a1a22",
-    "tab.unfocusedInactiveBackground": "#1a1a22",
-    "tab.inactiveBackground": "#1a1a22",
-    "input.background": "#222230",
-    "errorLens.errorBackground": "#00000000",
-    "errorLens.hintBackground": "#00000000",
-    "errorLens.warningBackground": "#00000000",
-    "editorSuggestWidget.background": "#1a1a22",
-    "editorSuggestWidget.selectedBackground": "#2a2a3d",
+    "statusBar.border": "#FFFFFF26",
+    "sideBar.border": "#FFFFFF26"
   },
 
   // Typography
@@ -107,10 +85,10 @@
       {
         "scope": "comment",
         "settings": {
-          "fontStyle": "italic",
-        },
-      },
-    ],
+          "fontStyle": "italic"
+        }
+      }
+    ]
   },
 
   // Decorations & hints
@@ -145,15 +123,6 @@
   "editor.formatOnPaste": true,
   "workbench.settings.editor": "json",
 
-  // Disable AI slop
-  //   "chat.agent.enabled": false,
-  "github.copilot.enable": {
-    "*": false,
-    "plaintext": false,
-    "markdown": false,
-    "scminput": false,
-  },
-
   // Trust all files, I know what I'm doing VSCode
   "security.workspace.trust.untrustedFiles": "open",
 
@@ -168,10 +137,14 @@
   // EXTENSIONS CONFIG
   // ------------------------------------------------------------
 
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
   // @ext ms-azuretools.vscode-docker
   "docker.extension.dockerEngineAvailabilityPrompt": false,
   "[dockerfile]": {
-    "editor.semanticHighlighting.enabled": false,
+    "editor.semanticHighlighting.enabled": false
   },
 
   // @ext ms-vscode.cpptools-extension-pack
@@ -201,9 +174,6 @@
   "workbench.productIconTheme": "bongocat",
   "docker.extension.enableComposeLanguageServer": false,
 
-  "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-  },
   "github.copilot.nextEditSuggestions.enabled": true,
-  "workbench.sideBar.location": "right",
+  "prettier.trailingComma": "none"
 }
