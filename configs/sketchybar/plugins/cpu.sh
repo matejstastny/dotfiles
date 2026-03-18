@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LABEL=$(python3 - << 'EOF'
-import ctypes, os
+import ctypes
 
 PROCESSOR_CPU_LOAD_INFO = 2
 CPU_STATE_MAX = 4

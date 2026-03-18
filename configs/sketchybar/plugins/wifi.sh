@@ -1,12 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
-# Get the current Wi-Fi SSID
-wifi_name=$(networksetup -listpreferredwirelessnetworks en0 | sed -n '2 p' | tr -d '\t')
+source "$CONFIG_DIR/colors.sh"
+source "$CONFIG_DIR/icons.sh"
 
-# If the Wi-Fi name is empty, set a default value (e.g., "No Wi-Fi")
-if [ -z "$wifi_name" ]; then
-    wifi_name="Offline"
+SSID=$(/System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport -I 2>/dev/null | awk -F': ' '/^ *SSID/{print $2}')
+
+if [ -z "$SSID" ]; then
+    sketchybar --set "$NAME" icon="$ICON_WIFI_OFF" label="Off"
+else
+    sketchybar --set "$NAME" icon="$ICON_WIFI" label="$SSID"
 fi
-
-# Set the Wi-Fi name as the label in SketchyBar
-sketchybar --set "$NAME" label="$wifi_name"

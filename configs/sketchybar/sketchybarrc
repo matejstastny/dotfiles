@@ -1,47 +1,99 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-PLUGIN_DIR="$CONFIG_DIR/plugins"
 ITEM_DIR="$CONFIG_DIR/items"
+PLUGIN_DIR="$CONFIG_DIR/plugins"
 
 source "$CONFIG_DIR/colors.sh"
+source "$CONFIG_DIR/icons.sh"
+
+# ── Bar ──────────────────────────────────────────────────────────────────────────
 
 sketchybar --bar \
     position=top \
-    height=32 \
+    height=36 \
+    color=$TRANSPARENT \
+    shadow=off \
+    corner_radius=0 \
+    border_width=0 \
+    blur_radius=0 \
     y_offset=0 \
     margin=0 \
-    corner_radius=0 \
-    blur_radius=0 \
-    color=$BAR_BG \
-    border_width=0 \
-    shadow=off
+    padding_left=10 \
+    padding_right=10
+
+# ── Defaults ─────────────────────────────────────────────────────────────────────
+
+sketchybar --default \
+    icon.font="DankMono Nerd Font Mono:Regular:16.0" \
+    icon.color=$FG_MUTED \
+    icon.padding_left=8 \
+    icon.padding_right=4 \
+    label.font="SF Pro:Medium:13.0" \
+    label.color=$FG_PRIMARY \
+    label.padding_left=0 \
+    label.padding_right=8 \
+    background.height=28 \
+    background.corner_radius=8
+
+# ── Events ───────────────────────────────────────────────────────────────────────
 
 sketchybar --add event aerospace_workspace_change
 
-source $ITEM_DIR/aerospace.sh
+# ── Left ─────────────────────────────────────────────────────────────────────────
 
-default=(
-    padding_left=4
-    padding_right=4
-    icon.font="SF Pro:Semibold:14.0"
-    label.font="SF Pro:Medium:13.0"
-    icon.color=$FG_PRIMARY
-    label.color=$FG_SECONDARY
-    icon.padding_left=4
-    icon.padding_right=4
-    label.padding_left=4
-    label.padding_right=4
-)
+source "$ITEM_DIR/aerospace.sh"
+source "$ITEM_DIR/front_app.sh"
 
-sketchybar --default "${default[@]}"
+# ── Right (added right-to-left) ──────────────────────────────────────────────────
 
-sketchybar --add item clock right \
-    --set clock update_freq=10 icon= icon.color=$FG_SECONDARY script="$PLUGIN_DIR/clock.sh" \
-    --add item battery right \
-    --set battery update_freq=120 icon.color=$FG_SECONDARY script="$PLUGIN_DIR/battery.sh" \
-    --subscribe battery system_woke power_source_change
+source "$ITEM_DIR/clock.sh"
 
-source $ITEM_DIR/front_app.sh
+sketchybar --add item spacer_right right \
+    --set spacer_right \
+        icon.drawing=off \
+        label.drawing=off \
+        background.drawing=off \
+        padding_left=3 \
+        padding_right=3
 
-sketchybar --hotload on
+source "$ITEM_DIR/battery.sh"
+source "$ITEM_DIR/wifi.sh"
+source "$ITEM_DIR/volume.sh"
+
+sketchybar --add item spacer_left right \
+    --set spacer_left \
+        icon.drawing=off \
+        label.drawing=off \
+        background.drawing=off \
+        padding_left=3 \
+        padding_right=3
+
+source "$ITEM_DIR/cpu.sh"
+source "$ITEM_DIR/memory.sh"
+source "$ITEM_DIR/disk.sh"
+
+# ── Bracket groups ───────────────────────────────────────────────────────────────
+
+sketchybar --add bracket stats disk memory cpu \
+    --set stats \
+        background.color=$BG_SECONDARY \
+        background.corner_radius=8 \
+        background.height=28 \
+        background.drawing=on
+
+sketchybar --add bracket controls volume wifi battery \
+    --set controls \
+        background.color=$BG_SECONDARY \
+        background.corner_radius=8 \
+        background.height=28 \
+        background.drawing=on
+
+sketchybar --add bracket time clock \
+    --set time \
+        background.color=$BG_SECONDARY \
+        background.corner_radius=8 \
+        background.height=28 \
+        background.drawing=on
+
+sketchybar --hotload true
 sketchybar --update

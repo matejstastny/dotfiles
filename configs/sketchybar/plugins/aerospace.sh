@@ -1,25 +1,37 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-FOCUSED_WORKSPACE=$(aerospace list-workspaces --focused)
+source "$CONFIG_DIR/colors.sh"
 
-update_workspace_icon() {
-    local workspace_id=$1
+SID="$1"
+FOCUSED=$(aerospace list-workspaces --focused)
 
-    local APP_ICONS=$(aerospace list-windows --workspace $workspace_id |
-        awk -F '|' '{print $2}' |
-        while read -r app_name; do
-            $CONFIG_DIR/plugins/icon_map_fn.sh "$app_name"
-        done | tr '\n' ' ')
+APPS=$(aerospace list-windows --workspace "$SID" 2>/dev/null | awk -F '|' '{gsub(/^ *| *$/, "", $2); print $2}')
+ICON_LIST=""
 
-    if [ -z "$APP_ICONS" ]; then
-        APP_ICONS="—"
-    fi
+if [ -n "$APPS" ]; then
+    while IFS= read -r app; do
+        [ -z "$app" ] && continue
+        icon=$("$CONFIG_DIR/plugins/icon_map_fn.sh" "$app")
+        ICON_LIST="${ICON_LIST}${ICON_LIST:+ }${icon}"
+    done <<< "$APPS"
+fi
 
-    if [ "$workspace_id" == "$FOCUSED_WORKSPACE" ]; then
-        sketchybar --set $NAME label="$APP_ICONS" label.color=0xFFe0e0e0 background.drawing=on
-    else
-        sketchybar --set $NAME label="$APP_ICONS" label.color=0xFF555555 background.drawing=off
-    fi
-}
-
-update_workspace_icon $1
+if [ "$SID" = "$FOCUSED" ]; then
+    sketchybar --set "space.$SID" \
+        icon.color=$FG_PRIMARY \
+        label="${ICON_LIST:- }" \
+        label.color=$FG_PRIMARY \
+        background.drawing=on \
+        background.color=$BG_HIGHLIGHT
+elif [ -n "$ICON_LIST" ]; then
+    sketchybar --set "space.$SID" \
+        icon.color=$FG_SECONDARY \
+        label="$ICON_LIST" \
+        label.color=$FG_MUTED \
+        background.drawing=off
+else
+    sketchybar --set "space.$SID" \
+        icon.color=$FG_MUTED \
+        label="" \
+        background.drawing=off
+fi

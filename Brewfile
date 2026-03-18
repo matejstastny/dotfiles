@@ -1,6 +1,7 @@
 # -------------------- Taps --------------------
 tap "felixkratz/formulae"
 tap "nikitabobko/tap"
+tap "joncrangle/tap"
 tap "olets/tap"
 
 # -------------------- Homebrew Formulae --------------------
@@ -51,6 +52,7 @@ brew "zoxide"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 brew "felixkratz/formulae/sketchybar"
+brew "joncrangle/tap/sketchybar-system-stats"
 
 # -------------------- Homebrew Casks --------------------
 cask "aerospace"
