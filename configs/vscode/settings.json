@@ -8,7 +8,7 @@
 // --------------------------------------------------------------------------------------------
 
 {
-  "workbench.colorTheme": "Noir Poimandres Darker",
+  "workbench.colorTheme": "One Dark Pro Night Flat",
   "workbench.iconTheme": "material-icon-theme",
   "workbench.editor.showTabs": "single",
   "workbench.editor.empty.hint": "hidden",
@@ -71,8 +71,14 @@
   "editor.cursorStyle": "line",
   "editor.cursorWidth": 2,
   "workbench.colorCustomizations": {
+    // Remote host
+    "statusBarItem.remoteBackground": "#FFFFFF00",
+    "statusBarItem.remoteForeground": "#9DA5B4",
+
+    // Borders
     "statusBar.border": "#FFFFFF26",
-    "sideBar.border": "#FFFFFF26"
+    "sideBar.border": "#FFFFFF26",
+    "panel.border": "#FFFFFF26"
   },
 
   // Typography
@@ -175,5 +181,6 @@
   "docker.extension.enableComposeLanguageServer": false,
 
   "github.copilot.nextEditSuggestions.enabled": true,
-  "prettier.trailingComma": "none"
+"prettier.trailingComma": "none",
+"chat.viewSessions.enabled": false
 }
