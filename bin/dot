@@ -97,6 +97,7 @@ link() {
 	declare -A FILE_EXCEPTIONS=(
 		[zsh]="$HOME"
 		[git]="$HOME"
+		[claude]="$HOME/.claude"
 		[vscode]="$HOME/Library/Application Support/Code/User"
 		[vesktop]="$HOME/Library/Application Support/vesktop/themes"
 	)
@@ -281,6 +282,7 @@ check() {
 	declare -A FILE_EXCEPTIONS=(
 		[zsh]="$HOME"
 		[git]="$HOME"
+		[claude]="$HOME/.claude"
 		[vscode]="$HOME/Library/Application Support/Code/User"
 		[vesktop]="$HOME/Library/Application Support/vesktop/themes"
 	)
