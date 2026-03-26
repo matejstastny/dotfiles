@@ -20,16 +20,17 @@ WALLPAPER_DIR="$ASSETS_DIR/wallpapers"
 BREWFILE="$DOTFILES_DIR/Brewfile"
 WALLPAPER="${WALLPAPER_DIR}/wallpaper.png"
 FONT_INSTALL_DIR="$HOME/Library/Fonts"
+LINK_CONF="$DOTFILES_DIR/link.conf"
 
-# Colors (Kanagawa)
-KG_GREEN='\033[38;2;152;187;108m'  # #98BB6C
-KG_YELLOW='\033[38;2;230;195;132m' # #E6C384
-KG_RED='\033[38;2;195;64;67m'      # #C34043
-KG_ORANGE='\033[38;2;255;160;102m' # #FFA066
-KG_BLUE='\033[38;2;126;156;216m'   # #7E9CD8
-KG_CYAN='\033[38;2;127;180;202m'   # #7FB4CA
-KG_PURPLE='\033[38;2;149;127;184m' # #957FB8
-KG_DIM='\033[38;2;114;113;105m'    # #727169
+# Colors (standard ANSI) --------------------------------------------------------------------
+
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+MAGENTA='\033[0;35m'
+DIM='\033[2m'
 RESET='\033[0m'
 BOLD='\033[1m'
 
@@ -41,32 +42,32 @@ log() {
 	local emoji color
 	case "$level" in
 	info)
-		emoji=""
-		color="$KG_BLUE"
+		emoji=""
+		color="$BLUE"
 		;;
 	success)
-		emoji=""
-		color="$KG_GREEN"
+		emoji=""
+		color="$GREEN"
 		;;
 	success-done)
 		emoji="󰄭"
-		color="$KG_PURPLE"
+		color="$MAGENTA"
 		;;
 	celebrate)
 		emoji="󰄛"
-		color="$KG_BLUE"
+		color="$BLUE"
 		;;
 	prompt)
-		emoji=""
-		color="$KG_CYAN"
+		emoji=""
+		color="$CYAN"
 		;;
 	warn)
-		emoji=""
-		color="$KG_YELLOW"
+		emoji=""
+		color="$YELLOW"
 		;;
 	error)
-		emoji=""
-		color="$KG_RED"
+		emoji=""
+		color="$RED"
 		;;
 	*)
 		emoji=" 󱗜"
@@ -79,6 +80,25 @@ log() {
 log_fatal() {
 	log error "$1"
 	exit 1
+}
+
+# Link exceptions ----------------------------------------------------------------------------
+
+load_link_conf() {
+	declare -gA FILE_EXCEPTIONS=()
+	if [[ ! -f "$LINK_CONF" ]]; then
+		return
+	fi
+	while IFS='=' read -r key value; do
+		key="${key%%#*}"
+		key="${key// /}"
+		[[ -z "$key" ]] && continue
+		value="${value## }"
+		value="${value%% }"
+		# Expand $HOME in value
+		value="${value/\$HOME/$HOME}"
+		FILE_EXCEPTIONS["$key"]="$value"
+	done <"$LINK_CONF"
 }
 
 # Task registry ------------------------------------------------------------------------------
@@ -94,13 +114,7 @@ declare -A TASK_DESC=(
 # link() -------------------------------------------------------------------------------------
 
 link() {
-	declare -A FILE_EXCEPTIONS=(
-		[zsh]="$HOME"
-		[git]="$HOME"
-		[claude]="$HOME/.claude"
-		[vscode]="$HOME/Library/Application Support/Code/User"
-		[vesktop]="$HOME/Library/Application Support/vesktop/themes"
-	)
+	load_link_conf
 
 	FORCE=false
 	DRY_RUN=false
@@ -263,8 +277,8 @@ assets() {
 		log warn "Failed to set wallpaper via AppleScript."
 	fi
 
-	# bat Kanagawa theme
-	log info "Installing bat Kanagawa theme..."
+	# bat theme
+	log info "Installing bat theme..."
 	mkdir -p "$(bat --config-dir)/themes"
 	src_theme="$CONFIGS_DIR/bat/themes/kanagawa.tmTheme"
 	dst_theme="$(bat --config-dir)/themes/kanagawa.tmTheme"
@@ -279,17 +293,11 @@ assets() {
 # check() ------------------------------------------------------------------------------------
 
 check() {
-	declare -A FILE_EXCEPTIONS=(
-		[zsh]="$HOME"
-		[git]="$HOME"
-		[claude]="$HOME/.claude"
-		[vscode]="$HOME/Library/Application Support/Code/User"
-		[vesktop]="$HOME/Library/Application Support/vesktop/themes"
-	)
+	load_link_conf
 
 	echo
 	echo -e "  ${BOLD}dot check${RESET} — symlink status"
-	echo -e "  ${KG_DIM}──────────────────────────────────────${RESET}"
+	echo -e "  ${DIM}──────────────────────────────────────${RESET}"
 
 	for folder in "$CONFIGS_DIR"/*; do
 		[ -d "$folder" ] || continue
@@ -306,16 +314,16 @@ check() {
 				label="$name/$filename"
 
 				if [ ! -e "$tgt" ] && [ ! -L "$tgt" ]; then
-					printf "  ${KG_RED}✗${RESET}  %-28s → not linked\n" "$label"
+					printf "  ${RED}✗${RESET}  %-28s → not linked\n" "$label"
 				elif [ -L "$tgt" ]; then
 					actual="$(readlink "$tgt")"
 					if [ "$actual" = "$file" ]; then
-						printf "  ${KG_GREEN}✓${RESET}  %-28s → %s\n" "$label" "$rel_tgt"
+						printf "  ${GREEN}✓${RESET}  %-28s → %s\n" "$label" "$rel_tgt"
 					else
-						printf "  ${KG_YELLOW}~${RESET}  %-28s → wrong target\n" "$label"
+						printf "  ${YELLOW}~${RESET}  %-28s → wrong target\n" "$label"
 					fi
 				else
-					printf "  ${KG_ORANGE}!${RESET}  %-28s → exists but not a symlink\n" "$label"
+					printf "  ${YELLOW}!${RESET}  %-28s → exists but not a symlink\n" "$label"
 				fi
 			done
 			shopt -u dotglob nullglob
@@ -324,16 +332,16 @@ check() {
 			rel_tgt="~/.config/$name"
 
 			if [ ! -e "$tgt" ] && [ ! -L "$tgt" ]; then
-				printf "  ${KG_RED}✗${RESET}  %-28s → not linked\n" "$name"
+				printf "  ${RED}✗${RESET}  %-28s → not linked\n" "$name"
 			elif [ -L "$tgt" ]; then
 				actual="$(readlink "$tgt")"
 				if [ "$actual" = "$folder" ]; then
-					printf "  ${KG_GREEN}✓${RESET}  %-28s → %s\n" "$name" "$rel_tgt"
+					printf "  ${GREEN}✓${RESET}  %-28s → %s\n" "$name" "$rel_tgt"
 				else
-					printf "  ${KG_YELLOW}~${RESET}  %-28s → wrong target\n" "$name"
+					printf "  ${YELLOW}~${RESET}  %-28s → wrong target\n" "$name"
 				fi
 			else
-				printf "  ${KG_ORANGE}!${RESET}  %-28s → exists but not a symlink\n" "$name"
+				printf "  ${YELLOW}!${RESET}  %-28s → exists but not a symlink\n" "$name"
 			fi
 		fi
 	done
@@ -352,27 +360,27 @@ diff_task() {
 
 	echo
 	echo -e "  ${BOLD}dot diff${RESET} — Brewfile vs installed"
-	echo -e "  ${KG_DIM}──────────────────────────────────────${RESET}"
+	echo -e "  ${DIM}──────────────────────────────────────${RESET}"
 
 	echo -e "\n  Missing (in Brewfile, not installed):"
 	missing=$(brew bundle check --file="$BREWFILE" --verbose 2>&1 | grep -v "^✓" || true)
 	if [[ -z "$missing" ]]; then
-		echo -e "  ${KG_GREEN}  (none)${RESET}"
+		echo -e "  ${GREEN}  (none)${RESET}"
 	else
 		while IFS= read -r line; do
 			pkg=$(echo "$line" | sed 's/^[^[:alnum:]]*//' | awk '{print $NF}')
-			printf "  ${KG_RED}  ✗  %s${RESET}\n" "$pkg"
+			printf "  ${RED}  ✗  %s${RESET}\n" "$pkg"
 		done <<<"$missing"
 	fi
 
 	echo -e "\n  Extra (installed, not in Brewfile):"
 	extra=$(brew bundle cleanup --file="$BREWFILE" --dry-run 2>/dev/null | grep "^Would uninstall" || true)
 	if [[ -z "$extra" ]]; then
-		echo -e "  ${KG_GREEN}  (none)${RESET}"
+		echo -e "  ${GREEN}  (none)${RESET}"
 	else
 		while IFS= read -r line; do
 			pkg=$(echo "$line" | awk '{print $NF}')
-			printf "  ${KG_YELLOW}  ~  %s${RESET}\n" "$pkg"
+			printf "  ${YELLOW}  ~  %s${RESET}\n" "$pkg"
 		done <<<"$extra"
 	fi
 	echo
@@ -384,18 +392,18 @@ usage() {
 	echo
 	echo -e "  ${BOLD}dot${RESET} — dotfiles task manager"
 	echo
-	echo -e "  Usage: ${KG_CYAN}dot <command>${RESET}"
+	echo -e "  Usage: ${CYAN}dot <command>${RESET}"
 	echo
-	echo -e "  ${KG_DIM}Tasks:${RESET}"
-	echo -e "    ${KG_BLUE}link${RESET}      ${TASK_DESC[link]}"
-	echo -e "    ${KG_BLUE}brew${RESET}      ${TASK_DESC[brew]}"
-	echo -e "    ${KG_BLUE}assets${RESET}    ${TASK_DESC[assets]}"
-	echo -e "    ${KG_BLUE}update${RESET}    Sync: brew + link"
-	echo -e "    ${KG_BLUE}all${RESET}       Run all tasks"
+	echo -e "  ${DIM}Tasks:${RESET}"
+	echo -e "    ${BLUE}link${RESET}      ${TASK_DESC[link]}"
+	echo -e "    ${BLUE}brew${RESET}      ${TASK_DESC[brew]}"
+	echo -e "    ${BLUE}assets${RESET}    ${TASK_DESC[assets]}"
+	echo -e "    ${BLUE}update${RESET}    Sync: brew + link"
+	echo -e "    ${BLUE}all${RESET}       Run all tasks"
 	echo
-	echo -e "  ${KG_DIM}Info:${RESET}"
-	echo -e "    ${KG_PURPLE}check${RESET}     Show symlink status for all configs"
-	echo -e "    ${KG_PURPLE}diff${RESET}      Show Brewfile vs installed packages"
+	echo -e "  ${DIM}Info:${RESET}"
+	echo -e "    ${MAGENTA}check${RESET}     Show symlink status for all configs"
+	echo -e "    ${MAGENTA}diff${RESET}      Show Brewfile vs installed packages"
 	echo
 	exit 1
 }
@@ -406,8 +414,8 @@ run_task() {
 	local name="$1"
 	shift
 	echo
-	echo -e "${BOLD}Running ${KG_BLUE}${name}${RESET}${BOLD}...${RESET}"
-	echo -e "${KG_DIM}──────────────────────────────────────${RESET}"
+	echo -e "${BOLD}Running ${BLUE}${name}${RESET}${BOLD}...${RESET}"
+	echo -e "${DIM}──────────────────────────────────────${RESET}"
 	case "$name" in
 	link) link "$@" ;;
 	brew) brew_task ;;
