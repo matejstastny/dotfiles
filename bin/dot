@@ -42,11 +42,11 @@ log() {
 	local emoji color
 	case "$level" in
 	info)
-		emoji=""
+		emoji=""
 		color="$BLUE"
 		;;
 	success)
-		emoji=""
+		emoji="✓"
 		color="$GREEN"
 		;;
 	success-done)
@@ -58,19 +58,19 @@ log() {
 		color="$BLUE"
 		;;
 	prompt)
-		emoji=""
+		emoji=""
 		color="$CYAN"
 		;;
 	warn)
-		emoji=""
+		emoji="⚠"
 		color="$YELLOW"
 		;;
 	error)
-		emoji=""
+		emoji="✗"
 		color="$RED"
 		;;
 	*)
-		emoji=" 󱗜"
+		emoji="󱗜"
 		color=""
 		;;
 	esac
@@ -276,16 +276,6 @@ assets() {
 	else
 		log warn "Failed to set wallpaper via AppleScript."
 	fi
-
-	# bat theme
-	log info "Installing bat theme..."
-	mkdir -p "$(bat --config-dir)/themes"
-	src_theme="$CONFIGS_DIR/bat/themes/kanagawa.tmTheme"
-	dst_theme="$(bat --config-dir)/themes/kanagawa.tmTheme"
-	if [ "$src_theme" != "$dst_theme" ] && [ ! -e "$dst_theme" ]; then
-		cp "$src_theme" "$dst_theme"
-	fi
-	bat cache --build >/dev/null
 
 	log celebrate "All done!"
 }
