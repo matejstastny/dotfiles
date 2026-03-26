@@ -181,6 +181,10 @@
   "docker.extension.enableComposeLanguageServer": false,
 
   "github.copilot.nextEditSuggestions.enabled": true,
-"prettier.trailingComma": "none",
-"chat.viewSessions.enabled": false
+  "prettier.trailingComma": "none",
+  "chat.viewSessions.enabled": false,
+  "[shellscript]": {
+    "editor.defaultFormatter": "mads-hartmann.bash-ide-vscode"
+  },
+  "customAppIcons.path": "~/Library/Application Support/Code/User/icons"
 }

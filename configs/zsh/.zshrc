@@ -1,6 +1,4 @@
-# --------------------------------------------------------------------------------------------
-# .zshrc
-# --------------------------------------------------------------------------------------------
+# Matej Stastny | https://github.com/matejstastny/dotfiles
 
 # Aliases ------------------------------------------------------------------------------------
 
@@ -54,7 +52,7 @@ alias nv='nvim'
 # Prompt & Plugins ---------------------------------------------------------------------------
 
 # Oh My Posh
-eval "$(oh-my-posh init zsh --config $HOME/.config/oh-my-posh/tokyonight_storm.omp.json)"
+eval "$(oh-my-posh init zsh --config $HOME/.config/oh-my-posh/prompt.json)"
 
 # Zoxide
 eval "$(zoxide init zsh)"
@@ -84,11 +82,6 @@ export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08
 # Fzf
 source <(fzf --zsh)
 export FZF_DEFAULT_COMMAND="find -L"
-export FZF_DEFAULT_OPTS=" \
-  --color=bg+:#252525,bg:-1,fg:#e0e0e0,fg+:#e0e0e0 \
-  --color=hl:#6c9ef8,hl+:#6c9ef8,info:#e5c07b,marker:#73c991 \
-  --color=prompt:#888888,spinner:#888888,pointer:#e0e0e0,border:#333333 \
-  --color=header:#6c9ef8,gutter:-1,separator:#333333"
 
 # Jenv
 if command -v jenv >/dev/null 2>&1; then

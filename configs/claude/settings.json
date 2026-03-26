@@ -1,6 +1,4 @@
 {
-  "effortLevel": "medium",
-  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "npx -y ccstatusline@latest",
