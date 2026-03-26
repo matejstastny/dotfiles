@@ -3,3 +3,6 @@
 
 # Tmux
 configs/tmux/plugins/
+
+# Claude
+.claude
