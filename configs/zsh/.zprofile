@@ -26,6 +26,7 @@ export FZF_CTRL_R_OPTS="--style minimal --color 16 --info inline --no-sort --no-
 
 export GOPATH="$HOME/go"
 export PROTO_HOME="$HOME/.proto"
+export BUN_INSTALL="$HOME/.bun"
 
 # macOS -------------------------------------------------------------------------------------
 
@@ -48,6 +49,7 @@ path=(
     "$HOME/dotfiles/bin"
     "$HOME/bin/bin"
     "$GOPATH/bin"
+    "$BUN_INSTALL/bin"
     "$VULKAN_SDK/bin"
     "/opt/homebrew/bin"
     "$PROTO_HOME/shims"
