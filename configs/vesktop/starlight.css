@@ -1,0 +1,94 @@
+/**
+ * @name Starlight
+ * @description The Starlight theme for Discord, meant to be pretty without bs :3
+ * @author matejstastny
+ * @version 0.1.0
+ * @website https://github.com/matejstastny/dotfiles
+ * @source https://github.com/matejstastny/dotfiles/blob/main/configs/vesktop/starlight.css
+ * @authorLink https://github.com/matejstastny
+*/
+
+:root {
+    --font: Atkinson Hyperlegible Next;
+    --starlight-accent: #b18cff;
+    --starlight-accent-bg: rgba(177, 140, 255, 0.1);
+    --starlight-accent-bg-hover: rgba(177, 140, 255, 0.2);
+}
+
+/* Links */
+a[class*="anchor_"],
+[class*="messageContent_"] a {
+    color: var(--starlight-accent) !important;
+}
+
+/* Mentions (@user, @role, #channel) */
+.mention,
+[class*="mention"] {
+    color: var(--starlight-accent) !important;
+    background-color: var(--starlight-accent-bg) !important;
+}
+.mention:hover,
+[class*="mention"]:hover {
+    background-color: var(--starlight-accent-bg-hover) !important;
+}
+
+/* Left bar + background on messages that mention you */
+[class*="mentioned_"] {
+    --mention-foreground: var(--starlight-accent) !important;
+    --mention-background: var(--starlight-accent-bg) !important;
+}
+[class*="mentioned_"]::before {
+    background-color: var(--starlight-accent) !important;
+}
+
+/* "New messages" divider */
+[class*="divider_"][class*="isUnread_"] {
+    border-color: var(--starlight-accent) !important;
+    color: var(--starlight-accent) !important;
+}
+[class*="divider_"][class*="isUnread_"] [class*="content_"] {
+    color: var(--starlight-accent) !important;
+    background-color: var(--background-base-lower, var(--background-primary)) !important;
+    padding: 0 8px !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* "NEW" pill on the right of the divider */
+[class*="divider_"] [class*="unreadPill"] {
+    background-color: var(--starlight-accent) !important;
+    border-color: var(--starlight-accent) !important;
+    color: #fff !important;
+}
+/* Pointed cap is an SVG — fill the path, keep the box transparent */
+[class*="divider_"] [class*="unreadPillCap"] {
+    background-color: transparent !important;
+    color: var(--starlight-accent) !important;
+    fill: var(--starlight-accent) !important;
+}
+[class*="divider_"] [class*="unreadPillCap"] path,
+[class*="divider_"] [class*="unreadPillCap"] polygon {
+    fill: var(--starlight-accent) !important;
+}
+
+/* "New messages" top bar (jump button / mark as read) */
+[class*="newMessagesBar_"] {
+    background-color: var(--starlight-accent) !important;
+    color: #fff !important;
+}
+
+/* Hide all scrollbars */
+* {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+*::-webkit-scrollbar {
+    display: none !important;
+}
+
+/* Hide Discord Premium Trial Badge and new badges */
+.premiumTrialBadge__4c1e4.premiumOfferUnackedBadge__4c1e4,
+.newBadge__4ed1a.eyebrow__4ed1a.textBadge__2b1f5.base__2b1f5.eyebrow__2b1f5.baseShapeRound__2b1f5
+{
+    display: none !important;
+}

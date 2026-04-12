@@ -4,7 +4,7 @@
 
 config-file = themes/moonfly
 background = #0F1017
-cursor-color = #e0e0e0
+cursor-color = #E29BD8
 
 # Fonts --------------------------------------------------------------------------------------
 

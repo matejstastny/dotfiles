@@ -5,13 +5,13 @@
       "alignment": "left",
       "segments": [
         {
-          "foreground": "#98C379",
+          "foreground": "#E29BD8",
           "style": "plain",
           "template": " \n\u279c",
           "type": "text"
         },
         {
-          "foreground": "#61AFEF",
+          "foreground": "#BB9AF7",
           "options": {
             "style": "folder"
           },
@@ -25,7 +25,7 @@
             "branch_icon": ""
           },
           "style": "plain",
-          "template": " <#49C7B5>git(</>{{ .HEAD }}<#49C7B5>)</>",
+          "template": " <#E29BD8>git(</>{{ .HEAD }}<#E29BD8>)</>",
           "type": "git"
         }
       ],

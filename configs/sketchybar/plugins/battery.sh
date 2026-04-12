@@ -14,7 +14,7 @@ fi
 
 case "$PERCENTAGE" in
     [0-9]|1[0-9])    ICON=$ICON_BAT_0;   COLOR=$RED ;;
-    [2-3][0-9])       ICON=$ICON_BAT_25;  COLOR=$YELLOW ;;
+    [2-3][0-9])       ICON=$ICON_BAT_25;  COLOR=$PINK ;;
     [4-5][0-9])       ICON=$ICON_BAT_50;  COLOR=$FG_MUTED ;;
     [6-7][0-9])       ICON=$ICON_BAT_75;  COLOR=$FG_MUTED ;;
     *)                ICON=$ICON_BAT_100;  COLOR=$FG_MUTED ;;

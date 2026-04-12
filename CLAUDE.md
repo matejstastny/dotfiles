@@ -18,20 +18,26 @@ dot diff       Show Brewfile vs installed packages
 
 1. Create a folder under `configs/<name>/` and add your config files inside it.
 2. By default, `dot link` will symlink the **whole folder** to `~/.config/<name>`.
-3. If the config needs to land somewhere else (or files need to be linked individually), add an entry to `link.conf`:
+3. If the config needs to land somewhere else, add an entry to `link.toml` under the appropriate section:
 
-```ini
-# links each file inside configs/<name>/ individually to <target_path>/<filename>
-<name>=<target_path>
+```toml
+[directories]
+# Symlink the whole folder to a custom path instead of ~/.config/<name>
+# name = "symlink_path"
+
+[files]
+# Link each file inside configs/<name>/ individually into the target directory
+# name = "target_directory"
 ```
 
-**Examples from `link.conf`:**
-- `zsh=$HOME` — each file in `configs/zsh/` is linked into `~` (so `.zshrc` → `~/.zshrc`)
-- `vscode=$HOME/Library/Application Support/Code/User` — each file linked into the VS Code user dir
-- `claude=$HOME/.claude` — each file linked into `~/.claude`
-- Configs *not* in `link.conf` (e.g. `ghostty`, `nvim`) get their folder linked to `~/.config/<name>`
+**Examples from `link.toml`:**
+- `[files]` `zsh = "$HOME"` — each file in `configs/zsh/` is linked into `~` (so `.zshrc` → `~/.zshrc`)
+- `[files]` `vscode = "$HOME/Library/Application Support/Code/User"` — each file linked into the VS Code user dir
+- `[files]` `claude = "$HOME/.claude"` — each file linked into `~/.claude`
+- `[directories]` entries symlink the whole folder to a custom path (e.g. a non-`~/.config` location)
+- Configs *not* in `link.toml` (e.g. `ghostty`, `nvim`) get their folder linked to `~/.config/<name>`
 
-After adding the folder (and optionally `link.conf` entry), run `dot link` to apply.
+After adding the folder (and optionally `link.toml` entry), run `dot link` to apply.
 
 ## Adding a Homebrew package
 

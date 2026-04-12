@@ -44,7 +44,8 @@ alias dockerc='docker system prune --all --volumes'
 
 alias n='clear && fastfetch'
 
-alias cc='clear && claude'
+alias cc='clear && claude --dangerously-skip-permissions'
+alias ccc='clear && claude --dangerously-skip-permissions --continue'
 alias claude='clear && claude'
 
 alias nv='nvim'
@@ -62,11 +63,13 @@ source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 # Zsh syntax highlighting
 source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-ZSH_HIGHLIGHT_STYLES[command]='fg=cyan,bold'
-ZSH_HIGHLIGHT_STYLES[builtin]='fg=cyan,bold'
-ZSH_HIGHLIGHT_STYLES[alias]='fg=cyan,bold'
-ZSH_HIGHLIGHT_STYLES[function]='fg=blue,bold'
-ZSH_HIGHLIGHT_STYLES[path]='fg=green,underline'
+ZSH_HIGHLIGHT_STYLES[command]='fg=#E29BD8,bold'
+ZSH_HIGHLIGHT_STYLES[builtin]='fg=#E29BD8,bold'
+ZSH_HIGHLIGHT_STYLES[alias]='fg=#E29BD8,bold'
+ZSH_HIGHLIGHT_STYLES[function]='fg=#BB9AF7,bold'
+ZSH_HIGHLIGHT_STYLES[path]='fg=#BB9AF7,underline'
+ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=#BB9AF7'
+ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=#BB9AF7'
 
 # Ripgrep
 export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/.ripgreprc"
@@ -78,6 +81,11 @@ export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08
 # Fzf
 source <(fzf --zsh)
 export FZF_DEFAULT_COMMAND="find -L"
+export FZF_DEFAULT_OPTS="
+  --color=fg:#888888,fg+:#E29BD8,bg+:#101017,hl:#BB9AF7,hl+:#E29BD8
+  --color=info:#555555,prompt:#E29BD8,pointer:#E29BD8,marker:#BB9AF7,border:#252525
+  --color=header:#555555,spinner:#BB9AF7
+"
 
 # Jenv
 if command -v jenv >/dev/null 2>&1; then
@@ -96,7 +104,7 @@ compinit
 # Completion settings
 zstyle ':completion:*' menu select
 zstyle ':completion:*' special-dirs true
-zstyle ':completion:*' list-colors "$LS_COLORS" ma=0\;33
+zstyle ':completion:*' list-colors "$LS_COLORS" ma=0\;35
 zstyle ':completion:*' squeeze-slashes false
 
 # Shell Options ------------------------------------------------------------------------------

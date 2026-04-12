@@ -17,6 +17,7 @@ export FG_MUTED=0xFF555555
 # Accents
 export GREEN=0xFF73c991
 export RED=0xFFf14c4c
-export YELLOW=0xFFe5c07b
+export PINK=0xFFE29BD8
+export PURPLE=0xFFBB9AF7
 
 export TRANSPARENT=0x00000000
