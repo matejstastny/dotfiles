@@ -1,448 +1,548 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 
-set -eu
+"""dot — dotfiles task manager"""
+
+import argparse
+import itertools
+import os
+import re
+import shutil
+import subprocess
+import sys
+import threading
+import time
+import tomllib
+from pathlib import Path
 
 # --------------------------------------------------------------------------------------------
-# dot — dotfiles task manager
-# --------------------------------------------------------------------------------------------
-# Author: Matej Stastny
-# License: MIT
-# Link: https://github.com/matejstastny/dotfiles
+# Constants
 # --------------------------------------------------------------------------------------------
 
-# Constants ----------------------------------------------------------------------------------
+DOTFILES_DIR = Path(__file__).resolve().parent.parent
+ASSETS_DIR = DOTFILES_DIR / "assets"
+FONT_DIR = ASSETS_DIR / "fonts"
+CONFIGS_DIR = DOTFILES_DIR / "configs"
+WALLPAPER_DIR = ASSETS_DIR / "wallpapers"
+BREWFILE = DOTFILES_DIR / "Brewfile"
+WALLPAPER = WALLPAPER_DIR / "wallpaper.png"
+FONT_INSTALL_DIR = Path.home() / "Library" / "Fonts"
+LINK_TOML = DOTFILES_DIR / "link.toml"
+CLEAR_LINE = "\033[2K\r"
 
-DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-ASSETS_DIR="$DOTFILES_DIR/assets"
-FONT_DIR="$ASSETS_DIR/fonts"
-CONFIGS_DIR="$DOTFILES_DIR/configs"
-WALLPAPER_DIR="$ASSETS_DIR/wallpapers"
-BREWFILE="$DOTFILES_DIR/Brewfile"
-WALLPAPER="${WALLPAPER_DIR}/wallpaper.png"
-FONT_INSTALL_DIR="$HOME/Library/Fonts"
-LINK_CONF="$DOTFILES_DIR/link.conf"
+# --------------------------------------------------------------------------------------------
+# Colors
+# --------------------------------------------------------------------------------------------
 
-# Colors (standard ANSI) --------------------------------------------------------------------
+GREEN = "\033[32m"
+YELLOW = "\033[33m"
+RED = "\033[31m"
+BLUE = "\033[34m"
+CYAN = "\033[36m"
+MAGENTA = "\033[35m"
+DIM = "\033[2m"
+RESET = "\033[0m"
+BOLD = "\033[1m"
 
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
-CYAN='\033[0;36m'
-MAGENTA='\033[0;35m'
-DIM='\033[2m'
-RESET='\033[0m'
-BOLD='\033[1m'
+# --------------------------------------------------------------------------------------------
+# Output helpers
+# --------------------------------------------------------------------------------------------
 
-# Logging ------------------------------------------------------------------------------------
 
-log() {
-	local level="$1"
-	local msg="$2"
-	local emoji color
-	case "$level" in
-	info)
-		emoji=""
-		color="$BLUE"
-		;;
-	success)
-		emoji="✓"
-		color="$GREEN"
-		;;
-	success-done)
-		emoji="󰄭"
-		color="$MAGENTA"
-		;;
-	celebrate)
-		emoji="󰄛"
-		color="$BLUE"
-		;;
-	prompt)
-		emoji=""
-		color="$CYAN"
-		;;
-	warn)
-		emoji="⚠"
-		color="$YELLOW"
-		;;
-	error)
-		emoji="✗"
-		color="$RED"
-		;;
-	*)
-		emoji="󱗜"
-		color=""
-		;;
-	esac
-	echo -e "${color}${emoji} ${msg}${RESET}"
+def rel(path: Path) -> str:
+    return str(path).replace(str(Path.home()), "~")
+
+
+def visible_len(s: str) -> int:
+    return len(re.sub(r"\033\[[^m]*m", "", s))
+
+
+def header(cmd: str, note: str = "") -> None:
+    label = f"{BOLD}dot{RESET} {DIM}\u00b7{RESET} {BOLD}{cmd}{RESET}"
+    suffix = f" {DIM}{note}{RESET}" if note else ""
+    print(f"\n  {DIM}\u2500\u2500\u2500{RESET} {label}{suffix} {DIM}{'─' * 30}{RESET}\n")
+
+
+def summary(*parts: str) -> None:
+    print(f"\n  {' {0} '.format(f'{DIM}\u00b7{RESET}').join(parts)}\n")
+
+
+def fatal(msg: str) -> None:
+    print(f"  {RED}\u2717 {msg}{RESET}")
+    sys.exit(1)
+
+
+# --------------------------------------------------------------------------------------------
+# Spinner
+# --------------------------------------------------------------------------------------------
+
+
+class Spinner:
+    FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+
+    def __init__(self, msg: str = ""):
+        self.msg = msg
+        self._stop = threading.Event()
+        self._thread: threading.Thread | None = None
+        self._lock = threading.Lock()
+
+    def __enter__(self):
+        self._stop.clear()
+        self._thread = threading.Thread(target=self._spin, daemon=True)
+        self._thread.start()
+        return self
+
+    def _spin(self):
+        for frame in itertools.cycle(self.FRAMES):
+            if self._stop.is_set():
+                break
+            with self._lock:
+                sys.stdout.write(f"{CLEAR_LINE}  {BLUE}{frame}{RESET} {self.msg}")
+                sys.stdout.flush()
+            time.sleep(0.08)
+
+    def update(self, msg: str):
+        self.msg = msg
+
+    def log(self, msg: str):
+        with self._lock:
+            sys.stdout.write(f"{CLEAR_LINE}{msg}\n")
+            sys.stdout.flush()
+
+    def __exit__(self, *args):
+        self._stop.set()
+        if self._thread:
+            self._thread.join()
+        sys.stdout.write(CLEAR_LINE)
+        sys.stdout.flush()
+
+
+# --------------------------------------------------------------------------------------------
+# Progress bar
+# --------------------------------------------------------------------------------------------
+
+
+class ProgressBar:
+    def __init__(self, total: int, label: str = "", width: int = 25):
+        self.total = total
+        self.current = 0
+        self.label = label
+        self.width = width
+
+    def advance(self, n: int = 1):
+        self.current += n
+        self._draw()
+
+    def _draw(self):
+        pct = self.current / self.total if self.total else 1
+        filled = int(self.width * pct)
+        color = GREEN if self.current == self.total else BLUE
+        bar = "\u2501" * filled + "\u2500" * (self.width - filled)
+        sys.stdout.write(
+            f"{CLEAR_LINE}  {self.label} {color}{bar}{RESET}"
+            f" {DIM}{self.current}/{self.total}{RESET}"
+        )
+        sys.stdout.flush()
+
+    def finish(self):
+        self._draw()
+        sys.stdout.write("\n")
+        sys.stdout.flush()
+
+
+# --------------------------------------------------------------------------------------------
+# Link config
+# --------------------------------------------------------------------------------------------
+
+
+def expand_path(value: str) -> str:
+    return value.replace("$HOME", str(Path.home()))
+
+
+def load_link_toml() -> tuple[dict[str, str], dict[str, str]]:
+    """Load link.toml. Returns (directories, files) mappings."""
+    directories: dict[str, str] = {}
+    files: dict[str, str] = {}
+    if not LINK_TOML.exists():
+        return directories, files
+    with open(LINK_TOML, "rb") as f:
+        data = tomllib.load(f)
+    for key, value in data.get("directories", {}).items():
+        directories[key] = expand_path(value)
+    for key, value in data.get("files", {}).items():
+        files[key] = expand_path(value)
+    return directories, files
+
+
+# --------------------------------------------------------------------------------------------
+# Task registry
+# --------------------------------------------------------------------------------------------
+
+TASK_ORDER = ["link", "brew", "assets"]
+TASK_DESC = {
+    "link": "Symlink configs to system locations",
+    "brew": "Install/update Homebrew packages",
+    "assets": "Install fonts and set wallpaper",
 }
 
-log_fatal() {
-	log error "$1"
-	exit 1
-}
 
-# Link exceptions ----------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------
+# link
+# --------------------------------------------------------------------------------------------
 
-load_link_conf() {
-	declare -gA FILE_EXCEPTIONS=()
-	if [[ ! -f "$LINK_CONF" ]]; then
-		return
-	fi
-	while IFS='=' read -r key value; do
-		key="${key%%#*}"
-		key="${key// /}"
-		[[ -z "$key" ]] && continue
-		value="${value## }"
-		value="${value%% }"
-		# Expand $HOME in value
-		value="${value/\$HOME/$HOME}"
-		FILE_EXCEPTIONS["$key"]="$value"
-	done <"$LINK_CONF"
-}
 
-# Task registry ------------------------------------------------------------------------------
+def link(force: bool = False, dry_run: bool = False) -> None:
+    dir_exceptions, file_exceptions = load_link_toml()
+    stats = {"new": 0, "ok": 0, "skipped": 0}
 
-TASK_ORDER=(link brew assets)
+    header("link", "(dry run)" if dry_run else "")
 
-declare -A TASK_DESC=(
-	[link]="Symlink configs to system locations"
-	[brew]="Install/update Homebrew packages"
-	[assets]="Install fonts and set wallpaper"
-)
+    def confirm(msg: str) -> bool:
+        if force:
+            return True
+        choice = input(f"  {YELLOW}? {msg} [y/N]{RESET} ").strip()
+        return choice.lower() in ("y", "yes")
 
-# link() -------------------------------------------------------------------------------------
+    def remove_target(target: Path) -> None:
+        if dry_run:
+            return
+        if target.is_dir() and not target.is_symlink():
+            shutil.rmtree(target)
+        else:
+            target.unlink(missing_ok=True)
 
-link() {
-	load_link_conf
+    def link_symlink(src: Path, tgt: Path, label: str) -> None:
+        if tgt.exists() or tgt.is_symlink():
+            if tgt.is_symlink() and os.readlink(tgt) == str(src):
+                print(f"  {DIM}\u2500  {label:<28} \u2192 {rel(tgt)}{RESET}")
+                stats["ok"] += 1
+                return
+            if confirm(f"{tgt} exists. Overwrite?"):
+                remove_target(tgt)
+            else:
+                print(f"  {YELLOW}\u25cb  {label:<28} \u2192 skipped{RESET}")
+                stats["skipped"] += 1
+                return
+        if dry_run:
+            print(f"  {CYAN}~  {label:<28} \u2192 {rel(tgt)}{RESET}")
+        else:
+            tgt.parent.mkdir(parents=True, exist_ok=True)
+            tgt.symlink_to(src)
+            print(f"  {GREEN}\u2713  {label:<28} \u2192 {rel(tgt)}{RESET}")
+        stats["new"] += 1
 
-	FORCE=false
-	DRY_RUN=false
-	while [[ $# -gt 0 ]]; do
-		case "$1" in
-		--force) FORCE=true ;;
-		--dry-run) DRY_RUN=true ;;
-		*)
-			echo "Unknown option: $1"
-			exit 1
-			;;
-		esac
-		shift
-	done
+    def link_files(src_dir: Path, tgt_dir: Path, folder_name: str) -> None:
+        tgt_dir.mkdir(parents=True, exist_ok=True)
+        for file in sorted(src_dir.iterdir()):
+            link_symlink(file, tgt_dir / file.name, f"{folder_name}/{file.name}")
 
-	prompt_or_force() {
-		local prompt_msg="$1"
-		if [ "$FORCE" = true ]; then return 0; fi
-		read -rp "$(log prompt "$prompt_msg") [y/N] " choice
-		[[ "$choice" =~ ^[Yy]$ ]]
-	}
+    for folder in sorted(CONFIGS_DIR.iterdir()):
+        if not folder.is_dir():
+            continue
+        name = folder.name
+        if name in file_exceptions:
+            link_files(folder, Path(file_exceptions[name]), name)
+        elif name in dir_exceptions:
+            link_symlink(folder, Path(dir_exceptions[name]), name)
+        else:
+            link_symlink(folder, Path.home() / ".config" / name, name)
 
-	remove_target() {
-		local target="$1"
-		if $DRY_RUN; then
-			log warn "Would remove existing $target"
-		else
-			rm -rf "$target"
-		fi
-	}
+    parts = []
+    if stats["new"]:
+        parts.append(f"{GREEN}{stats['new']} linked{RESET}")
+    if stats["ok"]:
+        parts.append(f"{DIM}{stats['ok']} ok{RESET}")
+    if stats["skipped"]:
+        parts.append(f"{YELLOW}{stats['skipped']} skipped{RESET}")
+    summary(*parts)
 
-	link_symlink() {
-		local src="$1"
-		local tgt="$2"
-		if [ -e "$tgt" ] || [ -L "$tgt" ]; then
-			if [ -L "$tgt" ] && [ "$(readlink "$tgt")" = "$src" ]; then
-				log success-done "$(basename "$tgt") already points to correct source"
-				return
-			fi
-			if prompt_or_force "Target $tgt exists. Overwrite?"; then
-				remove_target "$tgt"
-			else
-				log info "Skipped linking $tgt"
-				return
-			fi
-		fi
-		if $DRY_RUN; then
-			log success "Would link $tgt -> $src"
-		else
-			ln -s "$src" "$tgt" && log success "Linked $tgt -> $src"
-		fi
-	}
 
-	link_files() {
-		local src_dir="$1"
-		local tgt_dir="$2"
-		mkdir -p "$tgt_dir"
-		shopt -s dotglob nullglob
-		for file in "$src_dir"/*; do
-			[ -e "$file" ] || continue
-			local filename
-			filename="$(basename "$file")"
-			link_symlink "$file" "$tgt_dir/$filename"
-		done
-		shopt -u dotglob nullglob
-	}
+# --------------------------------------------------------------------------------------------
+# brew
+# --------------------------------------------------------------------------------------------
 
-	link_config() {
-		local folder_name="$1"
-		local src="$CONFIGS_DIR/$folder_name"
-		if [[ -v FILE_EXCEPTIONS[$folder_name] ]]; then
-			link_files "$src" "${FILE_EXCEPTIONS[$folder_name]}"
-		else
-			local tgt="$HOME/.config/$folder_name"
-			link_symlink "$src" "$tgt"
-		fi
-	}
 
-	for folder in "$CONFIGS_DIR"/*; do
-		[ -d "$folder" ] || continue
-		folder_name="$(basename "$folder")"
-		link_config "$folder_name"
-	done
+def brew_task() -> None:
+    if shutil.which("brew") is None:
+        fatal("Homebrew not installed!")
+    if not BREWFILE.exists():
+        fatal(f"Brewfile not found at {BREWFILE}!")
 
-	log celebrate "All done!"
-}
+    header("brew")
 
-# brew() -------------------------------------------------------------------------------------
+    steps = [
+        ("Updating Homebrew", ["brew", "update", "-q"]),
+        ("Upgrading packages", ["brew", "upgrade", "-q"]),
+        ("Installing from Brewfile", ["brew", "bundle", f"--file={BREWFILE}", "-q"]),
+        ("Removing unlisted packages", ["brew", "bundle", "cleanup", f"--file={BREWFILE}", "--force", "-q"]),
+        ("Cleaning up", ["brew", "cleanup"]),
+    ]
 
-brew_task() {
-	if ! command -v brew >/dev/null 2>&1; then
-		log_fatal "Homebrew not installed!"
-	fi
+    with Spinner() as sp:
+        for i, (label, cmd) in enumerate(steps, 1):
+            sp.update(f"{label}{DIM} ({i}/{len(steps)}){RESET}")
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            if result.returncode != 0:
+                sp.log(f"  {RED}\u2717  {label}{RESET}")
+                fatal("Homebrew command failed!")
+            sp.log(f"  {GREEN}\u2713{RESET}  {label}")
 
-	brew_failed() { log_fatal "Homebrew command failed!"; }
+    summary(f"{GREEN}\u2713 Done{RESET}")
 
-	if [[ ! -f "$BREWFILE" ]]; then
-		log_fatal "Brewfile not found at $BREWFILE!"
-	fi
 
-	log info "Updating Homebrew..."
-	brew update -q || brew_failed
+# --------------------------------------------------------------------------------------------
+# assets
+# --------------------------------------------------------------------------------------------
 
-	log info "Upgrading packages..."
-	brew upgrade -q || brew_failed
 
-	log info "Installing packages from Brewfile..."
-	brew bundle --file="$BREWFILE" -q || brew_failed
+def assets() -> None:
+    header("assets")
 
-	log info "Uninstalling packages not in Brewfile..."
-	brew bundle cleanup --file="$BREWFILE" --force -q || brew_failed
+    # Fonts
+    FONT_INSTALL_DIR.mkdir(parents=True, exist_ok=True)
+    installed = 0
+    skipped = 0
 
-	log info "Cleaning up..."
-	brew cleanup || brew_failed
+    if FONT_DIR.is_dir():
+        fonts = sorted(
+            f for f in FONT_DIR.rglob("*") if f.suffix in (".ttf", ".otf")
+        )
+        if fonts:
+            bar = ProgressBar(len(fonts), label="Fonts")
+            for font in fonts:
+                target = FONT_INSTALL_DIR / font.name
+                if target.exists():
+                    skipped += 1
+                else:
+                    try:
+                        shutil.copy2(font, FONT_INSTALL_DIR)
+                        installed += 1
+                    except OSError:
+                        pass
+                bar.advance()
+            bar.finish()
 
-	log celebrate "All done!"
-}
+            parts = []
+            if installed:
+                parts.append(f"{GREEN}{installed} installed{RESET}")
+            if skipped:
+                parts.append(f"{DIM}{skipped} already present{RESET}")
+            print(f"  {' {0} '.format(f'{DIM}\u00b7{RESET}').join(parts)}")
+        else:
+            print(f"  {YELLOW}\u26a0  No font files found{RESET}")
+    else:
+        print(f"  {YELLOW}\u26a0  No fonts directory{RESET}")
 
-# assets() -----------------------------------------------------------------------------------
+    # Wallpaper
+    print()
+    if not WALLPAPER.exists():
+        fatal(f"Wallpaper not found at {WALLPAPER}")
 
-assets() {
-	# Fonts
-	log info "Installing fonts..."
-	log info "Font source: $FONT_DIR"
-	log info "Target: $FONT_INSTALL_DIR"
-	mkdir -p "$FONT_INSTALL_DIR"
+    with Spinner("Setting wallpaper\u2026"):
+        result = subprocess.run(
+            [
+                "osascript", "-e",
+                f'tell application "System Events" to set picture of every desktop to "{WALLPAPER}"',
+            ],
+            capture_output=True,
+        )
 
-	if [ -d "$FONT_DIR" ]; then
-		mapfile -d '' fonts < <(find "$FONT_DIR" \( -name "*.ttf" -o -name "*.otf" \) -print0)
-		font_count=${#fonts[@]}
-		if ((font_count > 0)); then
-			log info "Found $font_count font(s) to install."
-			for font in "${fonts[@]}"; do
-				target_font="$FONT_INSTALL_DIR/$(basename "$font")"
-				if [[ -f "$target_font" ]]; then
-					log success-done "Font already exists: $(basename "$font")"
-				else
-					if cp "$font" "$FONT_INSTALL_DIR/"; then
-						log success "Installed font: $(basename "$font")"
-					else
-						log warn "Failed to install font: $(basename "$font")"
-					fi
-				fi
-			done
-		else
-			log warn "No font files found in $FONT_DIR."
-		fi
-	else
-		log warn "No fonts directory found at $FONT_DIR."
-	fi
+    if result.returncode == 0:
+        print(f"  {GREEN}\u2713{RESET}  Wallpaper set")
+    else:
+        print(f"  {YELLOW}\u26a0{RESET}  Failed to set wallpaper")
 
-	# Wallpaper
-	if [ ! -f "$WALLPAPER" ]; then
-		log_fatal "Wallpaper not found at $WALLPAPER"
-	fi
-	log info "Setting wallpaper: $WALLPAPER"
-	if osascript -e "tell application \"System Events\" to set picture of every desktop to \"${WALLPAPER}\""; then
-		log success "Wallpaper set."
-	else
-		log warn "Failed to set wallpaper via AppleScript."
-	fi
+    summary(f"{GREEN}\u2713 Done{RESET}")
 
-	log celebrate "All done!"
-}
 
-# check() ------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------
+# check
+# --------------------------------------------------------------------------------------------
 
-check() {
-	load_link_conf
 
-	echo
-	echo -e "  ${BOLD}dot check${RESET} — symlink status"
-	echo -e "  ${DIM}──────────────────────────────────────${RESET}"
+def check() -> None:
+    dir_exceptions, file_exceptions = load_link_toml()
 
-	for folder in "$CONFIGS_DIR"/*; do
-		[ -d "$folder" ] || continue
-		name="$(basename "$folder")"
+    header("check")
 
-		if [[ -v FILE_EXCEPTIONS[$name] ]]; then
-			# Check each file in the directory
-			shopt -s dotglob nullglob
-			for file in "$folder"/*; do
-				[ -e "$file" ] || continue
-				filename="$(basename "$file")"
-				tgt="${FILE_EXCEPTIONS[$name]}/$filename"
-				rel_tgt="${tgt/$HOME/\~}"
-				label="$name/$filename"
+    rows: list[tuple[str, str, str]] = []
 
-				if [ ! -e "$tgt" ] && [ ! -L "$tgt" ]; then
-					printf "  ${RED}✗${RESET}  %-28s → not linked\n" "$label"
-				elif [ -L "$tgt" ]; then
-					actual="$(readlink "$tgt")"
-					if [ "$actual" = "$file" ]; then
-						printf "  ${GREEN}✓${RESET}  %-28s → %s\n" "$label" "$rel_tgt"
-					else
-						printf "  ${YELLOW}~${RESET}  %-28s → wrong target\n" "$label"
-					fi
-				else
-					printf "  ${YELLOW}!${RESET}  %-28s → exists but not a symlink\n" "$label"
-				fi
-			done
-			shopt -u dotglob nullglob
-		else
-			tgt="$HOME/.config/$name"
-			rel_tgt="~/.config/$name"
+    for folder in sorted(CONFIGS_DIR.iterdir()):
+        if not folder.is_dir():
+            continue
+        name = folder.name
 
-			if [ ! -e "$tgt" ] && [ ! -L "$tgt" ]; then
-				printf "  ${RED}✗${RESET}  %-28s → not linked\n" "$name"
-			elif [ -L "$tgt" ]; then
-				actual="$(readlink "$tgt")"
-				if [ "$actual" = "$folder" ]; then
-					printf "  ${GREEN}✓${RESET}  %-28s → %s\n" "$name" "$rel_tgt"
-				else
-					printf "  ${YELLOW}~${RESET}  %-28s → wrong target\n" "$name"
-				fi
-			else
-				printf "  ${YELLOW}!${RESET}  %-28s → exists but not a symlink\n" "$name"
-			fi
-		fi
-	done
-	echo
-}
+        def add_row(label: str, src: Path, tgt: Path) -> None:
+            r = rel(tgt)
+            if not tgt.exists() and not tgt.is_symlink():
+                rows.append((f"{RED}\u2717{RESET}", label, f"{RED}not linked{RESET}"))
+            elif tgt.is_symlink():
+                if os.readlink(tgt) == str(src):
+                    rows.append((f"{GREEN}\u2713{RESET}", label, f"{DIM}{r}{RESET}"))
+                else:
+                    rows.append((f"{YELLOW}~{RESET}", label, f"{YELLOW}wrong target{RESET}"))
+            else:
+                rows.append((f"{YELLOW}!{RESET}", label, f"{YELLOW}not a symlink{RESET}"))
 
-# diff() -------------------------------------------------------------------------------------
+        if name in file_exceptions:
+            for file in sorted(folder.iterdir()):
+                add_row(f"{name}/{file.name}", file, Path(file_exceptions[name]) / file.name)
+        elif name in dir_exceptions:
+            add_row(name, folder, Path(dir_exceptions[name]))
+        else:
+            add_row(name, folder, Path.home() / ".config" / name)
 
-diff_task() {
-	if ! command -v brew >/dev/null 2>&1; then
-		log_fatal "Homebrew not installed!"
-	fi
-	if [[ ! -f "$BREWFILE" ]]; then
-		log_fatal "Brewfile not found at $BREWFILE!"
-	fi
+    # Render table
+    if not rows:
+        print(f"  {DIM}No configs found.{RESET}")
+        return
 
-	echo
-	echo -e "  ${BOLD}dot diff${RESET} — Brewfile vs installed"
-	echo -e "  ${DIM}──────────────────────────────────────${RESET}"
+    name_w = max(visible_len(r[1]) for r in rows) + 2
+    target_w = max(visible_len(r[2]) for r in rows) + 2
+    inner_w = 3 + name_w + 3 + target_w
 
-	echo -e "\n  Missing (in Brewfile, not installed):"
-	missing=$(brew bundle check --file="$BREWFILE" --verbose 2>&1 | grep -v "^✓" || true)
-	if [[ -z "$missing" ]]; then
-		echo -e "  ${GREEN}  (none)${RESET}"
-	else
-		while IFS= read -r line; do
-			pkg=$(echo "$line" | sed 's/^[^[:alnum:]]*//' | awk '{print $NF}')
-			printf "  ${RED}  ✗  %s${RESET}\n" "$pkg"
-		done <<<"$missing"
-	fi
+    print(f"  {DIM}\u256d{'─' * inner_w}\u256e{RESET}")
+    for icon, name, target in rows:
+        name_pad = " " * (name_w - visible_len(name))
+        target_pad = " " * (target_w - visible_len(target))
+        print(
+            f"  {DIM}\u2502{RESET}"
+            f" {icon}  {name}{name_pad}"
+            f" {DIM}\u2192{RESET} {target}{target_pad}"
+            f"{DIM}\u2502{RESET}"
+        )
+    print(f"  {DIM}\u2570{'─' * inner_w}\u256f{RESET}")
 
-	echo -e "\n  Extra (installed, not in Brewfile):"
-	extra=$(brew bundle cleanup --file="$BREWFILE" --dry-run 2>/dev/null | grep "^Would uninstall" || true)
-	if [[ -z "$extra" ]]; then
-		echo -e "  ${GREEN}  (none)${RESET}"
-	else
-		while IFS= read -r line; do
-			pkg=$(echo "$line" | awk '{print $NF}')
-			printf "  ${YELLOW}  ~  %s${RESET}\n" "$pkg"
-		done <<<"$extra"
-	fi
-	echo
-}
+    linked = sum(1 for r in rows if "\u2713" in r[0])
+    broken = len(rows) - linked
+    parts = [f"{GREEN}{linked} linked{RESET}"]
+    if broken:
+        parts.append(f"{RED}{broken} broken{RESET}")
+    summary(*parts)
 
-# usage() ------------------------------------------------------------------------------------
 
-usage() {
-	echo
-	echo -e "  ${BOLD}dot${RESET} — dotfiles task manager"
-	echo
-	echo -e "  Usage: ${CYAN}dot <command>${RESET}"
-	echo
-	echo -e "  ${DIM}Tasks:${RESET}"
-	echo -e "    ${BLUE}link${RESET}      ${TASK_DESC[link]}"
-	echo -e "    ${BLUE}brew${RESET}      ${TASK_DESC[brew]}"
-	echo -e "    ${BLUE}assets${RESET}    ${TASK_DESC[assets]}"
-	echo -e "    ${BLUE}update${RESET}    Sync: brew + link"
-	echo -e "    ${BLUE}all${RESET}       Run all tasks"
-	echo
-	echo -e "  ${DIM}Info:${RESET}"
-	echo -e "    ${MAGENTA}check${RESET}     Show symlink status for all configs"
-	echo -e "    ${MAGENTA}diff${RESET}      Show Brewfile vs installed packages"
-	echo
-	exit 1
-}
+# --------------------------------------------------------------------------------------------
+# diff
+# --------------------------------------------------------------------------------------------
 
-# run_task() ---------------------------------------------------------------------------------
 
-run_task() {
-	local name="$1"
-	shift
-	echo
-	echo -e "${BOLD}Running ${BLUE}${name}${RESET}${BOLD}...${RESET}"
-	echo -e "${DIM}──────────────────────────────────────${RESET}"
-	case "$name" in
-	link) link "$@" ;;
-	brew) brew_task ;;
-	assets) assets ;;
-	esac
-}
+def diff_task() -> None:
+    if shutil.which("brew") is None:
+        fatal("Homebrew not installed!")
+    if not BREWFILE.exists():
+        fatal(f"Brewfile not found at {BREWFILE}!")
 
-# Argument parsing ---------------------------------------------------------------------------
+    header("diff")
 
-if [ $# -eq 0 ]; then
-	usage
-fi
+    # Missing
+    with Spinner("Checking Brewfile\u2026"):
+        check_result = subprocess.run(
+            ["brew", "bundle", "check", f"--file={BREWFILE}", "--verbose"],
+            capture_output=True, text=True,
+        )
+        cleanup_result = subprocess.run(
+            ["brew", "bundle", "cleanup", f"--file={BREWFILE}", "--dry-run"],
+            capture_output=True, text=True,
+        )
 
-arg="$1"
-shift
+    output = check_result.stdout + check_result.stderr
+    missing = [line for line in output.splitlines() if line.startswith("\u2192")]
+    extra = [
+        line for line in cleanup_result.stdout.splitlines()
+        if line.startswith("Would uninstall")
+    ]
 
-case "$arg" in
-check)
-	check
-	;;
-diff)
-	diff_task
-	;;
-update)
-	run_task brew
-	run_task link "$@"
-	;;
-all)
-	for name in "${TASK_ORDER[@]}"; do
-		run_task "$name"
-	done
-	;;
-link | brew | assets)
-	run_task "$arg" "$@"
-	;;
-*)
-	echo "dot: Unknown command '$arg'"
-	usage
-	;;
-esac
+    print(f"  {BOLD}Missing{RESET} {DIM}(in Brewfile, not installed){RESET}")
+    if not missing:
+        print(f"  {DIM}  (none){RESET}")
+    else:
+        for line in missing:
+            parts = line.split()
+            pkg = parts[2] if len(parts) >= 3 else line
+            print(f"  {RED}  \u2717  {pkg}{RESET}")
+
+    print()
+    print(f"  {BOLD}Extra{RESET} {DIM}(installed, not in Brewfile){RESET}")
+    if not extra:
+        print(f"  {DIM}  (none){RESET}")
+    else:
+        for line in extra:
+            pkg = line.split()[-1]
+            print(f"  {YELLOW}  ~  {pkg}{RESET}")
+
+    print()
+
+
+# --------------------------------------------------------------------------------------------
+# run_task
+# --------------------------------------------------------------------------------------------
+
+
+def run_task(name: str, **kwargs) -> None:
+    match name:
+        case "link":
+            link(**kwargs)
+        case "brew":
+            brew_task()
+        case "assets":
+            assets()
+
+
+# --------------------------------------------------------------------------------------------
+# CLI
+# --------------------------------------------------------------------------------------------
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="dot",
+        description="dotfiles task manager",
+    )
+    sub = parser.add_subparsers(dest="command")
+
+    link_p = sub.add_parser("link", help=TASK_DESC["link"])
+    link_p.add_argument("--force", action="store_true", help="Overwrite without prompting")
+    link_p.add_argument("--dry-run", action="store_true", help="Show what would happen")
+
+    sub.add_parser("brew", help=TASK_DESC["brew"])
+    sub.add_parser("assets", help=TASK_DESC["assets"])
+
+    update_p = sub.add_parser("update", help="Sync: brew + link")
+    update_p.add_argument("--force", action="store_true", help="Overwrite without prompting")
+    update_p.add_argument("--dry-run", action="store_true", help="Show what would happen")
+
+    sub.add_parser("all", help="Run all tasks")
+    sub.add_parser("check", help="Show symlink status for all configs")
+    sub.add_parser("diff", help="Show Brewfile vs installed packages")
+
+    return parser
+
+
+def main() -> None:
+    parser = build_parser()
+    args = parser.parse_args()
+
+    if args.command is None:
+        parser.print_help()
+        sys.exit(1)
+
+    link_kwargs = {}
+    if args.command in ("link", "update"):
+        link_kwargs = {"force": args.force, "dry_run": args.dry_run}
+
+    match args.command:
+        case "check":
+            check()
+        case "diff":
+            diff_task()
+        case "update":
+            run_task("brew")
+            run_task("link", **link_kwargs)
+        case "all":
+            for name in TASK_ORDER:
+                run_task(name)
+        case "link" | "brew" | "assets":
+            run_task(args.command, **link_kwargs)
+
+
+if __name__ == "__main__":
+    main()
