@@ -5,7 +5,6 @@
 # Format: name = "symlink_path"
 [directories]
 vesktop = "$HOME/Library/Application Support/vesktop/themes"
-claude = "$HOME/.claude"
 
 # Link each file inside configs/<name>/ individually into the target directory
 # Format: name = "target_directory"
