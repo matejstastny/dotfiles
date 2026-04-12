@@ -69,11 +69,7 @@ if.app-name-regex-substring = 'VSCode'
 run = 'move-node-to-workspace 1'
 
 [[on-window-detected]]
-if.app-name-regex-substring = 'firefox'
-run = 'move-node-to-workspace 3'
-
-[[on-window-detected]]
-if.app-name-regex-substring = 'firefox'
+if.app-name-regex-substring = 'helium'
 run = 'move-node-to-workspace 3'
 
 [[on-window-detected]]
@@ -144,7 +140,6 @@ alt-shift-enter = 'mode apps'
 # Apps
 alt-o = 'exec-and-forget open -a /Applications/Obsidian.app'
 alt-p = 'exec-and-forget open -a "/Applications/Prism Launcher.app"'
-alt-f = 'exec-and-forget open -a /Applications/Firefox.app'
 alt-h = 'exec-and-forget open -a /Applications/Helium.app'
 alt-g = 'exec-and-forget open -n /Applications/Ghostty.app'
 alt-d = 'exec-and-forget open -a /Applications/Vesktop.app'

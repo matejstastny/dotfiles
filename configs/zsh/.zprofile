@@ -3,7 +3,7 @@
 # Defaults ----------------------------------------------------------------------------------
 
 export EDITOR="nvim"
-export BROWSER="firefox"
+export BROWSER="/Applications/Helium.app/Contents/MacOS/Helium"
 export DOTFILES_DIR="$HOME/dotfiles"
 
 # Locale ------------------------------------------------------------------------------------
@@ -46,15 +46,15 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 typeset -U path
 
 path=(
-    "$HOME/dotfiles/bin"
-    "$HOME/bin/bin"
-    "$GOPATH/bin"
-    "$BUN_INSTALL/bin"
-    "$VULKAN_SDK/bin"
-    "/opt/homebrew/bin"
-    "$PROTO_HOME/shims"
-    "$PROTO_HOME/bin"
-    "$HOME/Library/Application Support/JetBrains/Toolbox/scripts"
-    "$HOME/.local/bin"
-    $path
+	"$HOME/dotfiles/bin"
+	"$HOME/bin/bin"
+	"$GOPATH/bin"
+	"$BUN_INSTALL/bin"
+	"$VULKAN_SDK/bin"
+	"/opt/homebrew/bin"
+	"$PROTO_HOME/shims"
+	"$PROTO_HOME/bin"
+	"$HOME/Library/Application Support/JetBrains/Toolbox/scripts"
+	"$HOME/.local/bin"
+	$path
 )
