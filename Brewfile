@@ -41,7 +41,9 @@ brew "prettier"
 brew "python@3.14"
 brew "pipx"
 brew "ruff"
+brew "uv"
 brew "scc"
+brew "sshpass"
 brew "oh-my-posh"
 brew "switchaudio-osx"
 brew "tmux"
@@ -83,6 +85,8 @@ cask "vlc"
 cask "vnc-viewer"
 cask "utm"
 
+cask "ollama"
+
 # -------------------- Go Tools --------------------
 go "github.com/packwiz/packwiz"
 go "mvdan.cc/sh/v3/cmd/shfmt"
@@ -91,3 +95,6 @@ go "mvdan.cc/sh/v3/cmd/shfmt"
 cargo "darklua"
 cargo "nucleus"
 cargo "tree-sitter-cli"
+
+# -------------------- UV Tools --------------------
+uv "aider-chat"

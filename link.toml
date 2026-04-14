@@ -9,6 +9,7 @@ vesktop = "$HOME/Library/Application Support/vesktop/themes"
 # Link each file inside configs/<name>/ individually into the target directory
 # Format: name = "target_directory"
 [files]
+aider = "$HOME"
 zsh = "$HOME"
 git = "$HOME"
 vscode = "$HOME/Library/Application Support/Code/User"

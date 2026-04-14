@@ -35,6 +35,10 @@ outer.top = [{ monitor."^Built-in Retina Display$" = 9 }, 49]
 # Exceptions ---------------------------------------------------------------------------------
 
 [[on-window-detected]]
+if.app-name-regex-substring = 'ollama'
+run = 'layout floating'
+
+[[on-window-detected]]
 if.app-name-regex-substring = 'finder'
 run = 'layout floating'
 

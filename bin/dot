@@ -286,6 +286,15 @@ def brew_task() -> None:
                 fatal("Homebrew command failed!")
             sp.log(f"  {GREEN}\u2713{RESET}  {label}")
 
+        # aider-chat needs Python 3.12+ (system Python uses LibreSSL which breaks urllib3 v2)
+        if shutil.which("uv"):
+            sp.update("Ensuring aider-chat uses Python 3.12\u2026")
+            subprocess.run(
+                ["uv", "tool", "install", "aider-chat", "--python", "3.12", "--force"],
+                capture_output=True,
+            )
+            sp.log(f"  {GREEN}\u2713{RESET}  aider-chat (python 3.12)")
+
     summary(f"{GREEN}\u2713 Done{RESET}")
 
 

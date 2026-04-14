@@ -8,7 +8,7 @@
 // --------------------------------------------------------------------------------------------
 
 {
-  "workbench.colorTheme": "One Dark Pro Night Flat",
+  "workbench.colorTheme": "Aura Dracula Spirit",
   "workbench.iconTheme": "material-icon-theme",
   "workbench.editor.showTabs": "single",
   "workbench.editor.empty.hint": "hidden",
@@ -192,5 +192,6 @@
     "plaintext": false,
     "markdown": true,
     "scminput": false
-  }
+  },
+  "customAppIcons.path": "~/Library/Application Support/Code/User/icons"
 }
