@@ -14,10 +14,6 @@ import time
 import tomllib
 from pathlib import Path
 
-# --------------------------------------------------------------------------------------------
-# Constants
-# --------------------------------------------------------------------------------------------
-
 DOTFILES_DIR = Path(__file__).resolve().parent.parent
 ASSETS_DIR = DOTFILES_DIR / "assets"
 FONT_DIR = ASSETS_DIR / "fonts"
@@ -29,10 +25,6 @@ FONT_INSTALL_DIR = Path.home() / "Library" / "Fonts"
 LINK_TOML = DOTFILES_DIR / "link.toml"
 CLEAR_LINE = "\033[2K\r"
 
-# --------------------------------------------------------------------------------------------
-# Colors
-# --------------------------------------------------------------------------------------------
-
 GREEN = "\033[32m"
 YELLOW = "\033[33m"
 RED = "\033[31m"
@@ -42,10 +34,6 @@ MAGENTA = "\033[35m"
 DIM = "\033[2m"
 RESET = "\033[0m"
 BOLD = "\033[1m"
-
-# --------------------------------------------------------------------------------------------
-# Output helpers
-# --------------------------------------------------------------------------------------------
 
 
 def rel(path: Path) -> str:
@@ -67,13 +55,9 @@ def summary(*parts: str) -> None:
 
 
 def fatal(msg: str) -> None:
-    print(f"  {RED}\u2717 {msg}{RESET}")
+    print(f"  {RED}\u2717 {msg} (×_×){RESET}")
     sys.exit(1)
 
-
-# --------------------------------------------------------------------------------------------
-# Spinner
-# --------------------------------------------------------------------------------------------
 
 
 class Spinner:
@@ -116,11 +100,6 @@ class Spinner:
         sys.stdout.flush()
 
 
-# --------------------------------------------------------------------------------------------
-# Progress bar
-# --------------------------------------------------------------------------------------------
-
-
 class ProgressBar:
     def __init__(self, total: int, label: str = "", width: int = 25):
         self.total = total
@@ -149,11 +128,6 @@ class ProgressBar:
         sys.stdout.flush()
 
 
-# --------------------------------------------------------------------------------------------
-# Link config
-# --------------------------------------------------------------------------------------------
-
-
 def expand_path(value: str) -> str:
     return value.replace("$HOME", str(Path.home()))
 
@@ -173,10 +147,6 @@ def load_link_toml() -> tuple[dict[str, str], dict[str, str]]:
     return directories, files
 
 
-# --------------------------------------------------------------------------------------------
-# Task registry
-# --------------------------------------------------------------------------------------------
-
 TASK_ORDER = ["link", "brew", "assets"]
 TASK_DESC = {
     "link": "Symlink configs to system locations",
@@ -184,10 +154,6 @@ TASK_DESC = {
     "assets": "Install fonts and set wallpaper",
 }
 
-
-# --------------------------------------------------------------------------------------------
-# link
-# --------------------------------------------------------------------------------------------
 
 
 def link(force: bool = False, dry_run: bool = False) -> None:
@@ -256,10 +222,6 @@ def link(force: bool = False, dry_run: bool = False) -> None:
     summary(*parts)
 
 
-# --------------------------------------------------------------------------------------------
-# brew
-# --------------------------------------------------------------------------------------------
-
 
 def brew_task() -> None:
     if shutil.which("brew") is None:
@@ -295,18 +257,12 @@ def brew_task() -> None:
             )
             sp.log(f"  {GREEN}\u2713{RESET}  aider-chat (python 3.12)")
 
-    summary(f"{GREEN}\u2713 Done{RESET}")
-
-
-# --------------------------------------------------------------------------------------------
-# assets
-# --------------------------------------------------------------------------------------------
+    summary(f"{GREEN}\u2713 Done (˶˃ ᵕ ˂˶){RESET}")
 
 
 def assets() -> None:
     header("assets")
 
-    # Fonts
     FONT_INSTALL_DIR.mkdir(parents=True, exist_ok=True)
     installed = 0
     skipped = 0
@@ -341,7 +297,6 @@ def assets() -> None:
     else:
         print(f"  {YELLOW}\u26a0  No fonts directory{RESET}")
 
-    # Wallpaper
     print()
     if not WALLPAPER.exists():
         fatal(f"Wallpaper not found at {WALLPAPER}")
@@ -360,12 +315,8 @@ def assets() -> None:
     else:
         print(f"  {YELLOW}\u26a0{RESET}  Failed to set wallpaper")
 
-    summary(f"{GREEN}\u2713 Done{RESET}")
+    summary(f"{GREEN}\u2713 Done (˶˃ ᵕ ˂˶){RESET}")
 
-
-# --------------------------------------------------------------------------------------------
-# check
-# --------------------------------------------------------------------------------------------
 
 
 def check() -> None:
@@ -400,7 +351,6 @@ def check() -> None:
         else:
             add_row(name, folder, Path.home() / ".config" / name)
 
-    # Render table
     if not rows:
         print(f"  {DIM}No configs found.{RESET}")
         return
@@ -429,10 +379,6 @@ def check() -> None:
     summary(*parts)
 
 
-# --------------------------------------------------------------------------------------------
-# diff
-# --------------------------------------------------------------------------------------------
-
 
 def diff_task() -> None:
     if shutil.which("brew") is None:
@@ -442,7 +388,6 @@ def diff_task() -> None:
 
     header("diff")
 
-    # Missing
     with Spinner("Checking Brewfile\u2026"):
         check_result = subprocess.run(
             ["brew", "bundle", "check", f"--file={BREWFILE}", "--verbose"],
@@ -481,10 +426,6 @@ def diff_task() -> None:
     print()
 
 
-# --------------------------------------------------------------------------------------------
-# run_task
-# --------------------------------------------------------------------------------------------
-
 
 def run_task(name: str, **kwargs) -> None:
     match name:
@@ -495,10 +436,6 @@ def run_task(name: str, **kwargs) -> None:
         case "assets":
             assets()
 
-
-# --------------------------------------------------------------------------------------------
-# CLI
-# --------------------------------------------------------------------------------------------
 
 
 def build_parser() -> argparse.ArgumentParser:

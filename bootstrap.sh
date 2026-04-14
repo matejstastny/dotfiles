@@ -29,4 +29,4 @@ fi
 chmod +x "$DOTFILES_DIR/bin/dot"
 "$DOTFILES_DIR/bin/dot" all
 
-echo "Done. Restart your terminal!"
+echo "Done! Restart your terminal (>ω<)"

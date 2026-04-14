@@ -1,10 +1,10 @@
-# -------------------- Taps --------------------
+# taps
 tap "felixkratz/formulae"
 tap "nikitabobko/tap"
 tap "joncrangle/tap"
 tap "olets/tap"
 
-# -------------------- Homebrew Formulae --------------------
+# formulae
 brew "aria2"
 brew "bash"
 brew "bat"
@@ -57,7 +57,7 @@ brew "zsh-syntax-highlighting"
 brew "felixkratz/formulae/sketchybar"
 brew "joncrangle/tap/sketchybar-system-stats"
 
-# -------------------- Homebrew Casks --------------------
+# casks
 cask "aerospace"
 cask "balenaetcher"
 cask "battery"
@@ -84,17 +84,16 @@ cask "visual-studio-code"
 cask "vlc"
 cask "vnc-viewer"
 cask "utm"
-
 cask "ollama"
 
-# -------------------- Go Tools --------------------
+# go tools
 go "github.com/packwiz/packwiz"
 go "mvdan.cc/sh/v3/cmd/shfmt"
 
-# -------------------- Cargo Tools --------------------
+# cargo tools
 cargo "darklua"
 cargo "nucleus"
 cargo "tree-sitter-cli"
 
-# -------------------- UV Tools --------------------
+# uv tools
 uv "aider-chat"

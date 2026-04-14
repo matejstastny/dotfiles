@@ -1,14 +1,11 @@
-# link.toml — symlink targets for `dot link`
-# Folders not listed here are symlinked as directories to ~/.config/<folder_name>
+# Folders not listed here get symlinked to ~/.config/<name>
 
-# Symlink the whole directory to a custom path instead of ~/.config/<name>
-# Format: name = "symlink_path"
 [directories]
+# name = "symlink_path"
 vesktop = "$HOME/Library/Application Support/vesktop/themes"
 
-# Link each file inside configs/<name>/ individually into the target directory
-# Format: name = "target_directory"
 [files]
+# name = "target_directory"
 aider = "$HOME"
 zsh = "$HOME"
 git = "$HOME"
