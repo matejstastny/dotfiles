@@ -1,42 +1,67 @@
 <div align="center">
+<img src="./assets/repo/holymoly.png" width="25%" align="right"/>
+<br>
 
+# ✦ dotfiles
 
-# dotfiles
-`macOS` configuration managed with a custom `dot` script.
+_macOS · managed with [`dot`](bin/dot)_
 
 </div>
 
-
 <br>
-
-<img src="./assets/repo/banner.jpg" alt="banner" align="right" width="18%" />
 
 ```sh
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/matejstastny/dotfiles/main/bootstrap.sh)"
 ```
 
 ```sh
-# manual install
 git clone https://github.com/matejstastny/dotfiles.git ~/dotfiles
 ~/dotfiles/bin/dot all
 ```
 
 <br>
 
-### `dot`
+<details>
+<summary>&nbsp;&nbsp;<code>dot</code>&nbsp;&nbsp;·&nbsp;&nbsp;commands</summary>
+
+<br>
 
 ```
-dot <command>
-
   link      symlink configs to system locations
   brew      install & update homebrew packages
   assets    install fonts and set wallpaper
+
   update    brew + link
   all       run everything
 
-  check     show symlink status for all configs
-  diff      show brewfile vs installed packages
+  check     show symlink status
+  diff      brewfile vs installed
 ```
 
-flags for `link`: `--force`, `--dry-run`
+`link` accepts `--force` and `--dry-run`
 
+<br>
+
+</details>
+
+<details>
+<summary>&nbsp;&nbsp;<code>configs</code>&nbsp;&nbsp;·&nbsp;&nbsp;what's included</summary>
+
+<br>
+
+|              |                |
+| ------------ | -------------- |
+| `ghostty`    | terminal       |
+| `vscode`     | IDE            |
+| `nvim`       | text editor    |
+| `tmux`       | multiplexer    |
+| `zsh`        | shell          |
+| `sketchybar` | status bar     |
+| `aerospace`  | window manager |
+| `oh-my-posh` | prompt         |
+| `btop`       | system monitor |
+| `fastfetch`  | fetch          |
+
+<br>
+</details>
+<br>
