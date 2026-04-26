@@ -86,6 +86,8 @@ cask "vlc"
 cask "vnc-viewer"
 cask "utm"
 cask "ollama"
+cask "t3-code"
+cask "t3-code@nightly"
 
 # go tools
 go "github.com/packwiz/packwiz"
