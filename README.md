@@ -1,11 +1,11 @@
 <div align="center">
-<img src="./assets/repo/holymoly.png" width="25%" align="right"/>
 <br>
 
 # ✦ dotfiles
 
 _macOS · managed with [`dot`](bin/dot)_
 
+<img src="./assets/repo/holymoly.jpeg" width="25%" align="right"/>
 </div>
 
 <br>
@@ -14,12 +14,8 @@ _macOS · managed with [`dot`](bin/dot)_
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/matejstastny/dotfiles/main/bootstrap.sh)"
 ```
 
-```sh
-git clone https://github.com/matejstastny/dotfiles.git ~/dotfiles
-~/dotfiles/bin/dot all
-```
-
 <br>
+<img src="./assets/repo/him.jpeg" width="25%" align="right"/>
 
 <details>
 <summary>&nbsp;&nbsp;<code>dot</code>&nbsp;&nbsp;·&nbsp;&nbsp;commands</summary>
@@ -65,3 +61,4 @@ git clone https://github.com/matejstastny/dotfiles.git ~/dotfiles
 <br>
 </details>
 <br>
+
