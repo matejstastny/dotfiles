@@ -67,13 +67,14 @@ sketchybar --add item spacer_left right \
     padding_left=3 \
     padding_right=3
 
+source "$ITEM_DIR/claude_usage.sh"
 source "$ITEM_DIR/cpu.sh"
 source "$ITEM_DIR/memory.sh"
 source "$ITEM_DIR/disk.sh"
 
 # Bracket groups
 
-sketchybar --add bracket stats disk memory cpu \
+sketchybar --add bracket stats disk memory cpu claude_usage \
   --set stats \
     background.color=$BG_SECONDARY \
     background.corner_radius=8 \
