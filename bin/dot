@@ -397,9 +397,25 @@ def diff_task() -> None:
             ["brew", "bundle", "cleanup", f"--file={BREWFILE}", "--dry-run"],
             capture_output=True, text=True,
         )
+        outdated_result = subprocess.run(
+            ["brew", "outdated"],
+            capture_output=True, text=True,
+        )
+
+    outdated_set = set(outdated_result.stdout.splitlines())
 
     output = check_result.stdout + check_result.stderr
-    missing = [line for line in output.splitlines() if line.startswith("\u2192")]
+    missing = []
+    outdated = []
+    for line in output.splitlines():
+        if not line.startswith("\u2192"):
+            continue
+        parts = line.split()
+        pkg = parts[2] if len(parts) >= 3 else line
+        if pkg in outdated_set:
+            outdated.append(pkg)
+        else:
+            missing.append(pkg)
     extra = [
         line for line in cleanup_result.stdout.splitlines()
         if line.startswith("Would uninstall")
@@ -409,10 +425,16 @@ def diff_task() -> None:
     if not missing:
         print(f"  {DIM}  (none){RESET}")
     else:
-        for line in missing:
-            parts = line.split()
-            pkg = parts[2] if len(parts) >= 3 else line
+        for pkg in missing:
             print(f"  {RED}  \u2717  {pkg}{RESET}")
+
+    print()
+    print(f"  {BOLD}Outdated{RESET} {DIM}(in Brewfile, update available){RESET}")
+    if not outdated:
+        print(f"  {DIM}  (none){RESET}")
+    else:
+        for pkg in outdated:
+            print(f"  {CYAN}  \u2191  {pkg}{RESET}")
 
     print()
     print(f"  {BOLD}Extra{RESET} {DIM}(installed, not in Brewfile){RESET}")
