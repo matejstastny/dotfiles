@@ -1137,6 +1137,9 @@ function icon_map() {
     "T3 Chat")
         icon_result=":t3chat:"
         ;;
+    "T3 Code (Alpha)")
+        icon_result=":claude:"
+        ;;
     "Tabby")
         icon_result=":tabby:"
         ;;
