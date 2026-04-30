@@ -19,6 +19,7 @@ alias copy='pbcopy'
 alias paste='pbpaste'
 alias path='echo $PATH | tr ":" "\n"'
 alias ports='lsof -iTCP -sTCP:LISTEN -n -P'
+alias nocolor='gsed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2};?)?)?[mGK]//g"'
 
 alias d='trash'
 alias c='clear'
@@ -49,6 +50,7 @@ alias ccc='clear && claude --dangerously-skip-permissions --continue'
 alias claude='clear && claude'
 
 alias nv='nvim'
+alias ssh='$HOME/bin/bin/ssh'
 
 # Prompt & Plugins ---------------------------------------------------------------------------
 

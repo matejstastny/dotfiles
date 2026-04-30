@@ -144,7 +144,7 @@
   // ------------------------------------------------------------
 
   "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "vscode.json-language-features"
   },
 
   // @ext ms-azuretools.vscode-docker
@@ -197,5 +197,15 @@
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "lldb.suppressUpdateNotifications": true
+  "lldb.suppressUpdateNotifications": true,
+  "security.promptForRemoteFileProtocolHandling": false,
+  "chat.tools.urls.autoApprove": {
+    "https://github.com": {
+      "approveRequest": false,
+      "approveResponse": true
+    },
+    "https://v2.tauri.app": {
+      "approveResponse": true
+    }
+  }
 }

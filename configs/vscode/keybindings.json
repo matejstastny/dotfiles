@@ -1,102 +1,93 @@
 [
-  // Sidebar --------------------------------------------------------------------------
-
-  {
-    "key": "cmd+d",
-    "command": "workbench.view.explorer"
-  },
-
-  {
-    "key": "cmd+r",
-    "command": "copilot-chat.open"
-  },
-
-  {
-    "key": "cmd+g",
-    "command": "workbench.view.scm"
-  },
-
-  {
-    "key": "cmd+shift+e",
-    "command": "workbench.view.extensions"
-  },
-
-  {
-    // Close sidebar
-    "key": "cmd+b",
-    "command": "workbench.action.closeSidebar"
-  },
-
-  {
-    "key": "cmd+n",
-    "command": "extension.advancedNewFile"
-  },
-
-  {
-    // Toast clear
-    "key": "escape",
-    "command": "notifications.hideToasts",
-    "when": "notificationToastsVisible"
-  },
-
-  {
-    // Reset zoom
-    "key": "cmd+0",
-    "command": "workbench.action.zoomReset"
-  },
-
-  {
-    // Declaration
-    "key": "cmd+l",
-    "command": "editor.action.goToDeclaration",
-    "when": "editorTextFocus"
-  },
-
-  {
-    // Insert date string
-    "key": "cmd+shift+d",
-    "command": "insertDateString.insertDate",
-    "when": "editorTextFocus"
-  },
-
-  {
-    "command": "runCommands",
-    "key": "cmd+k",
-    "args": {
-      "commands": [
-        "workbench.files.action.collapseExplorerFolders",
-        "openEditors.closeAll"
-      ]
+    // Sidebar --------------------------------------------------------------------------
+    {
+        "key": "cmd+d",
+        "command": "workbench.view.explorer"
+    },
+    {
+        "key": "cmd+r",
+        "command": "copilot-chat.open"
+    },
+    {
+        "key": "cmd+g",
+        "command": "workbench.view.scm"
+    },
+    {
+        "key": "cmd+shift+e",
+        "command": "workbench.view.extensions"
+    },
+    {
+        // Close sidebar
+        "key": "cmd+b",
+        "command": "workbench.action.closeSidebar"
+    },
+    {
+        "key": "cmd+n",
+        "command": "extension.advancedNewFile"
+    },
+    {
+        // Toast clear
+        "key": "escape",
+        "command": "notifications.hideToasts",
+        "when": "notificationToastsVisible"
+    },
+    {
+        // Reset zoom
+        "key": "cmd+0",
+        "command": "workbench.action.zoomReset"
+    },
+    {
+        // Declaration
+        "key": "cmd+l",
+        "command": "editor.action.goToDeclaration",
+        "when": "editorTextFocus"
+    },
+    {
+        // Insert date string
+        "key": "cmd+shift+d",
+        "command": "insertDateString.insertDate",
+        "when": "editorTextFocus"
+    },
+    {
+        "command": "runCommands",
+        "key": "cmd+k",
+        "args": {
+            "commands": [
+                "workbench.files.action.collapseExplorerFolders",
+                "openEditors.closeAll"
+            ]
+        }
+    },
+    // Mini windows --------------------------------------------------------------------
+    {
+        // Open command panel
+        "key": "cmd+p",
+        "command": "workbench.action.showCommands"
+    },
+    {
+        // Line finder
+        "key": "cmd+m",
+        "command": "workbench.action.gotoLine"
+    },
+    {
+        // Method finder
+        "key": "cmd+e",
+        "command": "workbench.action.gotoSymbol"
+    },
+    {
+        // Quick open menu
+        "key": "cmd+o",
+        "command": "workbench.action.quickOpen"
+    },
+    // Open folder
+    {
+        "key": "cmd+u",
+        "command": "workbench.action.files.openFileFolder"
+    },
+    // Copilot
+    {
+        "key": "shift+cmd+i",
+        "command": "-insertDateString.insertDateTime",
+        "when": "editorTextFocus"
     }
-  },
-
-  // Mini windows --------------------------------------------------------------------
-
-  {
-    // Open command panel
-    "key": "cmd+p",
-    "command": "workbench.action.showCommands"
-  },
-
-  {
-    // Line finder
-    "key": "cmd+m",
-    "command": "workbench.action.gotoLine"
-  },
-  {
-    // Method finder
-    "key": "cmd+e",
-    "command": "workbench.action.gotoSymbol"
-  },
-
-  {
-    // Quick open menu
-    "key": "cmd+o",
-    "command": "workbench.action.quickOpen"
-  },
-  {
-    "key": "shift+cmd+i",
-    "command": "-insertDateString.insertDateTime",
-    "when": "editorTextFocus"
-  }
 ]
