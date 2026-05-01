@@ -1,28 +1,28 @@
 [
     // Sidebar --------------------------------------------------------------------------
     {
-        "key": "cmd+d",
+        "key": "ctrl+d",
         "command": "workbench.view.explorer"
     },
     {
-        "key": "cmd+r",
+        "key": "ctrl+r",
         "command": "copilot-chat.open"
     },
     {
-        "key": "cmd+g",
+        "key": "ctrl+g",
         "command": "workbench.view.scm"
     },
     {
-        "key": "cmd+shift+e",
+        "key": "ctrl+shift+e",
         "command": "workbench.view.extensions"
     },
     {
         // Close sidebar
-        "key": "cmd+b",
+        "key": "ctrl+b",
         "command": "workbench.action.closeSidebar"
     },
     {
-        "key": "cmd+n",
+        "key": "ctrl+n",
         "command": "extension.advancedNewFile"
     },
     {
@@ -33,24 +33,24 @@
     },
     {
         // Reset zoom
-        "key": "cmd+0",
+        "key": "ctrl+0",
         "command": "workbench.action.zoomReset"
     },
     {
         // Declaration
-        "key": "cmd+l",
+        "key": "ctrl+l",
         "command": "editor.action.goToDeclaration",
         "when": "editorTextFocus"
     },
     {
         // Insert date string
-        "key": "cmd+shift+d",
+        "key": "ctrl+shift+d",
         "command": "insertDateString.insertDate",
         "when": "editorTextFocus"
     },
     {
         "command": "runCommands",
-        "key": "cmd+k",
+        "key": "ctrl+k",
         "args": {
             "commands": [
                 "workbench.files.action.collapseExplorerFolders",
@@ -61,32 +61,32 @@
     // Mini windows --------------------------------------------------------------------
     {
         // Open command panel
-        "key": "cmd+p",
+        "key": "ctrl+p",
         "command": "workbench.action.showCommands"
     },
     {
         // Line finder
-        "key": "cmd+m",
+        "key": "ctrl+m",
         "command": "workbench.action.gotoLine"
     },
     {
         // Method finder
-        "key": "cmd+e",
+        "key": "ctrl+e",
         "command": "workbench.action.gotoSymbol"
     },
     {
         // Quick open menu
-        "key": "cmd+o",
+        "key": "ctrl+o",
         "command": "workbench.action.quickOpen"
     },
     // Open folder
     {
-        "key": "cmd+u",
+        "key": "ctrl+u",
         "command": "workbench.action.files.openFileFolder"
     },
     // Copilot
     {
-        "key": "shift+cmd+i",
+        "key": "shift+ctrl+i",
         "command": "-insertDateString.insertDateTime",
         "when": "editorTextFocus"
     }

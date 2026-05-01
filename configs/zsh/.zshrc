@@ -1,5 +1,20 @@
 # Matej Stastny | https://github.com/matejstastny/dotfiles
 
+# PREREQUISITES --------------------------------------------------------------------------------
+# - zsh-syntax-highlighting
+# - zsh-autosuggestions
+# - oh-my-posh
+# - zoxide
+# - tmux
+# - jenv
+# - fzf
+# - eza
+
+# FEDORA:
+# sudo dnf install zsh-syntax-highlighting oh-my-posh eza zoxide fzf tmux jenv bat git gh
+# dnf config-manager addrepo --from-repofile=https://download.opensuse.org/repositories/shells:zsh-users:zsh-autosuggestions/Fedora_Rawhide/shells:zsh-users:zsh-autosuggestions.repo
+# dnf install zsh-autosuggestions
+
 # Aliases ------------------------------------------------------------------------------------
 
 alias ..='cd ..'
@@ -21,7 +36,6 @@ alias path='echo $PATH | tr ":" "\n"'
 alias ports='lsof -iTCP -sTCP:LISTEN -n -P'
 alias nocolor='gsed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2};?)?)?[mGK]//g"'
 
-alias d='trash'
 alias c='clear'
 alias info='scc'
 alias aria='aria2c'
@@ -33,13 +47,10 @@ alias lsaa='echo && eza --color=always --long --git --icons=always -a'
 alias lst='echo && eza --color=always --tree --git --no-filesize --icons=always --no-time --no-user --no-permissions'
 
 alias ip="ifconfig | grep 'inet ' | awk '/inet / {print \$2}' | grep -Ev '^(127\.|::)'"
-alias sign='sudo xattr -rd com.apple.quarantine'
 
 alias q='tmux detach'
 alias qa='tmux kill-server'
 alias tl='tmux display-message -p "#{window_layout}"'
-
-alias vc='veracrypt -t'
 
 alias dockerc='docker system prune --all --volumes'
 
@@ -50,7 +61,6 @@ alias ccc='clear && claude --dangerously-skip-permissions --continue'
 alias claude='clear && claude'
 
 alias nv='nvim'
-alias ssh='$HOME/bin/bin/ssh'
 
 # Prompt & Plugins ---------------------------------------------------------------------------
 
@@ -61,10 +71,10 @@ eval "$(oh-my-posh init zsh --config $HOME/.config/oh-my-posh/prompt.json)"
 eval "$(zoxide init zsh)"
 
 # Zsh autosuggestions
-source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+source "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 # Zsh syntax highlighting
-source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+source "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 ZSH_HIGHLIGHT_STYLES[command]='fg=#E29BD8,bold'
 ZSH_HIGHLIGHT_STYLES[builtin]='fg=#E29BD8,bold'
 ZSH_HIGHLIGHT_STYLES[alias]='fg=#E29BD8,bold'
@@ -72,9 +82,6 @@ ZSH_HIGHLIGHT_STYLES[function]='fg=#BB9AF7,bold'
 ZSH_HIGHLIGHT_STYLES[path]='fg=#BB9AF7,underline'
 ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=#BB9AF7'
 ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=#BB9AF7'
-
-# Ripgrep
-export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/.ripgreprc"
 
 # Bat
 export BAT_THEME="base16"
@@ -98,7 +105,6 @@ fi
 # Completions ---------------------------------------------------------------------------------
 
 fpath=($HOME/.docker/completions $fpath)
-[ -s "${BUN_INSTALL:-$HOME/.bun}/_bun" ] && source "${BUN_INSTALL:-$HOME/.bun}/_bun"
 
 autoload -Uz compinit
 compinit
