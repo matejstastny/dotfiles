@@ -19,9 +19,8 @@ ASSETS_DIR = DOTFILES_DIR / "assets"
 FONT_DIR = ASSETS_DIR / "fonts"
 CONFIGS_DIR = DOTFILES_DIR / "configs"
 WALLPAPER_DIR = ASSETS_DIR / "wallpapers"
-BREWFILE = DOTFILES_DIR / "Brewfile"
 WALLPAPER = WALLPAPER_DIR / "wallpaper.png"
-FONT_INSTALL_DIR = Path.home() / "Library" / "Fonts"
+FONT_INSTALL_DIR = Path.home() / ".local" / "share" / "fonts"
 LINK_TOML = DOTFILES_DIR / "link.toml"
 CLEAR_LINE = "\033[2K\r"
 
@@ -147,10 +146,9 @@ def load_link_toml() -> tuple[dict[str, str], dict[str, str]]:
     return directories, files
 
 
-TASK_ORDER = ["link", "brew", "assets"]
+TASK_ORDER = ["link", "assets"]
 TASK_DESC = {
     "link": "Symlink configs to system locations",
-    "brew": "Install/update Homebrew packages",
     "assets": "Install fonts and set wallpaper",
 }
 
@@ -223,43 +221,6 @@ def link(force: bool = False, dry_run: bool = False) -> None:
 
 
 
-def brew_task() -> None:
-    if shutil.which("brew") is None:
-        fatal("Homebrew not installed!")
-    if not BREWFILE.exists():
-        fatal(f"Brewfile not found at {BREWFILE}!")
-
-    header("brew")
-
-    steps = [
-        ("Updating Homebrew", ["brew", "update", "-q"]),
-        ("Upgrading packages", ["brew", "upgrade", "-q"]),
-        ("Installing from Brewfile", ["brew", "bundle", f"--file={BREWFILE}", "-q"]),
-        ("Removing unlisted packages", ["brew", "bundle", "cleanup", f"--file={BREWFILE}", "--force", "-q"]),
-        ("Cleaning up", ["brew", "cleanup"]),
-    ]
-
-    with Spinner() as sp:
-        for i, (label, cmd) in enumerate(steps, 1):
-            sp.update(f"{label}{DIM} ({i}/{len(steps)}){RESET}")
-            result = subprocess.run(cmd, capture_output=True, text=True)
-            if result.returncode != 0:
-                sp.log(f"  {RED}\u2717  {label}{RESET}")
-                fatal("Homebrew command failed!")
-            sp.log(f"  {GREEN}\u2713{RESET}  {label}")
-
-        # aider-chat needs Python 3.12+ (system Python uses LibreSSL which breaks urllib3 v2)
-        if shutil.which("uv"):
-            sp.update("Ensuring aider-chat uses Python 3.12\u2026")
-            subprocess.run(
-                ["uv", "tool", "install", "aider-chat", "--python", "3.12", "--force"],
-                capture_output=True,
-            )
-            sp.log(f"  {GREEN}\u2713{RESET}  aider-chat (python 3.12)")
-
-    summary(f"{GREEN}\u2713 Done (˶˃ ᵕ ˂˶){RESET}")
-
-
 def assets() -> None:
     header("assets")
 
@@ -301,19 +262,49 @@ def assets() -> None:
     if not WALLPAPER.exists():
         fatal(f"Wallpaper not found at {WALLPAPER}")
 
-    with Spinner("Setting wallpaper\u2026"):
-        result = subprocess.run(
-            [
-                "osascript", "-e",
-                f'tell application "System Events" to set picture of every desktop to "{WALLPAPER}"',
-            ],
-            capture_output=True,
-        )
+    wallpaper_uri = WALLPAPER.resolve().as_uri()
 
-    if result.returncode == 0:
-        print(f"  {GREEN}\u2713{RESET}  Wallpaper set")
-    else:
-        print(f"  {YELLOW}\u26a0{RESET}  Failed to set wallpaper")
+    wallpaper_set = False
+    wallpaper_target = WALLPAPER.resolve()
+    if shutil.which("plasma-apply-wallpaperimage"):
+        with Spinner("Setting wallpaper (KDE Plasma)\u2026"):
+            result = subprocess.run(
+                ["plasma-apply-wallpaperimage", str(wallpaper_target)],
+                capture_output=True,
+                text=True,
+            )
+        if result.returncode == 0:
+            wallpaper_set = True
+            print(f"  {GREEN}\u2713{RESET}  Wallpaper set (KDE Plasma)")
+
+    if not wallpaper_set and shutil.which("gsettings"):
+        with Spinner("Setting wallpaper (GNOME)\u2026"):
+            result = subprocess.run(
+                [
+                    "gsettings",
+                    "set",
+                    "org.gnome.desktop.background",
+                    "picture-uri",
+                    wallpaper_uri,
+                ],
+                capture_output=True,
+            )
+            subprocess.run(
+                [
+                    "gsettings",
+                    "set",
+                    "org.gnome.desktop.background",
+                    "picture-uri-dark",
+                    wallpaper_uri,
+                ],
+                capture_output=True,
+            )
+        if result.returncode == 0:
+            wallpaper_set = True
+            print(f"  {GREEN}\u2713{RESET}  Wallpaper set (GNOME)")
+
+    if not wallpaper_set:
+        print(f"  {YELLOW}\u26a0{RESET}  Could not set wallpaper automatically")
 
     summary(f"{GREEN}\u2713 Done (˶˃ ᵕ ˂˶){RESET}")
 
@@ -380,81 +371,10 @@ def check() -> None:
 
 
 
-def diff_task() -> None:
-    if shutil.which("brew") is None:
-        fatal("Homebrew not installed!")
-    if not BREWFILE.exists():
-        fatal(f"Brewfile not found at {BREWFILE}!")
-
-    header("diff")
-
-    with Spinner("Checking Brewfile\u2026"):
-        check_result = subprocess.run(
-            ["brew", "bundle", "check", f"--file={BREWFILE}", "--verbose"],
-            capture_output=True, text=True,
-        )
-        cleanup_result = subprocess.run(
-            ["brew", "bundle", "cleanup", f"--file={BREWFILE}", "--dry-run"],
-            capture_output=True, text=True,
-        )
-        outdated_result = subprocess.run(
-            ["brew", "outdated"],
-            capture_output=True, text=True,
-        )
-
-    outdated_set = set(outdated_result.stdout.splitlines())
-
-    output = check_result.stdout + check_result.stderr
-    missing = []
-    outdated = []
-    for line in output.splitlines():
-        if not line.startswith("\u2192"):
-            continue
-        parts = line.split()
-        pkg = parts[2] if len(parts) >= 3 else line
-        if pkg in outdated_set:
-            outdated.append(pkg)
-        else:
-            missing.append(pkg)
-    extra = [
-        line for line in cleanup_result.stdout.splitlines()
-        if line.startswith("Would uninstall")
-    ]
-
-    print(f"  {BOLD}Missing{RESET} {DIM}(in Brewfile, not installed){RESET}")
-    if not missing:
-        print(f"  {DIM}  (none){RESET}")
-    else:
-        for pkg in missing:
-            print(f"  {RED}  \u2717  {pkg}{RESET}")
-
-    print()
-    print(f"  {BOLD}Outdated{RESET} {DIM}(in Brewfile, update available){RESET}")
-    if not outdated:
-        print(f"  {DIM}  (none){RESET}")
-    else:
-        for pkg in outdated:
-            print(f"  {CYAN}  \u2191  {pkg}{RESET}")
-
-    print()
-    print(f"  {BOLD}Extra{RESET} {DIM}(installed, not in Brewfile){RESET}")
-    if not extra:
-        print(f"  {DIM}  (none){RESET}")
-    else:
-        for line in extra:
-            pkg = line.split()[-1]
-            print(f"  {YELLOW}  ~  {pkg}{RESET}")
-
-    print()
-
-
-
 def run_task(name: str, **kwargs) -> None:
     match name:
         case "link":
             link(**kwargs)
-        case "brew":
-            brew_task()
         case "assets":
             assets()
 
@@ -471,16 +391,14 @@ def build_parser() -> argparse.ArgumentParser:
     link_p.add_argument("--force", action="store_true", help="Overwrite without prompting")
     link_p.add_argument("--dry-run", action="store_true", help="Show what would happen")
 
-    sub.add_parser("brew", help=TASK_DESC["brew"])
     sub.add_parser("assets", help=TASK_DESC["assets"])
 
-    update_p = sub.add_parser("update", help="Sync: brew + link")
+    update_p = sub.add_parser("update", help="Sync: link + assets")
     update_p.add_argument("--force", action="store_true", help="Overwrite without prompting")
     update_p.add_argument("--dry-run", action="store_true", help="Show what would happen")
 
     sub.add_parser("all", help="Run all tasks")
     sub.add_parser("check", help="Show symlink status for all configs")
-    sub.add_parser("diff", help="Show Brewfile vs installed packages")
 
     return parser
 
@@ -500,15 +418,13 @@ def main() -> None:
     match args.command:
         case "check":
             check()
-        case "diff":
-            diff_task()
         case "update":
-            run_task("brew")
             run_task("link", **link_kwargs)
+            run_task("assets")
         case "all":
             for name in TASK_ORDER:
                 run_task(name)
-        case "link" | "brew" | "assets":
+        case "link" | "assets":
             run_task(args.command, **link_kwargs)
 
 
