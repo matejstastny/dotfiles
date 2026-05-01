@@ -1,17 +1,19 @@
 # Matej Stastny | https://github.com/matejstastny/dotfiles
 
+# KDE terminals often start non-login shells, so load profile vars here too.
+[[ -r "$HOME/.zprofile" ]] && source "$HOME/.zprofile"
+
 # PREREQUISITES --------------------------------------------------------------------------------
 # - zsh-syntax-highlighting
 # - zsh-autosuggestions
 # - oh-my-posh
 # - zoxide
 # - tmux
-# - jenv
 # - fzf
 # - eza
 
 # FEDORA:
-# sudo dnf install zsh-syntax-highlighting oh-my-posh eza zoxide fzf tmux jenv bat git gh
+# sudo dnf install oh-my-posh eza zoxide fzf tmux bat git gh
 # dnf config-manager addrepo --from-repofile=https://download.opensuse.org/repositories/shells:zsh-users:zsh-autosuggestions/Fedora_Rawhide/shells:zsh-users:zsh-autosuggestions.repo
 # dnf install zsh-autosuggestions
 
@@ -95,12 +97,6 @@ export FZF_DEFAULT_OPTS="
   --color=info:#555555,prompt:#E29BD8,pointer:#E29BD8,marker:#BB9AF7,border:#252525
   --color=header:#555555,spinner:#BB9AF7
 "
-
-# Jenv
-if command -v jenv >/dev/null 2>&1; then
-	export PATH="$HOME/.jenv/bin:$PATH"
-	eval "$(jenv init -)"
-fi
 
 # Completions ---------------------------------------------------------------------------------
 

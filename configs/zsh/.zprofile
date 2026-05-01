@@ -3,7 +3,7 @@
 # Defaults ----------------------------------------------------------------------------------
 
 export EDITOR="nvim"
-export BROWSER="/Applications/Helium.app/Contents/MacOS/Helium"
+export BROWSER="firefox"
 export DOTFILES_DIR="$HOME/dotfiles"
 
 # Locale ------------------------------------------------------------------------------------
@@ -28,18 +28,9 @@ export GOPATH="$HOME/go"
 export PROTO_HOME="$HOME/.proto"
 export BUN_INSTALL="$HOME/.bun"
 
-# macOS -------------------------------------------------------------------------------------
+# Linux (Fedora) ---------------------------------------------------------------------------
 
-export APP_DATA="$HOME/Library/Application Support"
-
-# Vulkan SDK (macOS MoltenVK)
-export VULKAN_SDK="$HOME/VulkanSDK/1.4.321.0/macOS"
-export DYLD_LIBRARY_PATH="$VULKAN_SDK/lib${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PATH}"
-export VK_ICD_FILENAMES="$VULKAN_SDK/etc/vulkan/icd.d/MoltenVK_icd.json"
-export VK_LAYER_PATH="$VULKAN_SDK/etc/vulkan/explicit_layer.d"
-
-# Homebrew
-eval "$(/opt/homebrew/bin/brew shellenv)"
+export APP_DATA="$XDG_DATA_HOME"
 
 # PATH setup --------------------------------------------------------------------------------
 
@@ -49,12 +40,5 @@ path=(
 	"$HOME/dotfiles/bin"
 	"$HOME/bin/bin"
 	"$GOPATH/bin"
-	"$BUN_INSTALL/bin"
-	"$VULKAN_SDK/bin"
-	"/opt/homebrew/bin"
-	"$PROTO_HOME/shims"
-	"$PROTO_HOME/bin"
-	"$HOME/Library/Application Support/JetBrains/Toolbox/scripts"
-	"$HOME/.local/bin"
 	$path
 )
