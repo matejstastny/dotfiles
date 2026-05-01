@@ -156,7 +156,7 @@
     "prettier.trailingComma": "none",
     "chat.viewSessions.enabled": false,
     "[shellscript]": {
-        "editor.defaultFormatter": "mads-hartmann.bash-ide-vscode"
+        "editor.defaultFormatter": "mkhl.shfmt"
     },
     "github.copilot.enable": {
         "*": true,

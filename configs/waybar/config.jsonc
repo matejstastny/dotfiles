@@ -75,7 +75,8 @@
         "format-wifi": "󰤨 {signalStrength}%",
         "format-ethernet": "󰈀",
         "format-disconnected": "󰤭",
-        "tooltip-format-wifi": "{essid}\n{ipaddr}\n{signaldBm} dBm"
+        "tooltip-format-wifi": "{essid}\n{ipaddr}\n{signaldBm} dBm",
+        "on-click": "hyprltm-net"
     },
     "pulseaudio": {
         "format": "{icon} {volume}%",
