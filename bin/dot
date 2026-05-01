@@ -266,7 +266,22 @@ def assets() -> None:
 
     wallpaper_set = False
     wallpaper_target = WALLPAPER.resolve()
-    if shutil.which("plasma-apply-wallpaperimage"):
+
+    if shutil.which("swaybg") and os.environ.get("WAYLAND_DISPLAY"):
+        with Spinner("Setting wallpaper (swaybg)…"):
+            subprocess.run(["pkill", "swaybg"], capture_output=True)
+            time.sleep(0.2)
+            subprocess.Popen(
+                ["swaybg", "-i", str(wallpaper_target), "-m", "fill"],
+                start_new_session=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            time.sleep(0.5)
+        wallpaper_set = True
+        print(f"  {GREEN}✓{RESET}  Wallpaper set (swaybg)")
+
+    if not wallpaper_set and shutil.which("plasma-apply-wallpaperimage"):
         with Spinner("Setting wallpaper (KDE Plasma)\u2026"):
             result = subprocess.run(
                 ["plasma-apply-wallpaperimage", str(wallpaper_target)],
