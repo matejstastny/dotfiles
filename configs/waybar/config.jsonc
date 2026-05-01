@@ -1,0 +1,92 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 34,
+    "spacing": 0,
+    "modules-left":   ["hyprland/workspaces", "hyprland/window"],
+    "modules-center": [],
+    "modules-right":  ["clock", "pulseaudio", "backlight", "network", "battery", "tray"],
+
+    "hyprland/workspaces": {
+        "format": "{id}",
+        "on-click": "activate",
+        "sort-by-number": true,
+        "active-only": false,
+        "all-outputs": false
+    },
+
+    "hyprland/window": {
+        "max-length": 50,
+        "separate-outputs": true,
+        "rewrite": {
+            "(.*)Mozilla Firefox": "Firefox",
+            "(.*) — Dolphin": "Files",
+            "(.*)Visual Studio Code": "Code"
+        }
+    },
+
+    "clock": {
+        "format": "{:%H:%M}",
+        "format-alt": "{:%a, %b %-d}",
+        "tooltip-format": "<tt><big>{calendar}</big></tt>",
+        "calendar": {
+            "mode": "month",
+            "on-scroll": 1,
+            "format": {
+                "today": "<span color='#e29bd8'><b><u>{}</u></b></span>"
+            }
+        }
+    },
+
+    "battery": {
+        "bat": "macsmc-battery",
+        "adapter": "macsmc-ac",
+        "interval": 30,
+        "states": {
+            "good":     80,
+            "warning":  30,
+            "critical": 15
+        },
+        "format":          "{icon} {capacity}%",
+        "format-charging": "󱐋 {capacity}%",
+        "format-plugged":  "󰚥 {capacity}%",
+        "format-full":     "󰁹",
+        "format-icons":    ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "tooltip-format":  "{timeTo} · {power:.1f}W"
+    },
+
+    "network": {
+        "format-wifi":         "󰤨 {signalStrength}%",
+        "format-ethernet":     "󰈀",
+        "format-disconnected": "󰤭",
+        "tooltip-format-wifi": "{essid}\n{ipaddr}\n{signaldBm} dBm"
+    },
+
+    "pulseaudio": {
+        "format":           "{icon} {volume}%",
+        "format-muted":     "󰝟",
+        "format-bluetooth": "󰂰 {volume}%",
+        "format-icons": {
+            "headphone": "",
+            "headset":   "󰋎",
+            "default":   ["󰕿", "󰖀", "󰕾"]
+        },
+        "scroll-step": 2,
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "on-right-click": "pavucontrol"
+    },
+
+    "backlight": {
+        "device": "apple-panel-bl",
+        "format": "{icon} {percent}%",
+        "format-icons": ["󰃚", "󰃛", "󰃜", "󰃝", "󰃞", "󰃟", "󰃠"],
+        "scroll-step": 5,
+        "on-scroll-up":   "brightnessctl -e4 set 5%+",
+        "on-scroll-down": "brightnessctl -e4 set 5%-"
+    },
+
+    "tray": {
+        "icon-size": 14,
+        "spacing": 6
+    }
+}

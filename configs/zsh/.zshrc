@@ -1,21 +1,10 @@
 # Matej Stastny | https://github.com/matejstastny/dotfiles
 
-# KDE terminals often start non-login shells, so load profile vars here too.
+# Load profile vars (KDE/non-login shells don't source .zprofile)
 [[ -r "$HOME/.zprofile" ]] && source "$HOME/.zprofile"
 
 # PREREQUISITES --------------------------------------------------------------------------------
-# - zsh-syntax-highlighting
-# - zsh-autosuggestions
-# - oh-my-posh
-# - zoxide
-# - tmux
-# - fzf
-# - eza
-
-# FEDORA:
-# sudo dnf install oh-my-posh eza zoxide fzf tmux bat git gh
-# dnf config-manager addrepo --from-repofile=https://download.opensuse.org/repositories/shells:zsh-users:zsh-autosuggestions/Fedora_Rawhide/shells:zsh-users:zsh-autosuggestions.repo
-# dnf install zsh-autosuggestions
+# sudo dnf install oh-my-posh eza zoxide fzf tmux bat git gh zsh-autosuggestions zsh-syntax-highlighting
 
 # Aliases ------------------------------------------------------------------------------------
 
@@ -32,14 +21,14 @@ alias gp='git push'
 alias gl='git log --oneline --graph --decorate -20'
 alias gd='git diff'
 
-alias copy='pbcopy'
-alias paste='pbpaste'
+alias copy='wl-copy'
+alias paste='wl-paste'
 alias path='echo $PATH | tr ":" "\n"'
-alias ports='lsof -iTCP -sTCP:LISTEN -n -P'
-alias nocolor='gsed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2};?)?)?[mGK]//g"'
+alias ports='ss -tlnp'
+alias nocolor='sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2};?)?)?[mGK]//g"'
+alias localip="ip -4 addr show | awk '/inet / && !/127.0.0/ {print \$2}'"
 
 alias c='clear'
-alias info='scc'
 alias aria='aria2c'
 
 alias cd='z'
@@ -47,8 +36,6 @@ alias ls='echo && eza --color=always --long --git --no-filesize --icons=always -
 alias lsa='echo && eza --color=always --long --git --icons=always'
 alias lsaa='echo && eza --color=always --long --git --icons=always -a'
 alias lst='echo && eza --color=always --tree --git --no-filesize --icons=always --no-time --no-user --no-permissions'
-
-alias ip="ifconfig | grep 'inet ' | awk '/inet / {print \$2}' | grep -Ev '^(127\.|::)'"
 
 alias q='tmux detach'
 alias qa='tmux kill-server'
@@ -64,18 +51,30 @@ alias claude='clear && claude'
 
 alias nv='nvim'
 
+# Functions ----------------------------------------------------------------------------------
+
+# Tmux: attach to last session, any session, or create 'main'
+tm() {
+    [[ -n "$TMUX" ]] && return
+    local last
+    last=$(cat ~/.local/share/tmux/last-session 2>/dev/null)
+    if [[ -n "$last" ]] && tmux has-session -t "$last" 2>/dev/null; then
+        tmux attach -t "$last"
+    elif tmux list-sessions &>/dev/null; then
+        tmux attach
+    else
+        tmux new-session -s main
+    fi
+}
+
 # Prompt & Plugins ---------------------------------------------------------------------------
 
-# Oh My Posh
 eval "$(oh-my-posh init zsh --config $HOME/.config/oh-my-posh/prompt.json)"
 
-# Zoxide
 eval "$(zoxide init zsh)"
 
-# Zsh autosuggestions
 source "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
-# Zsh syntax highlighting
 source "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 ZSH_HIGHLIGHT_STYLES[command]='fg=#E29BD8,bold'
 ZSH_HIGHLIGHT_STYLES[builtin]='fg=#E29BD8,bold'
@@ -87,7 +86,7 @@ ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=#BB9AF7'
 
 # Bat
 export BAT_THEME="base16"
-export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08/, \"\", \$0); print }'\'' | bat -p -lman'"
+export MANPAGER="sh -c 'col -bx | bat -p -lman'"
 
 # Fzf
 source <(fzf --zsh)
@@ -105,7 +104,6 @@ fpath=($HOME/.docker/completions $fpath)
 autoload -Uz compinit
 compinit
 
-# Completion settings
 zstyle ':completion:*' menu select
 zstyle ':completion:*' special-dirs true
 zstyle ':completion:*' list-colors "$LS_COLORS" ma=0\;35
@@ -131,17 +129,15 @@ HISTSIZE=1000000
 SAVEHIST=1000000
 HISTFILE="$XDG_CACHE_HOME/zsh_history"
 
-# Tmux separate history
+# Per-pane tmux history
 if [[ -n $TMUX_PANE ]]; then
-	HISTDIR="$HOME/.zsh_tmux_hist"
-	mkdir -p "$HISTDIR"
-	HISTFILE="$HISTDIR/.zsh_history_${TMUX_PANE:1}"
-	if [[ ! -f $HISTFILE ]]; then
-		cp "$HOME/.zsh_history" "$HISTFILE" 2>/dev/null
-	fi
+    HISTDIR="$HOME/.zsh_tmux_hist"
+    mkdir -p "$HISTDIR"
+    HISTFILE="$HISTDIR/.zsh_history_${TMUX_PANE:1}"
+    [[ ! -f $HISTFILE ]] && cp "$HOME/.zsh_history" "$HISTFILE" 2>/dev/null
 fi
 
-# Attach to tmux session
-if [[ $TERM == "xterm-ghostty" ]]; then
-	tm
+# Auto-attach to tmux in any graphical terminal session
+if [[ -z "$TMUX" && (-n "$WAYLAND_DISPLAY" || -n "$DISPLAY") ]]; then
+    tm
 fi

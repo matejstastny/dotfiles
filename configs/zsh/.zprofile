@@ -39,6 +39,7 @@ typeset -U path
 path=(
 	"$HOME/dotfiles/bin"
 	"$HOME/bin/bin"
+  "$HOME/.local/bin"
 	"$GOPATH/bin"
 	$path
 )

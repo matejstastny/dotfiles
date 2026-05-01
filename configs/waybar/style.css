@@ -1,0 +1,138 @@
+@define-color bg      #0f0f17;
+@define-color surface #1a1a28;
+@define-color overlay #252538;
+@define-color border  #2a2a3e;
+@define-color muted   #55556e;
+@define-color dim     #888899;
+@define-color text    #e0e0e0;
+@define-color purple  #bb9af7;
+@define-color pink    #e29bd8;
+@define-color red     #f14c4c;
+@define-color green   #7dcfb6;
+@define-color yellow  #e5c07b;
+
+* {
+    font-family: "DankMono Nerd Font Mono", monospace;
+    font-size: 12px;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+}
+
+window#waybar {
+    background-color: @bg;
+    color: @text;
+    border-bottom: 1px solid @border;
+    transition: none;
+}
+
+/* ── Workspaces ────────────────────────────────────────────────────── */
+
+#workspaces {
+    margin: 0 4px;
+    padding: 2px 4px;
+}
+
+#workspaces button {
+    padding: 1px 9px;
+    color: @muted;
+    background: transparent;
+    border-radius: 5px;
+    transition: all 0.15s ease;
+    min-width: 0;
+}
+
+#workspaces button.active {
+    color: @bg;
+    background: @pink;
+    font-weight: bold;
+}
+
+#workspaces button.occupied:not(.active) {
+    color: @dim;
+    background: @overlay;
+}
+
+#workspaces button.urgent {
+    color: @red;
+    background: alpha(@red, 0.15);
+}
+
+#workspaces button:hover:not(.active) {
+    background: @overlay;
+    color: @text;
+}
+
+/* ── Window title ──────────────────────────────────────────────────── */
+
+#window {
+    color: @muted;
+    font-style: italic;
+    padding: 0 12px;
+}
+
+/* ── Clock ─────────────────────────────────────────────────────────── */
+
+#clock {
+    color: @text;
+    font-weight: bold;
+    padding: 0 10px;
+    letter-spacing: 0.04em;
+}
+
+/* ── Right modules ──────────────────────────────────────────────────── */
+
+#battery,
+#network,
+#pulseaudio,
+#backlight {
+    color: @purple;
+    padding: 0 8px;
+}
+
+#battery.charging,
+#battery.plugged {
+    color: @green;
+}
+
+#battery.good:not(.charging) {
+    color: @purple;
+}
+
+#battery.warning:not(.charging) {
+    color: @yellow;
+}
+
+#battery.critical:not(.charging) {
+    color: @red;
+    animation: blink 1s linear infinite;
+}
+
+@keyframes blink {
+    to { opacity: 0.4; }
+}
+
+#pulseaudio.muted {
+    color: @muted;
+}
+
+#network.disconnected {
+    color: @muted;
+}
+
+#tray {
+    padding: 0 8px 0 4px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: alpha(@red, 0.2);
+    border-radius: 4px;
+}
