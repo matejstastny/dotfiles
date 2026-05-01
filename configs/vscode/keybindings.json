@@ -84,10 +84,14 @@
         "key": "ctrl+u",
         "command": "workbench.action.files.openFileFolder"
     },
-    // Copilot
     {
-        "key": "shift+ctrl+i",
-        "command": "-insertDateString.insertDateTime",
-        "when": "editorTextFocus"
+        "key": "ctrl+shift+i",
+        "command": "workbench.panel.chat",
+        "when": "workbench.panel.chat.view.copilot.active"
+    },
+    {
+        "key": "ctrl+alt+i",
+        "command": "-workbench.panel.chat",
+        "when": "workbench.panel.chat.view.copilot.active"
     }
 ]
