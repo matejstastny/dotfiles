@@ -1,55 +1,102 @@
-# Matej Stastny | https://github.com/matejstastny/dotfiles
+# Prevent duplicate init when this file is sourced from multiple startup files
+if [[ -n ${ZSHRC_LOADED_ONCE:-} ]]; then
+    return
+fi
+ZSHRC_LOADED_ONCE=1
 
-# Load profile vars (KDE/non-login shells don't source .zprofile)
-[[ -r "$HOME/.zprofile" ]] && source "$HOME/.zprofile"
+# Env variables ------------------------------------------------------------------------------
 
-# PREREQUISITES --------------------------------------------------------------------------------
-# sudo dnf install oh-my-posh eza zoxide fzf tmux bat git gh zsh-autosuggestions zsh-syntax-highlighting
+# Defaults
+export EDITOR="nvim"
+export BROWSER="firefox"
+export DOTFILES_DIR="$HOME/dotfiles"
+
+# Locale
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+
+# XDG Base
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_DATA_HOME="$HOME/.local/share"
+
+# fzf config
+export FZF_DEFAULT_OPTS="--style minimal --color 16 --layout=reverse --height 30% --preview='bat -p --color=always {}'"
+export FZF_CTRL_R_OPTS="--style minimal --color 16 --info inline --no-sort --no-preview"
+
+# sdk config
+export GOPATH="$HOME/go"
+export PROTO_HOME="$HOME/.proto"
+export BUN_INSTALL="$HOME/.bun"
+
+# sdkman config
+export SDKMAN_DIR="$HOME/.sdkman"
+if [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]]; then
+    source "$SDKMAN_DIR/bin/sdkman-init.sh"
+fi
+
+# asahi fedora hyprland
+export APP_DATA="$XDG_DATA_HOME"
+export MOZ_ENABLE_WAYLAND=1
+
+# path
+typeset -U path
+path=(
+    "$HOME/dotfiles/bin"
+    "$HOME/bin/bin"
+    "$HOME/.local/bin"
+    "$GOPATH/bin"
+    $path
+)
 
 # Aliases ------------------------------------------------------------------------------------
 
+# Navigation
 alias ..='cd ..'
 alias ...='cd ../..'
+alias cd='z'
 alias dots='cd ~/dotfiles'
 alias scr='ls ~/bin/bin'
 
-alias lg='lazygit'
-alias gs='git status -sb'
+# Git
 alias ga='git add'
 alias gc='git commit'
-alias gp='git push'
-alias gl='git log --oneline --graph --decorate -20'
 alias gd='git diff'
+alias gl='git log --oneline --graph --decorate -20'
+alias gp='git push'
+alias gs='git status -sb'
+alias lg='lazygit'
 
+# System
+alias c='clear'
 alias copy='wl-copy'
 alias paste='wl-paste'
+alias localip="ip -4 addr show | awk '/inet / && !/127.0.0/ {print \$2}'"
+alias n='clear && fastfetch'
+alias nocolor='sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2};?)?)?[mGK]//g"'
 alias path='echo $PATH | tr ":" "\n"'
 alias ports='ss -tlnp'
-alias nocolor='sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2};?)?)?[mGK]//g"'
-alias localip="ip -4 addr show | awk '/inet / && !/127.0.0/ {print \$2}'"
 
-alias c='clear'
+# Tools
 alias aria='aria2c'
+alias dockerc='docker system prune --all --volumes'
+alias nv='nvim'
 
-alias cd='z'
+# Listing
 alias ls='echo && eza --color=always --long --git --no-filesize --icons=always --no-time --no-user --no-permissions'
 alias lsa='echo && eza --color=always --long --git --icons=always'
 alias lsaa='echo && eza --color=always --long --git --icons=always -a'
 alias lst='echo && eza --color=always --tree --git --no-filesize --icons=always --no-time --no-user --no-permissions'
 
+# Tmux
 alias q='tmux detach'
 alias qa='tmux kill-server'
 alias tl='tmux display-message -p "#{window_layout}"'
 
-alias dockerc='docker system prune --all --volumes'
-
-alias n='clear && fastfetch'
-
+# Agents
 alias cc='clear && claude --dangerously-skip-permissions'
 alias ccc='clear && claude --dangerously-skip-permissions --continue'
 alias claude='clear && claude'
-
-alias nv='nvim'
 
 # Functions ----------------------------------------------------------------------------------
 
@@ -141,7 +188,3 @@ fi
 if [[ -z "$TMUX" && (-n "$WAYLAND_DISPLAY" || -n "$DISPLAY") ]]; then
     tm
 fi
-
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
