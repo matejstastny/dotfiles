@@ -38,7 +38,7 @@ inputbar {
 
 prompt {
     color:      @purple;
-    font:       "DankMono Nerd Font Mono 14";
+    font:       "JetBrainsMono Nerd Font Mono 14";
 }
 
 entry {

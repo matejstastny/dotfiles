@@ -28,7 +28,7 @@
 
     idle_threshold = 120
 
-    font = DankMono Nerd Font Mono 12
+    font = JetBrainsMono Nerd Font Mono 12
 
     line_height   = 4
     markup        = full
