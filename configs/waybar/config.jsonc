@@ -78,34 +78,19 @@
         }
     },
     "mpris": {
-        "format": "{player_icon}{title} - {artist}",
-        "format-paused": "{status_icon}{title} - {artist}",
+        "format": "{player_icon} {artist} - {title}",
+        "format-paused": "{status_icon} {artist} - {title}",
         "player-icons": {
             "default": "󰝚 ",
             "spotify": "󰓇 ",
-            "firefox": "󰗃 "
+            "firefox": "󰝚 "
         },
         "status-icons": {
             "paused": "󰏤 "
         },
         "tooltip-format": "{title} - {artist}",
         "min-length": 5,
-        "max-length": 24
-    },
-    "custom/prev": {
-        "format": "󰙣",
-        "on-click": "playerctl previous",
-        "tooltip": false
-    },
-    "custom/pause": {
-        "format": "󰐊",
-        "on-click": "playerctl play-pause",
-        "tooltip": false
-    },
-    "custom/next": {
-        "format": "󰙡",
-        "on-click": "playerctl next",
-        "tooltip": false
+        "max-length": 40
     },
     "backlight": {
         "device": "apple-panel-bl",
@@ -171,8 +156,8 @@
         "interval": 30,
         "states": {
             "good": 80,
-            "warning": 30,
-            "critical": 15
+            "warning": 20,
+            "critical": 10
         },
         "format": "{icon}",
         "format-charging": "󱐋 {capacity}%",
@@ -206,13 +191,13 @@
     },
     "disk": {
         "interval": 30,
-        "format": "󰋊 {used}/{free}",
+        "format": "󰋊 {used} / {total}",
         "path": "/",
         "tooltip-format": "{used} used of {total}"
     },
     "memory": {
         "interval": 2,
-        "format": "󰍛 {used:0.1f}/{avail:0.1f}G",
+        "format": "󰍛 {used:0.1f}/{total:0.1f}G",
         "tooltip-format": "{percentage}% used"
     },
     "cpu": {
@@ -221,7 +206,7 @@
         "on-click": "kitty -e btop"
     },
     "temperature": {
-        "critical-threshold": 85,
+        "critical-threshold": 40,
         "interval": 2,
         "format": "󰔏 {temperatureC}°",
         "format-critical": "󱃂 {temperatureC}°"
