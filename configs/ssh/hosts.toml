@@ -1,3 +1,6 @@
+# Custom config for my own script
+# https://github.com/matejstastny/bin/blob/main/bin/remote
+
 [[hosts]]
 name = "rover"
 host = "192.168.0.146"
