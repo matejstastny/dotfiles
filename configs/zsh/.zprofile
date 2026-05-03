@@ -31,6 +31,7 @@ export BUN_INSTALL="$HOME/.bun"
 # Linux (Fedora) ---------------------------------------------------------------------------
 
 export APP_DATA="$XDG_DATA_HOME"
+export MOZ_ENABLE_WAYLAND=1
 
 # PATH setup --------------------------------------------------------------------------------
 

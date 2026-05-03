@@ -38,6 +38,7 @@ main() {
   dnf_pkgs=(
     aria2
     bat
+    blueman
     btop
     coreutils
     curl

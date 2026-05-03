@@ -1,53 +1,37 @@
 {
   "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
-  "version": 3,
-  "final_space": true,
-  "console_title_template": "{{ .Shell }} · {{ .Folder }}",
   "blocks": [
     {
-      "type": "prompt",
       "alignment": "left",
-      "newline": true,
       "segments": [
         {
-          "type": "path",
+          "foreground": "#E29BD8",
           "style": "plain",
-          "foreground": "#e29bd8",
-          "template": "{{ .Path }}",
-          "properties": {
-            "style": "agnoster_short",
-            "max_depth": 4,
-            "folder_icon": "…",
-            "home_icon": "~"
-          }
+          "template": " \n\u279c",
+          "type": "text"
         },
         {
-          "type": "git",
+          "foreground": "#BB9AF7",
+          "options": {
+            "style": "folder"
+          },
           "style": "plain",
-          "foreground": "#666680",
-          "template": " <#bb9af7>{{ .UpstreamIcon }}{{ .HEAD }}</>{{ if .Working.Changed }} <#e29bd8>{{ .Working.String }}</>{{ end }}{{ if .Staging.Changed }} <#7dcfb6>{{ .Staging.String }}</>{{ end }}",
-          "properties": {
-            "fetch_status": true,
-            "fetch_upstream_icon": true,
-            "branch_icon": " "
-          }
-        }
-      ]
-    },
-    {
-      "type": "prompt",
-      "alignment": "left",
-      "segments": [
+          "template": " {{ .Path }}",
+          "type": "path"
+        },
         {
-          "type": "exit",
+          "foreground": "#C678DD",
+          "options": {
+            "branch_icon": ""
+          },
           "style": "plain",
-          "foreground": "#bb9af7",
-          "template": "{{ if gt .Code 0 }}<#f14c4c>✗ {{ .Meaning }}</> {{ else }}❯ {{ end }}",
-          "properties": {
-            "always_enabled": true
-          }
+          "template": " <#E29BD8>git(</>{{ .HEAD }}<#E29BD8>)</>",
+          "type": "git"
         }
-      ]
+      ],
+      "type": "prompt"
     }
-  ]
+  ],
+  "final_space": true,
+  "version": 4
 }

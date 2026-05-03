@@ -1,138 +1,234 @@
-@define-color bg      #0f0f17;
-@define-color surface #1a1a28;
-@define-color overlay #252538;
-@define-color border  #2a2a3e;
-@define-color muted   #55556e;
-@define-color dim     #888899;
-@define-color text    #e0e0e0;
-@define-color purple  #bb9af7;
-@define-color pink    #e29bd8;
-@define-color red     #f14c4c;
-@define-color green   #7dcfb6;
-@define-color yellow  #e5c07b;
+/* Dark purple theme */
+@define-color bg       #0d0a1a;
+@define-color surface  #16112b;
+@define-color overlay  #221a3d;
+@define-color muted    #6b5f8a;
+@define-color text     #d4c0f0;
+@define-color magenta  #e879f9;
+@define-color pink     #f472b6;
+@define-color purple   #c084fc;
+@define-color lavender #a78bfa;
+@define-color rose     #fb7185;
+@define-color green    #86efac;
+@define-color amber    #fbbf24;
 
 * {
-    font-family: "DankMono Nerd Font Mono", monospace;
-    font-size: 12px;
-    border: none;
-    border-radius: 0;
-    min-height: 0;
-    margin: 0;
-    padding: 0;
-    box-shadow: none;
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 13px;
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  box-shadow: none;
 }
 
 window#waybar {
-    background-color: @bg;
-    color: @text;
-    border-bottom: 1px solid @border;
-    transition: none;
+  background: transparent;
+  color: @text;
 }
 
-/* ── Workspaces ────────────────────────────────────────────────────── */
+/* ── Pill groups ─────────────────────────────────────────────────────── */
+
+#pill-ws,
+#pill-media,
+#pill-sys,
+#pill-win,
+#pill-stats,
+#pill-ctrl {
+  background: @surface;
+  border-radius: 11px;
+  border: 2.5px solid rgba(187, 154, 247, 0.85);
+  padding: 6px 14px;
+  margin: 2px 0;
+}
+
+/* ── Workspaces ──────────────────────────────────────────────────────── */
 
 #workspaces {
-    margin: 0 4px;
-    padding: 2px 4px;
+  margin: 0;
+  padding: 0;
 }
 
 #workspaces button {
-    padding: 1px 9px;
-    color: @muted;
-    background: transparent;
-    border-radius: 5px;
-    transition: all 0.15s ease;
-    min-width: 0;
+  padding: 2px 8px;
+  color: @muted;
+  background: transparent;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  min-width: 0;
+  margin: 0;
 }
 
 #workspaces button.active {
-    color: @bg;
-    background: @pink;
-    font-weight: bold;
+  color: @bg;
+  background: @magenta;
+  font-weight: bold;
 }
 
 #workspaces button.occupied:not(.active) {
-    color: @dim;
-    background: @overlay;
+  color: @text;
+  background: @overlay;
 }
 
 #workspaces button.urgent {
-    color: @red;
-    background: alpha(@red, 0.15);
+  color: @rose;
+  background: alpha(@rose, 0.15);
 }
 
 #workspaces button:hover:not(.active) {
-    background: @overlay;
-    color: @text;
+  background: @overlay;
+  color: @text;
 }
 
-/* ── Window title ──────────────────────────────────────────────────── */
+/* ── Media ───────────────────────────────────────────────────────────── */
 
-#window {
-    color: @muted;
-    font-style: italic;
-    padding: 0 12px;
+#mpris {
+  color: @lavender;
+  padding: 0 4px;
 }
 
-/* ── Clock ─────────────────────────────────────────────────────────── */
-
-#clock {
-    color: @text;
-    font-weight: bold;
-    padding: 0 10px;
-    letter-spacing: 0.04em;
+#custom-prev,
+#custom-pause,
+#custom-next {
+  color: @muted;
+  padding: 0 3px;
+  transition: color 0.15s;
 }
 
-/* ── Right modules ──────────────────────────────────────────────────── */
+#custom-prev:hover,
+#custom-pause:hover,
+#custom-next:hover {
+  color: @pink;
+}
 
-#battery,
-#network,
-#pulseaudio,
+/* ── System (backlight, audio, network, battery) ─────────────────────── */
+
 #backlight {
-    color: @purple;
-    padding: 0 8px;
+  color: @pink;
+  padding: 0 5px;
+}
+
+#wireplumber {
+  color: @lavender;
+  padding: 0 5px;
+}
+
+#wireplumber.muted {
+  color: @muted;
+}
+
+#network {
+  color: @green;
+  padding: 0 5px;
+}
+
+#network.disconnected {
+  color: @rose;
+}
+
+#bluetooth {
+  color: @muted;
+  padding: 0 5px;
+}
+
+#bluetooth.connected {
+  color: @lavender;
+}
+
+#bluetooth.disabled {
+  color: @muted;
+  opacity: 0.4;
+}
+
+#battery {
+  color: @pink;
+  padding: 0 5px;
 }
 
 #battery.charging,
 #battery.plugged {
-    color: @green;
-}
-
-#battery.good:not(.charging) {
-    color: @purple;
+  color: @green;
 }
 
 #battery.warning:not(.charging) {
-    color: @yellow;
+  color: @amber;
 }
 
 #battery.critical:not(.charging) {
-    color: @red;
-    animation: blink 1s linear infinite;
+  color: @rose;
+  animation: blink 1s linear infinite;
 }
 
-@keyframes blink {
-    to { opacity: 0.4; }
+/* ── Window title ────────────────────────────────────────────────────── */
+
+#window {
+  color: @muted;
+  font-style: italic;
+  padding: 0 4px;
 }
 
-#pulseaudio.muted {
-    color: @muted;
+/* ── Stats (cpu, temp, memory) ───────────────────────────────────────── */
+
+#disk {
+  color: @purple;
+  padding: 0 5px;
 }
 
-#network.disconnected {
-    color: @muted;
+#cpu {
+  color: @lavender;
+  padding: 0 5px;
+}
+
+#temperature {
+  color: @pink;
+  padding: 0 5px;
+}
+
+#temperature.critical {
+  color: @rose;
+  animation: blink 1s linear infinite;
+}
+
+#memory {
+  color: @purple;
+  padding: 0 5px;
+}
+
+/* ── Controls (idle, tray, clock) ────────────────────────────────────── */
+
+#idle_inhibitor {
+  color: @muted;
+  padding: 0 5px;
+}
+
+#idle_inhibitor.activated {
+  color: @magenta;
 }
 
 #tray {
-    padding: 0 8px 0 4px;
+  padding: 0 5px;
 }
 
 #tray > .passive {
-    -gtk-icon-effect: dim;
+  -gtk-icon-effect: dim;
 }
 
 #tray > .needs-attention {
-    -gtk-icon-effect: highlight;
-    background-color: alpha(@red, 0.2);
-    border-radius: 4px;
+  -gtk-icon-effect: highlight;
+  background: alpha(@rose, 0.2);
+  border-radius: 4px;
+}
+
+#clock {
+  color: @text;
+  font-weight: bold;
+  padding: 0 4px;
+  letter-spacing: 0.04em;
+}
+
+@keyframes blink {
+  to {
+    opacity: 0.4;
+  }
 }
