@@ -1,52 +1,49 @@
 [user]
-	email = matysta@outlook.com
-	name = Matej Stastny
-
+email = matysta@outlook.com
+name = Matej Stastny
 
 [init]
-  defaultBranch = main
-
-
-[filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
-
+defaultBranch = main
 
 [alias]
-    ls = !eza --git --group-directories-first --icons
-    ll = !eza --git --group-directories-first --icons -l
-    la = !eza --git --group-directories-first --icons -la
+ls = !eza --git --group-directories-first --icons
+ll = !eza --git --group-directories-first --icons -l
+la = !eza --git --group-directories-first --icons -la
+
+[filter "lfs"]
+clean = git-lfs clean -- %f
+smudge = git-lfs smudge -- %f
+process = git-lfs filter-process
+required = true
 
 [core]
-  pager = delta
-	autocrlf = input
-	editor = code --wait
+pager = delta
+autocrlf = input
+editor = code --wait
 
 [interactive]
-  diffFilter = delta --color-only
+diffFilter = delta --color-only
 
 [delta]
-  navigate = true
-  side-by-side = true
-  syntax-theme = base16
-  line-numbers = true
+navigate = true
+side-by-side = true
+syntax-theme = base16
+line-numbers = true
 
 [merge]
-  conflictstyle = diff3
+conflictstyle = diff3
 
 [diff]
-  colorMoved = default
+colorMoved = default
 
 [init]
-	defaultBranch = main
+defaultBranch = main
 
 [pull]
-	rebase = false
+rebase = false
+
 [credential "https://github.com"]
-	helper = 
-	helper = !/usr/bin/gh auth git-credential
+helper = !/usr/bin/gh auth git-credential
+
 [credential "https://gist.github.com"]
-	helper = 
-	helper = !/usr/bin/gh auth git-credential
+helper = !/usr/bin/gh auth git-credential
