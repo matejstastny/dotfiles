@@ -1,0 +1,88 @@
+* {
+    bg0:    #0f0f17ff;
+    bg1:    #1a1a28ff;
+    bg2:    #252538ff;
+    border: #bb9af7ff;
+    text:   #e0e0e0ff;
+    dim:    #55556eff;
+    pink:   #e29bd8ff;
+    purple: #bb9af7ff;
+
+    background-color: transparent;
+    text-color:       @text;
+}
+
+window {
+    width:            500px;
+    background-color: @bg0;
+    border:           2px solid;
+    border-color:     @border;
+    border-radius:    12px;
+    padding:          0;
+}
+
+mainbox {
+    background-color: transparent;
+    padding:          12px;
+    spacing:          8px;
+    children:         [inputbar, listview];
+}
+
+inputbar {
+    background-color: @bg1;
+    border-radius:    8px;
+    padding:          10px 14px;
+    spacing:          8px;
+    children:         [prompt, entry];
+}
+
+prompt {
+    color:      @purple;
+    font:       "JetBrainsMono Nerd Font Mono 14";
+}
+
+entry {
+    color:             @text;
+    placeholder:       "search…";
+    placeholder-color: @dim;
+    cursor:            text;
+}
+
+listview {
+    background-color: transparent;
+    lines:            8;
+    scrollbar:        false;
+    padding:          4px 0;
+    spacing:          2px;
+    dynamic:          true;
+}
+
+element {
+    background-color: transparent;
+    padding:          8px 12px;
+    border-radius:    6px;
+    spacing:          10px;
+    orientation:      horizontal;
+    children:         [element-icon, element-text];
+}
+
+element.selected {
+    background-color: @bg2;
+}
+
+element-icon {
+    size:           20px;
+    vertical-align: 0.5;
+    background-color: transparent;
+}
+
+element-text {
+    color:          @text;
+    vertical-align: 0.5;
+    background-color: transparent;
+    highlight:      bold;
+}
+
+element.selected.normal element-text {
+    color: @pink;
+}

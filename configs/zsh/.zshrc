@@ -1,5 +1,11 @@
 # Matej Stastny | https://github.com/matejstastny/dotfiles
 
+# Load profile vars (KDE/non-login shells don't source .zprofile)
+[[ -r "$HOME/.zprofile" ]] && source "$HOME/.zprofile"
+
+# PREREQUISITES --------------------------------------------------------------------------------
+# sudo dnf install oh-my-posh eza zoxide fzf tmux bat git gh zsh-autosuggestions zsh-syntax-highlighting
+
 # Aliases ------------------------------------------------------------------------------------
 
 alias ..='cd ..'
@@ -15,15 +21,14 @@ alias gp='git push'
 alias gl='git log --oneline --graph --decorate -20'
 alias gd='git diff'
 
-alias copy='pbcopy'
-alias paste='pbpaste'
+alias copy='wl-copy'
+alias paste='wl-paste'
 alias path='echo $PATH | tr ":" "\n"'
-alias ports='lsof -iTCP -sTCP:LISTEN -n -P'
-alias nocolor='gsed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2};?)?)?[mGK]//g"'
+alias ports='ss -tlnp'
+alias nocolor='sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2};?)?)?[mGK]//g"'
+alias localip="ip -4 addr show | awk '/inet / && !/127.0.0/ {print \$2}'"
 
-alias d='trash'
 alias c='clear'
-alias info='scc'
 alias aria='aria2c'
 
 alias cd='z'
@@ -32,14 +37,9 @@ alias lsa='echo && eza --color=always --long --git --icons=always'
 alias lsaa='echo && eza --color=always --long --git --icons=always -a'
 alias lst='echo && eza --color=always --tree --git --no-filesize --icons=always --no-time --no-user --no-permissions'
 
-alias ip="ifconfig | grep 'inet ' | awk '/inet / {print \$2}' | grep -Ev '^(127\.|::)'"
-alias sign='sudo xattr -rd com.apple.quarantine'
-
 alias q='tmux detach'
 alias qa='tmux kill-server'
 alias tl='tmux display-message -p "#{window_layout}"'
-
-alias vc='veracrypt -t'
 
 alias dockerc='docker system prune --all --volumes'
 
@@ -50,21 +50,32 @@ alias ccc='clear && claude --dangerously-skip-permissions --continue'
 alias claude='clear && claude'
 
 alias nv='nvim'
-alias ssh='$HOME/bin/bin/ssh'
+
+# Functions ----------------------------------------------------------------------------------
+
+# Tmux: attach to last session, any session, or create 'main'
+tm() {
+    [[ -n "$TMUX" ]] && return
+    local last
+    last=$(cat ~/.local/share/tmux/last-session 2>/dev/null)
+    if [[ -n "$last" ]] && tmux has-session -t "$last" 2>/dev/null; then
+        tmux attach -t "$last"
+    elif tmux list-sessions &>/dev/null; then
+        tmux attach
+    else
+        tmux new-session -s main
+    fi
+}
 
 # Prompt & Plugins ---------------------------------------------------------------------------
 
-# Oh My Posh
 eval "$(oh-my-posh init zsh --config $HOME/.config/oh-my-posh/prompt.json)"
 
-# Zoxide
 eval "$(zoxide init zsh)"
 
-# Zsh autosuggestions
-source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+source "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
-# Zsh syntax highlighting
-source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+source "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 ZSH_HIGHLIGHT_STYLES[command]='fg=#E29BD8,bold'
 ZSH_HIGHLIGHT_STYLES[builtin]='fg=#E29BD8,bold'
 ZSH_HIGHLIGHT_STYLES[alias]='fg=#E29BD8,bold'
@@ -73,12 +84,9 @@ ZSH_HIGHLIGHT_STYLES[path]='fg=#BB9AF7,underline'
 ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=#BB9AF7'
 ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=#BB9AF7'
 
-# Ripgrep
-export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/.ripgreprc"
-
 # Bat
 export BAT_THEME="base16"
-export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08/, \"\", \$0); print }'\'' | bat -p -lman'"
+export MANPAGER="sh -c 'col -bx | bat -p -lman'"
 
 # Fzf
 source <(fzf --zsh)
@@ -89,21 +97,13 @@ export FZF_DEFAULT_OPTS="
   --color=header:#555555,spinner:#BB9AF7
 "
 
-# Jenv
-if command -v jenv >/dev/null 2>&1; then
-	export PATH="$HOME/.jenv/bin:$PATH"
-	eval "$(jenv init -)"
-fi
-
 # Completions ---------------------------------------------------------------------------------
 
 fpath=($HOME/.docker/completions $fpath)
-[ -s "${BUN_INSTALL:-$HOME/.bun}/_bun" ] && source "${BUN_INSTALL:-$HOME/.bun}/_bun"
 
 autoload -Uz compinit
 compinit
 
-# Completion settings
 zstyle ':completion:*' menu select
 zstyle ':completion:*' special-dirs true
 zstyle ':completion:*' list-colors "$LS_COLORS" ma=0\;35
@@ -129,17 +129,19 @@ HISTSIZE=1000000
 SAVEHIST=1000000
 HISTFILE="$XDG_CACHE_HOME/zsh_history"
 
-# Tmux separate history
+# Per-pane tmux history
 if [[ -n $TMUX_PANE ]]; then
-	HISTDIR="$HOME/.zsh_tmux_hist"
-	mkdir -p "$HISTDIR"
-	HISTFILE="$HISTDIR/.zsh_history_${TMUX_PANE:1}"
-	if [[ ! -f $HISTFILE ]]; then
-		cp "$HOME/.zsh_history" "$HISTFILE" 2>/dev/null
-	fi
+    HISTDIR="$HOME/.zsh_tmux_hist"
+    mkdir -p "$HISTDIR"
+    HISTFILE="$HISTDIR/.zsh_history_${TMUX_PANE:1}"
+    [[ ! -f $HISTFILE ]] && cp "$HOME/.zsh_history" "$HISTFILE" 2>/dev/null
 fi
 
-# Attach to tmux session
-if [[ $TERM == "xterm-ghostty" ]]; then
-	tm
+# Auto-attach to tmux in any graphical terminal session
+if [[ -z "$TMUX" && (-n "$WAYLAND_DISPLAY" || -n "$DISPLAY") ]]; then
+    tm
 fi
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"

@@ -1,12 +1,7 @@
-# Folders not listed here get symlinked to ~/.config/<name>
-
 [directories]
-# name = "symlink_path"
-vesktop = "$HOME/Library/Application Support/vesktop/themes"
+vesktop = "$HOME/.config/vesktop/themes"
 
 [files]
-# name = "target_directory"
-aider = "$HOME"
 zsh = "$HOME"
 git = "$HOME"
-vscode = "$HOME/Library/Application Support/Code/User"
+vscode = "$HOME/.config/Code/User"
