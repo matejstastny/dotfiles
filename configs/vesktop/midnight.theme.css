@@ -1,26 +1,21 @@
 /**
- * @name midnight
- * @description a dark, customizable discord theme.
- * @author refact0r
- * @version 2.1.1
- * @invite nz87hXyvcy
- * @website https://github.com/refact0r/midnight-discord
- * @source https://github.com/refact0r/midnight-discord/blob/master/themes/midnight.theme.css
- * @authorId 508863359777505290
- * @authorLink https://www.refact0r.dev
+ * @name Midnight Starlight fork
+ * @description Dark/purple/pink transparent theme.
+ * @author Matej Stastny (orignal: refact0r)
+ * @version 1.0.0
+ * @website https://github.com/matejstastny/dotfiles
+ * @source https://github.com/matejstastny/dotfiles/blob/main/configs/vesktop/midnight.theme.css
 */
 
-/* import theme modules */
 @import url("https://refact0r.github.io/midnight-discord/build/midnight.css");
 
 body {
-  /* font options */
-  --font: "figtree"; /* change to '' for default discord font */
-  --code-font: ""; /* change to '' for default discord font */
-  font-weight: 400; /* normal text font weight. DOES NOT AFFECT BOLD TEXT */
+  --font: "figtree";
+  --code-font: "JetBrainsMono Nerd Font";
+  font-weight: 400;
 
   /* sizes */
-  --gap: 12px; /* spacing between panels */
+  --gap: 7px; /* spacing between panels */
   --divider-thickness: 4px; /* thickness of unread messages divider and highlighted message borders */
   --border-thickness: 1px; /* thickness of borders around main panels. DOES NOT AFFECT OTHER BORDERS */
 
@@ -67,14 +62,14 @@ body {
   /* transparency/blur options */
   /* NOTE: TO USE TRANSPARENCY/BLUR, YOU MUST HAVE TRANSPARENT BG COLORS. FOR EXAMPLE: --bg-4: hsla(220, 15%, 10%, 0.7); */
   --transparency-tweaks: on; /* off: no changes, on: remove some elements for better transparency */
-  --remove-bg-layer: on; /* off: no changes, on: remove the base --bg-3 layer for use with window transparency (WILL OVERRIDE BACKGROUND IMAGE) */
+  --remove-bg-layer: off; /* off: no changes, on: remove the base --bg-3 layer for use with window transparency (WILL OVERRIDE BACKGROUND IMAGE) */
   --panel-blur: on; /* off: no changes, on: blur the background of panels */
   --blur-amount: 14px; /* amount of blur */
   --bg-floating: hsla(
-    290,
-    28%,
-    14%,
-    0.86
+    278,
+    24%,
+    10%,
+    0.9
   ); /* slightly more opaque floating panel color when blur is on */
 
   /* chatbar options */
@@ -102,29 +97,29 @@ body {
   ); /* muted channels/chats and timestamps (darker but legible) */
 
   /* background and dark colors (purple/pink, semi-transparent for blur) */
-  --bg-1: hsla(295, 28%, 18%, 0.62); /* dark buttons when clicked */
-  --bg-2: hsla(295, 26%, 15%, 0.56); /* dark buttons */
-  --bg-3: hsla(295, 24%, 12%, 0.5); /* spacing, secondary elements */
+  --bg-1: hsla(272, 24%, 14%, 0.7); /* dark buttons when clicked */
+  --bg-2: hsla(272, 22%, 12%, 0.64); /* dark buttons */
+  --bg-3: hsla(274, 20%, 10%, 0.58); /* spacing, secondary elements */
   --bg-4: hsla(
-    300,
-    22%,
-    9%,
-    0.44
+    276,
+    20%,
+    6%,
+    0.56
   ); /* main background color (semi-transparent) */
-  --hover: hsla(300, 60%, 70%, 0.07); /* channels and buttons when hovered */
+  --hover: hsla(290, 60%, 70%, 0.07); /* channels and buttons when hovered */
   --active: hsla(
-    300,
+    290,
     60%,
     70%,
     0.13
   ); /* channels and buttons when clicked or selected */
   --active-2: hsla(
-    300,
+    290,
     60%,
     70%,
     0.18
   ); /* extra state for transparent buttons */
-  --message-hover: hsla(290, 20%, 8%, 0.08); /* messages when hovered */
+  --message-hover: hsla(276, 20%, 8%, 0.08); /* messages when hovered */
 
   /* accent colors (purple / pink) */
   --accent-1: #ff7ac6; /* primary pink accent */
