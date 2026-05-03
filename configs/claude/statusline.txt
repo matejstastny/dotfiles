@@ -1,9 +1,13 @@
-ENABLE STATUS LINE BY ADDING THIS TO ~/.configs/claude/settings.json
+ENABLE STATUS LINE BY ADDING THIS TO "~/.configs/claude/settings.json" or "~/.claude/settings.json"
 
 {
+  some config...
+
   "statusLine": {
     "type": "command",
     "command": "npx -y ccstatusline@latest",
     "padding": 0
   }
+
+  maybe some more config
 }
