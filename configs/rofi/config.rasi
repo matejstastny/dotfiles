@@ -1,11 +1,11 @@
 configuration {
-    modi:              "drun,run";
-    show-icons:        true;
+    modi:                "drun,run";
+    show-icons:          true;
     drun-display-format: "{name}";
-    display-drun:      "";
-    display-run:       "";
-    disable-history:   false;
-    click-to-exit:     true;
+    display-drun:        "";
+    display-run:         "";
+    disable-history:     false;
+    click-to-exit:       true;
 }
 
 @theme "~/.config/rofi/theme.rasi"
