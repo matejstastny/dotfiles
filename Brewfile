@@ -1,9 +1,9 @@
-# ── Taps ──────────────────────────────────────────────────────────────────────
-tap "felixkratz/formulae"       # sketchybar
-tap "koekeishiya/formulae"      # yabai, skhd
-tap "joncrangle/tap"            # sketchybar-system-stats
+# Taps
+tap "felixkratz/formulae"
+tap "koekeishiya/formulae"
+tap "joncrangle/tap"
 
-# ── Formulae ──────────────────────────────────────────────────────────────────
+# Formulae
 brew "aria2"
 brew "bat"
 brew "btop"
@@ -52,7 +52,7 @@ brew "koekeishiya/formulae/skhd"
 brew "felixkratz/formulae/sketchybar"
 brew "joncrangle/tap/sketchybar-system-stats"
 
-# ── Casks ─────────────────────────────────────────────────────────────────────
+# Casks
 cask "battery"
 cask "claude-code"
 cask "docker-desktop"
@@ -71,20 +71,3 @@ cask "vesktop"
 cask "visual-studio-code"
 cask "vlc"
 cask "vnc-viewer"
-
-# ── Go tools ──────────────────────────────────────────────────────────────────
-# Run after `brew install go`:
-#   go install github.com/packwiz/packwiz@latest
-#   go install mvdan.cc/sh/v3/cmd/shfmt@latest
-
-# ── Cargo tools ───────────────────────────────────────────────────────────────
-# Run after `brew install rust`:
-#   cargo install darklua nucleus tree-sitter-cli
-
-# ── UV tools ──────────────────────────────────────────────────────────────────
-# Run after `brew install uv`:
-#   uv tool install aider-chat
-
-# ── Cleanup ───────────────────────────────────────────────────────────────────
-# To remove packages not listed here:
-#   brew bundle cleanup --force

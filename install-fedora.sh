@@ -18,14 +18,14 @@ ensure_root() { [[ $EUID -eq 0 ]] || { echo "Run as root: sudo bash $0" >&2; exi
 is_fedora || { echo "This script is for Fedora." >&2; exit 1; }
 ensure_root
 
-# ── RPM Fusion ────────────────────────────────────────────────────────────────
+# RPM Fusion
 echo "→ Enabling RPM Fusion..."
 dnf install -y \
   "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm" \
   "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm" \
   || true
 
-# ── Hyprland desktop stack ────────────────────────────────────────────────────
+#  Hyprland desktop stack
 if (( !SKIP_HYPRLAND )); then
   echo "→ Installing Hyprland desktop stack..."
   dnf install -y \
@@ -57,7 +57,7 @@ if (( !SKIP_HYPRLAND )); then
     || true
 fi
 
-# ── Dev tools ─────────────────────────────────────────────────────────────────
+#  Dev tools
 echo "→ Installing dev tools..."
 dnf_pkgs=(
   aria2
@@ -106,20 +106,20 @@ if ! dnf install -y "${dnf_pkgs[@]}"; then
   [[ ${#missing[@]} -gt 0 ]] && echo "Missing: ${missing[*]}"
 fi
 
-# ── npm globals ───────────────────────────────────────────────────────────────
+#  npm globals
 if command -v npm &>/dev/null; then
   echo "→ Installing npm globals..."
   npm install -g prettier || true
 fi
 
-# ── pipx tools ────────────────────────────────────────────────────────────────
+#  pipx tools
 if command -v pipx &>/dev/null; then
   echo "→ Installing Python tools via pipx..."
   pipx install --force ruff || true
   pipx install --force uv   || true
 fi
 
-# ── Go tools ──────────────────────────────────────────────────────────────────
+#  Go tools
 if command -v go &>/dev/null && [[ -n ${SUDO_USER:-} ]]; then
   echo "→ Installing Go tools..."
   su -l "$SUDO_USER" -c '
@@ -130,7 +130,7 @@ if command -v go &>/dev/null && [[ -n ${SUDO_USER:-} ]]; then
   ' || true
 fi
 
-# ── Flatpak / GUI apps ────────────────────────────────────────────────────────
+#  Flatpak / GUI apps
 if (( !SKIP_FLATPAK )); then
   command -v flatpak &>/dev/null || dnf install -y flatpak || true
   if command -v flatpak &>/dev/null; then
@@ -141,7 +141,7 @@ if (( !SKIP_FLATPAK )); then
   fi
 fi
 
-# ── Run dot ───────────────────────────────────────────────────────────────────
+#  Run dot
 DOT="$REPO_ROOT/bin/dot"
 if [[ -x $DOT && -n ${SUDO_USER:-} ]]; then
   echo "→ Running dot link + assets as $SUDO_USER..."
@@ -149,7 +149,4 @@ if [[ -x $DOT && -n ${SUDO_USER:-} ]]; then
 fi
 
 echo
-echo "Done. You may want to:"
-echo "  • Log out and select Hyprland from your display manager"
-echo "  • Run 'dot check' to verify symlinks"
-echo "  • Install VS Code: https://code.visualstudio.com/docs/setup/linux"
+echo "Done."
