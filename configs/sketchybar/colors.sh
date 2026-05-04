@@ -1,23 +1,16 @@
-#!/bin/bash
-
-# Bar
-export BAR_BG=0xFF0a0a0a
-
-# Backgrounds
-export BG_PRIMARY=0xFF0a0a0a
-export BG_SECONDARY=0xFF101017
-export BG_TERTIARY=0xFF252525
-export BG_HIGHLIGHT=0xFF2a2a2a
-
-# Foreground
-export FG_PRIMARY=0xFFe0e0e0
-export FG_SECONDARY=0xFF888888
-export FG_MUTED=0xFF555555
-
-# Accents
-export GREEN=0xFF73c991
-export RED=0xFFf14c4c
-export PINK=0xFFE29BD8
-export PURPLE=0xFFBB9AF7
-
-export TRANSPARENT=0x00000000
+#!/usr/bin/env bash
+# Kanagawa Wave — sketchybar 0xAARRGGBB format
+COLOR_BG="0xff1f1f28"
+COLOR_SURFACE="0xff2a2a37"
+COLOR_OVERLAY="0xff363646"
+COLOR_TEXT="0xffdcd7ba"
+COLOR_SUBTEXT="0xffc8c093"
+COLOR_MUTED="0xff727169"
+COLOR_BLUE="0xff7e9cd8"
+COLOR_GREEN="0xff98bb6c"
+COLOR_GOLD="0xffe6c384"
+COLOR_RED="0xffe46876"
+COLOR_PURPLE="0xff957fb8"
+COLOR_CYAN="0xff7aa89f"
+COLOR_ORANGE="0xffffa066"
+COLOR_TRANSPARENT="0x00000000"

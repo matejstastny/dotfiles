@@ -1,12 +1,7 @@
-#!/bin/bash
-
-USED=$(vm_stat 2>/dev/null | awk '
-    /Pages active/     {a=$3+0}
-    /Pages wired/      {w=$4+0}
-    /Pages occupied/   {c=$5+0}
-    END {printf "%.1f", (a+w+c)*4096/1073741824}
-')
-
-TOTAL=$(sysctl -n hw.memsize | awk '{printf "%d", $1/1073741824}')
-
-sketchybar --set "$NAME" label="${USED:-0}G / ${TOTAL}G"
+#!/usr/bin/env bash
+PAGE_SIZE=$(pagesize)
+STATS=$(vm_stat)
+ACTIVE=$(echo "$STATS" | awk '/Pages active/    {gsub(/\./, "", $3); print $3}')
+WIRED=$(echo "$STATS"  | awk '/Pages wired down/{gsub(/\./, "", $4); print $4}')
+MEM_GB=$(( (ACTIVE + WIRED) * PAGE_SIZE / 1073741824 ))
+sketchybar --set "$NAME" label="${MEM_GB}G"

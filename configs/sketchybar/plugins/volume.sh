@@ -1,18 +1,17 @@
-#!/bin/bash
+#!/usr/bin/env bash
+source "$CONFIG_DIR/colors.sh"
 
-source "$CONFIG_DIR/icons.sh"
+VOLUME=$(osascript -e 'output volume of (get volume settings)' 2>/dev/null || echo 0)
+MUTED=$(osascript -e 'output muted of (get volume settings)' 2>/dev/null || echo false)
 
-if [ "$SENDER" = "volume_change" ]; then
-    VOLUME="$INFO"
+if [ "$MUTED" = "true" ]; then
+  ICON="󰝟"; COLOR="$COLOR_MUTED"
+elif [ "$VOLUME" -lt 30 ]; then
+  ICON="󰕿"; COLOR="$COLOR_CYAN"
+elif [ "$VOLUME" -lt 70 ]; then
+  ICON="󰖀"; COLOR="$COLOR_CYAN"
 else
-    VOLUME=$(osascript -e 'output volume of (get volume settings)' 2>/dev/null)
+  ICON="󰕾"; COLOR="$COLOR_CYAN"
 fi
 
-case "$VOLUME" in
-    [6-9][0-9]|100) ICON=$ICON_VOL_HIGH ;;
-    [3-5][0-9])     ICON=$ICON_VOL_MED ;;
-    [1-9]|[1-2][0-9]) ICON=$ICON_VOL_LOW ;;
-    *)              ICON=$ICON_VOL_MUTE ;;
-esac
-
-sketchybar --set "$NAME" icon="$ICON" label="${VOLUME}%"
+sketchybar --set "$NAME" icon="$ICON" icon.color="$COLOR" label="${VOLUME}%"

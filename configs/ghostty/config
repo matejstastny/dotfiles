@@ -3,7 +3,6 @@
 # Color theme --------------------------------------------------------------------------------
 
 config-file = themes/moonfly
-background = #0F1017
 cursor-color = #E29BD8
 
 # Fonts --------------------------------------------------------------------------------------
@@ -35,3 +34,4 @@ adjust-cell-height = 15%
 shell-integration-features = no-cursor,sudo,no-title
 mouse-hide-while-typing = true
 copy-on-select = clipboard
+
