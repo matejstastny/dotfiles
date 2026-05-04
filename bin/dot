@@ -1,447 +1,205 @@
-#!/usr/bin/env python3
+#!/usr/bin/env bash
+set -euo pipefail
 
-"""dot — dotfiles task manager"""
+DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
+CONFIGS="$DOTFILES/configs"
+ASSETS="$DOTFILES/assets"
+FONT_DIR="$ASSETS/fonts"
+WALLPAPER="$ASSETS/wallpapers/wallpaper.png"
+LINK_TOML="$DOTFILES/link.toml"
 
-import argparse
-import itertools
-import os
-import re
-import shutil
-import subprocess
-import sys
-import threading
-import time
-import tomllib
-from pathlib import Path
+GREEN='\033[32m'; YELLOW='\033[33m'; RED='\033[31m'
+CYAN='\033[36m'; DIM='\033[2m'; BOLD='\033[1m'; RESET='\033[0m'
 
-DOTFILES_DIR = Path(__file__).resolve().parent.parent
-ASSETS_DIR = DOTFILES_DIR / "assets"
-FONT_DIR = ASSETS_DIR / "fonts"
-CONFIGS_DIR = DOTFILES_DIR / "configs"
-WALLPAPER_DIR = ASSETS_DIR / "wallpapers"
-WALLPAPER = WALLPAPER_DIR / "wallpaper.png"
-FONT_INSTALL_DIR = Path.home() / ".local" / "share" / "fonts"
-LINK_TOML = DOTFILES_DIR / "link.toml"
-CLEAR_LINE = "\033[2K\r"
+OS=$(uname -s)
+if [[ $OS == Darwin ]]; then
+  FONTS_INSTALL="$HOME/Library/Fonts"
+else
+  FONTS_INSTALL="$HOME/.local/share/fonts"
+fi
 
-GREEN = "\033[32m"
-YELLOW = "\033[33m"
-RED = "\033[31m"
-BLUE = "\033[34m"
-CYAN = "\033[36m"
-MAGENTA = "\033[35m"
-DIM = "\033[2m"
-RESET = "\033[0m"
-BOLD = "\033[1m"
+declare -A _DIRS _FILES
 
-
-def rel(path: Path) -> str:
-    return str(path).replace(str(Path.home()), "~")
-
-
-def visible_len(s: str) -> int:
-    return len(re.sub(r"\033\[[^m]*m", "", s))
-
-
-def header(cmd: str, note: str = "") -> None:
-    label = f"{BOLD}dot{RESET} {DIM}\u00b7{RESET} {BOLD}{cmd}{RESET}"
-    suffix = f" {DIM}{note}{RESET}" if note else ""
-    print(f"\n  {DIM}\u2500\u2500\u2500{RESET} {label}{suffix} {DIM}{'─' * 30}{RESET}\n")
-
-
-def summary(*parts: str) -> None:
-    print(f"\n  {' {0} '.format(f'{DIM}\u00b7{RESET}').join(parts)}\n")
-
-
-def fatal(msg: str) -> None:
-    print(f"  {RED}\u2717 {msg} (×_×){RESET}")
-    sys.exit(1)
-
-
-
-class Spinner:
-    FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
-
-    def __init__(self, msg: str = ""):
-        self.msg = msg
-        self._stop = threading.Event()
-        self._thread: threading.Thread | None = None
-        self._lock = threading.Lock()
-
-    def __enter__(self):
-        self._stop.clear()
-        self._thread = threading.Thread(target=self._spin, daemon=True)
-        self._thread.start()
-        return self
-
-    def _spin(self):
-        for frame in itertools.cycle(self.FRAMES):
-            if self._stop.is_set():
-                break
-            with self._lock:
-                sys.stdout.write(f"{CLEAR_LINE}  {BLUE}{frame}{RESET} {self.msg}")
-                sys.stdout.flush()
-            time.sleep(0.08)
-
-    def update(self, msg: str):
-        self.msg = msg
-
-    def log(self, msg: str):
-        with self._lock:
-            sys.stdout.write(f"{CLEAR_LINE}{msg}\n")
-            sys.stdout.flush()
-
-    def __exit__(self, *args):
-        self._stop.set()
-        if self._thread:
-            self._thread.join()
-        sys.stdout.write(CLEAR_LINE)
-        sys.stdout.flush()
-
-
-class ProgressBar:
-    def __init__(self, total: int, label: str = "", width: int = 25):
-        self.total = total
-        self.current = 0
-        self.label = label
-        self.width = width
-
-    def advance(self, n: int = 1):
-        self.current += n
-        self._draw()
-
-    def _draw(self):
-        pct = self.current / self.total if self.total else 1
-        filled = int(self.width * pct)
-        color = GREEN if self.current == self.total else BLUE
-        bar = "\u2501" * filled + "\u2500" * (self.width - filled)
-        sys.stdout.write(
-            f"{CLEAR_LINE}  {self.label} {color}{bar}{RESET}"
-            f" {DIM}{self.current}/{self.total}{RESET}"
-        )
-        sys.stdout.flush()
-
-    def finish(self):
-        self._draw()
-        sys.stdout.write("\n")
-        sys.stdout.flush()
-
-
-def expand_path(value: str) -> str:
-    return value.replace("$HOME", str(Path.home()))
-
-
-def load_link_toml() -> tuple[dict[str, str], dict[str, str]]:
-    """Load link.toml. Returns (directories, files) mappings."""
-    directories: dict[str, str] = {}
-    files: dict[str, str] = {}
-    if not LINK_TOML.exists():
-        return directories, files
-    with open(LINK_TOML, "rb") as f:
-        data = tomllib.load(f)
-    for key, value in data.get("directories", {}).items():
-        directories[key] = expand_path(value)
-    for key, value in data.get("files", {}).items():
-        files[key] = expand_path(value)
-    return directories, files
-
-
-TASK_ORDER = ["link", "assets"]
-TASK_DESC = {
-    "link": "Symlink configs to system locations",
-    "assets": "Install fonts and set wallpaper",
+load_toml() {
+  [[ -f $LINK_TOML ]] || return 0
+  local sec=''
+  while IFS= read -r line; do
+    [[ $line =~ ^\[([^\]]+)\] ]] && { sec="${BASH_REMATCH[1]}"; continue; }
+    [[ $line =~ ^([A-Za-z0-9_-]+)[[:space:]]*=[[:space:]]*\"([^\"]*)\" ]] || continue
+    local key="${BASH_REMATCH[1]}" val="${BASH_REMATCH[2]/\$HOME/$HOME}"
+    [[ $sec == directories ]] && _DIRS["$key"]="$val"
+    [[ $sec == files       ]] && _FILES["$key"]="$val"
+  done < "$LINK_TOML"
 }
 
+header() {
+  printf "\n  ${BOLD}dot${RESET} ${DIM}·${RESET} ${BOLD}%s${RESET}%s\n\n" \
+    "$1" "${2:+  ${DIM}($2)${RESET}}"
+}
 
+# Global counters (avoids set -e / dynamic-scoping interaction)
+_FORCE=0; _DRY=0
+_new=0; _ok=0; _skipped=0; _linked=0; _broken=0
 
-def link(force: bool = False, dry_run: bool = False) -> None:
-    dir_exceptions, file_exceptions = load_link_toml()
-    stats = {"new": 0, "ok": 0, "skipped": 0}
+do_symlink() {
+  local label=$1 src=$2 tgt=$3
+  if [[ -L $tgt && $(readlink "$tgt") == "$src" ]]; then
+    printf "  ${DIM}─  %-30s → %s${RESET}\n" "$label" "${tgt/$HOME/\~}"
+    _ok=$(( _ok + 1 )); return
+  fi
+  if [[ -e $tgt || -L $tgt ]]; then
+    if [[ $_FORCE -eq 1 ]]; then
+      [[ $_DRY -eq 0 ]] && { [[ -d $tgt && ! -L $tgt ]] && rm -rf "$tgt" || rm -f "$tgt"; }
+    else
+      local ans
+      read -rp "  ${YELLOW}?  ${tgt/$HOME/~} exists — overwrite? [y/N]${RESET} " ans
+      if [[ ${ans,,} != y ]]; then
+        printf "  ${YELLOW}○  %-30s → skipped${RESET}\n" "$label"
+        _skipped=$(( _skipped + 1 )); return
+      fi
+      [[ $_DRY -eq 0 ]] && { [[ -d $tgt && ! -L $tgt ]] && rm -rf "$tgt" || rm -f "$tgt"; }
+    fi
+  fi
+  if [[ $_DRY -eq 1 ]]; then
+    printf "  ${CYAN}~  %-30s → %s${RESET}\n" "$label" "${tgt/$HOME/\~}"
+  else
+    mkdir -p "$(dirname "$tgt")"
+    ln -s "$src" "$tgt"
+    printf "  ${GREEN}✓  %-30s → %s${RESET}\n" "$label" "${tgt/$HOME/\~}"
+  fi
+  _new=$(( _new + 1 ))
+}
 
-    header("link", "(dry run)" if dry_run else "")
+do_link_files() {
+  local name=$1 src=$2 tgt_dir=$3
+  [[ $_DRY -eq 0 ]] && mkdir -p "$tgt_dir"
+  while IFS= read -r -d '' f; do
+    do_symlink "$name/$(basename "$f")" "$f" "$tgt_dir/$(basename "$f")"
+  done < <(find "$src" -maxdepth 1 -mindepth 1 -print0 2>/dev/null)
+}
 
-    def confirm(msg: str) -> bool:
-        if force:
-            return True
-        choice = input(f"  {YELLOW}? {msg} [y/N]{RESET} ").strip()
-        return choice.lower() in ("y", "yes")
+cmd_link() {
+  _FORCE=0; _DRY=0; _new=0; _ok=0; _skipped=0
+  while [[ $# -gt 0 ]]; do
+    case "$1" in --force) _FORCE=1 ;; --dry-run) _DRY=1 ;; esac; shift
+  done
+  load_toml
+  header link "${_DRY:+dry run}"
 
-    def remove_target(target: Path) -> None:
-        if dry_run:
-            return
-        if target.is_dir() and not target.is_symlink():
-            shutil.rmtree(target)
-        else:
-            target.unlink(missing_ok=True)
+  for dir in "$CONFIGS"/*/; do
+    [[ -d $dir ]] || continue
+    local name src
+    name=$(basename "$dir")
+    src=$(realpath "$dir")
+    if [[ -v _FILES[$name] ]]; then
+      do_link_files "$name" "$src" "${_FILES[$name]}"
+    elif [[ -v _DIRS[$name] ]]; then
+      do_symlink "$name" "$src" "${_DIRS[$name]}"
+    else
+      do_symlink "$name" "$src" "$HOME/.config/$name"
+    fi
+  done
 
-    def link_symlink(src: Path, tgt: Path, label: str) -> None:
-        if tgt.exists() or tgt.is_symlink():
-            if tgt.is_symlink() and os.readlink(tgt) == str(src):
-                print(f"  {DIM}\u2500  {label:<28} \u2192 {rel(tgt)}{RESET}")
-                stats["ok"] += 1
-                return
-            if confirm(f"{tgt} exists. Overwrite?"):
-                remove_target(tgt)
-            else:
-                print(f"  {YELLOW}\u25cb  {label:<28} \u2192 skipped{RESET}")
-                stats["skipped"] += 1
-                return
-        if dry_run:
-            print(f"  {CYAN}~  {label:<28} \u2192 {rel(tgt)}{RESET}")
-        else:
-            tgt.parent.mkdir(parents=True, exist_ok=True)
-            tgt.symlink_to(src)
-            print(f"  {GREEN}\u2713  {label:<28} \u2192 {rel(tgt)}{RESET}")
-        stats["new"] += 1
+  local summary=""
+  [[ $_new     -gt 0 ]] && summary+="${GREEN}${_new} linked${RESET}"
+  [[ $_ok      -gt 0 ]] && summary+="${summary:+ · }${DIM}${_ok} ok${RESET}"
+  [[ $_skipped -gt 0 ]] && summary+="${summary:+ · }${YELLOW}${_skipped} skipped${RESET}"
+  printf "\n  %b\n\n" "${summary:-nothing to do}"
+}
 
-    def link_files(src_dir: Path, tgt_dir: Path, folder_name: str) -> None:
-        tgt_dir.mkdir(parents=True, exist_ok=True)
-        for file in sorted(src_dir.iterdir()):
-            link_symlink(file, tgt_dir / file.name, f"{folder_name}/{file.name}")
+cmd_assets() {
+  header assets
 
-    for folder in sorted(CONFIGS_DIR.iterdir()):
-        if not folder.is_dir():
-            continue
-        name = folder.name
-        if name in file_exceptions:
-            link_files(folder, Path(file_exceptions[name]), name)
-        elif name in dir_exceptions:
-            link_symlink(folder, Path(dir_exceptions[name]), name)
-        else:
-            link_symlink(folder, Path.home() / ".config" / name, name)
+  mkdir -p "$FONTS_INSTALL"
+  local installed=0 skipped=0
+  while IFS= read -r -d '' font; do
+    local tgt="$FONTS_INSTALL/$(basename "$font")"
+    if [[ -f $tgt ]]; then
+      skipped=$(( skipped + 1 ))
+    else
+      cp "$font" "$FONTS_INSTALL/"
+      installed=$(( installed + 1 ))
+    fi
+  done < <(find "$FONT_DIR" \( -name '*.ttf' -o -name '*.otf' \) -print0 2>/dev/null)
 
-    parts = []
-    if stats["new"]:
-        parts.append(f"{GREEN}{stats['new']} linked{RESET}")
-    if stats["ok"]:
-        parts.append(f"{DIM}{stats['ok']} ok{RESET}")
-    if stats["skipped"]:
-        parts.append(f"{YELLOW}{stats['skipped']} skipped{RESET}")
-    summary(*parts)
+  printf "  ${GREEN}✓${RESET}  Fonts  ${GREEN}%d installed${RESET}  ${DIM}%d cached${RESET}\n" \
+    "$installed" "$skipped"
+  [[ $OS == Linux ]] && { fc-cache -f "$FONTS_INSTALL" 2>/dev/null || true; }
 
+  if [[ ! -f $WALLPAPER ]]; then
+    printf "  ${RED}✗${RESET}  Wallpaper not found: %s\n" "$WALLPAPER"; return 1
+  fi
 
+  if [[ $OS == Darwin ]]; then
+    osascript -e "tell application \"System Events\" to set picture of every desktop to \"$WALLPAPER\""
+    printf "  ${GREEN}✓${RESET}  Wallpaper set (macOS)\n"
+  elif command -v swaybg &>/dev/null && [[ -n ${WAYLAND_DISPLAY:-} ]]; then
+    pkill swaybg 2>/dev/null || true; sleep 0.1
+    swaybg -i "$WALLPAPER" -m fill &
+    printf "  ${GREEN}✓${RESET}  Wallpaper set (swaybg)\n"
+  elif command -v gsettings &>/dev/null; then
+    gsettings set org.gnome.desktop.background picture-uri "file://$WALLPAPER"
+    printf "  ${GREEN}✓${RESET}  Wallpaper set (GNOME)\n"
+  else
+    printf "  ${YELLOW}⚠${RESET}  Wallpaper: no supported method found\n"
+  fi
 
-def assets() -> None:
-    header("assets")
+  printf "\n  ${GREEN}✓ Done${RESET}\n\n"
+}
 
-    FONT_INSTALL_DIR.mkdir(parents=True, exist_ok=True)
-    installed = 0
-    skipped = 0
+check_row() {
+  local label=$1 src=$2 tgt=$3 r="${3/$HOME/\~}"
+  if [[ ! -e $tgt && ! -L $tgt ]]; then
+    printf "  ${RED}✗${RESET}  %-30s ${DIM}→${RESET}  ${RED}not linked${RESET}\n" "$label"
+    _broken=$(( _broken + 1 ))
+  elif [[ -L $tgt && $(readlink "$tgt") == "$src" ]]; then
+    printf "  ${GREEN}✓${RESET}  %-30s ${DIM}→${RESET}  ${DIM}%s${RESET}\n" "$label" "$r"
+    _linked=$(( _linked + 1 ))
+  elif [[ -L $tgt ]]; then
+    printf "  ${YELLOW}~${RESET}  %-30s ${DIM}→${RESET}  ${YELLOW}wrong target${RESET}\n" "$label"
+    _broken=$(( _broken + 1 ))
+  else
+    printf "  ${YELLOW}!${RESET}  %-30s ${DIM}→${RESET}  ${YELLOW}not a symlink${RESET}\n" "$label"
+    _broken=$(( _broken + 1 ))
+  fi
+}
 
-    if FONT_DIR.is_dir():
-        fonts = sorted(
-            f for f in FONT_DIR.rglob("*") if f.suffix in (".ttf", ".otf")
-        )
-        if fonts:
-            bar = ProgressBar(len(fonts), label="Fonts")
-            for font in fonts:
-                target = FONT_INSTALL_DIR / font.name
-                if target.exists():
-                    skipped += 1
-                else:
-                    try:
-                        shutil.copy2(font, FONT_INSTALL_DIR)
-                        installed += 1
-                    except OSError:
-                        pass
-                bar.advance()
-            bar.finish()
+cmd_check() {
+  _linked=0; _broken=0
+  load_toml
+  header check
 
-            parts = []
-            if installed:
-                parts.append(f"{GREEN}{installed} installed{RESET}")
-            if skipped:
-                parts.append(f"{DIM}{skipped} already present{RESET}")
-            print(f"  {' {0} '.format(f'{DIM}\u00b7{RESET}').join(parts)}")
-        else:
-            print(f"  {YELLOW}\u26a0  No font files found{RESET}")
-    else:
-        print(f"  {YELLOW}\u26a0  No fonts directory{RESET}")
+  for dir in "$CONFIGS"/*/; do
+    [[ -d $dir ]] || continue
+    local name src
+    name=$(basename "$dir")
+    src=$(realpath "$dir")
+    if [[ -v _FILES[$name] ]]; then
+      while IFS= read -r -d '' f; do
+        check_row "$name/$(basename "$f")" "$f" "${_FILES[$name]}/$(basename "$f")"
+      done < <(find "$dir" -maxdepth 1 -mindepth 1 -print0 2>/dev/null)
+    elif [[ -v _DIRS[$name] ]]; then
+      check_row "$name" "$src" "${_DIRS[$name]}"
+    else
+      check_row "$name" "$src" "$HOME/.config/$name"
+    fi
+  done
 
-    print()
-    if not WALLPAPER.exists():
-        fatal(f"Wallpaper not found at {WALLPAPER}")
+  local summary="${GREEN}${_linked} linked${RESET}"
+  [[ $_broken -gt 0 ]] && summary+=" · ${RED}${_broken} broken${RESET}"
+  printf "\n  %b\n\n" "$summary"
+}
 
-    wallpaper_uri = WALLPAPER.resolve().as_uri()
-
-    wallpaper_set = False
-    wallpaper_target = WALLPAPER.resolve()
-
-    if shutil.which("swaybg") and os.environ.get("WAYLAND_DISPLAY"):
-        with Spinner("Setting wallpaper (swaybg)…"):
-            subprocess.run(["pkill", "swaybg"], capture_output=True)
-            time.sleep(0.2)
-            subprocess.Popen(
-                ["swaybg", "-i", str(wallpaper_target), "-m", "fill"],
-                start_new_session=True,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-            time.sleep(0.5)
-        wallpaper_set = True
-        print(f"  {GREEN}✓{RESET}  Wallpaper set (swaybg)")
-
-    if not wallpaper_set and shutil.which("plasma-apply-wallpaperimage"):
-        with Spinner("Setting wallpaper (KDE Plasma)\u2026"):
-            result = subprocess.run(
-                ["plasma-apply-wallpaperimage", str(wallpaper_target)],
-                capture_output=True,
-                text=True,
-            )
-        if result.returncode == 0:
-            wallpaper_set = True
-            print(f"  {GREEN}\u2713{RESET}  Wallpaper set (KDE Plasma)")
-
-    if not wallpaper_set and shutil.which("gsettings"):
-        with Spinner("Setting wallpaper (GNOME)\u2026"):
-            result = subprocess.run(
-                [
-                    "gsettings",
-                    "set",
-                    "org.gnome.desktop.background",
-                    "picture-uri",
-                    wallpaper_uri,
-                ],
-                capture_output=True,
-            )
-            subprocess.run(
-                [
-                    "gsettings",
-                    "set",
-                    "org.gnome.desktop.background",
-                    "picture-uri-dark",
-                    wallpaper_uri,
-                ],
-                capture_output=True,
-            )
-        if result.returncode == 0:
-            wallpaper_set = True
-            print(f"  {GREEN}\u2713{RESET}  Wallpaper set (GNOME)")
-
-    if not wallpaper_set:
-        print(f"  {YELLOW}\u26a0{RESET}  Could not set wallpaper automatically")
-
-    summary(f"{GREEN}\u2713 Done (˶˃ ᵕ ˂˶){RESET}")
-
-
-
-def check() -> None:
-    dir_exceptions, file_exceptions = load_link_toml()
-
-    header("check")
-
-    rows: list[tuple[str, str, str]] = []
-
-    for folder in sorted(CONFIGS_DIR.iterdir()):
-        if not folder.is_dir():
-            continue
-        name = folder.name
-
-        def add_row(label: str, src: Path, tgt: Path) -> None:
-            r = rel(tgt)
-            if not tgt.exists() and not tgt.is_symlink():
-                rows.append((f"{RED}\u2717{RESET}", label, f"{RED}not linked{RESET}"))
-            elif tgt.is_symlink():
-                if os.readlink(tgt) == str(src):
-                    rows.append((f"{GREEN}\u2713{RESET}", label, f"{DIM}{r}{RESET}"))
-                else:
-                    rows.append((f"{YELLOW}~{RESET}", label, f"{YELLOW}wrong target{RESET}"))
-            else:
-                rows.append((f"{YELLOW}!{RESET}", label, f"{YELLOW}not a symlink{RESET}"))
-
-        if name in file_exceptions:
-            for file in sorted(folder.iterdir()):
-                add_row(f"{name}/{file.name}", file, Path(file_exceptions[name]) / file.name)
-        elif name in dir_exceptions:
-            add_row(name, folder, Path(dir_exceptions[name]))
-        else:
-            add_row(name, folder, Path.home() / ".config" / name)
-
-    if not rows:
-        print(f"  {DIM}No configs found.{RESET}")
-        return
-
-    name_w = max(visible_len(r[1]) for r in rows) + 2
-    target_w = max(visible_len(r[2]) for r in rows) + 2
-    inner_w = 3 + name_w + 3 + target_w
-
-    print(f"  {DIM}\u256d{'─' * inner_w}\u256e{RESET}")
-    for icon, name, target in rows:
-        name_pad = " " * (name_w - visible_len(name))
-        target_pad = " " * (target_w - visible_len(target))
-        print(
-            f"  {DIM}\u2502{RESET}"
-            f" {icon}  {name}{name_pad}"
-            f" {DIM}\u2192{RESET} {target}{target_pad}"
-            f"{DIM}\u2502{RESET}"
-        )
-    print(f"  {DIM}\u2570{'─' * inner_w}\u256f{RESET}")
-
-    linked = sum(1 for r in rows if "\u2713" in r[0])
-    broken = len(rows) - linked
-    parts = [f"{GREEN}{linked} linked{RESET}"]
-    if broken:
-        parts.append(f"{RED}{broken} broken{RESET}")
-    summary(*parts)
-
-
-
-def run_task(name: str, **kwargs) -> None:
-    match name:
-        case "link":
-            link(**kwargs)
-        case "assets":
-            assets()
-
-
-
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        prog="dot",
-        description="dotfiles task manager",
-    )
-    sub = parser.add_subparsers(dest="command")
-
-    link_p = sub.add_parser("link", help=TASK_DESC["link"])
-    link_p.add_argument("--force", action="store_true", help="Overwrite without prompting")
-    link_p.add_argument("--dry-run", action="store_true", help="Show what would happen")
-
-    sub.add_parser("assets", help=TASK_DESC["assets"])
-
-    update_p = sub.add_parser("update", help="Sync: link + assets")
-    update_p.add_argument("--force", action="store_true", help="Overwrite without prompting")
-    update_p.add_argument("--dry-run", action="store_true", help="Show what would happen")
-
-    sub.add_parser("all", help="Run all tasks")
-    sub.add_parser("check", help="Show symlink status for all configs")
-
-    return parser
-
-
-def main() -> None:
-    parser = build_parser()
-    args = parser.parse_args()
-
-    if args.command is None:
-        parser.print_help()
-        sys.exit(1)
-
-    link_kwargs = {}
-    if args.command in ("link", "update"):
-        link_kwargs = {"force": args.force, "dry_run": args.dry_run}
-
-    match args.command:
-        case "check":
-            check()
-        case "update":
-            run_task("link", **link_kwargs)
-            run_task("assets")
-        case "all":
-            for name in TASK_ORDER:
-                run_task(name)
-        case "link" | "assets":
-            run_task(args.command, **link_kwargs)
-
-
-if __name__ == "__main__":
-    main()
+case "${1:-}" in
+  link)   shift; cmd_link "$@" ;;
+  assets) cmd_assets ;;
+  update) shift; cmd_link "$@"; cmd_assets ;;
+  check)  cmd_check ;;
+  *)
+    printf "\n  ${BOLD}dot${RESET} — dotfiles manager\n\n"
+    printf "  link    [--force] [--dry-run]   symlink configs\n"
+    printf "  assets                          install fonts and set wallpaper\n"
+    printf "  update  [--force] [--dry-run]   link + assets\n"
+    printf "  check                           show symlink status\n\n"
+    ;;
+esac

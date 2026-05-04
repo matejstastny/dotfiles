@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+CONFIG_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+export CONFIG_DIR PLUGIN_DIR
+
+source "$CONFIG_DIR/colors.sh"
+
+FONT_TEXT="SF Pro:Medium:13.0"
+FONT_ICON="JetBrainsMono Nerd Font Mono:Regular:15.0"
+export FONT_TEXT FONT_ICON
+
+# ── Bar ───────────────────────────────────────────────────────────────────────
+sketchybar --bar \
+  position=top      \
+  height=40         \
+  color="$COLOR_TRANSPARENT" \
+  shadow=off        \
+  border_width=0    \
+  margin=0          \
+  padding_left=8    \
+  padding_right=8   \
+  notch_width=220   \
+  corner_radius=0
+
+# ── Defaults ──────────────────────────────────────────────────────────────────
+sketchybar --default \
+  icon.font="$FONT_ICON"    \
+  icon.color="$COLOR_TEXT"  \
+  icon.padding_left=8       \
+  icon.padding_right=4      \
+  label.font="$FONT_TEXT"   \
+  label.color="$COLOR_TEXT" \
+  label.padding_left=0      \
+  label.padding_right=8     \
+  background.height=30      \
+  background.corner_radius=8 \
+  updates=when_shown
+
+# ── Custom events (from yabai signals) ───────────────────────────────────────
+sketchybar --add event space_change
+sketchybar --add event window_focus
+
+# ── Items ─────────────────────────────────────────────────────────────────────
+source "$CONFIG_DIR/items/spaces.sh"
+source "$CONFIG_DIR/items/front_app.sh"
+source "$CONFIG_DIR/items/clock.sh"
+source "$CONFIG_DIR/items/battery.sh"
+source "$CONFIG_DIR/items/volume.sh"
+source "$CONFIG_DIR/items/cpu.sh"
+source "$CONFIG_DIR/items/memory.sh"
+
+sketchybar --update

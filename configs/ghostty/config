@@ -1,0 +1,51 @@
+font-family = JetBrainsMono Nerd Font Mono
+font-size = 12
+
+# Kanagawa Wave
+background = 1f1f28
+foreground = dcd7ba
+
+# Black
+palette = 0=#16161d
+palette = 8=#363646
+
+# Red
+palette = 1=#c34043
+palette = 9=#e46876
+
+# Green
+palette = 2=#76946a
+palette = 10=#98bb6c
+
+# Yellow
+palette = 3=#c0a36e
+palette = 11=#e6c384
+
+# Blue
+palette = 4=#7e9cd8
+palette = 12=#7fb4ca
+
+# Magenta / Purple
+palette = 5=#957fb8
+palette = 13=#938aa9
+
+# Cyan
+palette = 6=#6a9589
+palette = 14=#7aa89f
+
+# White
+palette = 7=#c8c093
+palette = 15=#dcd7ba
+
+cursor-color = 6a9589
+selection-background = 2d4f67
+selection-foreground = dcd7ba
+
+background-opacity = 0.92
+window-decoration = false
+
+scrollback-limit = 10000
+shell-integration = detect
+
+copy-on-select = clipboard
+focus-follows-mouse = true
