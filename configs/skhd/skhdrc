@@ -27,6 +27,14 @@ alt - 7 : yabai -m space --focus 7
 alt - 8 : yabai -m space --focus 8
 alt - 9 : yabai -m space --focus 9
 
+# Display switching
+alt - right  : yabai -m display --focus prev
+alt - left : yabai -m display --focus next
+
+# Move current workspace between monitors
+shift + alt - right  : yabai -m space --display prev; yabai -m display --focus prev
+shift + alt - left : yabai -m space --display next; yabai -m display --focus next
+
 # Move window to space
 shift + alt - 1 : yabai -m window --space 1 --focus
 shift + alt - 2 : yabai -m window --space 2 --focus
@@ -47,6 +55,8 @@ alt - m : yabai -m window --toggle zoom-fullscreen
 # Balance all windows equally
 shift + alt - b : yabai -m space --balance
 
-# Apps
+# Appsssss
 alt - return : open -na Ghostty
-alt - w      : yabai -m window --close
+alt - b      : open Helium
+alt - v      : open Vesktop
+alt - m      : open Music

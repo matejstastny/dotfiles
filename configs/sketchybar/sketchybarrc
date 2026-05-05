@@ -9,7 +9,7 @@ FONT_TEXT="SF Pro:Medium:13.0"
 FONT_ICON="JetBrainsMono Nerd Font Mono:Regular:15.0"
 export FONT_TEXT FONT_ICON
 
-# ── Bar ───────────────────────────────────────────────────────────────────────
+# Bar
 sketchybar --bar \
   position=top      \
   height=40         \
@@ -22,7 +22,7 @@ sketchybar --bar \
   notch_width=220   \
   corner_radius=0
 
-# ── Defaults ──────────────────────────────────────────────────────────────────
+# Defaults
 sketchybar --default \
   icon.font="$FONT_ICON"    \
   icon.color="$COLOR_TEXT"  \
@@ -34,15 +34,16 @@ sketchybar --default \
   label.padding_right=8     \
   background.height=30      \
   background.corner_radius=8 \
+  background.border_width=1.5  \
+  background.border_color="$COLOR_BORDER" \
   updates=when_shown
 
-# ── Custom events (from yabai signals) ───────────────────────────────────────
+# Custom events
 sketchybar --add event space_change
 sketchybar --add event window_focus
 
-# ── Items ─────────────────────────────────────────────────────────────────────
+# Items
 source "$CONFIG_DIR/items/spaces.sh"
-source "$CONFIG_DIR/items/front_app.sh"
 source "$CONFIG_DIR/items/clock.sh"
 source "$CONFIG_DIR/items/battery.sh"
 source "$CONFIG_DIR/items/volume.sh"

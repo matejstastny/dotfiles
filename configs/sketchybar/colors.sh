@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
-# Kanagawa Wave — sketchybar 0xAARRGGBB format
-COLOR_BG="0xff1f1f28"
-COLOR_SURFACE="0xff2a2a37"
-COLOR_OVERLAY="0xff363646"
-COLOR_TEXT="0xffdcd7ba"
-COLOR_SUBTEXT="0xffc8c093"
-COLOR_MUTED="0xff727169"
-COLOR_BLUE="0xff7e9cd8"
-COLOR_GREEN="0xff98bb6c"
-COLOR_GOLD="0xffe6c384"
-COLOR_RED="0xffe46876"
-COLOR_PURPLE="0xff957fb8"
-COLOR_CYAN="0xff7aa89f"
-COLOR_ORANGE="0xffffa066"
+# Tokyo Night (storm) — sketchybar 0xAARRGGBB format
+# Source: folke/tokyonight.nvim (storm palette)
+COLOR_BG="0xff1f2335"        # bg_dark
+COLOR_SURFACE="0xff24283b"   # bg
+COLOR_OVERLAY="0xff292e42"   # bg_highlight / overlays
+COLOR_TEXT="0xffc0caf5"      # fg
+COLOR_SUBTEXT="0xffa9b1d6"   # fg_dark
+COLOR_MUTED="0xff565f89"     # comment / muted
+COLOR_BLUE="0xff7aa2f7"      # blue
+COLOR_GREEN="0xff9ece6a"     # green
+COLOR_GOLD="0xffe0af68"      # yellow/gold
+COLOR_RED="0xfff7768e"       # red
+COLOR_PURPLE="0xff9d7cd8"    # purple
+COLOR_CYAN="0xff7dcfff"      # cyan
+COLOR_ORANGE="0xffff9e64"    # orange
+COLOR_BORDER="0xffbb99f7"    # bubble border (Tokyo Night accent)
 COLOR_TRANSPARENT="0x00000000"

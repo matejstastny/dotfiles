@@ -65,6 +65,7 @@
       "type": "prompt"
     },
     {
+      "type": "rprompt",
       "alignment": "right",
       "overflow": "hide",
       "segments": [
@@ -104,8 +105,7 @@
           "foreground": "p:light-sky-blue",
           "template": "\uFCD1 {{ .Full}}"
         }
-      ],
-      "type": "prompt"
+      ]
     }
   ],
   "secondary_prompt": {
