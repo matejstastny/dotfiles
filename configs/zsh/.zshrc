@@ -1,11 +1,47 @@
-# Matej Stastny | https://github.com/matejstastny/dotfiles
+
+
+# Defaults
+export EDITOR="nvim"
+export BROWSER="/Applications/Helium.app/Contents/MacOS/Helium"
+export DOTFILES_DIR="$HOME/dotfiles"
+
+# Locale
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+
+# Config & Data
+export APP_DATA="$HOME/Library/Application Support"
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_DATA_HOME="$HOME/.local/share"
+
+
+# SDKS
+export GOPATH="$HOME/go"
+export PROTO_HOME="$HOME/.proto"
+export BUN_INSTALL="$HOME/.bun"
+
+# Homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Path
+typeset -U path
+path=(
+	"$HOME/dotfiles/bin"
+	"$HOME/bin/bin"
+	"$GOPATH/bin"
+	"$BUN_INSTALL/bin"
+	"$VULKAN_SDK/bin"
+	"/opt/homebrew/bin"
+	"$PROTO_HOME/shims"
+	"$PROTO_HOME/bin"
+	"$HOME/.local/bin"
+	$path
+)
 
 # Aliases ------------------------------------------------------------------------------------
 
-alias ..='cd ..'
-alias ...='cd ../..'
 alias dots='cd ~/dotfiles'
-alias scr='ls ~/bin/bin'
 
 alias lg='lazygit'
 alias gs='git status -sb'
@@ -39,8 +75,6 @@ alias q='tmux detach'
 alias qa='tmux kill-server'
 alias tl='tmux display-message -p "#{window_layout}"'
 
-alias vc='veracrypt -t'
-
 alias dockerc='docker system prune --all --volumes'
 
 alias n='clear && fastfetch'
@@ -48,9 +82,6 @@ alias n='clear && fastfetch'
 alias cc='clear && claude --dangerously-skip-permissions'
 alias ccc='clear && claude --dangerously-skip-permissions --continue'
 alias claude='clear && claude'
-
-alias nv='nvim'
-alias ssh='$HOME/bin/bin/ssh'
 
 # Prompt & Plugins ---------------------------------------------------------------------------
 
@@ -65,16 +96,13 @@ source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 # Zsh syntax highlighting
 source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-ZSH_HIGHLIGHT_STYLES[command]='fg=#E29BD8,bold'
-ZSH_HIGHLIGHT_STYLES[builtin]='fg=#E29BD8,bold'
-ZSH_HIGHLIGHT_STYLES[alias]='fg=#E29BD8,bold'
-ZSH_HIGHLIGHT_STYLES[function]='fg=#BB9AF7,bold'
-ZSH_HIGHLIGHT_STYLES[path]='fg=#BB9AF7,underline'
-ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=#BB9AF7'
-ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=#BB9AF7'
-
-# Ripgrep
-export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/.ripgreprc"
+ZSH_HIGHLIGHT_STYLES[command]='fg=#9ECE69,bold'
+ZSH_HIGHLIGHT_STYLES[builtin]='fg=#9ECE69,bold'
+ZSH_HIGHLIGHT_STYLES[alias]='fg=#9ECE69,bold'
+ZSH_HIGHLIGHT_STYLES[function]='fg=#9ECE69,bold'
+ZSH_HIGHLIGHT_STYLES[path]='fg=#9ECE69,underline'
+ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=#E1AF68'
+ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=#E1AF68'
 
 # Bat
 export BAT_THEME="base16"
@@ -82,11 +110,12 @@ export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08
 
 # Fzf
 source <(fzf --zsh)
+export FZF_CTRL_R_OPTS="--style minimal --color 16 --info inline --no-sort --no-preview"
 export FZF_DEFAULT_COMMAND="find -L"
 export FZF_DEFAULT_OPTS="
-  --color=fg:#888888,fg+:#E29BD8,bg+:#101017,hl:#BB9AF7,hl+:#E29BD8
-  --color=info:#555555,prompt:#E29BD8,pointer:#E29BD8,marker:#BB9AF7,border:#252525
-  --color=header:#555555,spinner:#BB9AF7
+  --color=fg:#555555,fg+:#c4b5fd,bg+:#0a0a0d,hl:#7c3aed,hl+:#c4b5fd
+  --color=info:#2d2d3d,prompt:#c4b5fd,pointer:#c4b5fd,marker:#7c3aed,border:#15151e
+  --color=header:#2d2d3d,spinner:#7c3aed
 "
 
 # Jenv
@@ -112,7 +141,6 @@ zstyle ':completion:*' squeeze-slashes false
 # Shell Options ------------------------------------------------------------------------------
 
 setopt append_history inc_append_history share_history hist_ignore_dups hist_ignore_space
-setopt auto_menu menu_complete
 setopt autocd
 setopt auto_param_slash
 setopt no_case_glob no_case_match

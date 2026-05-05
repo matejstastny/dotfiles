@@ -2,8 +2,8 @@
 
 # Color theme --------------------------------------------------------------------------------
 
-config-file = themes/moonfly
-cursor-color = #E29BD8
+theme = TokyoNight Night
+background = #16161E
 
 # Fonts --------------------------------------------------------------------------------------
 
@@ -34,4 +34,3 @@ adjust-cell-height = 15%
 shell-integration-features = no-cursor,sudo,no-title
 mouse-hide-while-typing = true
 copy-on-select = clipboard
-

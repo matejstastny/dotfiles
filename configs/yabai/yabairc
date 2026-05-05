@@ -31,7 +31,7 @@ yabai -m config \
 yabai -m rule --add app="^System Settings$"   manage=off
 yabai -m rule --add app="^System Preferences$" manage=off
 yabai -m rule --add app="^Calculator$"        manage=off float=on
-yabai -m rule --add app="^Finder$"            manage=off float=on
+yabai -m rule --add app="^Finder$"            manage=off
 yabai -m rule --add app="^Raycast$"           manage=off
 yabai -m rule --add app="^Activity Monitor$"  manage=off float=on
 yabai -m rule --add app="^Archive Utility$"   manage=off float=on
