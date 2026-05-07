@@ -1,18 +1,4 @@
 {
-    "workbench.colorTheme": "Noir Catppuccin Mocha",
-    "workbench.colorCustomizations": {
-        "[Catppuccin Mocha]": {
-            "editor.background": "#11111b",
-            "sideBar.background": "#11111b",
-            "activityBar.background": "#0d0d17",
-            "panel.background": "#11111b",
-            "statusBar.background": "#11111b",
-            "tab.inactiveBackground": "#181825",
-            "tab.activeBackground": "#1e1e2e",
-            "terminal.background": "#11111b",
-            "editorGroupHeader.tabsBackground": "#0d0d17"
-        }
-    },
     "Lua.diagnostics.globals": [
         "vim"
     ],

@@ -15,7 +15,7 @@ if [ -z "$TITLE" ] || [ "$TITLE" = "null" ] || [ "$RATE" = "0" ] || [ "$RATE" = 
   exit 0
 fi
 
-MAX=24
+MAX=50
 if [ -n "$ARTIST" ] && [ "$ARTIST" != "null" ]; then
   DISPLAY="$TITLE — $ARTIST"
 else

@@ -96,13 +96,13 @@ source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 # Zsh syntax highlighting
 source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-ZSH_HIGHLIGHT_STYLES[command]='fg=#9ECE69,bold'
-ZSH_HIGHLIGHT_STYLES[builtin]='fg=#9ECE69,bold'
-ZSH_HIGHLIGHT_STYLES[alias]='fg=#9ECE69,bold'
-ZSH_HIGHLIGHT_STYLES[function]='fg=#9ECE69,bold'
-ZSH_HIGHLIGHT_STYLES[path]='fg=#9ECE69,underline'
-ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=#E1AF68'
-ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=#E1AF68'
+ZSH_HIGHLIGHT_STYLES[command]='fg=#a6e3a1,bold'
+ZSH_HIGHLIGHT_STYLES[builtin]='fg=#a6e3a1,bold'
+ZSH_HIGHLIGHT_STYLES[alias]='fg=#a6e3a1,bold'
+ZSH_HIGHLIGHT_STYLES[function]='fg=#a6e3a1,bold'
+ZSH_HIGHLIGHT_STYLES[path]='fg=#cba6f7,underline'
+ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=#f9e2af'
+ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=#f9e2af'
 
 # Bat
 export BAT_THEME="base16"
@@ -113,9 +113,9 @@ source <(fzf --zsh)
 export FZF_CTRL_R_OPTS="--style minimal --color 16 --info inline --no-sort --no-preview"
 export FZF_DEFAULT_COMMAND="find -L"
 export FZF_DEFAULT_OPTS="
-  --color=fg:#555555,fg+:#c4b5fd,bg+:#0a0a0d,hl:#7c3aed,hl+:#c4b5fd
-  --color=info:#2d2d3d,prompt:#c4b5fd,pointer:#c4b5fd,marker:#7c3aed,border:#15151e
-  --color=header:#2d2d3d,spinner:#7c3aed
+  --color=fg:#6c7086,fg+:#cdd6f4,bg+:#1e1e2e,hl:#cba6f7,hl+:#f38ba8
+  --color=info:#6c7086,prompt:#cba6f7,pointer:#cba6f7,marker:#f38ba8,border:#313244
+  --color=header:#6c7086,spinner:#cba6f7
 "
 
 # Jenv
