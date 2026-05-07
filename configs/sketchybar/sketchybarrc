@@ -5,21 +5,21 @@ export CONFIG_DIR PLUGIN_DIR
 
 source "$CONFIG_DIR/colors.sh"
 
-FONT_TEXT="SF Pro:Medium:13.0"
+FONT_TEXT="JetBrainsMono Nerd Font Mono:Medium:13.0"
 FONT_ICON="JetBrainsMono Nerd Font Mono:Regular:15.0"
 export FONT_TEXT FONT_ICON
 
 # Bar
 sketchybar --bar \
-  position=top      \
-  height=40         \
+  position=top     \
+  height=40        \
   color="$COLOR_TRANSPARENT" \
-  shadow=off        \
-  border_width=0    \
-  margin=0          \
-  padding_left=8    \
-  padding_right=8   \
-  notch_width=220   \
+  shadow=off       \
+  border_width=0   \
+  margin=0         \
+  padding_left=12  \
+  padding_right=12 \
+  notch_width=220  \
   corner_radius=0
 
 # Defaults
@@ -33,21 +33,23 @@ sketchybar --default \
   label.padding_left=0      \
   label.padding_right=8     \
   background.height=30      \
-  background.corner_radius=8 \
-  background.border_width=1.5  \
-  background.border_color="$COLOR_BORDER" \
+  background.corner_radius=10 \
+  background.border_width=0 \
   updates=when_shown
 
 # Custom events
 sketchybar --add event space_change
 sketchybar --add event window_focus
 
-# Items
-source "$CONFIG_DIR/items/spaces.sh"
+# Items — left (sourced first = leftmost)
+source "$CONFIG_DIR/items/workspace.sh"
+source "$CONFIG_DIR/items/music.sh"
+
+# Items — right (sourced first = rightmost on screen)
 source "$CONFIG_DIR/items/clock.sh"
 source "$CONFIG_DIR/items/battery.sh"
-source "$CONFIG_DIR/items/volume.sh"
-source "$CONFIG_DIR/items/cpu.sh"
+source "$CONFIG_DIR/items/disk.sh"
 source "$CONFIG_DIR/items/memory.sh"
+source "$CONFIG_DIR/items/cpu.sh"
 
 sketchybar --update

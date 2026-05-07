@@ -4,8 +4,8 @@ options=(
 	style=round
 	width=2.0
 	hidpi=off
-	active_color=0xffBB99F7
-	inactive_color=0xffBB99F7
+	active_color=0xffcba6f7
+	inactive_color=0x30cba6f7
 	blacklist="Control Center,Notification Center,Raycast,Activity Monitor,Archive Utility"
 )
 

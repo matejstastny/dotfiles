@@ -1,18 +1,35 @@
 #!/usr/bin/env bash
-# Tokyo Night (storm) — sketchybar 0xAARRGGBB format
-# Source: folke/tokyonight.nvim (storm palette)
-COLOR_BG="0xff1f2335"        # bg_dark
-COLOR_SURFACE="0xff24283b"   # bg
-COLOR_OVERLAY="0xff292e42"   # bg_highlight / overlays
-COLOR_TEXT="0xffc0caf5"      # fg
-COLOR_SUBTEXT="0xffa9b1d6"   # fg_dark
-COLOR_MUTED="0xff565f89"     # comment / muted
-COLOR_BLUE="0xff7aa2f7"      # blue
-COLOR_GREEN="0xff9ece6a"     # green
-COLOR_GOLD="0xffe0af68"      # yellow/gold
-COLOR_RED="0xfff7768e"       # red
-COLOR_PURPLE="0xff9d7cd8"    # purple
-COLOR_CYAN="0xff7dcfff"      # cyan
-COLOR_ORANGE="0xffff9e64"    # orange
-COLOR_BORDER="0xffbb99f7"    # bubble border (Tokyo Night accent)
+# Catppuccin Mocha Noir — sketchybar 0xAARRGGBB
+# Base shifted to Crust (#11111b) for deeper darkness
+
+# Backgrounds
+COLOR_BASE="0xff11111b"       # crust — deepest dark
+COLOR_SURFACE="0xff181825"    # mantle — pill/bracket backgrounds
+COLOR_PANEL="0xff1e1e2e"      # base — slightly lighter panels
+
+# Text
+COLOR_TEXT="0xffcdd6f4"
+COLOR_SUBTEXT="0xffbac2de"
+COLOR_MUTED="0xff6c7086"      # overlay0
+
+# Accents
+COLOR_MAUVE="0xffcba6f7"      # purple
+COLOR_PINK="0xfff38ba8"       # pink
+COLOR_FLAMINGO="0xfff2cdcd"   # soft pink
+COLOR_LAVENDER="0xffb4befe"   # lavender
+COLOR_SAPPHIRE="0xff74c7ec"   # blue
+COLOR_TEAL="0xff94e2d8"       # teal
+COLOR_GREEN="0xffa6e3a1"      # green
+COLOR_YELLOW="0xfff9e2af"     # yellow
+COLOR_PEACH="0xfffab387"      # peach/orange
+COLOR_MAROON="0xffeba0ac"     # muted red
+
+# Transparent fills (44 = 27% alpha — used for graph fills)
+COLOR_MAUVE_FILL="0x44cba6f7"
+COLOR_PINK_FILL="0x44f38ba8"
+COLOR_LAVENDER_FILL="0x44b4befe"
+COLOR_SAPPHIRE_FILL="0x4474c7ec"
+COLOR_TEAL_FILL="0x4494e2d8"
+COLOR_PEACH_FILL="0x44fab387"
+
 COLOR_TRANSPARENT="0x00000000"

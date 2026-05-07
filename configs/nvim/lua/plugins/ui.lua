@@ -1,105 +1,84 @@
 return {
+    -- Catppuccin Mocha Noir — base shifted to crust for deeper darkness
     {
-        "xiyaowong/transparent.nvim",
-        lazy = false,
-        opts = {
-            groups = {
-                'Normal', 'NormalNC', 'Comment', 'Constant', 'Special', 'Identifier',
-                'Statement', 'PreProc', 'Type', 'Underlined', 'Todo', 'String', 'Function',
-                'Conditional', 'Repeat', 'Operator', 'Structure', 'LineNr', 'NonText',
-                'SignColumn', 'CursorLine', 'CursorLineNr', 'StatusLine', 'StatusLineNC',
-                'EndOfBuffer',
-            },
-            extra_groups = { "StatusLine", "StatusLineNC", "NormalFloat", "FloatBorder", "NoiceCmdlinePopup", "NoiceCmdlinePopupBorder" },
-        },
-    },
-
-    {
-        "folke/noice.nvim",
-        cond = not vim.g.neovide,
-        event = "VeryLazy",
-        dependencies = {
-            "MunifTanjim/nui.nvim",
-        },
-        opts = {
-            cmdline  = {
-                view = "cmdline_popup",
-                format = {
-                    cmdline     = { icon = ">" },
-                    search_up   = { icon = "/" },
-                    search_down = { icon = "?" },
-                },
-            },
-            messages = { enabled = false },
-            notify   = { enabled = false },
-            lsp      = {
-                progress  = { enabled = false },
-                hover     = { enabled = false },
-                signature = { enabled = false },
-            },
-            views    = {
-                cmdline_popup = {
-                    position    = { row = "40%", col = "50%" },
-                    size        = { width = 60, height = "auto" },
-                    border      = { style = "rounded" },
-                    win_options = {
-                        winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder",
-                    },
-                },
-            },
-        },
-    },
-
-    {
-        "rebelot/kanagawa.nvim",
+        "catppuccin/nvim",
+        name = "catppuccin",
         lazy = false,
         priority = 1000,
         config = function()
-            require("kanagawa").setup({
-                transparent = true,
-                theme = "wave",
-                commentStyle = { italic = true },
-                keywordStyle = { italic = false },
-                overrides = function(colors)
-                    return {
-                        NormalFloat = { bg = "none" },
-                        FloatBorder = { bg = "none" },
-                        NoiceCmdlinePopup = { bg = "none" },
-                        NoiceCmdlinePopupBorder = { bg = "none" },
-                    }
-                end,
+            require("catppuccin").setup({
+                flavour = "mocha",
+                transparent_background = true,
+                dim_inactive = { enabled = true, shade = "dark", percentage = 0.12 },
+                styles = {
+                    comments  = { "italic" },
+                    keywords  = {},
+                    functions = { "italic" },
+                },
+                color_overrides = {
+                    mocha = {
+                        -- Noir shift: use crust as base, sink everything darker
+                        base   = "#11111b",
+                        mantle = "#0d0d17",
+                        crust  = "#090910",
+                    },
+                },
+                integrations = {
+                    treesitter        = true,
+                    telescope         = { enabled = true },
+                    lualine           = true,
+                    gitsigns          = true,
+                    mason             = true,
+                    which_key         = true,
+                    indent_blankline  = { enabled = true, colored_indent_levels = false },
+                    illuminate        = { enabled = true },
+                    neotree           = true,
+                },
+                highlight_overrides = {
+                    mocha = function(c)
+                        return {
+                            -- Telescope — clear all pane backgrounds
+                            TelescopeNormal          = { bg = "NONE" },
+                            TelescopePromptNormal    = { bg = "NONE" },
+                            TelescopeResultsNormal   = { bg = "NONE" },
+                            TelescopePreviewNormal   = { bg = "NONE" },
+                            TelescopeBorder          = { bg = "NONE", fg = c.surface1 },
+                            TelescopePromptBorder    = { bg = "NONE", fg = c.surface1 },
+                            TelescopeResultsBorder   = { bg = "NONE", fg = c.surface1 },
+                            TelescopePreviewBorder   = { bg = "NONE", fg = c.surface1 },
+                            TelescopePromptTitle     = { bg = "NONE", fg = c.mauve },
+                            TelescopeResultsTitle    = { bg = "NONE", fg = c.mauve },
+                            TelescopePreviewTitle    = { bg = "NONE", fg = c.mauve },
+                            TelescopeSelection       = { bg = c.surface0 },
+                            TelescopeSelectionCaret  = { fg = c.mauve },
+                            TelescopeMatching        = { fg = c.pink, style = { "bold" } },
+                        }
+                    end,
+                },
             })
-            vim.cmd("colorscheme kanagawa-wave")
+            vim.cmd("colorscheme catppuccin-mocha")
+            -- Clear any remaining opaque highlights after colorscheme loads
+            for _, g in ipairs({ "WinBar", "WinBarNC", "NeoTreeNormal", "NeoTreeNormalNC" }) do
+                vim.api.nvim_set_hl(0, g, { bg = "NONE" })
+            end
         end,
     },
 
+    -- Statusline
     {
         "nvim-lualine/lualine.nvim",
         lazy = false,
         config = function()
-            -- kanagawa palette
-            local dim    = "#727169"
-            local text   = "#DCD7BA"
-            local accent = "#7E9CD8"
-            local mid    = "NONE"
-            local bg     = "NONE"
-            local dark   = "#16161D"
+            local c = require("catppuccin.palettes").get_palette("mocha")
+            local noir = "#11111b"
 
-            local theme  = {
-                normal   = {
-                    a = { fg = dark, bg = accent, gui = "bold" },
-                    b = { fg = text, bg = mid },
-                    c = { fg = text, bg = bg },
-                },
-                insert   = { a = { fg = dark, bg = "#98BB6C", gui = "bold" }, b = { fg = text, bg = mid }, c = { fg = text, bg = bg } },
-                visual   = { a = { fg = dark, bg = "#957FB8", gui = "bold" }, b = { fg = text, bg = mid }, c = { fg = text, bg = bg } },
-                replace  = { a = { fg = dark, bg = "#E46876", gui = "bold" }, b = { fg = text, bg = mid }, c = { fg = text, bg = bg } },
-                command  = { a = { fg = dark, bg = "#E6C384", gui = "bold" }, b = { fg = text, bg = mid }, c = { fg = text, bg = bg } },
-                inactive = {
-                    a = { fg = dim, bg = bg },
-                    b = { fg = dim, bg = bg },
-                    c = { fg = dim, bg = bg },
-                },
+            local theme = {
+                normal   = { a = { fg = noir, bg = c.mauve,    gui = "bold" }, b = { fg = c.text, bg = "NONE" }, c = { fg = c.text, bg = "NONE" } },
+                insert   = { a = { fg = noir, bg = c.green,    gui = "bold" }, b = { fg = c.text, bg = "NONE" }, c = { fg = c.text, bg = "NONE" } },
+                visual   = { a = { fg = noir, bg = c.flamingo, gui = "bold" }, b = { fg = c.text, bg = "NONE" }, c = { fg = c.text, bg = "NONE" } },
+                replace  = { a = { fg = noir, bg = c.pink,     gui = "bold" }, b = { fg = c.text, bg = "NONE" }, c = { fg = c.text, bg = "NONE" } },
+                command  = { a = { fg = noir, bg = c.peach,    gui = "bold" }, b = { fg = c.text, bg = "NONE" }, c = { fg = c.text, bg = "NONE" } },
+                inactive = { a = { fg = c.overlay0, bg = "NONE" }, b = { fg = c.overlay0, bg = "NONE" }, c = { fg = c.overlay0, bg = "NONE" } },
             }
 
             require("lualine").setup({
@@ -117,23 +96,27 @@ return {
                             "diff",
                             symbols = { added = "+ ", modified = "~ ", removed = "- " },
                             diff_color = {
-                                added    = { fg = "#98BB6C" },
-                                modified = { fg = "#E6C384" },
-                                removed  = { fg = "#E46876" },
+                                added    = { fg = c.green },
+                                modified = { fg = c.yellow },
+                                removed  = { fg = c.maroon },
                             },
                         },
                     },
-                    lualine_c = { { "filename", symbols = { modified = " *", readonly = " ", unnamed = "[No Name]" } } },
+                    lualine_c = {
+                        { "filename", symbols = { modified = " ✦", readonly = " ", unnamed = "~" } },
+                    },
                     lualine_x = {
                         {
                             "diagnostics",
-                            sources = { "nvim_lsp" },
+                            sources  = { "nvim_lsp" },
                             sections = { "error", "warn" },
-                            symbols = { error = "E:", warn = "W:" },
+                            symbols  = { error = "E:", warn = "W:" },
                         },
                     },
                     lualine_y = { "filetype" },
-                    lualine_z = { { "location", fmt = function(s) return "Ln " .. s:gsub(":", ", Col ") end } },
+                    lualine_z = {
+                        { "location", fmt = function(s) return "Ln " .. s:gsub(":", ", Col ") end },
+                    },
                 },
                 inactive_sections = {
                     lualine_a = {},

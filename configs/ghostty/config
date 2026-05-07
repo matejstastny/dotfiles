@@ -2,8 +2,8 @@
 
 # Color theme --------------------------------------------------------------------------------
 
-theme = TokyoNight Night
-background = #16161E
+theme = Catppuccin Mocha
+background = #11111b
 
 # Fonts --------------------------------------------------------------------------------------
 
@@ -17,7 +17,8 @@ maximize = true
 window-save-state = always
 confirm-close-surface = false
 
-background-opacity = 1.0
+background-opacity = 0.92
+background-blur-radius = 20
 
 macos-titlebar-style = transparent
 macos-titlebar-proxy-icon = hidden

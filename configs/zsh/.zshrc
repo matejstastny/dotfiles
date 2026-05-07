@@ -171,3 +171,8 @@ fi
 if [[ $TERM == "xterm-ghostty" ]]; then
 	tm
 fi
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=(/Users/matejstastny/.docker/completions $fpath)
+autoload -Uz compinit
+compinit
+# End of Docker CLI completions
