@@ -4,8 +4,10 @@
 
 # Backgrounds
 COLOR_BASE="0xff11111b"       # crust — deepest dark
-COLOR_SURFACE="0xff181825"    # mantle — pill/bracket backgrounds
+COLOR_SURFACE="0x00000000"    # transparent
 COLOR_PANEL="0xff1e1e2e"      # base — slightly lighter panels
+COLOR_BAR_BG="0xff11111b"     # bar background — solid crust
+COLOR_BAR_BORDER="0x55cba6f7" # bar border — ~33% mauve
 
 # Text
 COLOR_TEXT="0xffcdd6f4"

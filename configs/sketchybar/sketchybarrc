@@ -11,16 +11,18 @@ export FONT_TEXT FONT_ICON
 
 # Bar
 sketchybar --bar \
-  position=top     \
-  height=40        \
-  color="$COLOR_TRANSPARENT" \
-  shadow=off       \
-  border_width=0   \
-  margin=0         \
-  padding_left=12  \
-  padding_right=12 \
-  notch_width=220  \
-  corner_radius=0
+  position=top              \
+  height=40                 \
+  color="$COLOR_BAR_BG"     \
+  shadow=on                 \
+  border_width=1            \
+  border_color="$COLOR_BAR_BORDER" \
+  margin=10                 \
+  y_offset=8                \
+  padding_left=12           \
+  padding_right=12          \
+  notch_width=220           \
+  corner_radius=14
 
 # Defaults
 sketchybar --default \
