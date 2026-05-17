@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# quick weather via wttr.in
+
+location="${1:-}"
+curl -s "wttr.in/${location}?format=v2"

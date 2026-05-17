@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+
+# clone - quick github cloner with fzf repo picker
+
+set -euo pipefail
+
+# -------- config --------
+
+PERSONAL="matejstastny"
+PROTO="ssh"
+
+declare -A ORGS=(
+	[t]="TrickfireRobotics"
+)
+
+# -------- helpers --------
+
+die() {
+	echo "[ERR] $*" >&2
+	exit 1
+}
+
+info() { echo "[INF] $*"; }
+
+make_url() {
+	local org="$1" repo="$2"
+	if [[ "$PROTO" == "ssh" ]]; then
+		echo "git@github.com:$org/$repo.git"
+	else
+		echo "https://github.com/$org/$repo.git"
+	fi
+}
+
+list_repos() {
+	local org="$1"
+	command -v gh >/dev/null 2>&1 || die "gh CLI not found — install it or pass a repo name directly"
+	command -v fzf >/dev/null 2>&1 || die "fzf not found — install it or pass a repo name directly"
+
+	info "Fetching repos for $org ..."
+	gh repo list "$org" --limit 200 --json name,isPrivate,description \
+		--jq '.[] | "\(.name)\t\(if .isPrivate then "🔒" else "  " end) \(.description // "")"' |
+		fzf --prompt="$org/ " \
+			--with-nth=1.. \
+			--delimiter='\t' \
+			--preview="gh repo view $org/{1} 2>/dev/null || true" \
+			--preview-window=right:50%:wrap |
+		cut -f1
+}
+
+do_clone() {
+	local org="$1" repo="$2"
+	local url
+	url=$(make_url "$org" "$repo")
+	info "Cloning $url ..."
+	git clone "$url"
+	info "Done"
+}
+
+usage() {
+	echo "clone — quick github cloner"
+	echo ""
+	echo "Usage:"
+	echo "  clone                   fzf pick from your ($PERSONAL) repos"
+	echo "  clone <repo>            clone $PERSONAL/<repo>"
+	echo "  clone <org> <repo>      clone <org>/<repo>"
+	echo ""
+	echo "Org flags:"
+	for key in $(echo "${!ORGS[@]}" | tr ' ' '\n' | sort); do
+		printf "  -%s                   fzf or clone from %s\n" "$key" "${ORGS[$key]}"
+	done
+	echo ""
+	echo "Examples:"
+	echo "  clone dotfiles          → $PERSONAL/dotfiles"
+	echo "  clone -t                → fzf from trickfire"
+	echo "  clone -t myrepo         → trickfire/myrepo"
+	echo "  clone someorg myrepo    → someorg/myrepo"
+	echo ""
+	echo "Config: edit PERSONAL / PROTO / ORGS at the top of this script"
+}
+
+# -------- parse flag --------
+ORG="$PERSONAL"
+
+case "${1:-}" in
+-h | --help)
+	usage
+	exit 0
+	;;
+-*)
+	flag="${1#-}"
+	if [[ -n "${ORGS[$flag]+x}" ]]; then
+		ORG="${ORGS[$flag]}"
+		shift
+	else
+		known=$(for k in "${!ORGS[@]}"; do printf ' -%s=%s' "$k" "${ORGS[$k]}"; done)
+		die "Unknown flag: -$flag  (known:$known)"
+	fi
+	;;
+esac
+
+# -------- dispatch --------
+case "$#" in
+0)
+	picked=$(list_repos "$ORG")
+	[[ -z "$picked" ]] && exit 0
+	do_clone "$ORG" "$picked"
+	;;
+1)
+	do_clone "$ORG" "$1"
+	;;
+2)
+	# two plain args → org repo (backward compat / escape hatch)
+	do_clone "$1" "$2"
+	;;
+*)
+	die "Too many arguments"
+	;;
+esac

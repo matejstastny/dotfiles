@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# fun launcher - runs a random pretty/fun CLI app
+
+declare -a candidates=()
+
+command -v cbonsai   >/dev/null 2>&1 && candidates+=("cbonsai -l")
+command -v cbonsai   >/dev/null 2>&1 && candidates+=("cbonsai")
+command -v fastfetch >/dev/null 2>&1 && candidates+=("fastfetch")
+command -v neofetch  >/dev/null 2>&1 && candidates+=("neofetch")
+command -v pfetch    >/dev/null 2>&1 && candidates+=("pfetch")
+command -v fortune   >/dev/null 2>&1 && candidates+=("fortune")
+command -v pipes.sh  >/dev/null 2>&1 && candidates+=("pipes.sh -t 0 -R")
+
+if [ ${#candidates[@]} -eq 0 ]; then
+    echo "No fun apps found. Try: brew install cbonsai fastfetch fortune"
+    exit 1
+fi
+
+pick="${candidates[$RANDOM % ${#candidates[@]}]}"
+eval "$pick"

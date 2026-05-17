@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# pexp = packwiz export
+# Nieche script to get all mod-ID's from a packwiz project and dump them into a file.
+# Used when I was migrating packwiz projects to azalea
+
+DIR="${1:-.}"
+OUTFILE="${2:-mod_ids.txt}"
+
+>"$OUTFILE"
+
+find "$DIR" -type f -name "*.toml" -print0 |
+    while IFS= read -r -d '' file; do
+        grep -oE 'mod-id[[:space:]]*=[[:space:]]*"[^"]+"' "$file" |
+            sed -E 's/.*"([^"]+)".*/\1/' >>"$OUTFILE"
+    done
+
+echo "modlist at $OUTFILE"

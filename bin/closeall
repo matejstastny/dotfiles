@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# close all apps
+
+apps=$(osascript -e 'tell application "System Events" to get name of (processes where background only is false)')
+IFS=', ' read -r -a app_list <<<"$apps"
+for app in "${app_list[@]}"; do
+    if [[ "$app" != "Finder" ]]; then
+        echo "Closing: $app"
+        osascript -e "tell application \"$app\" to quit"
+    fi
+done

@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+    cat <<EOF >&2
+Usage: da <container-name> [shell]
+
+Attach to a running container and open an interactive shell.
+By default tries to run 'bash' inside the container and falls back to 'sh'.
+EOF
+    exit 2
+}
+
+if [ $# -lt 1 ]; then
+    usage
+fi
+
+container="$1"; shift || true
+shell="${1:-bash}"
+
+# Ensure docker is available
+if ! command -v docker >/dev/null 2>&1; then
+    echo "docker not found in PATH" >&2
+    exit 1
+fi
+
+# Check that the named container is running (exact name match)
+if ! docker ps --format '{{.Names}}' | grep -w -- "$container" >/dev/null 2>&1; then
+    echo "Container '$container' is not running" >&2
+    echo "Running containers:" >&2
+    docker ps --format '  {{.Names}} ({{.Image}})'
+    exit 1
+fi
+
+# Prefer exec to run a login shell; fall back to sh if requested shell not found
+if docker exec "$container" sh -c "command -v $shell >/dev/null 2>&1" >/dev/null 2>&1; then
+    exec docker exec -it "$container" "$shell"
+else
+    exec docker exec -it "$container" sh
+fi
+

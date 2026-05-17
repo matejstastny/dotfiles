@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+
+from sqlite3 import connect
+import sys
+import tomllib
+from pathlib import Path
+from dataclasses import dataclass
+import subprocess
+
+CONFIG_PATH = Path.home() / ".config" / "ssh" / "hosts.toml"
+
+@dataclass
+class Host:
+    name: str
+    host: str
+    user: str
+    path: str
+    tags: list[str]
+    password: str
+
+def main() -> None:
+    if len(sys.argv) == 1:
+        hosts = load_hosts()
+        if not hosts:
+            print("No hosts in config")
+            return
+        print("Available hosts:", ", ".join(host.name for host in hosts))
+        return
+
+    selected_name = sys.argv[1]
+    hosts = load_hosts()
+    selected_host = next((h for h in hosts if h.name == selected_name), None)
+    if not selected_host:
+        print(f"Host '{selected_name}' not found")
+        return
+    connect_to_host(selected_host)
+
+def load_hosts() -> list[Host]:
+    if not CONFIG_PATH.exists():
+        print(f"Config file not found: {CONFIG_PATH}")
+        return []
+    with open(CONFIG_PATH, "rb") as f:
+        data = tomllib.load(f)
+    hosts_data = data.get("hosts", [])
+    return [Host(**host) for host in hosts_data]
+
+def connect_to_host(host: Host) -> None:
+    if not host.password or not host.user or not host.host or not host.path:
+        print("Missing required fields: password, user, host, or path.")
+        return
+    subprocess.run([
+        "sshpass", "-p", host.password,
+        "ssh", "-Y", "-t",
+        "-o", "GSSAPIAuthentication=no",
+        "-o", "LogLevel=ERROR",
+        "-o", "StrictHostKeyChecking=no",
+        f"{host.user}@{host.host}",
+        f"TERM=xterm-256color bash -c 'clear; cd {host.path} 2>/dev/null; bash'"
+    ])
+
+if __name__ == "__main__":    main()

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# nieche script for quick attach to devcontainer projects
+
+if [[ -x "./scripts/attach_to_container.sh" ]]; then
+    clear
+    ./scripts/attach_to_container.sh
+elif  [[ -x "./scripts/attach-container.sh" ]]; then
+  clear
+  ./scripts/attach-container.sh
+else
+    echo "No attach script found!"
+fi
