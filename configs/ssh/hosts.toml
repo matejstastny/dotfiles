@@ -5,3 +5,12 @@ user = "trickfire"
 path = "/home/trickfire/urc-2023"
 tags = ["trickfire"]
 password = "trickfire"
+
+[[hosts]]
+name = "sim"
+host = "192.168.0.205"
+user = "trickfire"
+path = "/home/trickfire/gazebo-simulations"
+tags = ["trickfire"]
+password = "trickfire"
+
