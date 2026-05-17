@@ -26,7 +26,6 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 typeset -U path
 path=(
 	"$HOME/dotfiles/bin"
-	"$HOME/bin/bin"
 	"$GOPATH/bin"
 	"$BUN_INSTALL/bin"
 	"$VULKAN_SDK/bin"
