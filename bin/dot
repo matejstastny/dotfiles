@@ -394,7 +394,7 @@ def diff_task() -> None:
             capture_output=True, text=True,
         )
         cleanup_result = subprocess.run(
-            ["brew", "bundle", "cleanup", f"--file={BREWFILE}", "--dry-run"],
+            ["brew", "bundle", "cleanup", f"--file={BREWFILE}"],
             capture_output=True, text=True,
         )
         outdated_result = subprocess.run(
@@ -416,10 +416,13 @@ def diff_task() -> None:
             outdated.append(pkg)
         else:
             missing.append(pkg)
-    extra = [
-        line for line in cleanup_result.stdout.splitlines()
-        if line.startswith("Would uninstall")
-    ]
+    extra = []
+    in_section = False
+    for line in cleanup_result.stdout.splitlines():
+        if line.startswith("Would uninstall"):
+            in_section = True
+        elif in_section and line.strip() and not line.startswith("Run"):
+            extra.append(line.strip())
 
     print(f"  {BOLD}Missing{RESET} {DIM}(in Brewfile, not installed){RESET}")
     if not missing:
