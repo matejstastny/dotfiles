@@ -419,9 +419,11 @@ def diff_task() -> None:
     extra = []
     in_section = False
     for line in cleanup_result.stdout.splitlines():
-        if line.startswith("Would uninstall"):
+        if line.startswith("Would uninstall") or line.startswith("Would untap"):
             in_section = True
-        elif in_section and line.strip() and not line.startswith("Run"):
+        elif line.startswith("Would") or line.startswith("Run"):
+            in_section = False
+        elif in_section and line.strip():
             extra.append(line.strip())
 
     print(f"  {BOLD}Missing{RESET} {DIM}(in Brewfile, not installed){RESET}")
@@ -444,8 +446,7 @@ def diff_task() -> None:
     if not extra:
         print(f"  {DIM}  (none){RESET}")
     else:
-        for line in extra:
-            pkg = line.split()[-1]
+        for pkg in extra:
             print(f"  {YELLOW}  ~  {pkg}{RESET}")
 
     print()

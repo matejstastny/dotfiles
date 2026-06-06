@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
-from sqlite3 import connect
 import sys
 import tomllib
 from pathlib import Path
 from dataclasses import dataclass
 import subprocess
 
-CONFIG_PATH = Path.home() / ".config" / "ssh" / "hosts.toml"
+CONFIG_PATH = Path.home() / ".config" / "remote" / "hosts.toml"
 
 @dataclass
 class Host:
@@ -55,7 +54,8 @@ def connect_to_host(host: Host) -> None:
         "-o", "LogLevel=ERROR",
         "-o", "StrictHostKeyChecking=no",
         f"{host.user}@{host.host}",
-        f"TERM=xterm-256color bash -c 'clear; cd {host.path} 2>/dev/null; bash'"
+        f"TERM=xterm-256color bash -c 'clear; cd {host.path} 2>/dev/null; exec $SHELL'"
     ])
 
-if __name__ == "__main__":    main()
+if __name__ == "__main__":
+    main()

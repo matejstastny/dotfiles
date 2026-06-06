@@ -34,10 +34,12 @@ yabai -m rule --add app="^System Settings$"   manage=off
 yabai -m rule --add app="^System Preferences$" manage=off
 yabai -m rule --add app="^Calculator$"        manage=off float=on
 yabai -m rule --add app="^Finder$"            manage=off
+yabai -m rule --add app="^Messages$"          manage=off float=on
 yabai -m rule --add app="^Raycast$"           manage=off
 yabai -m rule --add app="^Activity Monitor$"  manage=off float=on
 yabai -m rule --add app="^Archive Utility$"   manage=off float=on
 yabai -m rule --add app="^[Pp]ython.*"        manage=off
+yabai -m rule --add title="OgreWindow"        manage=off float=on hidden=on
 
 # Space labels
 yabai -m space 1 --label terminal

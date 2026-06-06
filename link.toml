@@ -6,7 +6,8 @@ vesktop = "$HOME/Library/Application Support/vesktop/themes"
 
 [files]
 # name = "target_directory"
+claude = "$HOME/.claude"
+vscode = "$HOME/Library/Application Support/Code/User"
 aider = "$HOME"
 zsh = "$HOME"
 git = "$HOME"
-vscode = "$HOME/Library/Application Support/Code/User"

@@ -21,6 +21,7 @@ export BUN_INSTALL="$HOME/.bun"
 
 # Homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
+export HOMEBREW_NO_REQUIRE_TAP_TRUST=1
 
 # Path
 typeset -U path
@@ -39,6 +40,7 @@ path=(
 # Aliases ------------------------------------------------------------------------------------
 
 alias dots='cd ~/dotfiles'
+alias appdata='cd "$APP_DATA"'
 
 alias lg='lazygit'
 alias gs='git status -sb'

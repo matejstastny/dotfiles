@@ -1,2 +1,3 @@
 .DS_Store
 configs/tmux/plugins/
+configs/remote/hosts.toml
