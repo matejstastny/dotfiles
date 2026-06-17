@@ -41,6 +41,7 @@ path=(
 
 alias dots='cd ~/dotfiles'
 alias appdata='cd "$APP_DATA"'
+alias s='ls ~/dotfiles/bin'
 
 alias lg='lazygit'
 alias gs='git status -sb'
@@ -50,6 +51,7 @@ alias gp='git push'
 alias gl='git log --oneline --graph --decorate -20'
 alias gd='git diff'
 
+alias ani='ani-cli'
 alias copy='pbcopy'
 alias paste='pbpaste'
 alias path='echo $PATH | tr ":" "\n"'
