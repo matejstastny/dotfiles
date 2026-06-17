@@ -11,5 +11,5 @@ Use `pnpm` instead of `npm` for all package management tasks.
 
 ## Remote / External Computers
 When I ask you to look at, work on, or copy something from an external computer:
-1. Read `~/.config/ssh/hosts.toml` to find the connection details for that machine.
+1. Read `~/.config/remote/hosts.toml` to find the connection details for that machine.
 2. Use `sshpass` to connect.
