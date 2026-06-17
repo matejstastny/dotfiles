@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+# Wait for an app window to appear and move it to a space.
+# Optional title_filter waits for a window whose title contains that string
+# (useful for apps like Vesktop that show a splash before the real window).
+wait_and_place() {
+    local app="$1"
+    local space="$2"
+    local title_filter="${3:-}"
+
+    open -a "$app"
+
+    local wid
+    for _ in $(seq 1 40); do
+        sleep 0.5
+        if [[ -n "$title_filter" ]]; then
+            wid=$(yabai -m query --windows | jq -r \
+                --arg a "$app" --arg f "$title_filter" \
+                '.[] | select(.app == $a and (.title | contains($f))) | .id' | head -1)
+        else
+            wid=$(yabai -m query --windows | jq -r \
+                --arg a "$app" \
+                '.[] | select(.app == $a and .["is-minimized"] == false) | .id' | head -1)
+        fi
+        [[ -n "$wid" ]] && break
+    done
+
+    [[ -n "$wid" ]] && yabai -m window "$wid" --space "$space"
+}
+
+wait_and_place "Ghostty"            1 &
+wait_and_place "Visual Studio Code" 2 &
+wait_and_place "Helium"             3 &
+wait_and_place "T3 Code (Alpha)"    4 &
+wait_and_place "Vesktop"            5 &
+wait_and_place "Music"              6 &
+
+wait
+
+yabai -m space --focus 1
