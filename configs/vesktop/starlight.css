@@ -8,6 +8,8 @@
  * @authorLink https://github.com/matejstastny
 */
 
+@import url("https://catppuccin.github.io/discord/dist/catppuccin-mocha.theme.css");
+
 :root {
     --font: Atkinson Hyperlegible Next;
     --starlight-accent: #b18cff;
