@@ -40,7 +40,7 @@ hl.config({
     decoration = {
         rounding = 8,
         shadow   = { enabled = false },
-        blur     = { enabled = false },
+        blur     = { enabled = true, size = 6, passes = 2, new_optimizations = true },
     },
     animations = {
         enabled = true,
@@ -143,6 +143,9 @@ hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"
 
 -- Lock screen
 hl.bind(mod .. " + CTRL + L", hl.dsp.exec_cmd("hyprlock"))
+
+-- Power menu
+hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/powermenu"))
 
 -- Screenshot (macOS-style: physical CMD = CTRL due to swap_lwin_lctl)
 hl.bind("CTRL + SHIFT + 4", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/screenshot"))

@@ -27,6 +27,9 @@ sudo dnf install -y \
     `# App launcher` \
     wofi \
     \
+    `# Power menu` \
+    wlogout \
+    \
     `# Notifications` \
     swaync \
     \

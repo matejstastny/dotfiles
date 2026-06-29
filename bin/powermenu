@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+GTK_THEME=Adwaita:dark wlogout \
+    -b 2 -m 280 -c 20 -r 20 \
+    -C "$HOME/.config/wlogout/style.css" \
+    -l "$HOME/.config/wlogout/layout"
