@@ -1,0 +1,112 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  "console_title_template": "{{ .Folder }}",
+  "palette": {
+    "base": "#0a0812",
+    "surface": "#110d1a",
+    "muted": "#3d2f52",
+    "purple": "#7c5cbf",
+    "rose": "#c47a9b",
+    "text": "#e0d4f0",
+    "dim": "#9b8ab0",
+    "bright": "#f4eeff",
+    "t-background": "p:base"
+  },
+  "blocks": [
+    {
+      "alignment": "left",
+      "type": "prompt",
+      "segments": [
+        {
+          "type": "text",
+          "style": "plain",
+          "background": "transparent",
+          "foreground": "p:purple",
+          "template": "➜ "
+        },
+        {
+          "type": "path",
+          "style": "plain",
+          "foreground": "p:rose",
+          "options": {
+            "style": "folder"
+          },
+          "template": "<b>{{ .Path }}</b>"
+        },
+        {
+          "type": "git",
+          "style": "plain",
+          "foreground": "p:dim",
+          "foreground_templates": [
+            "{{ if or (.Working.Changed) (.Staging.Changed) }}p:rose{{ end }}",
+            "{{ if and (gt .Ahead 0) (gt .Behind 0) }}p:purple{{ end }}",
+            "{{ if gt .Ahead 0 }}p:purple{{ end }}",
+            "{{ if gt .Behind 0 }}p:dim{{ end }}"
+          ],
+          "template": " ({{ .HEAD}})",
+          "options": {
+            "fetch_status": true,
+            "branch_icon": " "
+          }
+        },
+        {
+          "type": "status",
+          "style": "plain",
+          "foreground": "p:rose",
+          "template": " ✗"
+        }
+      ]
+    },
+    {
+      "type": "rprompt",
+      "alignment": "right",
+      "overflow": "hide",
+      "segments": [
+        {
+          "type": "node",
+          "style": "plain",
+          "foreground": "p:dim",
+          "template": " {{ .Full }} "
+        },
+        {
+          "type": "php",
+          "style": "plain",
+          "foreground": "p:purple",
+          "template": " {{ .Full }} "
+        },
+        {
+          "type": "python",
+          "style": "plain",
+          "foreground": "p:rose",
+          "template": " {{ .Full }} "
+        },
+        {
+          "type": "julia",
+          "style": "plain",
+          "foreground": "p:purple",
+          "template": " {{ .Full }} "
+        },
+        {
+          "type": "ruby",
+          "style": "plain",
+          "foreground": "p:rose",
+          "template": " {{ .Full }} "
+        },
+        {
+          "type": "go",
+          "style": "plain",
+          "foreground": "p:dim",
+          "template": "ﳑ {{ .Full }} "
+        }
+      ]
+    }
+  ],
+  "secondary_prompt": {
+    "background": "transparent",
+    "foreground": "p:purple",
+    "template": "➜ "
+  },
+  "final_space": true,
+  "version": 4,
+  "terminal_background": "p:t-background"
+}

@@ -1,0 +1,151 @@
+#!/usr/bin/env python3
+
+import subprocess
+import sys
+from datetime import datetime, timezone
+
+R = "\033[0m"
+BOLD = "\033[1m"
+DIM = "\033[2m"
+RED = "\033[91m"
+GREEN = "\033[92m"
+YELLOW = "\033[93m"
+BLUE = "\033[94m"
+CYAN = "\033[96m"
+GRAY = "\033[90m"
+MAGENTA = "\033[95m"
+WHITE = "\033[97m"
+
+
+def run(cmd):
+    r = subprocess.run(cmd, capture_output=True, text=True, shell=True)
+    return r.stdout.strip()
+
+
+def relative_time(dt):
+    now = datetime.now(timezone.utc)
+    days = (now - dt).days
+    if days < 1:
+        return "today"
+    if days == 1:
+        return "1 day ago"
+    if days < 7:
+        return f"{days} days ago"
+    if days < 14:
+        return "1 week ago"
+    if days < 30:
+        return f"{days // 7} weeks ago"
+    if days < 60:
+        return "1 month ago"
+    if days < 365:
+        return f"{days // 30} months ago"
+    if days < 730:
+        return "1 year ago"
+    return f"{days // 365} years ago"
+
+
+def time_color(days):
+    if days < 7:
+        return GREEN
+    if days < 30:
+        return YELLOW
+    if days < 180:
+        return "\033[33m"  # orange-ish
+    return RED
+
+
+def main():
+    no_fetch = "--no-fetch" in sys.argv
+
+    # Verify inside a git repo
+    if run("git rev-parse --is-inside-work-tree 2>/dev/null") != "true":
+        print(f"{RED}Not inside a git repository.{R}")
+        sys.exit(1)
+
+    # Detect default branch
+    main_branch = run("git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|.*/||'")
+    if not main_branch:
+        for candidate in ("main", "master", "trunk"):
+            if run(f"git show-ref --verify --quiet refs/remotes/origin/{candidate} && echo yes") == "yes":
+                main_branch = candidate
+                break
+        else:
+            main_branch = "main"
+
+    if not no_fetch:
+        print(f"{DIM}  Fetching...{R}", end="\r", flush=True)
+        run("git fetch --all --prune -q 2>/dev/null")
+        print(" " * 20, end="\r")
+
+    branches_raw = run("git branch -r")
+    branches = []
+    for b in branches_raw.splitlines():
+        b = b.strip()
+        if not b or "->" in b:
+            continue
+        if b == f"origin/{main_branch}":
+            continue
+        branches.append(b)
+
+    if not branches:
+        print(f"{YELLOW}No remote branches found (other than {main_branch}).{R}")
+        return
+
+    # Gather data
+    rows = []
+    for branch in branches:
+        short = branch.removeprefix("origin/")
+        date_str = run(f"git log -1 --format=%aI {branch}")
+        if not date_str:
+            continue
+        try:
+            dt = datetime.fromisoformat(date_str)
+            now = datetime.now(timezone.utc)
+            days_old = (now - dt).days
+            rel = relative_time(dt)
+        except Exception:
+            dt = None
+            days_old = 9999
+            rel = "unknown"
+
+        ahead_raw = run(f"git log origin/{main_branch}..{branch} --oneline")
+        ahead_commits = [l.strip() for l in ahead_raw.splitlines() if l.strip()]
+        behind = run(f"git rev-list {branch}..origin/{main_branch} --count")
+        behind = int(behind) if behind.isdigit() else 0
+
+        rows.append((short, days_old, rel, ahead_commits, behind))
+
+    # Sort by last updated (most recent first)
+    rows.sort(key=lambda x: x[1])
+
+    # Header
+    print(f"\n{BOLD}{CYAN}  Remote branches{R}  {DIM}({len(rows)} total, ahead of {BOLD}{main_branch}{R}{DIM}){R}\n")
+
+    for short, days_old, rel, ahead_commits, behind in rows:
+        tc = time_color(days_old)
+
+        ahead_count = len(ahead_commits)
+        ahead_str = f"{GREEN}{BOLD}+{ahead_count}{R}{GREEN} ahead{R}" if ahead_count > 0 else f"{GRAY}0 ahead{R}"
+        behind_str = f"{RED}{BOLD}-{behind}{R}{RED} behind{R}" if behind > 0 else f"{GRAY}0 behind{R}"
+
+        print(f"  {BOLD}{BLUE}{short}{R}  {tc}{rel}{R}")
+        print(f"  {DIM}{'─' * (len(short) + 2)}{R}  {ahead_str}  {behind_str}")
+
+        if ahead_commits:
+            shown = ahead_commits[:15]
+            for line in shown:
+                parts = line.split(" ", 1)
+                if len(parts) == 2:
+                    h, msg = parts
+                    print(f"    {YELLOW}{h}{R} {WHITE}{msg}{R}")
+                else:
+                    print(f"    {GRAY}{line}{R}")
+            if len(ahead_commits) > 15:
+                extra = len(ahead_commits) - 15
+                print(f"    {DIM}… and {extra} more commit{'s' if extra > 1 else ''}{R}")
+
+        print()
+
+
+if __name__ == "__main__":
+    main()

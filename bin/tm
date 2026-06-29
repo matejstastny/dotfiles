@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Attach to last used tmux session, or create a new one
+
+if [ -n "$TMUX" ]; then
+    exit 0
+fi
+
+LAST_SESSION_FILE="$HOME/.local/share/tmux/last-session"
+LAST=$(cat "$LAST_SESSION_FILE" 2>/dev/null)
+
+if [ -n "$LAST" ] && tmux has-session -t "$LAST" 2>/dev/null; then
+    tmux attach -t "$LAST"
+elif tmux list-sessions &>/dev/null; then
+    tmux attach
+else
+    tmux new-session -s main
+fi

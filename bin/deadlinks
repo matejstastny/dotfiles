@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 1 ]]; then
+    echo "Usage: $(basename "$0") <directory>"
+    exit 1
+fi
+
+dir="$1"
+
+if [[ ! -d "$dir" ]]; then
+    echo "Error: '$dir' is not a directory"
+    exit 1
+fi
+
+count=0
+while IFS= read -r -d '' link; do
+    echo "Removing dead symlink: $link"
+    rm "$link"
+    ((count++)) || true
+done < <(find "$dir" -maxdepth 1 -type l ! -exec test -e {} \; -print0)
+
+echo "Removed $count dead symlink(s)"

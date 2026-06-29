@@ -1,0 +1,11 @@
+[[hosts]]
+name = "myhost"             # identifier used with `remote <name>`
+host = "192.168.0.100"      # IP address or hostname
+user = "username"           # SSH login user
+path = "/home/username"     # directory to cd into after connecting
+tags = ["optional-tag"]     # arbitrary labels for grouping (unused by script currently)
+password = "secret"         # plaintext password passed to sshpass
+
+# for another computer repeat
+[[hosts]]
+# repeat fields as above

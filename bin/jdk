@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+# simple java manager
+# adds all Java managers from `$HOME/java` into jenv and then lets you select
+# the one you want to use
+
+JAVA_DIR="$HOME/java"
+
+if [ -d "$JAVA_DIR" ]; then
+    for dir in "$JAVA_DIR"/*/; do
+        if [ -d "$dir" ]; then
+            echo "Adding $dir to jenv..."
+            jenv add "${dir}Contents/Home"
+        fi
+    done
+else
+    echo "Directory $JAVA_DIR does not exist"
+    exit 1
+fi
+
+echo -e "\nAvailable Java versions:"
+mapfile -t java_versions < <(jenv versions --bare)
+for i in "${!java_versions[@]}"; do
+    printf "%d) %s\n" "$((i + 1))" "${java_versions[$i]}"
+done
+
+read -rp "Enter the number of the Java version to set as global: " selection
+
+if [[ "$selection" =~ ^[0-9]+$ ]] && ((selection >= 1 && selection <= ${#java_versions[@]})); then
+    chosen_java="${java_versions[$((selection - 1))]}"
+    jenv global "$chosen_java"
+    echo "Java global version set to $chosen_java"
+else
+    echo "Invalid selection"
+    exit 1
+fi

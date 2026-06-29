@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+# months. i use it more that you think...
+
+echo "01 january"
+echo "02 february"
+echo "03 march"
+echo "04 april"
+echo "05 may"
+echo "06 june"
+echo "07 july"
+echo "08 august"
+echo "09 september"
+echo "10 october"
+echo "11 november"
+echo "12 december"

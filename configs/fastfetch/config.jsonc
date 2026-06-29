@@ -1,0 +1,92 @@
+{
+    "logo": {
+        "type": "kitty-icat",
+        "source": "/home/elara/dotfiles/configs/fastfetch/homura.png",
+        "width": 28,
+        "height": 14
+    },
+    "display": {
+        "separator": "   "
+    },
+    "modules": [
+        {
+            "type": "custom",
+            "format": " "
+        },
+        {
+            "type": "os",
+            "key": "",
+            "keyColor": "green",
+            "outputColor": "green",
+            "format": "{2}"
+        },
+        {
+            "type": "kernel",
+            "key": "",
+            "keyColor": "blue",
+            "outputColor": "blue",
+            "format": "{1}"
+        },
+        {
+            "type": "uptime",
+            "key": "",
+            "keyColor": "yellow",
+            "outputColor": "yellow",
+            "format": "{?1}{1}d {?}{?2}{2}h {?}{3} min"
+        },
+        {
+            "type": "packages",
+            "key": "󰏖",
+            "keyColor": "magenta",
+            "outputColor": "magenta",
+            "format": "{rpm}"
+        },
+        {
+            "type": "shell",
+            "key": "",
+            "keyColor": "yellow",
+            "outputColor": "yellow",
+            "format": "{1}"
+        },
+        {
+            "type": "wm",
+            "key": "",
+            "keyColor": "cyan",
+            "outputColor": "cyan",
+            "format": "{1}"
+        },
+        {
+            "type": "terminal",
+            "key": "",
+            "keyColor": "blue",
+            "outputColor": "blue",
+            "format": "{1}"
+        },
+        {
+            "type": "cpu",
+            "key": "",
+            "keyColor": "green",
+            "outputColor": "green",
+            "format": "{1}"
+        },
+        {
+            "type": "gpu",
+            "key": "󰢮",
+            "keyColor": "magenta",
+            "outputColor": "magenta",
+            "format": "{2}"
+        },
+        {
+            "type": "memory",
+            "key": "",
+            "keyColor": "yellow",
+            "outputColor": "yellow",
+            "format": "{1} / {2} ({3})"
+        },
+        "break",
+        {
+            "type": "custom",
+            "format": "\u001b[33m󰮯   \u001b[32m󰊠 \u001b[31m󰊠 \u001b[33m󰊠 \u001b[35m󰊠 \u001b[36m󰊠 \u001b[90m󰊠 \u001b[34m󰊠 \u001b[93m󰊠 \u001b[95m󰊠 "
+        }
+    ]
+}

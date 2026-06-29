@@ -1,0 +1,78 @@
+{
+  "font": "Geist Mono Variable",
+  "fontWeight": 400,
+  "currentTheme": "default",
+  "tabTitle": "~",
+  "taskBackend": "local",
+  "todoistApiToken": "",
+  "googleTasksSignedIn": false,
+  "locationMode": "manual",
+  "latitude": null,
+  "longitude": null,
+  "showSeconds": true,
+  "timeFormat": "24hr",
+  "dateFormat": "mdy",
+  "tempUnit": "celsius",
+  "speedUnit": "kmh",
+  "forecastMode": "hourly",
+  "linksPerColumn": 4,
+  "linkTarget": "_self",
+  "linkHotkeys": false,
+  "linkHotkeyPosition": "right",
+  "linkIconMode": "icons",
+  "links": [
+    {
+      "title": "GitHub",
+      "url": "https://github.com/matejstastny",
+      "icon": "github",
+      "hotkey": ""
+    },
+    {
+      "title": "Dotfiles",
+      "url": "https://github.com/matejstastny/dotfiles",
+      "icon": "github",
+      "hotkey": ""
+    },
+    {
+      "title": "TrickFire",
+      "url": "https://github.com/TrickFireRobotics",
+      "icon": "github",
+      "hotkey": ""
+    },
+    {
+      "title": "Simulation",
+      "url": "https://github.com/TrickFireRobotics/gazebo-simulations",
+      "icon": "github",
+      "hotkey": ""
+    },
+    {
+      "title": "Mission Control",
+      "url": "https://github.com/TrickFireRobotics/mission-control",
+      "icon": "github",
+      "hotkey": ""
+    },
+    {
+      "title": "URC Repo",
+      "url": "https://github.com/TrickFireRobotics/urc-2023",
+      "icon": "github",
+      "hotkey": ""
+    }
+  ],
+  "customThemeColors": {
+    "bg1": "#141414",
+    "bg2": "#1d1d1d",
+    "bg3": "#262626",
+    "txt1": "#dedede",
+    "txt2": "#aeaeae",
+    "txt3": "#636363",
+    "txt4": "#484848",
+    "txtErr": "#d6809c"
+  },
+  "pingUrl": "https://www.google.com/generate_204",
+  "customCSS": "",
+  "showClock": false,
+  "showStats": true,
+  "showWeather": false,
+  "showTasks": false,
+  "showLinks": true
+}

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# branches - pull all branches
+# script to create local branches for all remote branches in a repo
+
+git fetch --all
+git branch -r | grep -v '\->' | sed "s,\x1B\[[0-9;]*[a-zA-Z],,g" | while read -r remote; do
+    local="${remote#origin/}"
+    git branch --track "$local" "$remote" 2>/dev/null || git branch --set-upstream-to="$remote" "$local" 2>/dev/null || true
+done

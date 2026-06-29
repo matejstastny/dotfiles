@@ -1,0 +1,246 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+LIST_ONLY=0
+BLACKLIST_MODE=0
+
+die() {
+	echo "[ERR] $*" >&2
+	exit 1
+}
+
+info() {
+	echo "[INF] $*"
+}
+
+usage() {
+	cat <<'EOF'
+gitc — cleanup local branches
+
+Usage:
+  gitc            delete branches without a usable remote (after confirmation)
+  gitc -l         list branches without a usable remote
+  gitc -b         blacklist mode: choose branch numbers to keep, delete the rest
+
+Options:
+  -l, --list       List only (no deletion)
+  -b, --blacklist  Keep-by-number mode
+  -h, --help       Show this help
+EOF
+}
+
+ensure_git_repo() {
+	git rev-parse --is-inside-work-tree >/dev/null 2>&1 || die "Not inside a git repository"
+}
+
+refresh_remote_state() {
+	# Prune stale remote-tracking refs so [gone] status is accurate.
+	git fetch --prune --quiet
+}
+
+contains_branch() {
+	local needle="$1"
+	shift
+	local value
+	for value in "$@"; do
+		[[ "$value" == "$needle" ]] && return 0
+	done
+	return 1
+}
+
+print_numbered_branches() {
+	local current="$1"
+	shift
+	local branches=("$@")
+	local i
+	for ((i = 0; i < ${#branches[@]}; i++)); do
+		if [[ "${branches[$i]}" == "$current" ]]; then
+			printf "%2d) %s (current)\n" "$((i + 1))" "${branches[$i]}"
+		else
+			printf "%2d) %s\n" "$((i + 1))" "${branches[$i]}"
+		fi
+	done
+}
+
+parse_keep_numbers() {
+	local input="$1"
+	local max="$2"
+	KEEP_NUMBERS=()
+
+	[[ -z "$input" ]] && return 0
+
+	local token start end n existing
+	for token in ${input//,/ }; do
+		if [[ "$token" =~ ^[0-9]+-[0-9]+$ ]]; then
+			start="${token%-*}"
+			end="${token#*-}"
+			((start <= end)) || die "Invalid range: $token"
+			for ((n = start; n <= end; n++)); do
+				((n >= 1 && n <= max)) || die "Number out of range: $n"
+				existing=0
+				for existing_n in "${KEEP_NUMBERS[@]:-}"; do
+					[[ "$existing_n" == "$n" ]] && existing=1 && break
+				done
+				((existing == 0)) && KEEP_NUMBERS+=("$n")
+			done
+		elif [[ "$token" =~ ^[0-9]+$ ]]; then
+			n="$token"
+			((n >= 1 && n <= max)) || die "Number out of range: $n"
+			existing=0
+			for existing_n in "${KEEP_NUMBERS[@]:-}"; do
+				[[ "$existing_n" == "$n" ]] && existing=1 && break
+			done
+			((existing == 0)) && KEEP_NUMBERS+=("$n")
+		else
+			die "Invalid token: $token"
+		fi
+	done
+}
+
+confirm_or_exit() {
+	local prompt="$1"
+	local answer
+	read -r -p "$prompt [y/N] " answer
+	case "$answer" in
+	y | Y | yes | YES)
+		return 0
+		;;
+	*)
+		info "Cancelled"
+		exit 0
+		;;
+	esac
+}
+
+delete_branches() {
+	local branches=("$@")
+	local branch
+	for branch in "${branches[@]}"; do
+		if git branch -d "$branch"; then
+			:
+		else
+			echo "[WRN] Could not delete '$branch' with -d (not fully merged?)" >&2
+		fi
+	done
+}
+
+default_cleanup() {
+	refresh_remote_state
+
+	local current
+	current=$(git branch --show-current)
+
+	local candidates=()
+	local branch upstream track
+	while IFS='|' read -r branch upstream track; do
+		[[ "$branch" == "$current" ]] && continue
+		if [[ -z "$upstream" || "$track" == *"[gone]"* ]]; then
+			candidates+=("$branch")
+		fi
+	done < <(git for-each-ref --format='%(refname:short)|%(upstream:short)|%(upstream:track)' refs/heads)
+
+	if [[ ${#candidates[@]} -eq 0 ]]; then
+		info "No branches without a usable remote"
+		exit 0
+	fi
+
+	echo "Branches without a usable remote:"
+	print_numbered_branches "$current" "${candidates[@]}"
+
+	if ((LIST_ONLY == 1)); then
+		exit 0
+	fi
+
+	confirm_or_exit "Delete these ${#candidates[@]} branch(es)?"
+	delete_branches "${candidates[@]}"
+}
+
+blacklist_cleanup() {
+	refresh_remote_state
+
+	local current
+	current=$(git branch --show-current)
+
+	local all_branches=()
+	local branch
+	while IFS= read -r branch; do
+		all_branches+=("$branch")
+	done < <(git for-each-ref --format='%(refname:short)' refs/heads)
+
+	[[ ${#all_branches[@]} -gt 0 ]] || die "No local branches found"
+
+	echo "All local branches:"
+	print_numbered_branches "$current" "${all_branches[@]}"
+	echo
+	echo "Enter numbers to KEEP (examples: 1 3 5 or 1,3-6)."
+	echo "The current branch will always be kept."
+
+	local raw_keep
+	read -r -p "Keep numbers: " raw_keep
+	parse_keep_numbers "$raw_keep" "${#all_branches[@]}"
+
+	local keep_branches=()
+	local n
+	for n in "${KEEP_NUMBERS[@]:-}"; do
+		keep_branches+=("${all_branches[$((n - 1))]}")
+	done
+	if ! contains_branch "$current" "${keep_branches[@]:-}"; then
+		keep_branches+=("$current")
+	fi
+	if contains_branch "main" "${all_branches[@]}" && ! contains_branch "main" "${keep_branches[@]}"; then
+		keep_branches+=("main")
+	fi
+	if contains_branch "master" "${all_branches[@]}" && ! contains_branch "master" "${keep_branches[@]}"; then
+		keep_branches+=("master")
+	fi
+
+	local delete_list=()
+	for branch in "${all_branches[@]}"; do
+		if ! contains_branch "$branch" "${keep_branches[@]}"; then
+			delete_list+=("$branch")
+		fi
+	done
+
+	if [[ ${#delete_list[@]} -eq 0 ]]; then
+		info "Nothing to delete"
+		exit 0
+	fi
+
+	echo
+	echo "Branches to delete:"
+	print_numbered_branches "$current" "${delete_list[@]}"
+	confirm_or_exit "Delete these ${#delete_list[@]} branch(es)?"
+	delete_branches "${delete_list[@]}"
+}
+
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+	-l | --list)
+		LIST_ONLY=1
+		;;
+	-b | --blacklist)
+		BLACKLIST_MODE=1
+		;;
+	-h | --help)
+		usage
+		exit 0
+		;;
+	*)
+		die "Unknown option: $1"
+		;;
+	esac
+	shift
+done
+
+if ((LIST_ONLY == 1 && BLACKLIST_MODE == 1)); then
+	die "Use either --list or --blacklist, not both"
+fi
+
+ensure_git_repo
+
+if ((BLACKLIST_MODE == 1)); then
+	blacklist_cleanup
+else
+	default_cleanup
+fi

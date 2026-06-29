@@ -1,0 +1,175 @@
+* {
+  border: none;
+  border-radius: 0;
+  font-family: "Maple Mono NF", "Font Awesome 6 Free", monospace;
+  font-size: 13px;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+window#waybar {
+  background-color: rgba(17, 13, 26, 0.92);
+  border-bottom: 1px solid rgba(124, 92, 191, 0.35);
+  color: #e0d4f0;
+  transition-property: background-color;
+  transition-duration: 0.5s;
+}
+
+window#waybar.hidden {
+  opacity: 0.2;
+}
+
+/* Workspaces */
+
+#workspaces {
+  margin: 0 6px;
+}
+
+#workspaces button {
+  padding: 0 10px;
+  color: #9b8ab0;
+  background: transparent;
+  border-radius: 6px;
+  margin: 5px 2px;
+  transition: all 0.15s ease;
+  border-bottom: 2px solid transparent;
+}
+
+#workspaces button:hover {
+  color: #e0d4f0;
+  background-color: rgba(124, 92, 191, 0.12);
+  border-bottom-color: rgba(124, 92, 191, 0.4);
+}
+
+#workspaces button.active {
+  color: #f4eeff;
+  background-color: rgba(124, 92, 191, 0.22);
+  border-bottom-color: #7c5cbf;
+}
+
+#workspaces button.urgent {
+  color: #c47a9b;
+  border-bottom-color: #c47a9b;
+}
+
+/* Window title */
+
+#window {
+  color: #9b8ab0;
+  font-style: italic;
+  padding: 0 10px;
+  margin: 0 2px;
+}
+
+/* Clock */
+
+#clock {
+  color: #f4eeff;
+  font-size: 14px;
+  letter-spacing: 1px;
+  padding: 0 16px;
+}
+
+/* Separator */
+
+#custom-sep {
+  color: rgba(124, 92, 191, 0.45);
+  font-size: 10px;
+  padding: 0 8px;
+}
+
+/* Right modules */
+
+#pulseaudio,
+#backlight,
+#battery,
+#bluetooth,
+#network,
+#custom-notification {
+  color: #e0d4f0;
+  padding: 0 10px;
+}
+
+#pulseaudio:hover,
+#backlight:hover,
+#battery:hover,
+#bluetooth:hover,
+#network:hover {
+  color: #f4eeff;
+  background-color: rgba(124, 92, 191, 0.12);
+  border-radius: 6px;
+}
+
+#pulseaudio.muted {
+  color: #9b8ab0;
+}
+
+/* Battery states */
+
+#battery.good {
+  color: #a8c4b0;
+}
+
+#battery.warning {
+  color: #c4a87a;
+}
+
+#battery.critical {
+  color: #c47a9b;
+  animation: blink 1.2s linear infinite;
+}
+
+#battery.charging,
+#battery.plugged {
+  color: #9bbfc4;
+}
+
+@keyframes blink {
+  to {
+    color: #f4eeff;
+  }
+}
+
+/* Tray */
+
+#tray {
+  padding: 0 8px;
+}
+
+#tray > .passive {
+  -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+  -gtk-icon-effect: highlight;
+  background-color: rgba(196, 122, 155, 0.2);
+  border-radius: 4px;
+}
+
+/* Notification bell */
+
+#custom-notification {
+  color: #9b8ab0;
+  font-size: 14px;
+  padding: 0 10px;
+}
+
+#custom-notification.notification {
+  color: #c47a9b;
+}
+
+/* Tooltip */
+
+tooltip {
+  background-color: #110d1a;
+  border: 1px solid rgba(124, 92, 191, 0.5);
+  border-radius: 8px;
+  padding: 4px;
+  color: #e0d4f0;
+}
+
+tooltip label {
+  color: #e0d4f0;
+  padding: 4px 8px;
+}

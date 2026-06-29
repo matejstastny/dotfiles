@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+import sys
+from pathlib import Path
+from configparser import ConfigParser
+
+_ROOT = Path(__file__).resolve().parent.parent
+CONFIGS_DIR = _ROOT / "configs"
+CONF_FILE = _ROOT / "link.conf"
+DEFAULT_TARGET = Path.home() / ".config"
+
+dry_run = "--dry-run" in sys.argv
+
+
+def symlink(src: Path, dst: Path):
+    dst = dst.expanduser()
+    src = src.resolve()
+    if dst.is_symlink():
+        if dst.readlink().resolve() == src:
+            return
+        print(f"skip (exists, different target): {dst}")
+        return
+    if dst.exists():
+        print(f"skip (not a symlink): {dst}")
+        return
+    print(f"  {src} -> {dst}")
+    if not dry_run:
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        dst.symlink_to(src)
+
+
+def main():
+    if not CONFIGS_DIR.is_dir():
+        sys.exit(f"configs/ directory not found at {CONFIGS_DIR}")
+
+    conf = ConfigParser()
+    conf.read(CONF_FILE)
+
+    path_overrides = dict(conf["path_overrides"]) if "path_overrides" in conf else {}
+    file_overrides = dict(conf["file_overrides"]) if "file_overrides" in conf else {}
+
+    if dry_run:
+        print("[dry run]")
+
+    for src in sorted(CONFIGS_DIR.iterdir()):
+        if not src.is_dir():
+            continue
+        name = src.name
+
+        if name in file_overrides:
+            target_dir = Path(file_overrides[name]).expanduser()
+            print(f"{name}/ (file links -> {target_dir})")
+            for f in sorted(src.iterdir()):
+                symlink(f, target_dir / f.name)
+        elif name in path_overrides:
+            target = Path(path_overrides[name])
+            print(f"{name}/ (path override -> {target})")
+            symlink(src, target)
+        else:
+            print(f"{name}/ (-> {DEFAULT_TARGET / name})")
+            symlink(src, DEFAULT_TARGET / name)
+
+
+if __name__ == "__main__":
+    main()

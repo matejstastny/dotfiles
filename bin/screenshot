@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Region screenshot → clipboard
+grim -g "$(slurp)" - | wl-copy
+notify-send "✦ screenshot" "Region copied to clipboard" -t 2000

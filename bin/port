@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# port - show what's listening on a given port
+
+if [ -z "$1" ]; then
+    echo "Usage: port <number>"
+    exit 1
+fi
+
+lsof -iTCP:"$1" -sTCP:LISTEN -n -P

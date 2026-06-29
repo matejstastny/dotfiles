@@ -1,0 +1,70 @@
+* {
+  font-family: "Maple Mono NF", monospace;
+  font-size: 13px;
+}
+
+window {
+  background-color: rgba(17, 13, 26, 0.96);
+  border: 1px solid rgba(124, 92, 191, 0.5);
+  border-radius: 12px;
+  color: #e0d4f0;
+}
+
+#input {
+  background-color: rgba(28, 21, 40, 0.8);
+  border: 1px solid rgba(124, 92, 191, 0.3);
+  border-radius: 8px;
+  color: #e0d4f0;
+  margin: 12px;
+  padding: 10px 14px;
+  font-size: 14px;
+}
+
+#input:focus {
+  border-color: #7c5cbf;
+  box-shadow: 0 0 0 1px rgba(124, 92, 191, 0.3);
+  outline: none;
+}
+
+#inner-box {
+  background: transparent;
+  margin: 0 8px 8px 8px;
+}
+
+#outer-box {
+  background: transparent;
+  padding: 4px;
+}
+
+#scroll {
+  background: transparent;
+  margin: 0 4px;
+}
+
+#text {
+  color: #e0d4f0;
+  padding: 2px 8px;
+}
+
+#entry {
+  background-color: transparent;
+  border-radius: 8px;
+  padding: 6px 8px;
+  margin: 1px 4px;
+  transition: background-color 0.1s ease;
+  border-left: 2px solid transparent;
+}
+
+#entry:selected {
+  background-color: rgba(124, 92, 191, 0.2);
+  border-left-color: #7c5cbf;
+}
+
+#entry:selected #text {
+  color: #f4eeff;
+}
+
+#entry image {
+  margin-right: 8px;
+  opacity: 0.85;
+}

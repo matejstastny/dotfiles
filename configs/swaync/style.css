@@ -1,0 +1,182 @@
+* {
+  font-family: "Maple Mono NF", monospace;
+  font-size: 13px;
+  transition: none;
+  box-shadow: none;
+}
+
+/* Notification popups */
+
+.notification-row {
+  outline: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notification-row:focus,
+.notification-row:hover {
+  opacity: 1;
+  background: transparent;
+}
+
+.notification {
+  border-radius: 10px;
+  margin: 6px 10px;
+  padding: 0;
+  background: rgba(17, 13, 26, 0.95);
+  border: 1px solid rgba(124, 92, 191, 0.4);
+  color: #e0d4f0;
+}
+
+.notification-content {
+  background: transparent;
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+
+.notification-default-action,
+.notification-action {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  color: #9b8ab0;
+  font-size: 12px;
+}
+
+.notification-default-action:hover,
+.notification-action:hover {
+  color: #e0d4f0;
+  background: rgba(124, 92, 191, 0.12);
+}
+
+.notification-default-action {
+  border-radius: 0 0 8px 8px;
+}
+
+.notification.critical {
+  border-color: rgba(196, 122, 155, 0.6);
+}
+
+.close-button {
+  background: rgba(61, 47, 82, 0.6);
+  color: #9b8ab0;
+  border-radius: 50%;
+  padding: 2px;
+  border: none;
+  margin: 6px;
+  font-size: 12px;
+  min-width: 20px;
+  min-height: 20px;
+}
+
+.close-button:hover {
+  background: rgba(196, 122, 155, 0.4);
+  color: #f4eeff;
+}
+
+.app-name {
+  font-weight: bold;
+  font-size: 12px;
+  color: #7c5cbf;
+}
+
+.time-label {
+  font-size: 11px;
+  color: #9b8ab0;
+}
+
+.notification-title {
+  color: #f4eeff;
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.notification-body {
+  color: #e0d4f0;
+  font-size: 12px;
+}
+
+/* Control center */
+
+.control-center {
+  background: rgba(10, 8, 18, 0.96);
+  border: 1px solid rgba(124, 92, 191, 0.4);
+  border-radius: 12px;
+  padding: 8px;
+  color: #e0d4f0;
+}
+
+.widget-title {
+  color: #f4eeff;
+  font-size: 15px;
+  font-weight: bold;
+  padding: 8px 12px 4px 12px;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.widget-title > button {
+  font-size: 12px;
+  color: #9b8ab0;
+  background: transparent;
+  border: 1px solid rgba(155, 138, 176, 0.3);
+  border-radius: 6px;
+  padding: 3px 10px;
+}
+
+.widget-title > button:hover {
+  background: rgba(124, 92, 191, 0.15);
+  color: #e0d4f0;
+  border-color: rgba(124, 92, 191, 0.4);
+}
+
+.widget-dnd {
+  background: rgba(17, 13, 26, 0.6);
+  border-radius: 8px;
+  margin: 4px 8px;
+  padding: 8px 12px;
+  border: 1px solid rgba(61, 47, 82, 0.6);
+  color: #9b8ab0;
+}
+
+.widget-dnd > switch {
+  font-size: 1px;
+  min-height: 0;
+  min-width: 0;
+  border-radius: 14px;
+  background: rgba(61, 47, 82, 0.8);
+  border: 1px solid rgba(155, 138, 176, 0.3);
+}
+
+.widget-dnd > switch:checked {
+  background: rgba(124, 92, 191, 0.5);
+  border-color: #7c5cbf;
+}
+
+.widget-dnd > switch slider {
+  min-height: 18px;
+  min-width: 18px;
+  border-radius: 50%;
+  background: #e0d4f0;
+  border: none;
+  margin: 1px;
+}
+
+.control-center-list {
+  background: transparent;
+}
+
+.control-center-list-placeholder {
+  opacity: 0.4;
+  color: #9b8ab0;
+  padding: 40px 0;
+}
+
+.floating-notifications.background {
+  background: transparent;
+}
+
+.blank-window {
+  background: transparent;
+}
