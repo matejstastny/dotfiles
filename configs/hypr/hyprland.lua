@@ -36,6 +36,7 @@ hl.config({
         },
         layout           = "dwindle",
         resize_on_border = true,
+        allow_tearing    = true,
     },
     decoration = {
         rounding = 8,
@@ -52,6 +53,9 @@ hl.config({
         disable_hyprland_logo   = true,
         force_default_wallpaper = 0,
     },
+    render = {
+        direct_scanout = true,
+    },
 })
 
 -- Minimal animations (fast, not distracting)
@@ -66,10 +70,11 @@ hl.config({
         kb_options    = "ctrl:swap_lwin_lctl",
         follow_mouse  = 1,
         touchpad      = {
-            natural_scroll       = true,
-            tap_to_click         = true,
-            drag_lock            = true,
-            clickfinger_behavior = true,
+            natural_scroll        = true,
+            tap_to_click          = true,
+            drag_lock             = true,
+            clickfinger_behavior  = true,
+            disable_while_typing  = false,
         },
         -- keyboard
         repeat_delay  = 190,
@@ -158,6 +163,11 @@ hl.bind(mod .. " + V", hl.dsp.exec_cmd("clip"))
 hl.bind(mod .. " + SHIFT + Q", hl.dsp.exit())
 
 -- Window rules
+hl.window_rule({
+    name      = "minecraft-immediate",
+    match     = { class = "^Minecraft" },
+    immediate = true,
+})
 hl.window_rule({
     name           = "suppress-maximize",
     match          = { class = ".*" },
