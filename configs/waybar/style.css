@@ -62,15 +62,6 @@ window#waybar.hidden {
   margin: 0 2px;
 }
 
-/* Clock */
-
-#clock {
-  color: #f4eeff;
-  font-size: 14px;
-  letter-spacing: 1px;
-  padding: 0 16px;
-}
-
 /* Separator */
 
 #custom-sep {
@@ -79,20 +70,49 @@ window#waybar.hidden {
   padding: 0 8px;
 }
 
-/* Right modules */
+/* Clock & Date */
+
+#clock {
+  color: #f4eeff;
+  font-size: 14px;
+  letter-spacing: 1px;
+  padding: 0 12px 0 6px;
+}
+
+#custom-date {
+  color: #c4b8e0;
+  font-size: 13px;
+  padding: 0 6px 0 10px;
+}
+
+/* System stats */
+
+#cpu,
+#memory,
+#disk {
+  color: #e0d4f0;
+  padding: 0 8px;
+}
+
+#cpu:hover,
+#memory:hover,
+#disk:hover {
+  color: #f4eeff;
+  background-color: rgba(124, 92, 191, 0.12);
+  border-radius: 6px;
+}
+
+/* Status badges */
 
 #pulseaudio,
-#backlight,
 #battery,
 #bluetooth,
-#network,
-#custom-notification {
+#network {
   color: #e0d4f0;
-  padding: 0 10px;
+  padding: 0 8px;
 }
 
 #pulseaudio:hover,
-#backlight:hover,
 #battery:hover,
 #bluetooth:hover,
 #network:hover {
@@ -145,18 +165,6 @@ window#waybar.hidden {
   -gtk-icon-effect: highlight;
   background-color: rgba(196, 122, 155, 0.2);
   border-radius: 4px;
-}
-
-/* Notification bell */
-
-#custom-notification {
-  color: #9b8ab0;
-  font-size: 14px;
-  padding: 0 10px;
-}
-
-#custom-notification.notification {
-  color: #c47a9b;
 }
 
 /* Tooltip */

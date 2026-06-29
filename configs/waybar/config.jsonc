@@ -10,20 +10,22 @@
         "hyprland/window"
     ],
 
-    "modules-center": [
-        "clock"
-    ],
+    "modules-center": [],
 
     "modules-right": [
+        "tray",
         "custom/sep",
-        "pulseaudio",
-        "backlight",
-        "battery",
+        "disk",
+        "memory",
+        "cpu",
+        "custom/sep",
         "bluetooth",
         "network",
+        "pulseaudio",
+        "battery",
         "custom/sep",
-        "tray",
-        "custom/notification"
+        "custom/date",
+        "clock"
     ],
 
     "hyprland/workspaces": {
@@ -41,9 +43,16 @@
     },
 
     "clock": {
-        "format": "✦ {:%H:%M} ✦",
-        "format-alt": "{:%A, %d %B %Y}",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+        "format": "{:%H:%M}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "on-click": "swaync-client -t -sw"
+    },
+
+    "custom/date": {
+        "format": "{}",
+        "exec": "date '+%a %d %b'",
+        "interval": 60,
+        "tooltip": false
     },
 
     "custom/sep": {
@@ -52,25 +61,13 @@
     },
 
     "pulseaudio": {
-        "format": "{icon}  {volume}%",
-        "format-muted": "󰝟  muted",
-        "format-bluetooth": "󰂯  {volume}%",
-        "format-icons": {
-            "headphone": "󰋋",
-            "hands-free": "󰋋",
-            "headset": "󰋋",
-            "default": ["󰕿", "󰖀", "󰕾"]
-        },
+        "format": "󰕾 {volume}%",
+        "format-muted": "󰝟",
+        "format-bluetooth": "󰂯 {volume}%",
         "on-click": "pavucontrol",
         "on-scroll-up": "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+",
-        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-    },
-
-    "backlight": {
-        "format": "{icon}  {percent}%",
-        "format-icons": ["", "", "", "", "", "", "", "", ""],
-        "on-scroll-up": "brightnessctl set 5%+",
-        "on-scroll-down": "brightnessctl set 5%-"
+        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
+        "tooltip-format": "{desc}"
     },
 
     "battery": {
@@ -79,9 +76,9 @@
             "warning": 30,
             "critical": 15
         },
-        "format": "{icon}  {capacity}%",
-        "format-charging": "󰂄  {capacity}%",
-        "format-plugged": "󰚥  {capacity}%",
+        "format": "{icon} {capacity}%",
+        "format-charging": "󰂄 {capacity}%",
+        "format-plugged": "󰚥 {capacity}%",
         "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
     },
 
@@ -89,8 +86,7 @@
         "format": "󰂯",
         "format-disabled": "󰂲",
         "format-off": "󰂲",
-        "format-connected": "󰂱  {device_alias}",
-        "format-connected-battery": "󰂱  {device_alias} {device_battery_percentage}%",
+        "format-connected": "󰂱",
         "tooltip-format": "{controller_alias}\t{controller_address}",
         "tooltip-format-connected": "{controller_alias}\n\n{device_enumerate}",
         "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
@@ -98,8 +94,8 @@
     },
 
     "network": {
-        "format-wifi": "󰤨  {signalStrength}%",
-        "format-ethernet": "󰈀  connected",
+        "format-wifi": "󰤨",
+        "format-ethernet": "󰈀",
         "format-disconnected": "󰤭",
         "format-linked": "󰤫",
         "tooltip-format-wifi": "  {essid} ({signalStrength}%)\n  {ipaddr}",
@@ -107,25 +103,27 @@
         "on-click": "nm-connection-editor"
     },
 
+    "cpu": {
+        "format": "󰘚 {usage}%",
+        "interval": 2,
+        "tooltip": false
+    },
+
+    "memory": {
+        "format": "󰍛 {percentage}%",
+        "interval": 10,
+        "tooltip-format": "{used:0.1f}G / {total:0.1f}G"
+    },
+
+    "disk": {
+        "format": "󰋊 {percentage_used}%",
+        "interval": 60,
+        "path": "/",
+        "tooltip-format": "{used} / {total}"
+    },
+
     "tray": {
         "icon-size": 16,
         "spacing": 10
-    },
-
-    "custom/notification": {
-        "tooltip": false,
-        "format": "{icon}",
-        "format-icons": {
-            "notification": "󱅫",
-            "none": "󰂚",
-            "dnd-notification": "󰂛",
-            "dnd-none": "󰂛"
-        },
-        "return-type": "json",
-        "exec-if": "which swaync-client",
-        "exec": "swaync-client -swb",
-        "on-click": "swaync-client -t -sw",
-        "on-click-right": "swaync-client -d -sw",
-        "escape": true
     }
 }
