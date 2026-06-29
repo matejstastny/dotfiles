@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-# Region screenshot → clipboard
-grim -g "$(slurp)" - | wl-copy
+FILE=$(mktemp /tmp/screenshot-XXXX.png)
+grim -g "$(slurp)" "$FILE" && wl-copy --type image/png < "$FILE"
 notify-send "✦ screenshot" "Region copied to clipboard" -t 2000

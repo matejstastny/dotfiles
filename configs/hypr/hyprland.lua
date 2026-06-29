@@ -142,9 +142,9 @@ hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"
 -- Lock screen
 hl.bind(mod .. " + CTRL + L", hl.dsp.exec_cmd("hyprlock"))
 
--- Screenshot
-hl.bind("CTRL + 3", hl.dsp.exec_cmd("screenshot"))
-hl.bind("SHIFT + Print", hl.dsp.exec_cmd("screenshot-full"))
+-- Screenshot (macOS-style: physical CMD = CTRL due to swap_lwin_lctl)
+hl.bind("CTRL + SHIFT + 4", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/screenshot"))
+hl.bind("CTRL + SHIFT + 3", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/screenshot-full"))
 
 -- Clipboard history picker
 hl.bind(mod .. " + V", hl.dsp.exec_cmd("clip"))
