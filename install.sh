@@ -77,6 +77,21 @@ else
     echo "  https://github.com/sentriz/cliphist/releases"
 fi
 
+# ── Rose Pine Hyprcursor ──────────────────────────────────
+echo ""
+echo "✦ Installing rose-pine-hyprcursor..."
+ICONS_DIR="$HOME/.local/share/icons"
+mkdir -p "$ICONS_DIR"
+if [ -d "$ICONS_DIR/rose-pine-hyprcursor" ]; then
+    echo "  already installed, skipping"
+else
+    TMP=$(mktemp -d)
+    git clone --depth 1 https://github.com/ndom91/rose-pine-hyprcursor "$TMP/rose-pine-hyprcursor"
+    cp -r "$TMP/rose-pine-hyprcursor" "$ICONS_DIR/rose-pine-hyprcursor"
+    rm -rf "$TMP"
+    echo "  installed rose-pine-hyprcursor"
+fi
+
 # ── Font: Maple Mono NF ───────────────────────────────────
 echo ""
 echo "✦ Installing Maple Mono NF..."

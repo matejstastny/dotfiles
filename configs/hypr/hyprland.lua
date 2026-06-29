@@ -19,7 +19,9 @@ hl.monitor({ output = "DP-1", mode = "preferred", position = "1600x0", scale = 1
 
 -- Env
 hl.env("XCURSOR_SIZE", "24")
+hl.env("XCURSOR_THEME", "rose-pine-hyprcursor")
 hl.env("HYPRCURSOR_SIZE", "24")
+hl.env("HYPRCURSOR_THEME", "rose-pine-hyprcursor")
 hl.env("GDK_SCALE", "2")
 
 -- Look & feel
