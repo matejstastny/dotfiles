@@ -11,6 +11,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("wl-paste --type text  --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
     hl.exec_cmd("gnome-keyring-daemon --start --components=secrets,pkcs11,ssh")
+    hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme prefer-dark")
 end)
 
 -- Monitors
