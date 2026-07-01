@@ -1,0 +1,18 @@
+#!/bin/bash
+# Work around Apple DCP valid_mode:0 race that causes DP-1 to appear black.
+# The DCP fires the hotplug before timing is established; bouncing through
+# 1080p forces a clean mode-set sequence before returning to native 4K.
+
+output="DP-1"
+native_mode="3840x2160@59.997002"
+native_scale="1.5"
+bounce_mode="1920x1080@60.000000"
+
+if ! wlr-randr | grep -q "^${output}"; then
+    echo "DP-1 not connected" >&2
+    exit 1
+fi
+
+wlr-randr --output "$output" --mode "$bounce_mode"
+sleep 2
+wlr-randr --output "$output" --mode "$native_mode" --scale "$native_scale"

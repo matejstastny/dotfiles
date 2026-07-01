@@ -1,0 +1,55 @@
+/* Ellie — libadwaita palette overrides */
+
+/* Backgrounds */
+@define-color window_bg_color #0a0812;
+@define-color window_fg_color #e0d4f0;
+@define-color view_bg_color #110d1a;
+@define-color view_fg_color #e0d4f0;
+
+/* Accent */
+@define-color accent_color #9b78d4;
+@define-color accent_bg_color #7c5cbf;
+@define-color accent_fg_color #f4eeff;
+
+/* Headerbars */
+@define-color headerbar_bg_color #110d1a;
+@define-color headerbar_fg_color #e0d4f0;
+@define-color headerbar_border_color #1c1528;
+@define-color headerbar_backdrop_color #0a0812;
+@define-color headerbar_shade_color rgba(0, 0, 0, 0.36);
+
+/* Sidebars */
+@define-color sidebar_bg_color #110d1a;
+@define-color sidebar_fg_color #e0d4f0;
+@define-color sidebar_backdrop_color #0a0812;
+@define-color sidebar_shade_color rgba(0, 0, 0, 0.25);
+
+/* Cards */
+@define-color card_bg_color #1c1528;
+@define-color card_fg_color #e0d4f0;
+@define-color card_shade_color rgba(0, 0, 0, 0.36);
+
+/* Dialogs & popovers (right-click menus, file dialogs, dropdowns) */
+@define-color dialog_bg_color #110d1a;
+@define-color dialog_fg_color #e0d4f0;
+@define-color popover_bg_color #1c1528;
+@define-color popover_fg_color #e0d4f0;
+@define-color popover_shade_color rgba(0, 0, 0, 0.25);
+
+/* Status */
+@define-color success_color #a6e3a1;
+@define-color success_bg_color #40a02b;
+@define-color success_fg_color #f4eeff;
+@define-color warning_color #f9e2af;
+@define-color warning_bg_color #df8e1d;
+@define-color warning_fg_color #0a0812;
+@define-color error_color #f38ba8;
+@define-color error_bg_color #d20f39;
+@define-color error_fg_color #f4eeff;
+@define-color destructive_color #f38ba8;
+@define-color destructive_bg_color #d20f39;
+@define-color destructive_fg_color #f4eeff;
+
+/* Misc */
+@define-color shade_color rgba(0, 0, 0, 0.36);
+@define-color scrollbar_outline_color rgba(0, 0, 0, 0.5);

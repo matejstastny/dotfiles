@@ -11,12 +11,20 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("wl-paste --type text  --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
     hl.exec_cmd("gnome-keyring-daemon --start --components=secrets,pkcs11,ssh")
+    hl.exec_cmd("gsettings set org.gnome.desktop.interface gtk-theme 'catppuccin-mocha-mauve-standard+default'")
+    hl.exec_cmd("gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme prefer-dark")
 end)
 
 -- Monitors
-hl.monitor({ output = "eDP-1", mode = "preferred", position = "0x0", scale = 1.60 })
+hl.monitor({ output = "eDP-1", mode = "preferred", position = "0x400", scale = 1.60 })
 hl.monitor({ output = "DP-1", mode = "preferred", position = "1600x0", scale = 1.5 })
+
+-- Auto-fix Apple DCP valid_mode:0 race (DP-1 appears black on connect)
+hl.on("monitor.added", function(monitor)
+    if monitor.name ~= "DP-1" then return end
+    hl.exec_cmd("sh -c 'sleep 2 && ~/dotfiles/bin/fix-dp1'")
+end)
 
 -- Env
 hl.env("XCURSOR_SIZE", "24")
@@ -24,6 +32,7 @@ hl.env("XCURSOR_THEME", "rose-pine-hyprcursor")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_THEME", "rose-pine-hyprcursor")
 hl.env("GDK_SCALE", "2")
+hl.env("GTK_THEME", "catppuccin-mocha-mauve-standard+default")
 
 -- Look & feel
 hl.config({
@@ -71,11 +80,11 @@ hl.config({
         kb_options    = "ctrl:swap_lwin_lctl",
         follow_mouse  = 1,
         touchpad      = {
-            natural_scroll        = true,
-            tap_to_click          = true,
-            drag_lock             = true,
-            clickfinger_behavior  = true,
-            disable_while_typing  = false,
+            natural_scroll       = true,
+            tap_to_click         = true,
+            drag_lock            = true,
+            clickfinger_behavior = true,
+            disable_while_typing = false,
         },
         -- keyboard
         repeat_delay  = 190,
@@ -84,6 +93,10 @@ hl.config({
         accel_profile = "flat",
     },
 })
+
+-- This is for my windows keyboard to feel as a mac one
+hl.device({ name = "keychron-keychron-k1-se", kb_options = "ctrl:swap_lalt_lctl_lwin" })
+hl.device({ name = "keychron-keychron-k1-se-2", kb_options = "ctrl:swap_lalt_lctl_lwin" })
 
 -- 3-finger swipe to switch workspaces (like yabai/macOS)
 hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
@@ -134,6 +147,16 @@ end
 hl.bind(mod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
 hl.bind(mod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
 
+-- Move active workspace to the other monitor
+hl.bind(mod .. " + tab", function()
+    local mon = hl.get_active_monitor()
+    if not mon then return end
+    local target = mon.name == "eDP-1" and "DP-1" or "eDP-1"
+    local ws = hl.get_active_workspace()
+    if not ws then return end
+    hl.dispatch(hl.dsp.workspace.move({ workspace = ws.id, monitor = target }))
+end)
+
 -- Move/resize with mod + drag (like yabai mod+drag)
 hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
@@ -144,12 +167,15 @@ hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),
     { locked = true, repeating = true })
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
-hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
+hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
-hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("playerctl next"),        { locked = true })
-hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),    { locked = true })
+hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
+hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
 hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"), { locked = true, repeating = true })
 hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"), { locked = true, repeating = true })
+
+-- Fix black external display (Apple DCP race workaround)
+hl.bind(mod .. " + SHIFT + D", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/fix-dp1"))
 
 -- Lock screen
 hl.bind(mod .. " + CTRL + L", hl.dsp.exec_cmd("hyprlock"))
@@ -168,6 +194,10 @@ hl.bind(mod .. " + V", hl.dsp.exec_cmd("clip"))
 hl.bind(mod .. " + SHIFT + Q", hl.dsp.exit())
 
 -- Window rules
+hl.on("window.open_early", function(window)
+    if not window.class:match("^blueman") then return end
+    window.floating = true
+end)
 hl.window_rule({
     name      = "minecraft-immediate",
     match     = { class = "^Minecraft" },

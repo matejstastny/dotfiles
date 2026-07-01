@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
+echo ""
+echo "✦ ✧ ✦  Fedora Asahi dotfiles installer"
+echo ""
 
-echo ""
-echo "✦ ✧ ✦  Ellie rice installer (Fedora Asahi)"
-echo ""
+# ── COPRs ─────────────────────────────────────────────────
+
 
 # ── COPRs ─────────────────────────────────────────────────
 echo "✦ Enabling COPRs..."
@@ -21,53 +22,28 @@ echo ""
 echo "✦ Installing packages..."
 
 sudo dnf install -y \
-    `# Bar` \
     waybar \
-    \
-    `# App launcher` \
     wofi \
-    \
-    `# Power menu` \
     wlogout \
-    \
-    `# Notifications` \
     swaync \
-    \
-    `# Lock screen` \
     hyprlock \
-    \
-    `# Wallpaper daemon` \
     swww \
-    \
-    `# Clipboard` \
     wl-clipboard \
-    \
-    `# Bluetooth` \
     bluez \
     bluez-tools \
     blueman \
-    \
-    `# Screenshot` \
     grim \
     slurp \
-    \
-    `# Audio` \
     pipewire \
     pipewire-pulseaudio \
     wireplumber \
     pavucontrol \
-    \
-    `# Brightness` \
     brightnessctl \
-    \
-    `# Media keys` \
     playerctl \
-    \
-    `# Network tray` \
     network-manager-applet \
-    \
-    `# Notifications helper` \
-    libnotify
+    libnotify \
+    nwg-look \
+    papirus-icon-theme
 
 # ── cliphist (Go binary, not in Fedora repos) ─────────────
 echo ""
@@ -78,6 +54,26 @@ if command -v go &>/dev/null; then
 else
     echo "  warning: Go not found — install cliphist manually:"
     echo "  https://github.com/sentriz/cliphist/releases"
+fi
+
+# ── GTK Theme: Catppuccin Mocha Mauve ────────────────────
+echo ""
+echo "✦ Installing Catppuccin GTK theme..."
+THEMES_DIR="$HOME/.local/share/themes"
+mkdir -p "$THEMES_DIR"
+CATPPUCCIN_DIR="catppuccin-mocha-mauve-standard+default"
+if [ -d "$THEMES_DIR/$CATPPUCCIN_DIR" ]; then
+    echo "  already installed, skipping"
+else
+    TMP=$(mktemp -d)
+    LATEST=$(curl -fsSL https://api.github.com/repos/catppuccin/gtk/releases/latest \
+        | grep '"tag_name"' | cut -d'"' -f4)
+    curl -fsSL \
+        "https://github.com/catppuccin/gtk/releases/download/${LATEST}/${CATPPUCCIN_DIR}.zip" \
+        -o "$TMP/catppuccin-gtk.zip"
+    unzip -q "$TMP/catppuccin-gtk.zip" -d "$THEMES_DIR"
+    rm -rf "$TMP"
+    echo "  installed Catppuccin Mocha Mauve $LATEST"
 fi
 
 # ── Rose Pine Hyprcursor ──────────────────────────────────
@@ -129,6 +125,16 @@ mkdir -p "$HOME/Pictures/Wallpapers"
 echo ""
 echo "✦ Linking dotfiles..."
 python3 "$DOTFILES_DIR/bin/link"
+
+# ── GTK / gsettings ───────────────────────────────────────
+echo ""
+echo "✦ Applying GTK settings..."
+gsettings set org.gnome.desktop.interface gtk-theme     'catppuccin-mocha-mauve-standard+default'
+gsettings set org.gnome.desktop.interface icon-theme    'Papirus-Dark'
+gsettings set org.gnome.desktop.interface font-name     'Maple Mono NF 11'
+gsettings set org.gnome.desktop.interface cursor-theme  'rose-pine-hyprcursor'
+gsettings set org.gnome.desktop.interface cursor-size   24
+gsettings set org.gnome.desktop.interface color-scheme  'prefer-dark'
 
 echo ""
 echo "✦ ✧ ✦  Done! Restart Hyprland to apply the Ellie theme."
