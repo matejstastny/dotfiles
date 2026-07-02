@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+storage="$HOME/.config/Code/User/globalStorage/storage.json"
+history_file="$HOME/.local/share/vscode-projects"
+
+mkdir -p "$(dirname "$history_file")"
+touch "$history_file"
+
+selected=$(python3 - <<'EOF' | wofi --dmenu --prompt "✦ projects ✦" --width 520 --height 400
+import json, os, sys
+
+storage = os.path.expanduser("~/.config/Code/User/globalStorage/storage.json")
+history_file = os.path.expanduser("~/.local/share/vscode-projects")
+home = os.environ["HOME"]
+
+seen = set()
+paths = []
+
+def add(path):
+    if not path or path in seen:
+        return
+    seen.add(path)
+    paths.append(path)
+
+# Our own history (most-recently-used first)
+try:
+    with open(history_file) as f:
+        for line in f:
+            add(line.strip())
+except FileNotFoundError:
+    pass
+
+# VSCode's live storage — merge in any new entries
+vscode_paths = []
+try:
+    data = json.load(open(storage))
+    for entry in data.get("backupWorkspaces", {}).get("folders", []):
+        uri = entry.get("folderUri", "")
+        if uri.startswith("file://"):
+            vscode_paths.append(uri[7:])
+    ws = data.get("windowsState", {})
+    for w in [ws.get("lastActiveWindow", {})] + ws.get("openedWindows", []):
+        uri = w.get("folder", "")
+        if uri and uri.startswith("file://"):
+            vscode_paths.append(uri[7:])
+except Exception:
+    pass
+
+for p in vscode_paths:
+    add(p)
+
+# Persist any newly discovered paths back to history
+if vscode_paths:
+    existing = set()
+    try:
+        with open(history_file) as f:
+            existing = {l.strip() for l in f}
+    except FileNotFoundError:
+        pass
+    new_entries = [p for p in vscode_paths if p not in existing]
+    if new_entries:
+        with open(history_file, "a") as f:
+            for p in new_entries:
+                f.write(p + "\n")
+
+print("\n".join(p.replace(home, "~", 1) for p in paths))
+EOF
+)
+
+[ -z "$selected" ] && exit 0
+
+abs="${selected/#\~/$HOME}"
+
+# Prepend to history (keep at most 50 entries, no duplicates)
+tmp=$(mktemp)
+echo "$abs" > "$tmp"
+grep -Fxv "$abs" "$history_file" | head -49 >> "$tmp"
+mv "$tmp" "$history_file"
+
+code "$abs"

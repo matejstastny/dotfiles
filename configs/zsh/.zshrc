@@ -1,6 +1,6 @@
 # Defaults
 export EDITOR="nvim"
-export BROWSER="firefox"
+export BROWSER="helium"
 export DOTFILES_DIR="$HOME/dotfiles"
 
 # Locale
@@ -36,6 +36,7 @@ alias gc='git commit'
 alias gp='git push'
 alias gl='git log --oneline --graph --decorate -20'
 alias gd='git diff'
+alias gb='gh browse'
 
 alias ani='ani-cli'
 alias copy='wl-copy'

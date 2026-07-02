@@ -14,6 +14,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("gsettings set org.gnome.desktop.interface gtk-theme 'catppuccin-mocha-mauve-standard+default'")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme prefer-dark")
+    hl.exec_cmd("gsettings set org.gnome.desktop.interface font-name 'Atkinson Hyperlegible Next 10'")
 end)
 
 -- Monitors
@@ -31,7 +32,8 @@ hl.env("XCURSOR_SIZE", "24")
 hl.env("XCURSOR_THEME", "rose-pine-hyprcursor")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_THEME", "rose-pine-hyprcursor")
-hl.env("GDK_SCALE", "2")
+hl.env("GDK_DPI_SCALE", "0.4")
+hl.env("GDK_SCALE", "0.4")
 hl.env("GTK_THEME", "catppuccin-mocha-mauve-standard+default")
 
 -- Look & feel
@@ -188,7 +190,10 @@ hl.bind("CTRL + SHIFT + 4", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/screenshot
 hl.bind("CTRL + SHIFT + 3", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/screenshot-full"))
 
 -- Clipboard history picker
-hl.bind(mod .. " + V", hl.dsp.exec_cmd("clip"))
+hl.bind(mod .. " + V", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/clip"))
+
+-- VSCode recent projects picker
+hl.bind(mod .. " + P", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/vscode-projects"))
 
 -- Exit (mod+shift+q to avoid accidents)
 hl.bind(mod .. " + SHIFT + Q", hl.dsp.exit())
@@ -197,6 +202,12 @@ hl.bind(mod .. " + SHIFT + Q", hl.dsp.exit())
 hl.on("window.open_early", function(window)
     if not window.class:match("^blueman") then return end
     window.floating = true
+end)
+hl.on("window.open", function(window)
+    if not window.class:find("chrome%-nngceckbapebfimnlniiiahkandclblb") then return end
+    hl.dispatch(hl.dsp.window.float({ action = "set" }))
+    hl.dispatch(hl.dsp.window.resize({ exact = true, x = 400, y = 600 }))
+    hl.dispatch(hl.dsp.window.center())
 end)
 hl.window_rule({
     name      = "minecraft-immediate",
