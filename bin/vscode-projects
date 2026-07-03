@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
-storage="$HOME/.config/Code/User/globalStorage/storage.json"
 history_file="$HOME/.local/share/vscode-projects"
-
 mkdir -p "$(dirname "$history_file")"
 touch "$history_file"
 
-selected=$(python3 - <<'EOF' | wofi --dmenu --prompt "✦ projects ✦" --width 520 --height 400
-import json, os, sys
+get_list() {
+    python3 - <<'EOF'
+import json, os
 
 storage = os.path.expanduser("~/.config/Code/User/globalStorage/storage.json")
 history_file = os.path.expanduser("~/.local/share/vscode-projects")
@@ -21,7 +20,6 @@ def add(path):
     seen.add(path)
     paths.append(path)
 
-# Our own history (most-recently-used first)
 try:
     with open(history_file) as f:
         for line in f:
@@ -29,7 +27,6 @@ try:
 except FileNotFoundError:
     pass
 
-# VSCode's live storage — merge in any new entries
 vscode_paths = []
 try:
     data = json.load(open(storage))
@@ -48,7 +45,6 @@ except Exception:
 for p in vscode_paths:
     add(p)
 
-# Persist any newly discovered paths back to history
 if vscode_paths:
     existing = set()
     try:
@@ -64,16 +60,32 @@ if vscode_paths:
 
 print("\n".join(p.replace(home, "~", 1) for p in paths))
 EOF
-)
+}
 
-[ -z "$selected" ] && exit 0
+while true; do
+    selected=$(get_list | rofi -dmenu \
+        -p "✦ projects ✦" \
+        -kb-custom-1 "Alt+Delete" \
+        -mesg "Alt+Delete to remove")
+    exit_code=$?
 
-abs="${selected/#\~/$HOME}"
+    [ $exit_code -eq 1 ] && exit 0
+    [ -z "$selected" ] && exit 0
 
-# Prepend to history (keep at most 50 entries, no duplicates)
-tmp=$(mktemp)
-echo "$abs" > "$tmp"
-grep -Fxv "$abs" "$history_file" | head -49 >> "$tmp"
-mv "$tmp" "$history_file"
+    abs="${selected/#\~/$HOME}"
 
-code "$abs"
+    if [ $exit_code -eq 10 ]; then
+        tmp=$(mktemp)
+        grep -Fxv "$abs" "$history_file" > "$tmp"
+        mv "$tmp" "$history_file"
+        continue
+    fi
+
+    tmp=$(mktemp)
+    echo "$abs" > "$tmp"
+    grep -Fxv "$abs" "$history_file" | head -49 >> "$tmp"
+    mv "$tmp" "$history_file"
+
+    code "$abs"
+    exit 0
+done

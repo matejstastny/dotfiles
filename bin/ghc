@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# neat script for cloning cause git clone is long to write and gh repo clone sucks
+
+set -euo pipefail
+
+if [ $# -eq 0 ]
+  then
+    echo "No repo passed"
+	exit 1
+fi
+
+REPO=$1
+declare -a accounts=(
+	"matejstastny"
+	"TrickFireRobotics"
+)
+
+check_repo_exists() {
+    repoUrl="$1"
+    myStr="$(git ls-remote -q "$repoUrl" &> /dev/null)";
+    return_code=$?
+	if [ $return_code -eq 0 ]; then
+		echo "REPO EXISTS"
+	else
+		echo "REPO DOES NOT EXIST"
+	fi
+}
+
+for account in "${accounts[@]}"; do
+	URL="https://github.com/${account}/$REPO"
+	if [[ $(check_repo_exists "$URL") == "REPO EXISTS" ]]; then
+		git clone "$URL"
+		exit 0
+	fi
+done
+echo "Repo not found in any of the accounts"
+exit 1

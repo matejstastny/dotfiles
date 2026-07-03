@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 cliphist list \
-    | wofi --dmenu --prompt "✦ clipboard" --width 500 --height 400 \
+    | rofi -dmenu -p "✦ clipboard ✦" \
     | cliphist decode \
     | wl-copy

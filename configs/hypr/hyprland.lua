@@ -32,9 +32,9 @@ hl.env("XCURSOR_SIZE", "24")
 hl.env("XCURSOR_THEME", "rose-pine-hyprcursor")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_THEME", "rose-pine-hyprcursor")
-hl.env("GDK_DPI_SCALE", "0.4")
-hl.env("GDK_SCALE", "0.4")
 hl.env("GTK_THEME", "catppuccin-mocha-mauve-standard+default")
+hl.env("GDK_SCALE", 1);
+hl.env("GDK_DPI_SCALE", 1);
 
 -- Look & feel
 hl.config({
@@ -108,7 +108,7 @@ local mod = "ALT"
 -- Apps
 hl.bind(mod .. " + Return", hl.dsp.exec_cmd("kitty"))
 hl.bind(mod .. " + B", hl.dsp.exec_cmd("firefox"))
-hl.bind(mod .. " + Space", hl.dsp.exec_cmd("wofi --show drun"))
+hl.bind(mod .. " + Space", hl.dsp.exec_cmd("rofi -show drun"))
 hl.bind(mod .. " + E", hl.dsp.exec_cmd("nautilus"))
 
 -- Window: close like yabai mod+w
@@ -117,16 +117,6 @@ hl.bind(mod .. " + F", hl.dsp.window.fullscreen())
 hl.bind(mod .. " + T", hl.dsp.window.float({ action = "toggle" }))
 -- Center a floating window
 hl.bind(mod .. " + C", hl.dsp.window.center())
-
--- Focus (vim hjkl + arrow keys)
-hl.bind(mod .. " + H", hl.dsp.focus({ direction = "left" }))
-hl.bind(mod .. " + L", hl.dsp.focus({ direction = "right" }))
-hl.bind(mod .. " + K", hl.dsp.focus({ direction = "up" }))
-hl.bind(mod .. " + J", hl.dsp.focus({ direction = "down" }))
-hl.bind(mod .. " + left", hl.dsp.focus({ direction = "left" }))
-hl.bind(mod .. " + right", hl.dsp.focus({ direction = "right" }))
-hl.bind(mod .. " + up", hl.dsp.focus({ direction = "up" }))
-hl.bind(mod .. " + down", hl.dsp.focus({ direction = "down" }))
 
 -- Move windows in tiling
 hl.bind(mod .. " + SHIFT + H", hl.dsp.window.move({ direction = "left" }))
@@ -191,6 +181,7 @@ hl.bind("CTRL + SHIFT + 3", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/screenshot
 
 -- Clipboard history picker
 hl.bind(mod .. " + V", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/clip"))
+hl.bind(mod .. " + E", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/emoji"))
 
 -- VSCode recent projects picker
 hl.bind(mod .. " + P", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/vscode-projects"))
@@ -199,15 +190,17 @@ hl.bind(mod .. " + P", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/vscode-projects
 hl.bind(mod .. " + SHIFT + Q", hl.dsp.exit())
 
 -- Window rules
-hl.on("window.open_early", function(window)
-    if not window.class:match("^blueman") then return end
-    window.floating = true
-end)
 hl.on("window.open", function(window)
-    if not window.class:find("chrome%-nngceckbapebfimnlniiiahkandclblb") then return end
-    hl.dispatch(hl.dsp.window.float({ action = "set" }))
-    hl.dispatch(hl.dsp.window.resize({ exact = true, x = 400, y = 600 }))
-    hl.dispatch(hl.dsp.window.center())
+    if window.class:find("^blueman") then
+        hl.dispatch(hl.dsp.window.float({ action = "set" }))
+        hl.dispatch(hl.dsp.window.resize({ exact = true, x = 400, y = 600 }))
+        hl.dispatch(hl.dsp.window.center())
+    end
+    if window.class:find("chrome%-nngceckbapebfimnlniiiahkandclblb") then
+        hl.dispatch(hl.dsp.window.float({ action = "set" }))
+        hl.dispatch(hl.dsp.window.resize({ exact = true, x = 400, y = 600 }))
+        hl.dispatch(hl.dsp.window.center())
+    end
 end)
 hl.window_rule({
     name      = "minecraft-immediate",

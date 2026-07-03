@@ -1,0 +1,90 @@
+* {
+    bg:      rgba(10, 8, 18, 0.97);
+    surface: #110d1a;
+    accent:  #7c5cbf;
+    fg:      #e0d4f0;
+    dim:     #9b8ab0;
+    bright:  #f4eeff;
+
+    background-color: transparent;
+    text-color:       @fg;
+    font:             "Atkinson Hyperlegible Next 11";
+}
+
+window {
+    background-color: @bg;
+    border:           1px;
+    border-color:     rgba(124, 92, 191, 0.5);
+    border-radius:    12px;
+    width:            520px;
+}
+
+mainbox {
+    background-color: transparent;
+    padding:          12px;
+    spacing:          8px;
+}
+
+inputbar {
+    background-color: @surface;
+    border:           1px;
+    border-color:     rgba(124, 92, 191, 0.3);
+    border-radius:    8px;
+    padding:          10px 14px;
+    spacing:          8px;
+    children:         [prompt, entry];
+}
+
+prompt {
+    background-color: transparent;
+    text-color:       @accent;
+}
+
+entry {
+    background-color:  transparent;
+    text-color:        @fg;
+    placeholder-color: @dim;
+}
+
+listview {
+    background-color: transparent;
+    scrollbar:        false;
+    spacing:          2px;
+    lines:            10;
+}
+
+element {
+    background-color: transparent;
+    border-radius:    8px;
+    padding:          7px 10px;
+    spacing:          10px;
+    children:         [element-icon, element-text];
+}
+
+element.normal.normal   { background-color: transparent;             text-color: @fg;     }
+element.alternate.normal{ background-color: transparent;             text-color: @fg;     }
+element.selected.normal { background-color: rgba(124,92,191,0.2);   text-color: @bright; }
+
+element-icon {
+    background-color: transparent;
+    size:             22px;
+}
+
+element-text {
+    background-color: transparent;
+    text-color:       inherit;
+    vertical-align:   0.5;
+}
+
+message {
+    background-color: @surface;
+    border-radius:    8px;
+    padding:          8px;
+    margin:           4px 0 0 0;
+}
+
+textbox {
+    background-color: transparent;
+    text-color:       @dim;
+    font:             "Atkinson Hyperlegible Next 10";
+}

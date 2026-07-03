@@ -39,6 +39,7 @@ alias gd='git diff'
 alias gb='gh browse'
 
 alias ani='ani-cli'
+alias mem='sudo ps_mem'
 alias copy='wl-copy'
 alias paste='wl-paste'
 alias path='echo $PATH | tr ":" "\n"'

@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
-GTK_THEME=Adwaita:dark wlogout \
-    -b 2 -m 280 -c 20 -r 20 \
-    -C "$HOME/.config/wlogout/style.css" \
-    -l "$HOME/.config/wlogout/layout"
+chosen=$(printf " Lock\n Suspend\n󰍃 Logout\n󰜉 Reboot\n Shutdown" \
+    | rofi -dmenu -p "✦ system ✦" \
+        -theme-str 'window { width: 220px; } listview { lines: 5; }')
+
+case "$chosen" in
+    *Lock)     hyprlock ;;
+    *Suspend)  systemctl suspend ;;
+    *Logout)   hyprctl dispatch exit ;;
+    *Reboot)   systemctl reboot ;;
+    *Shutdown) systemctl poweroff ;;
+esac
