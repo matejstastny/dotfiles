@@ -22,7 +22,7 @@
           "style": "plain",
           "background": "transparent",
           "foreground": "p:purple",
-          "template": "➜ "
+          "template": "✦ "
         },
         {
           "type": "path",
@@ -104,7 +104,7 @@
   "secondary_prompt": {
     "background": "transparent",
     "foreground": "p:purple",
-    "template": "➜ "
+    "template": "✦ "
   },
   "final_space": true,
   "version": 4,

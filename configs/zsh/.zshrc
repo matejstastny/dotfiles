@@ -70,6 +70,16 @@ alias n='clear && fastfetch'
 alias cc='clear && claude --dangerously-skip-permissions'
 alias ccc='clear && claude --dangerously-skip-permissions --continue'
 
+# Yazi — cd into directory on exit
+function y() {
+    local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+    yazi "$@" --cwd-file="$tmp"
+    if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+        builtin cd -- "$cwd"
+    fi
+    rm -f -- "$tmp"
+}
+
 # Prompt & Plugins ---------------------------------------------------------------------------
 
 # Oh My Posh

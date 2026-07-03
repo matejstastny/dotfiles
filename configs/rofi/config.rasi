@@ -3,8 +3,8 @@ configuration {
     show-icons:          true;
     icon-theme:          "Papirus-Dark";
     drun-display-format: "{name}";
-    display-drun:        "apps";
-    display-run:         "run";
+    display-drun:        "✦";
+    display-run:         "✦";
     terminal:            "kitty";
 }
 

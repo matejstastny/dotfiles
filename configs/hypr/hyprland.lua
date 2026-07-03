@@ -4,6 +4,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("swww-daemon")
     hl.exec_cmd(
         "swww img --wait-for-daemon ~/dotfiles/assets/wallpapers/wallpaper.png --transition-type fade --transition-duration 1.5")
+    hl.exec_cmd("swayosd-server")
     hl.exec_cmd("waybar")
     hl.exec_cmd("swaync")
     hl.exec_cmd("nm-applet --indicator")
@@ -107,7 +108,8 @@ local mod = "ALT"
 
 -- Apps
 hl.bind(mod .. " + Return", hl.dsp.exec_cmd("kitty"))
-hl.bind(mod .. " + B", hl.dsp.exec_cmd("firefox"))
+hl.bind(mod .. " + H", hl.dsp.exec_cmd("helium"))
+hl.bind(mod .. " + B", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/bluetooth"))
 hl.bind(mod .. " + Space", hl.dsp.exec_cmd("rofi -show drun"))
 hl.bind(mod .. " + E", hl.dsp.exec_cmd("nautilus"))
 
@@ -154,23 +156,27 @@ hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
 -- Media & brightness keys
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"),
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("swayosd-client --output-volume raise"),
     { locked = true, repeating = true })
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("swayosd-client --output-volume lower"),
     { locked = true, repeating = true })
-hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
+hl.bind("XF86AudioMute", hl.dsp.exec_cmd("swayosd-client --output-volume mute-toggle"), { locked = true })
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
-hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"), { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"), { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("swayosd-client --brightness raise"), { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("swayosd-client --brightness lower"),
+    { locked = true, repeating = true })
 
 -- Fix black external display (Apple DCP race workaround)
 hl.bind(mod .. " + SHIFT + D", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/fix-dp1"))
 
 -- Lock screen
 hl.bind(mod .. " + CTRL + L", hl.dsp.exec_cmd("hyprlock"))
+
+-- Color picker (copies hex to clipboard)
+hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"))
 
 -- Power menu
 hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/powermenu"))

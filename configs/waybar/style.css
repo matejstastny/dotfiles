@@ -70,19 +70,13 @@ window#waybar.hidden {
   padding: 0 8px;
 }
 
-/* Clock & Date */
+/* Clock */
 
 #clock {
   color: #f4eeff;
-  font-size: 14px;
-  letter-spacing: 1px;
-  padding: 0 12px 0 6px;
-}
-
-#custom-date {
-  color: #c4b8e0;
   font-size: 13px;
-  padding: 0 6px 0 10px;
+  letter-spacing: 0.5px;
+  padding: 0 12px 0 6px;
 }
 
 /* System stats */
@@ -102,20 +96,62 @@ window#waybar.hidden {
   border-radius: 6px;
 }
 
-/* Status badges */
+/* Media player */
+
+#mpris {
+  color: #c47a9b;
+  font-style: italic;
+  padding: 0 10px;
+}
+
+#mpris.paused {
+  color: #9b8ab0;
+}
+
+/* Tailscale */
+
+#custom-tailscale {
+  color: #3d2f52;
+  padding: 0 6px;
+}
+
+#custom-tailscale.connected {
+  color: #e0d4f0;
+}
+
+#custom-tailscale.offline {
+  color: #3d2f52;
+}
+
+/* Docker */
+
+#custom-docker {
+  color: #3d2f52;
+  padding: 0 6px;
+}
+
+#custom-docker.running {
+  color: #e0d4f0;
+}
+
+#custom-docker.idle {
+  color: #e0d4f0;
+}
+
+#custom-docker.offline {
+  color: #3d2f52;
+}
+
+/* Status modules */
 
 #pulseaudio,
-#battery,
-#bluetooth,
-#network {
+#battery {
   color: #e0d4f0;
   padding: 0 8px;
 }
 
 #pulseaudio:hover,
-#battery:hover,
-#bluetooth:hover,
-#network:hover {
+#battery:hover {
   color: #f4eeff;
   background-color: rgba(124, 92, 191, 0.12);
   border-radius: 6px;

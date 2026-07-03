@@ -1,0 +1,14 @@
+[manager]
+ratio          = [1, 3, 4]
+sort_by        = "natural"
+sort_sensitive = false
+sort_reverse   = false
+show_hidden    = true
+show_symlink   = true
+scrolloff      = 5
+
+[preview]
+wrap        = "no"
+tab_size    = 2
+max_width   = 1200
+max_height  = 900

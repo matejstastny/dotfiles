@@ -1,0 +1,40 @@
+window#osd {
+  background: transparent;
+}
+
+window#osd box {
+  background-color: rgba(17, 13, 26, 0.92);
+  border: 1px solid rgba(124, 92, 191, 0.35);
+  border-radius: 12px;
+  padding: 12px 20px;
+  min-width: 180px;
+  spacing: 12px;
+}
+
+window#osd image {
+  color: #7c5cbf;
+}
+
+window#osd label {
+  color: #9b8ab0;
+  font-family: "Maple Mono NF";
+  font-size: 12px;
+  min-width: 36px;
+}
+
+window#osd progressbar {
+  min-height: 5px;
+  border-radius: 3px;
+}
+
+window#osd progressbar trough {
+  background-color: #3d2f52;
+  border-radius: 3px;
+  min-height: 5px;
+}
+
+window#osd progressbar progress {
+  background-color: #7c5cbf;
+  border-radius: 3px;
+  min-height: 5px;
+}

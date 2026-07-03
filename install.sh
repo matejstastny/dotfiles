@@ -11,11 +11,14 @@ echo ""
 # ── COPRs ─────────────────────────────────────────────────
 echo "✦ Enabling COPRs..."
 
-# hyprlock, swww, and other Hyprland ecosystem tools
+# hyprlock, swww, hyprpicker, and other Hyprland ecosystem tools
 sudo dnf copr enable -y solopasha/hyprland
 
 # SwayNotificationCenter (swaync)
 sudo dnf copr enable -y erikreider/SwayNotificationCenter
+
+# SwayOSD (volume/brightness on-screen display)
+sudo dnf copr enable -y erikreider/swayosd
 
 # ── Main packages ─────────────────────────────────────────
 echo ""
@@ -25,6 +28,8 @@ sudo dnf install -y \
     waybar \
     wofi \
     wlogout \
+    swayosd \
+    hyprpicker \
     swaync \
     hyprlock \
     swww \
@@ -110,6 +115,27 @@ else
     fc-cache -fv
     rm -rf "$TMP"
     echo "  installed Maple Mono NF $LATEST"
+fi
+
+# ── yazi (aarch64 binary from GitHub) ────────────────────
+echo ""
+echo "✦ Installing yazi..."
+if command -v yazi &>/dev/null; then
+    echo "  already installed, skipping"
+else
+    YAZI_LATEST=$(curl -fsSL https://api.github.com/repos/sxyazi/yazi/releases/latest \
+        | grep '"tag_name"' | cut -d'"' -f4)
+    TMP=$(mktemp -d)
+    curl -fsSL \
+        "https://github.com/sxyazi/yazi/releases/download/${YAZI_LATEST}/yazi-aarch64-unknown-linux-gnu.zip" \
+        -o "$TMP/yazi.zip"
+    unzip -q "$TMP/yazi.zip" -d "$TMP/yazi-extracted"
+    mkdir -p "$HOME/.local/bin"
+    cp "$TMP/yazi-extracted/yazi-aarch64-unknown-linux-gnu/yazi" "$HOME/.local/bin/yazi"
+    cp "$TMP/yazi-extracted/yazi-aarch64-unknown-linux-gnu/ya"   "$HOME/.local/bin/ya"
+    chmod +x "$HOME/.local/bin/yazi" "$HOME/.local/bin/ya"
+    rm -rf "$TMP"
+    echo "  installed yazi $YAZI_LATEST"
 fi
 
 # ── Bluetooth service ─────────────────────────────────────

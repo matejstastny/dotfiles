@@ -8,7 +8,7 @@
 
     background-color: transparent;
     text-color:       @fg;
-    font:             "Atkinson Hyperlegible Next 11";
+    font:             "Maple Mono NF 11";
 }
 
 window {
@@ -86,5 +86,5 @@ message {
 textbox {
     background-color: transparent;
     text-color:       @dim;
-    font:             "Atkinson Hyperlegible Next 10";
+    font:             "Maple Mono NF 10";
 }
