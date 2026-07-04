@@ -4,8 +4,5 @@
     ],
     "[shellscript]": {
         "editor.formatOnSave": false
-    },
-    "files.exclude": {
-        ".claude/": true
-    },
+    }
 }

@@ -171,7 +171,8 @@ sudo dnf install -y \
     pipewire \
     pipewire-pulseaudio \
     wireplumber \
-    pavucontrol
+    pavucontrol \
+    sound-theme-freedesktop
 
 echo "==> Installing system integration..."
 sudo dnf install -y \

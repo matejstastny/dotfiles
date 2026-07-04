@@ -1,0 +1,7 @@
+hl.env("XCURSOR_SIZE",    "24")
+hl.env("XCURSOR_THEME",   "rose-pine-hyprcursor")
+hl.env("HYPRCURSOR_SIZE", "24")
+hl.env("HYPRCURSOR_THEME","rose-pine-hyprcursor")
+hl.env("GTK_THEME",       "catppuccin-mocha-mauve-standard+default")
+hl.env("GDK_SCALE",       1)
+hl.env("GDK_DPI_SCALE",   1)

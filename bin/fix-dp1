@@ -14,5 +14,5 @@ if ! wlr-randr | grep -q "^${output}"; then
 fi
 
 wlr-randr --output "$output" --mode "$bounce_mode"
-sleep 2
+sleep 5
 wlr-randr --output "$output" --mode "$native_mode" --scale "$native_scale"

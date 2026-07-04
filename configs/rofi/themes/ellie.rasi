@@ -17,6 +17,9 @@ window {
     border-color:     rgba(124, 92, 191, 0.5);
     border-radius:    12px;
     width:            520px;
+    location:         north;
+    anchor:           north;
+    y-offset:         240px;
 }
 
 mainbox {
