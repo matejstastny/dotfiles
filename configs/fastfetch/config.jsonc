@@ -1,122 +1,80 @@
-// Based on many examples
 {
-    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
-    "logo": {
-        "source": "~/.config/fastfetch/ascii.txt",
-        //        "height": 15,
-        "color": {
-            "1": "green"
-        },
-        //        "position": "top",
-        "padding": {
-            "top": 0, // Top padding
-            "left": 2, // Left padding
-            "right": 3 // Right padding
-        }
-    },
+    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
     "display": {
-        "separator": "",
-                "constants": [
-            // {$1} - info box right column (40 wide)
-            "\u001b[38;2;124;92;191m│                                        │\u001b[40D\u001b[39m",
-            // {$2} - full-width box rows (54 wide)
-            "\u001b[38;2;124;92;191m│                                                      │\u001b[54D\u001b[39m",
-            // {$3}-{$9}: Ellie palette — purple, rose, dim, bright, muted, text, reset
-            "\u001b[38;2;124;92;191m",
-            "\u001b[38;2;196;122;155m",
-            "\u001b[38;2;155;138;176m",
-            "\u001b[38;2;244;238;255m",
-            "\u001b[38;2;61;47;82m",
-            "\u001b[38;2;224;212;240m",
-            "\u001b[39m"
-        ]
+        "key": {
+            "width": 10
+        },
+        "size": {
+            "binaryPrefix": "jedec"
+        },
+        "separator": ""
+    },
+    "logo": {
+        "type": "file",
+        "source": "~/.config/fastfetch/ascii.txt",
+        "width": 1,
+        "height": 10
     },
     "modules": [
         "break",
         {
-            "type": "custom",
-            "key": " ",
-            "format": "{$3}╭ ✦ {$6}user {$3}──────────────────────────────────────────────╮",
-        },
-        {
-            "type": "title",
-            "format": "{$2}{$3}{user-name}{$5}@{$4}{host-name}"
-        },
-        {
-            "key": "{$3}╰──────────────────────────────────────────────────────╯",
-            "type": "custom"
-        },
-        {
-            "type": "custom",
-            "key": "{$3}╭────────────╮",
-            "format": "{$3}╭────────────────────────────────────────╮",
-        },
-        {
-            "key": "{$3}│ {$4}󰇅 machine  {$3}│",
-            "type": "host",
-            "format": "{$1}{name}"
-        },
-        {
-            "key": "{$3}│ {$4}{icon} distro   {$3}│",
             "type": "os",
-            "format": "{$1}{name} {version-id} {$5}[{arch}]"
+            "key": "os",
+            "keyColor": "yellow",
+            "format": "{name}"
         },
         {
-            "key": "{$3}│ {$4}{icon} kernel   {$3}│",
             "type": "kernel",
-            "format": "{$1}{sysname}  {$5}[v{release}]"
+            "key": "ker",
+            "keyColor": "green"
         },
         {
-            "key": "{$3}│ {$4}󰇄 desktop  {$3}│",
-            "type": "de",
-            "format": "{$1}{pretty-name}  {$5}[v{version}]"
+            "type": "packages",
+            "key": "pkgs",
+            "keyColor": "cyan"
         },
         {
-            "key": "{$3}│ {$4} terminal {$3}│",
-            "type": "terminal",
-            "format": "{$1}{pretty-name}  {$5}[{version}]"
-        },
-        {
-            "key": "{$3}│ {$4} shell    {$3}│",
             "type": "shell",
-            "format": "{$1}{pretty-name}  {$5}[v{version}]"
+            "key": "sh",
+            "keyColor": "blue",
+            "format": "{pretty-name}"
         },
         {
-            "key": "{$3}│ {$4}{icon} cpu      {$3}│",
+            "type": "wm",
+            "key": "wm",
+            "keyColor": "red",
+            "format": "{pretty-name}"
+        },
+        {
+            "type": "uptime",
+            "key": "up",
+            "keyColor": "green"
+        },
+        {
             "type": "cpu",
-            "showPeCoreCount": true,
-            "temp": true,
-            "format": "{$1}{name} {$5}[C:{core-types}][{freq-max}]"
+            "key": "cpu",
+            "keyColor": "red",
+            "format": "{name}"
         },
         {
-            "type": "gpu",
-            "key": "{$3}│ {$4}{icon} gpu      {$3}│",
-            "detectionMethod": "auto",
-            "driverSpecific": true,
-            "format": "{$1}{name}"
-        },
-        {
-            "key": "{$3}│ {$4}{icon} memory   {$3}│",
             "type": "memory",
-            "format": "{$1}{used} / {total} {$5}({percentage}{$5})"
+            "key": "ram",
+            "keyColor": "yellow",
+            "format": "{used} / {total}"
         },
+        {
+            "type": "disk",
+            "key": "disk",
+            "keyColor": "cyan",
+            "folders": [
+                "/"
+            ],
+            "format": "{size-used} / {size-total}"
+        },
+        "break",
         {
             "type": "custom",
-            "key": "{$3}╰────────────╯",
-            "format": "{$3}╰────────────────────────────────────────╯",
-        },
-        {
-            "type": "custom",
-            "key": " ",
-            "format": "{$3}╭ ✦ {$6}colors {$3}────────────────────────────────────────────╮",
-        },
-        {
-            "type": "custom",
-            "format": "{$2}{$7}󰊠 {$3}󰊠 {$4}󰊠 {$5}󰊠 {$8}󰊠 {$6}󰊠"
-        },
-        {
-            "key": "{$3}╰──────────────────────────────────────────────────────╯",
-            "type": "custom"
+            "format": "\u001b[33m \u001b[32m \u001b[34m \u001b[31m \u001b[36m \u001b[35m \u001b[37m \u001b[97m "
         }
     ]
 }

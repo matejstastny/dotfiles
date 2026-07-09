@@ -3,8 +3,8 @@
 classes=("kitty" "code" "helium" "vesktop" "t3code")
 clients=$(hyprctl clients -j)
 for class in "${classes[@]}"; do
-    while IFS= read -r addr; do
-        [[ -z "$addr" ]] && continue
-        hyprctl dispatch closewindow "address:$addr"
-    done < <(echo "$clients" | jq -r --arg c "$class" '.[] | select(.class == $c) | .address')
+    while IFS= read -r pid; do
+        [[ -z "$pid" ]] && continue
+        kill -15 "$pid"
+    done < <(echo "$clients" | jq -r --arg c "$class" '.[] | select(.class == $c) | .pid')
 done

@@ -26,21 +26,7 @@
     "hide-on-action": true,
     "script-fail-notify": false,
     "scripts": {
-        "play-low": {
-            "exec": "paplay --volume=25000 /usr/share/sounds/freedesktop/stereo/message.oga",
-            "urgency": "low",
-            "run-on": "receive"
-        },
-        "play-normal": {
-            "exec": "paplay --volume=40000 /usr/share/sounds/freedesktop/stereo/message-new-instant.oga",
-            "urgency": "normal",
-            "run-on": "receive"
-        },
-        "play-critical": {
-            "exec": "paplay --volume=55000 /usr/share/sounds/freedesktop/stereo/dialog-warning.oga",
-            "urgency": "critical",
-            "run-on": "receive"
-        }
+        "notification-received": "paplay /usr/share/sounds/freedesktop/stereo/message-new-instant.oga"
     },
     "widgets": [
         "title",

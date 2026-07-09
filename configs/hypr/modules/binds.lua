@@ -2,8 +2,7 @@ local mod = "ALT"
 
 -- apps
 hl.bind(mod .. " + Return", hl.dsp.exec_cmd("kitty"))
-hl.bind(mod .. " + H",         hl.dsp.exec_cmd("helium"))
-hl.bind(mod .. " + SHIFT + H", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/helium-stars"))
+hl.bind(mod .. " + H", hl.dsp.exec_cmd("helium"))
 hl.bind(mod .. " + V", hl.dsp.exec_cmd("vesktop"))
 
 -- rofi
@@ -28,7 +27,7 @@ hl.bind("CTRL + SHIFT + 4", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/screenshot
 hl.bind("CTRL + SHIFT + 3", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/screenshot-full"))
 
 -- session
-hl.bind(mod .. " + SHIFT + S", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/session"))
+hl.bind(mod .. " + SHIFT + O", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/session"))
 hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/close-session"))
 
 -- window managment

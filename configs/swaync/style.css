@@ -4,7 +4,7 @@
   box-shadow: none;
 }
 
-/* ── Notification popup ─────────────────────────────────── */
+/* popup */
 
 .notification-row {
   outline: none;
@@ -19,7 +19,7 @@
 
 .notification {
   border-radius: 12px;
-  margin: 6px 10px;
+  margin: 6px 8px;
   padding: 0;
   background: rgba(17, 13, 26, 0.96);
   border: 1px solid rgba(124, 92, 191, 0.35);
@@ -27,7 +27,6 @@
   color: #e0d4f0;
 }
 
-/* urgency strip: dim for low, rose for critical */
 .notification.low {
   border-color: rgba(61, 47, 82, 0.5);
   border-left-color: rgba(61, 47, 82, 0.85);
@@ -51,7 +50,6 @@
   margin-right: 10px;
 }
 
-/* app name as small pill badge */
 .app-name {
   font-size: 10px;
   font-weight: bold;
@@ -124,7 +122,9 @@
   font-size: 11px;
   min-width: 18px;
   min-height: 18px;
-  transition: background 120ms, color 120ms;
+  transition:
+    background 120ms,
+    color 120ms;
 }
 
 .close-button:hover {
@@ -132,7 +132,7 @@
   color: #c47a9b;
 }
 
-/* ── Control center ─────────────────────────────────────── */
+/* controll centre */
 
 .control-center {
   background: rgba(10, 8, 18, 0.97);
@@ -158,7 +158,10 @@
   border: 1px solid rgba(155, 138, 176, 0.25);
   border-radius: 20px;
   padding: 3px 12px;
-  transition: background 120ms, color 120ms, border-color 120ms;
+  transition:
+    background 120ms,
+    color 120ms,
+    border-color 120ms;
 }
 
 .widget-title > button:hover {
@@ -200,7 +203,7 @@
   margin: 1px;
 }
 
-/* ── MPRIS widget ───────────────────────────────────────── */
+/* mpris */
 
 .widget-mpris {
   margin: 4px 8px;
@@ -240,7 +243,9 @@
   min-width: 28px;
   min-height: 28px;
   padding: 4px;
-  transition: background 100ms, color 100ms;
+  transition:
+    background 100ms,
+    color 100ms;
 }
 
 .widget-mpris button:hover {
@@ -248,7 +253,7 @@
   color: #f4eeff;
 }
 
-/* ── Volume widget ──────────────────────────────────────── */
+/* volume widget */
 
 .widget-volume {
   background: rgba(17, 13, 26, 0.6);
@@ -279,7 +284,7 @@
   border: none;
 }
 
-/* ── Notification list ──────────────────────────────────── */
+/* notification list */
 
 .control-center-list {
   background: transparent;
@@ -295,4 +300,20 @@
 .floating-notifications.background,
 .blank-window {
   background: transparent;
+}
+
+/* hide backgrounds that pmo */
+
+list,
+listview,
+row,
+listview row,
+listview row:selected,
+listview row:hover,
+listview row:focus,
+listview row:active {
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  outline: none;
 }
