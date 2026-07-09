@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# hypridle handles pre-sleep locking via PrepareForSleep D-Bus signal.
+# This hook is intentionally a no-op.

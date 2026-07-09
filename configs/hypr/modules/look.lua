@@ -32,5 +32,5 @@ hl.config({
 })
 
 hl.curve("snappy", { type = "bezier", points = { { 0.2, 1 }, { 0.2, 1 } } })
-hl.animation({ leaf = "global",     enabled = true, speed = 8, bezier = "snappy" })
+hl.animation({ leaf = "global", enabled = true, speed = 8, bezier = "snappy" })
 hl.animation({ leaf = "workspaces", enabled = true, speed = 6, bezier = "snappy", style = "slide" })

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Closes all session app windows gracefully (does not kill background services).
+classes=("kitty" "code" "helium" "vesktop" "t3code")
+clients=$(hyprctl clients -j)
+for class in "${classes[@]}"; do
+    while IFS= read -r addr; do
+        [[ -z "$addr" ]] && continue
+        hyprctl dispatch closewindow "address:$addr"
+    done < <(echo "$clients" | jq -r --arg c "$class" '.[] | select(.class == $c) | .address')
+done

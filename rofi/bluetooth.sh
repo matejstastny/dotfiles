@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bluetooth connect/disconnect via rofi
+# bluetooth connect/disconnect via rofi
 
 is_connected() { bluetoothctl info "$1" 2>/dev/null | grep -q "Connected: yes"; }
 

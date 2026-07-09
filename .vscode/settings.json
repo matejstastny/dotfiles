@@ -2,7 +2,12 @@
     "Lua.diagnostics.globals": [
         "vim"
     ],
+    "[lua]": {
+        "editor.defaultFormatter": "sumneko.lua",
+        "editor.formatOnSave": true
+    },
     "[shellscript]": {
-        "editor.formatOnSave": false
+        "editor.defaultFormatter": "mkhl.shfmt",
+        "editor.formatOnSave": true
     }
 }

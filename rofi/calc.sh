@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Requires: rofi, python3, wl-copy, notify-send
-# Supports: standard math ops + sin/cos/tan/sqrt/log/pi/e/abs/round/floor/ceil
+# reqs: rofi, python3, wl-copy, notify-send
+# supports standard math ops + sin/cos/tan/sqrt/log/pi/e/abs/round/floor/ceil
 
 HISTORY="${XDG_CACHE_HOME:-$HOME/.cache}/rofi-calc-history"
 touch "$HISTORY" 2>/dev/null
 
 compute() {
-    python3 -c "
+	python3 -c "
 import sys, math
 expr = sys.argv[1]
 ns = {k: getattr(math, k) for k in dir(math) if not k.startswith('_')}
@@ -24,27 +24,26 @@ except Exception as e:
 
 mapfile -t history < <(tac "$HISTORY" 2>/dev/null | head -30)
 
-choice=$(printf '%s\n' "${history[@]}" | rofi -dmenu -p "  " -l "${#history[@]}")
+choice=$(printf '%s\n' "${history[@]}" | rofi -dmenu -p "✦ calc ✦" -l "${#history[@]}")
 [ -z "$choice" ] && exit 0
 
-# If selected from history (format: "expr = result"), re-evaluate the expression part
 if [[ "$choice" == *" = "* ]]; then
-    expr="${choice%% = *}"
+	expr="${choice%% = *}"
 else
-    expr="$choice"
+	expr="$choice"
 fi
 
 result=$(compute "$expr")
 
 if [[ "$result" == \?* ]]; then
-    notify-send -t 3000 "calc" "$result" 2>/dev/null
-    exec "$0"
+	notify-send -t 3000 "calc" "$result" 2>/dev/null
+	exec "$0"
 fi
 
 full_line="$expr = $result"
 
-grep -vF "$expr = " "$HISTORY" > "${HISTORY}.tmp" && mv "${HISTORY}.tmp" "$HISTORY"
-echo "$full_line" >> "$HISTORY"
+grep -vF "$expr = " "$HISTORY" >"${HISTORY}.tmp" && mv "${HISTORY}.tmp" "$HISTORY"
+echo "$full_line" >>"$HISTORY"
 
 echo -n "$result" | wl-copy 2>/dev/null
 notify-send -t 2000 "$result" "copied · $full_line" 2>/dev/null

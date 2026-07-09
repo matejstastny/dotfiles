@@ -4,7 +4,7 @@ mkdir -p "$(dirname "$history_file")"
 touch "$history_file"
 
 get_list() {
-    python3 - <<'EOF'
+	python3 - <<'EOF'
 import json, os
 
 storage = os.path.expanduser("~/.config/Code/User/globalStorage/storage.json")
@@ -63,29 +63,29 @@ EOF
 }
 
 while true; do
-    selected=$(get_list | rofi -dmenu \
-        -p "✦ projects ✦" \
-        -kb-custom-1 "Alt+Delete" \
-        -mesg "Alt+Delete to remove")
-    exit_code=$?
+	selected=$(get_list | rofi -dmenu \
+		-p "✦ code ✦" \
+		-kb-custom-1 "Alt+Delete" \
+		-mesg "Alt+Delete to remove")
+	exit_code=$?
 
-    [ $exit_code -eq 1 ] && exit 0
-    [ -z "$selected" ] && exit 0
+	[ $exit_code -eq 1 ] && exit 0
+	[ -z "$selected" ] && exit 0
 
-    abs="${selected/#\~/$HOME}"
+	abs="${selected/#\~/$HOME}"
 
-    if [ $exit_code -eq 10 ]; then
-        tmp=$(mktemp)
-        grep -Fxv "$abs" "$history_file" > "$tmp"
-        mv "$tmp" "$history_file"
-        continue
-    fi
+	if [ $exit_code -eq 10 ]; then
+		tmp=$(mktemp)
+		grep -Fxv "$abs" "$history_file" >"$tmp"
+		mv "$tmp" "$history_file"
+		continue
+	fi
 
-    tmp=$(mktemp)
-    echo "$abs" > "$tmp"
-    grep -Fxv "$abs" "$history_file" | head -49 >> "$tmp"
-    mv "$tmp" "$history_file"
+	tmp=$(mktemp)
+	echo "$abs" >"$tmp"
+	grep -Fxv "$abs" "$history_file" | head -49 >>"$tmp"
+	mv "$tmp" "$history_file"
 
-    code "$abs"
-    exit 0
+	code "$abs"
+	exit 0
 done

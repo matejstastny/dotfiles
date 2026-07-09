@@ -1,4 +1,5 @@
 hl.on("hyprland.start", function()
+    hl.exec_cmd("hypridle")
     hl.exec_cmd("hyprlock")
     hl.exec_cmd("swww-daemon")
     hl.exec_cmd(
@@ -15,4 +16,5 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme prefer-dark")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface font-name 'Atkinson Hyperlegible Next 10'")
+    hl.exec_cmd("/home/elara/dotfiles/bin/session")
 end)

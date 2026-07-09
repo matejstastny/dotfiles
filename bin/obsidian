@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+exec "$HOME/.local/share/obsidian/obsidian.AppImage" --appimage-extract-and-run "$@"
