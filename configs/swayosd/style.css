@@ -1,14 +1,35 @@
 window#osd {
   background: transparent;
+  border-radius: 0;
+  border: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+}
+
+window#osd .decoration,
+window#osd decoration {
+  box-shadow: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  background: transparent;
 }
 
 window#osd box {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+window#osd #container {
   background-color: rgba(17, 13, 26, 0.92);
   border: 1px solid rgba(124, 92, 191, 0.35);
   border-radius: 12px;
   padding: 12px 20px;
   min-width: 180px;
-  spacing: 12px;
+  max-width: 220px;
 }
 
 window#osd image {
@@ -24,6 +45,7 @@ window#osd label {
 
 window#osd progressbar {
   min-height: 5px;
+  min-width: 0;
   border-radius: 3px;
 }
 

@@ -22,6 +22,13 @@ hl.on("window.open", function(window)
 end)
 
 
+-- swayosd: disable blur so the transparent window bg doesn't create a liquid-glass circle
+hl.layer_rule({
+    name  = "swayosd-noblur",
+    match = { namespace = "swayosd" },
+    blur  = false,
+})
+
 -- other rules
 hl.window_rule({
     name      = "minecraft-immediate",
