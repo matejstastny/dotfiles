@@ -32,7 +32,6 @@ alias s='ls ~/dotfiles/bin'
 alias lg='lazygit'
 alias gs='git status -sb'
 alias ga='git add'
-alias gc='git commit'
 alias gp='git push'
 alias gl='git log --oneline --graph --decorate -20'
 alias gd='git diff'
@@ -72,12 +71,12 @@ alias ccc='clear && claude --dangerously-skip-permissions --continue'
 
 # Yazi — cd into directory on exit
 function y() {
-    local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
-    yazi "$@" --cwd-file="$tmp"
-    if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-        builtin cd -- "$cwd"
-    fi
-    rm -f -- "$tmp"
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
 }
 
 # Prompt & Plugins ---------------------------------------------------------------------------
@@ -95,21 +94,7 @@ ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 
 # Zsh syntax highlighting
-source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-ZSH_HIGHLIGHT_STYLES[command]='fg=#7c5cbf,bold'
-ZSH_HIGHLIGHT_STYLES[builtin]='fg=#7c5cbf,bold'
-ZSH_HIGHLIGHT_STYLES[alias]='fg=#7c5cbf,bold'
-ZSH_HIGHLIGHT_STYLES[function]='fg=#7c5cbf,bold'
-ZSH_HIGHLIGHT_STYLES[path]='fg=#c47a9b,underline'
-ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=#c4a87a'
-ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=#c4a87a'
-ZSH_HIGHLIGHT_STYLES[single-hyphen-option]='fg=#9b8ab0'
-ZSH_HIGHLIGHT_STYLES[double-hyphen-option]='fg=#9b8ab0'
-ZSH_HIGHLIGHT_STYLES[comment]='fg=#3d2f52,italic'
-ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=#c47a9b,bold,underline'
-ZSH_HIGHLIGHT_STYLES[reserved-word]='fg=#e0d4f0,bold'
-ZSH_HIGHLIGHT_STYLES[globbing]='fg=#c4a87a'
-ZSH_HIGHLIGHT_STYLES[back-quoted-argument]='fg=#9b8ab0'
+source ~/dotfiles/zsh-highlighting.sh || true
 
 # Bat
 export BAT_THEME="base16"
@@ -175,8 +160,8 @@ fi
 # pnpm
 export PNPM_HOME="/home/elara/.local/share/pnpm"
 case ":$PATH:" in
-  *":$PNPM_HOME/bin:"*) ;;
-  *) export PATH="$PNPM_HOME/bin:$PATH" ;;
+*":$PNPM_HOME/bin:"*) ;;
+*) export PATH="$PNPM_HOME/bin:$PATH" ;;
 esac
 # pnpm end
 

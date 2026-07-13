@@ -20,52 +20,52 @@
         {
             "type": "os",
             "key": "os",
-            "keyColor": "yellow",
+            "keyColor": "#c47a9b",
             "format": "{name}"
         },
         {
             "type": "kernel",
             "key": "ker",
-            "keyColor": "green"
+            "keyColor": "#7c5cbf"
         },
         {
             "type": "packages",
             "key": "pkgs",
-            "keyColor": "cyan"
+            "keyColor": "#9b8ab0"
         },
         {
             "type": "shell",
             "key": "sh",
-            "keyColor": "blue",
+            "keyColor": "#9b8ab0",
             "format": "{pretty-name}"
         },
         {
             "type": "wm",
             "key": "wm",
-            "keyColor": "red",
+            "keyColor": "#7c5cbf",
             "format": "{pretty-name}"
         },
         {
             "type": "uptime",
             "key": "up",
-            "keyColor": "green"
+            "keyColor": "#9b8ab0"
         },
         {
             "type": "cpu",
             "key": "cpu",
-            "keyColor": "red",
+            "keyColor": "#c47a9b",
             "format": "{name}"
         },
         {
             "type": "memory",
             "key": "ram",
-            "keyColor": "yellow",
+            "keyColor": "#7c5cbf",
             "format": "{used} / {total}"
         },
         {
             "type": "disk",
             "key": "disk",
-            "keyColor": "cyan",
+            "keyColor": "#9b8ab0",
             "folders": [
                 "/"
             ],
