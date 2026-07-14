@@ -11,19 +11,19 @@
     <style>
       @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap");
 
-      /* Catppuccin Mocha */
+      /* Ellie — midnight with stars */
       :root {
-        --bg: #1e1e2e;
-        --fg: #cdd6f4;
-        --blue: #89b4fa;
-        --purple: #cba6f7;
-        --red: #f38ba8;
-        --orange: #fab387;
-        --yellow: #f9e2af;
-        --green: #a6e3a1;
-        --cyan: #94e2d5;
-        --gray: #6c7086;
-        --white: #bac2de;
+        --base: #171221;
+        --surface: #1e1729;
+        --overlay: #2a2038;
+        --muted: #3d2f52;
+        --purple: #7c5cbf;
+        --lavender: #a888d6;
+        --rose: #c47a9b;
+        --rose-deep: #b06885;
+        --text: #e0d4f0;
+        --dim: #9b8ab0;
+        --bright: #f4eeff;
       }
 
       * {
@@ -31,9 +31,9 @@
       }
 
       body {
-        background-color: var(--bg);
-        color: var(--fg);
-        font-family: "JetBrains Mono", monospace;
+        background-color: var(--base);
+        color: var(--text);
+        font-family: "Maple Mono NF", "JetBrains Mono", monospace;
         -webkit-font-smoothing: antialiased;
         display: flex;
         justify-content: center;
@@ -51,27 +51,27 @@
 
       /* Prompt segments: user@host path $ */
       .user {
-        color: var(--green);
+        color: var(--rose);
         font-weight: 700;
       }
       .at {
-        color: var(--fg);
+        color: var(--dim);
       }
       .host {
-        color: var(--blue);
+        color: var(--purple);
         font-weight: 700;
       }
       .path {
-        color: var(--purple);
+        color: var(--dim);
       }
       .sign {
-        color: var(--fg);
+        color: var(--purple);
       }
       .cmd {
-        color: var(--white);
+        color: var(--bright);
       }
       .comment {
-        color: var(--gray);
+        color: var(--muted);
       }
 
       /* A shell line: prompt + command */
@@ -84,10 +84,10 @@
         margin-bottom: 24px;
       }
       .header .row {
-        color: var(--gray);
+        color: var(--dim);
       }
       .header .row .key {
-        color: var(--cyan);
+        color: var(--rose);
       }
 
       /* ls-style grid */
@@ -103,40 +103,41 @@
         font-weight: 700;
       }
       .cat::before {
-        content: "";
+        content: "✦ ";
+        color: inherit;
+        opacity: 0.7;
       }
       .cat-media {
-        color: var(--red);
+        color: var(--rose);
       }
       .cat-code {
-        color: var(--orange);
+        color: var(--purple);
       }
       .cat-crypto {
-        color: var(--yellow);
+        color: var(--lavender);
       }
       .cat-reddit {
-        color: var(--green);
+        color: var(--rose-deep);
       }
-
       .cat-dailies {
         color: var(--purple);
       }
 
       a {
-        color: var(--fg);
+        color: var(--text);
         text-decoration: none;
         display: block;
         margin-bottom: 5px;
       }
       a::before {
         content: "› ";
-        color: var(--gray);
+        color: var(--muted);
       }
       a:hover {
-        color: var(--white);
+        color: var(--bright);
       }
       a:hover::before {
-        color: var(--white);
+        color: var(--rose);
       }
 
       /* Search line */
@@ -155,7 +156,7 @@
       input {
         background: transparent;
         border: none;
-        color: var(--fg);
+        color: var(--text);
         font-family: inherit;
         font-size: inherit;
         outline: none;
@@ -172,7 +173,7 @@
         transform: translateY(-50%);
         width: 8px;
         height: 15px;
-        background: var(--fg);
+        background: var(--purple);
         animation: blink 1s step-end infinite;
         pointer-events: none;
       }
@@ -192,7 +193,7 @@
           <span class="sign">$</span>
           <span class="cmd">neofetch</span>
         </div>
-        <div class="row"><span class="key">os</span>........ helium</div>
+        <div class="row"><span class="key">os</span>........ ellie ✧</div>
         <div class="row"><span class="key">shell</span>..... zsh</div>
         <div class="row">
           <span class="key">uptime</span>.... <span id="clock">--:--:--</span>

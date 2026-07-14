@@ -4,6 +4,7 @@ hl.window_rule({ name = "session-ws-code", match = { class = "^code$" }, workspa
 hl.window_rule({ name = "session-ws-helium", match = { class = "^helium$" }, workspace = "3 silent" })
 hl.window_rule({ name = "session-ws-vesktop", match = { class = "^vesktop$" }, workspace = "4 silent" })
 hl.window_rule({ name = "session-ws-t3code", match = { class = "^t3code$" }, workspace = "5 silent" })
+hl.window_rule({ name = "session-ws-obsidian", match = { class = "^obsidian$" }, workspace = "6 silent" })
 
 -- floating windows
 hl.on("window.open", function(window)

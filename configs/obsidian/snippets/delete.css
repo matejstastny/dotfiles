@@ -1,0 +1,32 @@
+/* ---------------------------------------------------------------------------
+   DELETES CUS FCK UR BLOATED UI OBSIDIAN
+   ------------------------------------------------------------------------- */
+
+.workspace-tab-header-container {
+  display: none !important;
+}
+
+.empty-state-container {
+  display: none !important;
+}
+
+.nav-header {
+  display: none !important;
+}
+
+.workspace-ribbon {
+  display: none !important;
+}
+
+.plugin-sync {
+  display: none !important;
+}
+
+.clickable-icon {
+  display: none !important;
+}
+
+/* Re-add breathing room since the deleted nav-header used to provide it */
+.nav-files-container.node-insert-event {
+  padding-top: 12px !important;
+}

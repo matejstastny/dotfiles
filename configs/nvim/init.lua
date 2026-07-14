@@ -19,6 +19,7 @@ require("lazy").setup({
     { import = "plugins.editor" },
     { import = "plugins.nav" },
     { import = "plugins.lsp" },
+    { import = "plugins.notes" },
 }, {
     change_detection = { notify = false },
 })

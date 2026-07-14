@@ -8,91 +8,233 @@
  * @authorLink https://github.com/matejstastny
 */
 
-@import url("https://catppuccin.github.io/discord/dist/catppuccin-mocha.theme.css");
+/* import theme modules */
+@import url("https://refact0r.github.io/midnight-discord/build/midnight.css");
 
 :root {
-  --font: Atkinson Hyperlegible Next;
-  --starlight-accent: #b18cff;
-  --starlight-accent-bg: rgba(177, 140, 255, 0.1);
-  --starlight-accent-bg-hover: rgba(177, 140, 255, 0.2);
+  zoom: 0.9;
 }
 
-/* Links */
-a[class*="anchor_"],
-[class*="messageContent_"] a {
-  color: var(--starlight-accent) !important;
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("file:///home/elara/.local/share/fonts/AtkinsonHyperlegibleNext/AtkinsonHyperlegibleNext-Regular.otf")
+    format("opentype");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  src: url("file:///home/elara/.local/share/fonts/AtkinsonHyperlegibleNext/AtkinsonHyperlegibleNext-RegularItalic.otf")
+    format("opentype");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url("file:///home/elara/.local/share/fonts/AtkinsonHyperlegibleNext/AtkinsonHyperlegibleNext-Medium.otf")
+    format("opentype");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url("file:///home/elara/.local/share/fonts/AtkinsonHyperlegibleNext/AtkinsonHyperlegibleNext-SemiBold.otf")
+    format("opentype");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("file:///home/elara/.local/share/fonts/AtkinsonHyperlegibleNext/AtkinsonHyperlegibleNext-Bold.otf")
+    format("opentype");
 }
 
-/* Mentions (@user, @role, #channel) */
-.mention,
-[class*="mention"] {
-  color: var(--starlight-accent) !important;
-  background-color: var(--starlight-accent-bg) !important;
-}
-.mention:hover,
-[class*="mention"]:hover {
-  background-color: var(--starlight-accent-bg-hover) !important;
+body {
+  /* font, change to '' for default discord font */
+  --font: "Atkinson Hyperlegible Next"; /* change to '' for default discord font */
+  --code-font: ""; /* change to '' for default discord font */
+  font-weight: 400 /* normal text font weight. DOES NOT AFFECT BOLD TEXT */;
+
+  /* sizes */
+  --gap: 8px; /* spacing between panels */
+  --divider-thickness: 0px; /* thickness of unread messages divider and highlighted message borders */
+  --border-thickness: 1px; /* thickness of borders around main panels. DOES NOT AFFECT OTHER BORDERS */
+
+  /* animation/transition options */
+  --animations: on; /* off: disable animations/transitions, on: enable animations/transitions */
+  --list-item-transition: 0.2s ease; /* transition for list items */
+  --dms-icon-svg-transition: 0.4s ease; /* transition for the dms icon */
+  --border-hover-transition: 0.2s ease; /* transition for borders when hovered */
+
+  /* top bar options */
+  --top-bar-height: var(
+    --gap
+  ); /* height of the top bar (discord default is 36px, old discord style is 24px, var(--gap) recommended if button position is set to titlebar) */
+  --top-bar-button-position: titlebar; /* off: default position, hide: hide buttons completely, serverlist: move inbox button to server list, titlebar: move inbox button to channel titlebar (will hide title) */
+  --top-bar-title-position: off; /* off: default centered position, hide: hide title completely, left: left align title (like old discord) */
+  --subtle-top-bar-title: off; /* off: default, on: hide the icon and use subtle text color (like old discord) */
+
+  /* window controls */
+  --custom-window-controls: on; /* off: default window controls, on: custom window controls */
+  --window-control-size: 14px; /* size of custom window controls */
+
+  /* dms button options */
+  --custom-dms-icon: custom
+  --dms-icon-svg-url: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 27 27' width='24' height='24'%3E%3Cpath fill='currentColor' d='M0 0h7v1H6v1H5v1H4v1H3v1H2v1h5v1H0V6h1V5h1V4h1V3h1V2h1V1H0m13 2h5v1h-1v1h-1v1h-1v1h3v1h-5V7h1V6h1V5h1V4h-3m8 5h1v5h1v-1h1v1h-1v1h1v-1h1v1h-1v3h-1v1h-2v1h-1v1h1v-1h2v-1h1v2h-1v1h-2v1h-1v-1h-1v1h-6v-1h-1v-1h-1v-2h1v1h2v1h3v1h1v-1h-1v-1h-3v-1h-4v-4h1v-2h1v-1h1v-1h1v2h1v1h1v-1h1v1h-1v1h2v-2h1v-2h1v-1h1M8 14h2v1H9v4h1v2h1v1h1v1h1v1h4v1h-6v-1H5v-1H4v-5h1v-1h1v-2h2m17 3h1v3h-1v1h-1v1h-1v2h-2v-2h2v-1h1v-1h1m1 0h1v3h-1v1h-2v-1h1v-1h1'%3E%3C/path%3E%3C/svg%3E");
+  --dms-icon-svg-size: 90%; /* size of the svg (css mask-size property) */
+  --dms-icon-color-before: var(--icon-subtle); /* normal icon color */
+  --dms-icon-color-after: var(
+    --white
+  ); /* icon color when button is hovered/selected */
+  --dms-background-color: linear-gradient(
+    70deg,
+    var(--blue-2),
+    var(--purple-2),
+    var(--red-2)
+  ); /* fixed color/gradient (css background property) */
+
+  /* background image options */
+  --background-image: off; /* off: no background image, on: enable background image (must set url variable below) */
+  --background-image-url: url(""); /* url of the background image */
+
+  /* transparency/blur options */
+  /* NOTE: TO USE TRANSPARENCY/BLUR, YOU MUST HAVE TRANSPARENT BG COLORS. FOR EXAMPLE: --bg-4: hsla(220, 15%, 10%, 0.7); */
+  --transparency-tweaks: off; /* off: no changes, on: remove some elements for better transparency */
+  --remove-bg-layer: off; /* off: no changes, on: remove the base --bg-3 layer for use with window transparency (WILL OVERRIDE BACKGROUND IMAGE) */
+  --panel-blur: off; /* off: no changes, on: blur the background of panels */
+  --blur-amount: 12px; /* amount of blur */
+  --bg-floating: var(
+    --bg-3
+  ); /* set this to a more opaque color if floating panels look too transparent. only applies if panel blur is on  */
+
+  /* chatbar options */
+  --custom-chatbar: off; /* off: default chatbar, separated: chatbar separated from chat */
+  --chatbar-height: 47px; /* height of the chatbar (56px by default, 47px to align with user panel, 56px recommended for separated) */
+
+  /* other options */
+  --small-user-panel: on; /* off: default user panel, on: smaller user panel like in old discord */
 }
 
-/* Left bar + background on messages that mention you */
-[class*="mentioned_"] {
-  --mention-foreground: var(--starlight-accent) !important;
-  --mention-background: var(--starlight-accent-bg) !important;
-}
-[class*="mentioned_"]::before {
-  background-color: var(--starlight-accent) !important;
-}
+/* color options */
+:root {
+  --colors: on; /* off: discord default colors, on: midnight custom colors */
 
-/* "New messages" divider */
-[class*="divider_"][class*="isUnread_"] {
-  border-color: var(--starlight-accent) !important;
-  color: var(--starlight-accent) !important;
-}
-[class*="divider_"][class*="isUnread_"] [class*="content_"] {
-  color: var(--starlight-accent) !important;
-  background-color: var(
-    --background-base-lower,
-    var(--background-primary)
-  ) !important;
-  padding: 0 8px !important;
-  position: relative !important;
-  z-index: 1 !important;
-}
+  /* text colors */
+  --text-0: hsl(260deg, 40%, 96%); /* text on colored elements */
+  --text-1: hsl(266deg, 48%, 95%); /* other normally white text */
+  --text-2: hsl(266deg, 44%, 90%); /* headings and important text */
+  --text-3: hsl(266deg, 38%, 85%); /* normal text */
+  --text-4: hsl(267deg, 22%, 68%); /* icon buttons and channels */
+  --text-5: hsl(265deg, 18%, 52%); /* muted channels/chats and timestamps */
 
-/* "NEW" pill on the right of the divider */
-[class*="divider_"] [class*="unreadPill"] {
-  background-color: var(--starlight-accent) !important;
-  border-color: var(--starlight-accent) !important;
-  color: #fff !important;
-}
-/* Pointed cap is an SVG — fill the path, keep the box transparent */
-[class*="divider_"] [class*="unreadPillCap"] {
-  background-color: transparent !important;
-  color: var(--starlight-accent) !important;
-  fill: var(--starlight-accent) !important;
-}
-[class*="divider_"] [class*="unreadPillCap"] path,
-[class*="divider_"] [class*="unreadPillCap"] polygon {
-  fill: var(--starlight-accent) !important;
-}
+  /* background and dark colors */
+  --bg-1: hsl(262deg, 25%, 20%); /* dark buttons when clicked */
+  --bg-2: hsl(260deg, 26%, 16%); /* dark buttons */
+  --bg-3: hsl(258deg, 26%, 13%); /* spacing behind panels (shows in the gaps) */
+  --bg-4: hsl(
+    258deg,
+    28%,
+    10%
+  ); /* main bg — all panels: server list / channels / members / chat */
+  --hover: hsla(259deg, 44%, 60%, 0.08); /* channels and buttons when hovered */
+  --active: hsla(259deg, 44%, 60%, 0.16); /* channels and buttons when clicked or selected */
+    259deg,
+    44%,
+    60%,
+    0.16
+  ); /* channels and buttons when clicked or selected */
+  --active-2: hsla(
+    259deg,
+    44%,
+    60%,
+    0.24
+  ); /* extra state for transparent buttons */
+  --message-hover: hsla(250deg, 0%, 0%, 0.1); /* messages when hovered */
 
-/* "New messages" top bar (jump button / mark as read) */
-[class*="newMessagesBar_"] {
-  background-color: var(--starlight-accent) !important;
-  color: #fff !important;
-}
+  /* accent colors */
+  --accent-1: hsl(259deg, 55%, 74%); /* links and other accent text */
+  --accent-2: hsl(259deg, 50%, 68%); /* small accent elements */
+  --accent-3: hsl(259deg, 47%, 62%); /* accent buttons */
+  --accent-4: hsl(259deg, 47%, 57%); /* accent buttons when hovered */
+  --accent-5: hsl(259deg, 47%, 52%); /* accent buttons when clicked */
+  --accent-new: var(
+    --red-2
+  ); /* stuff that's normally red like mute/deafen buttons */
+  --mention: linear-gradient(
+    to right,
+    color-mix(in hsl, var(--accent-2), transparent 90%) 40%,
+    transparent
+  ); /* background of messages that mention you */
+  --mention-hover: linear-gradient(
+    to right,
+    color-mix(in hsl, var(--accent-2), transparent 95%) 40%,
+    transparent
+  ); /* background of messages that mention you when hovered */
+  --reply: linear-gradient(
+    to right,
+    color-mix(in hsl, var(--text-3), transparent 90%) 40%,
+    transparent
+  ); /* background of messages that reply to you */
+  --reply-hover: linear-gradient(
+    to right,
+    color-mix(in hsl, var(--text-3), transparent 95%) 40%,
+    transparent
+  ); /* background of messages that reply to you when hovered */
 
-/* Hide all scrollbars */
-* {
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
-}
-*::-webkit-scrollbar {
-  display: none !important;
-}
+  /* status indicator colors */
+  --online: var(--green-2); /* change to #43a25a for default */
+  --dnd: var(--red-2); /* change to #d83a42 for default */
+  --idle: var(--yellow-2); /* change to #ca9654 for default */
+  --streaming: var(--purple-2); /* change to #593695 for default */
+  --offline: var(--text-4); /* change to #83838b for default offline color */
 
-/* Hide Discord Premium Trial Badge and new badges */
-.premiumTrialBadge__4c1e4.premiumOfferUnackedBadge__4c1e4,
-.newBadge__4ed1a.eyebrow__4ed1a.textBadge__2b1f5.base__2b1f5.eyebrow__2b1f5.baseShapeRound__2b1f5 {
-  display: none !important;
+  /* border colors */
+  --border-light: var(--hover); /* general light border color */
+  --border: var(--active); /* general normal border color */
+  --border-hover: var(--active); /* border color of panels when hovered */
+  --button-border: hsl(
+    250,
+    0%,
+    100%,
+    0.1
+  ); /* neutral border color of buttons */
+
+  /* base colors */
+  /* softened to the Ellie register — hues kept semantic (red=danger, etc.) */
+  --red-1: hsl(338deg, 50%, 74%);
+  --red-2: hsl(338deg, 50%, 68%);
+  --red-3: hsl(338deg, 50%, 68%);
+  --red-4: hsl(338deg, 50%, 62%);
+  --red-5: hsl(338deg, 50%, 56%);
+
+  --green-1: hsl(152deg, 33%, 60%);
+  --green-2: hsl(152deg, 33%, 54%);
+  --green-3: hsl(152deg, 33%, 54%);
+  --green-4: hsl(152deg, 33%, 48%);
+  --green-5: hsl(152deg, 33%, 42%);
+
+  --blue-1: hsl(240deg, 42%, 76%);
+  --blue-2: hsl(240deg, 42%, 71%);
+  --blue-3: hsl(240deg, 42%, 71%);
+  --blue-4: hsl(240deg, 42%, 66%);
+  --blue-5: hsl(240deg, 42%, 61%);
+
+  --yellow-1: hsl(40deg, 60%, 74%);
+  --yellow-2: hsl(40deg, 60%, 69%);
+  --yellow-3: hsl(40deg, 60%, 69%);
+  --yellow-4: hsl(40deg, 60%, 64%);
+  --yellow-5: hsl(40deg, 60%, 59%);
+
+  --purple-1: hsl(259deg, 55%, 78%);
+  --purple-2: hsl(259deg, 55%, 72%);
+  --purple-3: hsl(259deg, 55%, 72%);
+  --purple-4: hsl(259deg, 55%, 67%);
+  --purple-5: hsl(259deg, 55%, 62%);
 }

@@ -20,6 +20,14 @@ map("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>")
 -- Gitsigns
 map("n", "<leader>gg", "<cmd>Gitsigns preview_hunk<cr>")
 
+-- Obsidian / notes
+map("n", "<leader>nt", "<cmd>Obsidian today<cr>")
+map("n", "<leader>nn", "<cmd>Obsidian new<cr>")
+map("n", "<leader>no", "<cmd>Obsidian quick_switch<cr>")
+map("n", "<leader>ns", "<cmd>Obsidian search<cr>")
+map("n", "<leader>nb", "<cmd>Obsidian backlinks<cr>")
+map("n", "<leader>nl", "<cmd>Obsidian links<cr>")
+
 -- LSP diagnostics
 map("n", "[d", vim.diagnostic.goto_prev)
 map("n", "]d", vim.diagnostic.goto_next)

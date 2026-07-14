@@ -4,3 +4,4 @@ code ~/dotfiles &
 "$(dirname "$0")/helium" --profile-directory=Default &
 vesktop &
 /home/elara/.local/share/t3code/t3code --no-sandbox &
+obsidian &

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Closes all session app windows gracefully (does not kill background services).
-classes=("kitty" "code" "helium" "vesktop" "t3code")
+classes=("kitty" "code" "helium" "vesktop" "t3code" "obsidian")
 clients=$(hyprctl clients -j)
 for class in "${classes[@]}"; do
-    while IFS= read -r pid; do
-        [[ -z "$pid" ]] && continue
-        kill -15 "$pid"
-    done < <(echo "$clients" | jq -r --arg c "$class" '.[] | select(.class == $c) | .pid')
+	while IFS= read -r pid; do
+		[[ -z "$pid" ]] && continue
+		kill -15 "$pid"
+	done < <(echo "$clients" | jq -r --arg c "$class" '.[] | select(.class == $c) | .pid')
 done

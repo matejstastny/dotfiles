@@ -14,6 +14,8 @@ hl.bind(mod .. " + E", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/emoji.sh"))
 hl.bind(mod .. " + P", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/vscode.sh"))
 hl.bind(mod .. " + B", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/bluetooth.sh"))
 hl.bind(mod .. " + T", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/todo.sh personal"))
+hl.bind(mod .. " + O", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/notes.sh"))
+hl.bind(mod .. " + I", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/capture.sh"))
 hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/powermenu.sh"))
 hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/todo.sh stars"))
 

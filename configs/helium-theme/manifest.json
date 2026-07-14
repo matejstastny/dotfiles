@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "Ellie",
+  "version": "1.0",
+  "description": "Ellie — midnight with stars. Browser theme matching the Hyprland rice.",
+  "theme": {
+    "colors": {
+      "frame": [23, 18, 33],
+      "frame_inactive": [23, 18, 33],
+      "frame_incognito": [30, 23, 41],
+      "frame_incognito_inactive": [30, 23, 41],
+
+      "toolbar": [30, 23, 41],
+      "toolbar_text": [224, 212, 240],
+      "toolbar_button_icon": [168, 136, 214],
+
+      "tab_text": [244, 238, 255],
+      "tab_background_text": [155, 138, 176],
+      "tab_background_text_inactive": [120, 106, 138],
+      "background_tab": [23, 18, 33],
+      "background_tab_inactive": [23, 18, 33],
+
+      "bookmark_text": [224, 212, 240],
+      "button_background": [42, 32, 56],
+
+      "omnibox_background": [42, 32, 56],
+      "omnibox_text": [224, 212, 240],
+
+      "ntp_background": [23, 18, 33],
+      "ntp_header": [30, 23, 41],
+      "ntp_text": [224, 212, 240],
+      "ntp_link": [124, 92, 191]
+    },
+    "tints": {
+      "buttons": [0.72, 0.4, 0.78]
+    },
+    "properties": {
+      "ntp_logo_alternate": 1
+    }
+  }
+}

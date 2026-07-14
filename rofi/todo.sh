@@ -20,7 +20,7 @@ stars)
 esac
 
 if [ ! -f "$file" ]; then
-	printf "# %s\n\n" "${label^}" >"$file"
+	printf "%s\n\n" "#todo #$label" >"$file"
 fi
 
 TODAY=$(date +%Y-%m-%d)
@@ -45,7 +45,7 @@ import sys
 path, date, text = sys.argv[1], sys.argv[2], sys.argv[3]
 with open(path) as f:
     lines = f.readlines()
-lines.insert(1, f"- [ ] {date} {text}\n")
+lines.insert(2, f"- [ ] {date} {text}\n")
 with open(path, "w") as f:
     f.writelines(lines)
 PY

@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-exec /usr/bin/helium --load-extension="$DOTFILES_DIR/configs/newtab" "$@"
+exec /usr/bin/helium --load-extension="$DOTFILES_DIR/configs/newtab,$DOTFILES_DIR/configs/helium-theme" "$@"

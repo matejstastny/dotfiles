@@ -1,0 +1,151 @@
+/* ============================================================================
+   Starlight — Ellie theme for Obsidian
+   "midnight with stars" · soft purple / dusty rose · Atkinson Hyperlegible Next
+   Install: enabled as a CSS snippet (Appearance → CSS snippets → Starlight)
+   ========================================================================== */
+
+/* --- Fonts -----------------------------------------------------------------
+   Obsidian (Electron) does not reliably resolve ~/.local/share/fonts, so the
+   font is embedded by absolute path here. That is the whole fix for the
+   "Obsidian can't see my fonts" problem. */
+
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("file:///home/elara/.local/share/fonts/AtkinsonHyperlegibleNext/AtkinsonHyperlegibleNext-Regular.otf")
+    format("opentype");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  src: url("file:///home/elara/.local/share/fonts/AtkinsonHyperlegibleNext/AtkinsonHyperlegibleNext-RegularItalic.otf")
+    format("opentype");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url("file:///home/elara/.local/share/fonts/AtkinsonHyperlegibleNext/AtkinsonHyperlegibleNext-Medium.otf")
+    format("opentype");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url("file:///home/elara/.local/share/fonts/AtkinsonHyperlegibleNext/AtkinsonHyperlegibleNext-SemiBold.otf")
+    format("opentype");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("file:///home/elara/.local/share/fonts/AtkinsonHyperlegibleNext/AtkinsonHyperlegibleNext-Bold.otf")
+    format("opentype");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+  src: url("file:///home/elara/.local/share/fonts/AtkinsonHyperlegibleNext/AtkinsonHyperlegibleNext-BoldItalic.otf")
+    format("opentype");
+}
+
+/* --- Palette + typography tokens ------------------------------------------ */
+
+body {
+  /* Ellie palette */
+  --ellie-base: #0a0812; /* primary background      */
+  --ellie-surface: #110d1a; /* secondary background    */
+  --ellie-overlay: #1c1528; /* raised surfaces         */
+  --ellie-muted: #3d2f52; /* borders / dividers      */
+  --ellie-purple: #7c5cbf; /* accent                  */
+  --ellie-rose: #c47a9b; /* secondary accent        */
+  --ellie-text: #e0d4f0; /* normal text             */
+  --ellie-dim: #9b8ab0; /* muted text              */
+  --ellie-bright: #f4eeff; /* headings / emphasis     */
+
+  /* Fonts — theme-level so they win unless you set an explicit Appearance
+     override (leave the Appearance font fields blank). */
+  --font-text-theme: "Atkinson Hyperlegible Next", ui-sans-serif, sans-serif;
+  --font-interface-theme:
+    "Atkinson Hyperlegible Next", ui-sans-serif, sans-serif;
+  --font-monospace-theme: "Maple Mono NF", ui-monospace, monospace;
+
+  /* Accent as HSL parts (Obsidian derives links, buttons, hovers from these) */
+  --accent-h: 259;
+  --accent-s: 44%;
+  --accent-l: 60%;
+}
+
+/* --- Dark palette wiring (Ellie is a dark, midnight theme) ----------------- */
+
+.theme-dark {
+  --color-base-00: #0a0812;
+  --color-base-05: #0c0916;
+  --color-base-10: #110d1a;
+  --color-base-20: #16101f;
+  --color-base-25: #1c1528;
+  --color-base-30: #241a33;
+  --color-base-35: #2c2040;
+  --color-base-40: #3d2f52;
+  --color-base-50: #4d3d63;
+  --color-base-60: #9b8ab0;
+  --color-base-70: #b7a8cc;
+  --color-base-100: #e0d4f0;
+
+  --background-primary: var(--ellie-base);
+  --background-primary-alt: var(--ellie-surface);
+  --background-secondary: var(--ellie-surface);
+  --background-secondary-alt: var(--ellie-overlay);
+  --background-modifier-border: var(--ellie-muted);
+  --background-modifier-border-hover: #4d3d63;
+  --background-modifier-hover: rgba(124, 92, 191, 0.1);
+
+  --text-normal: var(--ellie-text);
+  --text-muted: var(--ellie-dim);
+  --text-faint: #6f6188;
+  --text-on-accent: #f4eeff;
+  --text-selection: rgba(124, 92, 191, 0.3);
+
+  /* Headings — dusty rose leading into bright */
+  --h1-color: var(--ellie-rose);
+  --h2-color: var(--ellie-rose);
+  --h3-color: var(--ellie-bright);
+  --h4-color: var(--ellie-bright);
+  --h5-color: var(--ellie-text);
+  --h6-color: var(--ellie-dim);
+
+  --interactive-accent: var(--ellie-purple);
+  --interactive-accent-hover: #8f6fd1;
+  --link-color: #a888e0;
+  --link-color-hover: var(--ellie-rose);
+
+  --checkbox-color: var(--ellie-purple);
+  --code-background: #140f1e;
+  --hr-color: var(--ellie-muted);
+}
+
+/* Active editor line — a faint purple wash */
+.theme-dark .cm-active.cm-line,
+.theme-dark .HyperMD-header.cm-active {
+  background: rgba(124, 92, 191, 0.06);
+}
+
+/* ============================================================================
+   Chrome / minimal
+   ========================================================================== */
+
+/* Hide the Windows-style window controls (minimize / maximize / close) */
+.titlebar-button-container,
+.titlebar-button-container.mod-right,
+.workspace-tab-header-container .titlebar-button-container {
+  display: none !important;
+}
