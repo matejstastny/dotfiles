@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Terminal Startpage",
+  "version": "1.0",
+  "description": "Better new tab",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA861KTpyzKpmWiuFSE6v07aBkWi9b6QXBbaAGStWL3yxkvhyuDklZuzdui51MehvsrOENXKQIoVt7lh6oFFKl4oEwhTkZZoBb77pqOHDlNRoHf+wsfFxmM4CeAWiiD/X3boarusBeneIQj2Cvq4I5pTIyEGbsaGdxxJHCIIiMElbmoC5KUsMEMV3wbHrq7Tnp7m8bjPhqULTSl3e0oxCaOyaoOEQoduSSUlAxzWFu6+dED9FCZdVTUlvkCPbIlT4TcoBAg/9TAzDkzPcJwNJ7P/9JNnuoWZlBRiT1TWzVE/qOu3uUmlSK17ioqXPFG2MNQwC5Bc+NcRQlYx5mih1TsQIDAQAB",
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  }
+}

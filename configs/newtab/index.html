@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terminal Startpage</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap");
+
+      /* Catppuccin Mocha */
+      :root {
+        --bg: #1e1e2e;
+        --fg: #cdd6f4;
+        --blue: #89b4fa;
+        --purple: #cba6f7;
+        --red: #f38ba8;
+        --orange: #fab387;
+        --yellow: #f9e2af;
+        --green: #a6e3a1;
+        --cyan: #94e2d5;
+        --gray: #6c7086;
+        --white: #bac2de;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: var(--bg);
+        color: var(--fg);
+        font-family: "JetBrains Mono", monospace;
+        -webkit-font-smoothing: antialiased;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .container {
+        width: 640px;
+        padding: 20px;
+      }
+
+      /* Prompt segments: user@host path $ */
+      .user {
+        color: var(--green);
+        font-weight: 700;
+      }
+      .at {
+        color: var(--fg);
+      }
+      .host {
+        color: var(--blue);
+        font-weight: 700;
+      }
+      .path {
+        color: var(--purple);
+      }
+      .sign {
+        color: var(--fg);
+      }
+      .cmd {
+        color: var(--white);
+      }
+      .comment {
+        color: var(--gray);
+      }
+
+      /* A shell line: prompt + command */
+      .line {
+        margin-bottom: 4px;
+      }
+
+      /* neofetch-style header */
+      .header {
+        margin-bottom: 24px;
+      }
+      .header .row {
+        color: var(--gray);
+      }
+      .header .row .key {
+        color: var(--cyan);
+      }
+
+      /* ls-style grid */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 22px;
+        margin: 14px 0 28px;
+      }
+
+      .cat {
+        margin-bottom: 8px;
+        font-weight: 700;
+      }
+      .cat::before {
+        content: "";
+      }
+      .cat-media {
+        color: var(--red);
+      }
+      .cat-code {
+        color: var(--orange);
+      }
+      .cat-crypto {
+        color: var(--yellow);
+      }
+      .cat-reddit {
+        color: var(--green);
+      }
+
+      .cat-dailies {
+        color: var(--purple);
+      }
+
+      a {
+        color: var(--fg);
+        text-decoration: none;
+        display: block;
+        margin-bottom: 5px;
+      }
+      a::before {
+        content: "› ";
+        color: var(--gray);
+      }
+      a:hover {
+        color: var(--white);
+      }
+      a:hover::before {
+        color: var(--white);
+      }
+
+      /* Search line */
+      .search-container {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        white-space: nowrap;
+      }
+      .search-container form {
+        display: flex;
+        flex-grow: 1;
+        margin: 0;
+        position: relative;
+      }
+      input {
+        background: transparent;
+        border: none;
+        color: var(--fg);
+        font-family: inherit;
+        font-size: inherit;
+        outline: none;
+        margin-left: 8px;
+        width: 100%;
+        caret-color: transparent;
+      }
+
+      /* Blinking block cursor that follows the typed text */
+      .cursor {
+        position: absolute;
+        top: 50%;
+        left: 8px;
+        transform: translateY(-50%);
+        width: 8px;
+        height: 15px;
+        background: var(--fg);
+        animation: blink 1s step-end infinite;
+        pointer-events: none;
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="line">
+          <span class="user">elara</span><span class="at">@</span
+          ><span class="host">helium</span> <span class="path">~</span>
+          <span class="sign">$</span>
+          <span class="cmd">neofetch</span>
+        </div>
+        <div class="row"><span class="key">os</span>........ helium</div>
+        <div class="row"><span class="key">shell</span>..... zsh</div>
+        <div class="row">
+          <span class="key">uptime</span>.... <span id="clock">--:--:--</span>
+        </div>
+      </div>
+
+      <div class="line">
+        <span class="user">elara</span><span class="at">@</span
+        ><span class="host">helium</span> <span class="path">~/bookmarks</span>
+        <span class="sign">$</span>
+        <span class="cmd">ls</span>
+      </div>
+
+      <div class="grid">
+        <div>
+          <div class="cat cat-reddit">me/</div>
+          <a href="https://github.com/matejstastny">github</a>
+          <a href="https://github.com/matejstastny/dotfiles">dotfiles</a>
+        </div>
+        <div>
+          <div class="cat cat-code">trickfire/</div>
+          <a href="https://github.com/TrickfireRobotics">org</a>
+          <a href="https://github.com/TrickfireRobotics/dashboard">dashboard</a>
+          <a
+            href="https://github.com/TrickfireRobotics/TrickFireRobotics.github.io"
+            >docs-fw</a
+          >
+          <a href="https://github.com/TrickfireRobotics/gazebo-simulations"
+            >simulation</a
+          >
+        </div>
+        <div>
+          <div class="cat cat-crypto">repos/</div>
+          <a href="https://github.com/TrickfireRobotics/trickfire-urc">urc</a>
+          <a href="https://github.com/TrickfireRobotics/ak-series-lib"
+            >motors</a
+          >
+          <a href="https://github.com/TrickfireRobotics/trickfire-drone"
+            >drone</a
+          >
+        </div>
+        <div>
+          <div class="cat cat-media">web/</div>
+          <a href="http://trickfirerobotics.com/">website</a>
+          <a href="http://docs.trickfirerobotics.com/">docs</a>
+          <a href="http://dashboard.trickfirerobotics.com/">dashboard</a>
+        </div>
+      </div>
+
+      <div class="search-container">
+        <span class="user">elara</span><span class="at">@</span
+        ><span class="host">helium</span>
+        <span class="path" style="margin-left: 6px">~</span>
+        <span class="sign" style="margin-left: 6px">$</span>
+        <form action="https://www.duckduckgo.com/" method="get" autofocus>
+          <input
+            id="search"
+            type="text"
+            name="q"
+            autofocus
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <span class="cursor" id="cursor"></span>
+        </form>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
