@@ -2,7 +2,7 @@ local mod = "ALT"
 
 -- apps
 hl.bind(mod .. " + Return", hl.dsp.exec_cmd("kitty"))
-hl.bind(mod .. " + H", hl.dsp.exec_cmd("helium"))
+hl.bind(mod .. " + H", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/helium"))
 hl.bind(mod .. " + V", hl.dsp.exec_cmd("vesktop"))
 
 -- rofi
