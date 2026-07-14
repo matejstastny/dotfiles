@@ -1,4 +1,3 @@
--- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
     vim.fn.system({
@@ -18,6 +17,7 @@ require("lazy").setup({
     { import = "plugins.dashboard" },
     { import = "plugins.editor" },
     { import = "plugins.nav" },
+    { import = "plugins.completion" },
     { import = "plugins.lsp" },
     { import = "plugins.notes" },
 }, {

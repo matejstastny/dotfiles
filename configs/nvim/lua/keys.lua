@@ -12,13 +12,19 @@ map("n", ";", ":")
 map("n", "<leader>e", "<cmd>Neotree toggle<cr>")
 
 -- Telescope
-map("n", "<leader>ff", "<cmd>Telescope find_files<cr>")
-map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>")
-map("n", "<leader>fb", "<cmd>Telescope buffers<cr>")
-map("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>")
+map("n", "<leader>ff", "<cmd>Telescope find_files<cr>",  { desc = "Find files" })
+map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>",   { desc = "Grep text" })
+map("n", "<leader>fb", "<cmd>Telescope buffers<cr>",     { desc = "Buffers" })
+map("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>",    { desc = "Recent files" })
+map("n", "<leader>fd", "<cmd>Telescope diagnostics<cr>", { desc = "Diagnostics" })
+map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>",   { desc = "Help tags" })
+map("n", "<leader>fk", "<cmd>Telescope keymaps<cr>",     { desc = "Keymaps" })
 
 -- Gitsigns
-map("n", "<leader>gg", "<cmd>Gitsigns preview_hunk<cr>")
+map("n", "<leader>gg", "<cmd>Gitsigns preview_hunk<cr>", { desc = "Preview hunk" })
+map("n", "<leader>gb", "<cmd>Gitsigns blame_line<cr>",   { desc = "Blame line" })
+map("n", "]h",         "<cmd>Gitsigns next_hunk<cr>",    { desc = "Next hunk" })
+map("n", "[h",         "<cmd>Gitsigns prev_hunk<cr>",    { desc = "Prev hunk" })
 
 -- Obsidian / notes
 map("n", "<leader>nt", "<cmd>Obsidian today<cr>")

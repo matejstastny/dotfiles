@@ -1,14 +1,25 @@
 return {
     {
         "nvim-treesitter/nvim-treesitter",
+        -- Pin to the stable `master` branch: its classic setup (highlight/indent
+        -- via `nvim-treesitter.configs`) is what this config relies on.
+        branch = "master",
         build = ":TSUpdate",
         event = { "BufReadPost", "BufNewFile" },
-        main = "nvim-treesitter",
-        opts = {
-            ensure_installed = { "bash", "python", "lua", "vim", "vimdoc", "markdown" },
-            highlight        = { enable = true },
-            indent           = { enable = true },
-        },
+        config = function()
+            require("nvim-treesitter.configs").setup({
+                ensure_installed = {
+                    "bash", "python", "lua", "vim", "vimdoc", "query",
+                    "markdown", "markdown_inline", "regex", "diff", "gitcommit",
+                    "javascript", "typescript", "tsx", "html", "css",
+                    "json", "jsonc", "yaml", "toml",
+                    "rust", "go", "gomod", "c", "cpp",
+                },
+                auto_install = true,
+                highlight = { enable = true },
+                indent    = { enable = true },
+            })
+        end,
     },
 
     {
@@ -20,7 +31,16 @@ return {
     {
         "lewis6991/gitsigns.nvim",
         event = { "BufReadPost", "BufNewFile" },
-        config = true,
+        opts = {
+            signs = {
+                add          = { text = "▎" },
+                change       = { text = "▎" },
+                delete       = { text = "" },
+                topdelete    = { text = "" },
+                changedelete = { text = "▎" },
+                untracked    = { text = "▎" },
+            },
+        },
     },
 
     {
@@ -41,16 +61,31 @@ return {
         cmd = "Neotree",
         opts = {
             close_if_last_window = true,
-            window = { width = 28 },
+            popup_border_style   = "rounded",
+            window = { width = 30 },
             filesystem = {
                 filtered_items = {
                     hide_dotfiles   = false,
                     hide_gitignored = false,
                 },
-                follow_current_file = { enabled = true },
+                follow_current_file      = { enabled = true },
+                use_libuv_file_watcher   = true,
             },
             default_component_configs = {
                 indent = { with_expanders = true },
+                git_status = {
+                    symbols = {
+                        added    = "",
+                        modified = "",
+                        deleted  = "✖",
+                        renamed  = "󰁕",
+                        untracked = "",
+                        ignored   = "",
+                        unstaged  = "󰄱",
+                        staged    = "",
+                        conflict  = "",
+                    },
+                },
             },
         },
     },
@@ -59,10 +94,19 @@ return {
     {
         "folke/which-key.nvim",
         event = "VeryLazy",
-        opts = { preset = "modern" },
+        opts = {
+            preset = "modern",
+            spec = {
+                { "<leader>c", group = "code / lsp" },
+                { "<leader>f", group = "find" },
+                { "<leader>g", group = "git" },
+                { "<leader>n", group = "notes" },
+                { "<leader>r", group = "rename" },
+            },
+        },
     },
 
-    -- Rainbow indent guides
+    -- Indent guides
     {
         "lukas-reineke/indent-blankline.nvim",
         main = "ibl",
@@ -81,7 +125,7 @@ return {
         config = true,
     },
 
-    -- Highlight all instances of word under cursor
+    -- Highlight all instances of the word under the cursor
     {
         "RRethy/vim-illuminate",
         event = { "BufReadPost", "BufNewFile" },
@@ -89,27 +133,8 @@ return {
             require("illuminate").configure({
                 delay = 150,
                 large_file_cutoff = 2000,
-                filetypes_denylist = { "neo-tree", "TelescopePrompt", "dashboard" },
+                filetypes_denylist = { "neo-tree", "TelescopePrompt", "dashboard", "snacks_dashboard" },
             })
-        end,
-    },
-
-    -- Telescope UI select (makes vim.ui.select use telescope)
-    {
-        "nvim-telescope/telescope-ui-select.nvim",
-        dependencies = { "nvim-telescope/telescope.nvim" },
-        config = function()
-            require("telescope").setup({
-                extensions = {
-                    ["ui-select"] = { require("telescope.themes").get_dropdown() },
-                },
-                defaults = {
-                    layout_strategy  = "horizontal",
-                    sorting_strategy = "ascending",
-                    layout_config    = { prompt_position = "top" },
-                },
-            })
-            require("telescope").load_extension("ui-select")
         end,
     },
 }
