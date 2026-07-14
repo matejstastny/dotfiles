@@ -10,6 +10,15 @@ DEFAULT_TARGET = Path.home() / ".config"
 
 dry_run = "--dry-run" in sys.argv
 
+def log(msg: str):
+    print(f"\033[32m{msg}\033[0m")
+
+def error(msg: str):
+    print(f"\033[31merror: {msg}\033[0m", file=sys.stderr)
+
+def get_pad(item_len: int, name: str, msg: str) -> str:
+    return f"{name.ljust(item_len)}: {msg}"
+
 
 def symlink(src: Path, dst: Path):
     dst = dst.expanduser()
@@ -17,18 +26,26 @@ def symlink(src: Path, dst: Path):
     if dst.is_symlink():
         if dst.readlink().resolve() == src:
             return
-        print(f"skip (exists, different target): {dst}")
+        error(f"skip (exists, different target): {dst}")
         return
     if dst.exists():
-        print(f"skip (not a symlink): {dst}")
+        error(f"skip (not a symlink): {dst}")
         return
-    print(f"  {src} -> {dst}")
+    log(f"  {src} -> {dst}")
     if not dry_run:
         dst.parent.mkdir(parents=True, exist_ok=True)
         dst.symlink_to(src)
 
 
 def main():
+    item_len = 0
+    for src in CONFIGS_DIR.iterdir():
+        if not src.is_dir():
+            continue
+        name = src.name
+        item_len = max(item_len, len(name))
+    item_len +=2
+
     if not CONFIGS_DIR.is_dir():
         sys.exit(f"configs/ directory not found at {CONFIGS_DIR}")
 
@@ -48,15 +65,15 @@ def main():
 
         if name in file_overrides:
             target_dir = Path(file_overrides[name]).expanduser()
-            print(f"{name}/ (file links -> {target_dir})")
+            log(get_pad(item_len, name, f" files link    -> {target_dir}"))
             for f in sorted(src.iterdir()):
                 symlink(f, target_dir / f.name)
         elif name in path_overrides:
-            target = Path(path_overrides[name])
-            print(f"{name}/ (path override -> {target})")
+            target = Path(path_overrides[name]).expanduser()
+            log(get_pad(item_len, name, f" path override -> {target}"))
             symlink(src, target)
         else:
-            print(f"{name}/ (-> {DEFAULT_TARGET / name})")
+            log(get_pad(item_len, name, f" default       -> {DEFAULT_TARGET / name}"))
             symlink(src, DEFAULT_TARGET / name)
 
 
