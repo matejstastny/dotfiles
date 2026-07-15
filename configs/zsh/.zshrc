@@ -21,6 +21,7 @@ path=(
 	"$PROTO_HOME/shims"
 	"$PROTO_HOME/bin"
 	"$HOME/.local/bin"
+	"$HOME/.cargo/bin"
 	$path
 )
 
@@ -107,21 +108,22 @@ today() {
 # fuzzy-find a note by name and open it
 nn() {
 	local f
-	f=$( (builtin cd "$NOTES_DIR" && rg --files -g '*.md') | \
+	f=$( (builtin cd "$NOTES_DIR" && rg --files -g '*.md') |
 		fzf --prompt '✦ notes ✦ ' \
-		    --preview "bat --style=numbers --color=always '$NOTES_DIR'/{}" )
+			--preview "bat --style=numbers --color=always '$NOTES_DIR'/{}")
 	[ -n "$f" ] && "$EDITOR" "$NOTES_DIR/$f"
 }
 
 # ripgrep the vault, pick a match, open at that line
 ns() {
 	local sel file line
-	sel=$( (builtin cd "$NOTES_DIR" && rg --line-number --no-heading --color=always -g '*.md' "${*:-.}") | \
+	sel=$( (builtin cd "$NOTES_DIR" && rg --line-number --no-heading --color=always -g '*.md' "${*:-.}") |
 		fzf --ansi --delimiter : \
-		    --prompt '✦ search ✦ ' \
-		    --preview "bat --style=numbers --color=always --highlight-line {2} '$NOTES_DIR'/{1}" )
+			--prompt '✦ search ✦ ' \
+			--preview "bat --style=numbers --color=always --highlight-line {2} '$NOTES_DIR'/{1}")
 	[ -z "$sel" ] && return
-	file=${sel%%:*}; line=${${sel#*:}%%:*}
+	file=${sel%%:*}
+	line=${${sel#*:}%%:*}
 	"$EDITOR" "+$line" "$NOTES_DIR/$file"
 }
 
@@ -130,7 +132,10 @@ qn() {
 	local inbox="$NOTES_DIR/inbox.md"
 	mkdir -p "$NOTES_DIR"
 	[ -f "$inbox" ] || printf '# Inbox\n\n' >"$inbox"
-	if [ $# -eq 0 ]; then "$EDITOR" "$inbox"; return; fi
+	if [ $# -eq 0 ]; then
+		"$EDITOR" "$inbox"
+		return
+	fi
 	printf -- '- %s %s\n' "$(date '+%Y-%m-%d %H:%M')" "$*" >>"$inbox"
 	echo "✦ captured → inbox.md"
 }
@@ -140,9 +145,16 @@ todo() {
 	local file="$NOTES_DIR/todo/personal.md" tmp
 	mkdir -p "$(dirname "$file")"
 	[ -f "$file" ] || printf '# Personal\n\n' >"$file"
-	if [ $# -eq 0 ]; then "$EDITOR" "$file"; return; fi
+	if [ $# -eq 0 ]; then
+		"$EDITOR" "$file"
+		return
+	fi
 	tmp=$(mktemp)
-	{ head -1 "$file"; printf -- '- [ ] %s %s\n' "$(date +%Y-%m-%d)" "$*"; tail -n +2 "$file"; } >"$tmp"
+	{
+		head -1 "$file"
+		printf -- '- [ ] %s %s\n' "$(date +%Y-%m-%d)" "$*"
+		tail -n +2 "$file"
+	} >"$tmp"
 	mv "$tmp" "$file"
 	echo "✦ todo added"
 }
@@ -154,7 +166,10 @@ nsync() {
 		return 1
 	fi
 	git -C "$NOTES_DIR" add -A
-	git -C "$NOTES_DIR" diff --cached --quiet && { echo "✦ nothing to sync"; return 0; }
+	git -C "$NOTES_DIR" diff --cached --quiet && {
+		echo "✦ nothing to sync"
+		return 0
+	}
 	git -C "$NOTES_DIR" commit -q -m "notes: $(date '+%Y-%m-%d %H:%M')"
 	git -C "$NOTES_DIR" push -q 2>/dev/null && echo "✦ synced" || echo "✦ committed (no remote/push)"
 }

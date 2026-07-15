@@ -1,0 +1,17 @@
+layout {
+    tab name="main" cwd="/home/elara" {
+        pane
+    }
+    tab name="dots" cwd="/home/elara/dotfiles" {
+        pane command="nvim"
+    }
+    tab name="anime" cwd="/home/elara/devel/meow" {
+        pane split_direction="vertical" {
+            pane
+            pane
+        }
+    }
+    tab name="starlight" cwd="/home/elara/devel/starlight" {
+        pane
+    }
+}
