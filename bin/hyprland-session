@@ -2,7 +2,7 @@
 
 LOG="$HOME/.cache/hyprland-session.log"
 mkdir -p "$HOME/.cache"
-exec > >(tee -a "$LOG") 2>&1
+exec >> "$LOG" 2>&1
 echo "=== hyprland-session start $(date) ==="
 
 export XDG_CURRENT_DESKTOP=Hyprland
@@ -14,18 +14,20 @@ export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 
 /usr/bin/start-hyprland &
 
+HYPR_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hypr"
+
 for ((i = 0; i < 150; i++)); do
-	[[ -n "$(ls /tmp/hypr/ 2>/dev/null)" ]] && break
+	[[ -n "$(ls "$HYPR_DIR" 2>/dev/null)" ]] && break
 	sleep 0.2
 done
 
-if [[ -z "$(ls /tmp/hypr/ 2>/dev/null)" ]]; then
+if [[ -z "$(ls "$HYPR_DIR" 2>/dev/null)" ]]; then
 	echo "[hyprland-session] timed out waiting for hyprland socket"
 	sleep 10
 	exit 1
 fi
 
-export HYPRLAND_INSTANCE_SIGNATURE="$(ls /tmp/hypr/ | head -1)"
+export HYPRLAND_INSTANCE_SIGNATURE="$(ls "$HYPR_DIR" | head -1)"
 
 for ((i = 0; i < 150; i++)); do
 	ls "/run/user/$(id -u)/wayland-"* &>/dev/null 2>&1 && break
