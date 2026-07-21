@@ -147,7 +147,6 @@
     // EXTENSIONS CONFIG
     // ------------------------------------------------------------
 
-
     // @ext esbenp.prettier-vscode
     "prettier.tabWidth": 4,
     "prettier.printWidth": 100,
@@ -175,12 +174,11 @@
         "**/.forgejo/workflows/*.yaml"
     ],
 
-
     // Rest of unsorted autogened settings slop :3
     "prettier.trailingComma": "none",
     "lldb.suppressUpdateNotifications": true,
     "shfmt.executablePath": "/home/elara/.local/bin/shfmt",
     "redhat.telemetry.enabled": false,
     "makefile.configureOnOpen": true,
-
+    "cmake.ignoreCMakeListsMissing": true
 }

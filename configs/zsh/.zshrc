@@ -22,6 +22,7 @@ path=(
 	"$PROTO_HOME/bin"
 	"$HOME/.local/bin"
 	"$HOME/.cargo/bin"
+	"$HOME/.devcontainers/bin"
 	$path
 )
 

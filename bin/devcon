@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+abs="$(realpath "${1:-$PWD}")"
+
+if [ ! -d "$abs/.devcontainer" ] && [ ! -f "$abs/.devcontainer.json" ]; then
+    echo "error: no .devcontainer config in $abs" >&2
+    [[ -t 0 ]] && read -r -p "Press Enter to close..."
+    exit 1
+fi
+
+echo "✦ devcontainer up: $(basename "$abs")"
+result=$(devcontainer up --workspace-folder "$abs")
+
+outcome=$(printf '%s' "$result" | python3 -c "import sys,json; print(json.load(sys.stdin).get('outcome',''))")
+if [ "$outcome" != "success" ]; then
+    echo "error: outcome=$outcome"
+    printf '%s\n' "$result"
+    [[ -t 0 ]] && read -r -p "Press Enter to close..."
+    exit 1
+fi
+
+remote=$(printf '%s' "$result" | python3 -c "import sys,json; print(json.load(sys.stdin)['remoteWorkspaceFolder'])")
+uri=$(python3 -c "
+import json, sys
+auth = json.dumps({'localFolder': sys.argv[1]}, separators=(',', ':')).encode().hex()
+print('vscode-remote://dev-container+' + auth + sys.argv[2])
+" "$abs" "$remote")
+
+echo "✦ Attaching VSCodium..."
+codium --folder-uri "$uri"

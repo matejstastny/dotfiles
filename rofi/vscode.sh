@@ -58,21 +58,33 @@ if vscode_paths:
             for p in new_entries:
                 f.write(p + "\n")
 
-print("\n".join(p.replace(home, "~", 1) for p in paths))
+def has_devcontainer(path):
+    return (os.path.isdir(os.path.join(path, ".devcontainer")) or
+            os.path.isfile(os.path.join(path, ".devcontainer.json")))
+
+for p in paths:
+    display = p.replace(home, "~", 1)
+    prefix = "[dc] " if has_devcontainer(p) else ""
+    print(f"{prefix}{display}")
 EOF
 }
 
 while true; do
 	selected=$(get_list | rofi -dmenu \
 		-p "✦ code ✦" \
-		-kb-custom-1 "Alt+Delete" \
-		-mesg "Alt+Delete to remove")
+		-kb-custom-1 "Alt+BackSpace" \
+		-kb-custom-2 "Alt+d" \
+		-mesg "Alt+Backspace: remove  |  Alt+D: open in devcontainer")
 	exit_code=$?
 
 	[ $exit_code -eq 1 ] && exit 0
 	[ -z "$selected" ] && exit 0
 
-	abs="${selected/#\~/$HOME}"
+	# Strip [dc] prefix to get the bare path
+	path_part="$selected"
+	[[ "$path_part" == "[dc] "* ]] && path_part="${path_part#\[dc\] }"
+
+	abs="${path_part/#\~/$HOME}"
 
 	if [ $exit_code -eq 10 ]; then
 		tmp=$(mktemp)
@@ -86,6 +98,10 @@ while true; do
 	grep -Fxv "$abs" "$history_file" | head -49 >>"$tmp"
 	mv "$tmp" "$history_file"
 
-	codium "$abs"
+	if [ $exit_code -eq 11 ]; then
+		kitty devcon "$abs" &
+	else
+		codium "$abs"
+	fi
 	exit 0
 done
