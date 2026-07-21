@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-# Hyprland session wrapper.
-# /usr/bin/start-hyprland double-forks (exits immediately after spawning
-# Hyprland), so we wait on the IPC socket and Hyprland process directly.
 
 LOG="$HOME/.cache/hyprland-session.log"
 mkdir -p "$HOME/.cache"
@@ -15,38 +12,33 @@ export MOZ_ENABLE_WAYLAND=1
 export QT_QPA_PLATFORM=wayland
 export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 
-# Launch via the system binary so Hyprland sees it was started properly
 /usr/bin/start-hyprland &
 
-# Wait for Hyprland's IPC socket (up to 30s)
-for (( i=0; i<150; i++ )); do
-    [[ -n "$(ls /tmp/hypr/ 2>/dev/null)" ]] && break
-    sleep 0.2
+for ((i = 0; i < 150; i++)); do
+	[[ -n "$(ls /tmp/hypr/ 2>/dev/null)" ]] && break
+	sleep 0.2
 done
 
 if [[ -z "$(ls /tmp/hypr/ 2>/dev/null)" ]]; then
-    echo "[hyprland-session] Timed out waiting for Hyprland socket — not starting daemons"
-    sleep 10
-    exit 1
+	echo "[hyprland-session] timed out waiting for hyprland socket"
+	sleep 10
+	exit 1
 fi
 
 export HYPRLAND_INSTANCE_SIGNATURE="$(ls /tmp/hypr/ | head -1)"
 
-# Wait for Wayland socket (up to 30s)
-for (( i=0; i<150; i++ )); do
-    ls "/run/user/$(id -u)/wayland-"* &>/dev/null 2>&1 && break
-    sleep 0.2
+for ((i = 0; i < 150; i++)); do
+	ls "/run/user/$(id -u)/wayland-"* &>/dev/null 2>&1 && break
+	sleep 0.2
 done
 
-export WAYLAND_DISPLAY="$(ls "/run/user/$(id -u)/wayland-"* 2>/dev/null \
-    | grep -v '\.lock$' | head -1 | xargs basename)"
+export WAYLAND_DISPLAY="$(ls "/run/user/$(id -u)/wayland-"* 2>/dev/null |
+	grep -v '\.lock$' | head -1 | xargs basename)"
 
-# Export Wayland environment to dbus/portals/tray icons
 dbus-update-activation-environment --systemd \
-    WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE \
-    HYPRLAND_INSTANCE_SIGNATURE 2>/dev/null
+	WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE \
+	HYPRLAND_INSTANCE_SIGNATURE 2>/dev/null
 
-# Wait for Hyprland itself to exit (not for the start-hyprland wrapper)
 while pgrep -x Hyprland &>/dev/null; do
-    sleep 2
+	sleep 2
 done

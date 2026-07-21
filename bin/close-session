@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Closes all session app windows gracefully (does not kill background services).
+
 classes=("kitty" "code" "helium" "vesktop" "t3code" "obsidian")
 clients=$(hyprctl clients -j)
 for class in "${classes[@]}"; do

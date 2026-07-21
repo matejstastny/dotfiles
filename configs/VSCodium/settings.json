@@ -1,0 +1,186 @@
+// meowsers :3
+{
+    "workbench.colorTheme": "Catppuccin Noir",
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.editor.showTabs": "single",
+    "workbench.editor.empty.hint": "hidden",
+    "workbench.sideBar.location": "right",
+    "workbench.startupEditor": "none",
+    "workbench.tips.enabled": false,
+    "editor.minimap.enabled": false,
+    "breadcrumbs.enabled": false,
+
+    // Sidebar & file explorer
+    "workbench.secondarySideBar.defaultVisibility": "hidden",
+    "explorer.sortOrder": "type",
+    "material-icon-theme.hidesExplorerArrows": true,
+    "workbench.tree.enableStickyScroll": false,
+    "workbench.tree.renderIndentGuides": "none",
+    "workbench.tree.indent": 16,
+    "explorer.confirmDragAndDrop": false,
+    "explorer.confirmDelete": false,
+    "explorer.decorations.badges": false,
+    "git.decorations.enabled": false,
+    "explorer.compactFolders": false,
+    "explorer.confirmPasteNative": false,
+
+    // Custom UI Style extension
+    "window.customMenuBarAltFocus": false,
+    "window.newWindowDimensions": "maximized",
+    "window.menuBarVisibility": "toggle",
+    "window.enableMenuBarMnemonics": false,
+    "window.customTitleBarVisibility": "never",
+    "window.titleBarStyle": "native",
+    "custom-ui-style.electron": {
+        "titleBarStyle": "hiddenInset",
+        "trafficLightPosition": {
+            "x": 16,
+            "y": 12
+        }
+    },
+    "custom-ui-style.stylesheet": {
+        ".quick-input-widget": "top: 25vh !important",
+        ".monaco-scrollable-element > .shadow.top": "display: none",
+        ".sidebar .title-label": "padding: 0 !important",
+        ".monaco-editor .scroll-decoration": "display: none",
+        ".title.show-file-icons .label-container .monaco-icon-label.file-icon": "justify-content: center; padding: 0 !important",
+        ".title .monaco-icon-label:after": "margin-rightw: 0",
+        ".monaco-workbench .part.editor > .content .editor-group-container > .title > .label-container > .title-label": "padding-left: 80px",
+        ".title .monaco-icon-label.file-icon": "margin: 0 60px"
+    },
+    "custom-ui-style.font.sansSerif": "Maple Mono NF",
+
+    // Cursor
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.cursorBlinking": "phase",
+    "editor.cursorStyle": "line",
+    "editor.cursorWidth": 2,
+    "workbench.colorCustomizations": {
+        // Remote host
+        "statusBarItem.remoteBackground": "#FFFFFF00",
+        "statusBarItem.remoteForeground": "#9DA5B4",
+
+        // Borders
+        "statusBar.border": "#FFFFFF26",
+        "sideBar.border": "#FFFFFF26",
+        "panel.border": "#FFFFFF26"
+    },
+
+    // Typography
+    "editor.fontFamily": "Maple Mono NF",
+    "editor.fontSize": 12.5,
+    "editor.fontLigatures": false,
+    "editor.lineHeight": 1.7,
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope": "comment",
+                "settings": {
+                    "fontStyle": "italic"
+                }
+            }
+        ]
+    },
+
+    // Decorations & hints
+    "editor.stickyScroll.enabled": false,
+    "editor.colorDecorators": false,
+    "editor.codeLens": false,
+    "editor.lightbulb.enabled": "off",
+    "editor.matchBrackets": "never",
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+
+    // Guides & highlights
+    "editor.tabSize": 4,
+    "editor.inlayHints.enabled": "off",
+    "editor.detectIndentation": false,
+    "editor.showFoldingControls": "mouseover",
+    "editor.guides.indentation": false,
+    "editor.renderWhitespace": "none",
+    "editor.selectionHighlight": false,
+
+    // Scrollbars
+    "editor.scrollbar.horizontal": "hidden",
+    "editor.scrollbar.vertical": "hidden",
+    "editor.scrollbar.verticalScrollbarSize": 0,
+    "editor.overviewRulerBorder": false,
+    "editor.hideCursorInOverviewRuler": true,
+
+    // Other
+    "editor.snippetSuggestions": "top",
+    "files.autoSave": "afterDelay",
+    "update.mode": "none",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "workbench.settings.editor": "json",
+
+    // Trust all files, I know what I'm doing VSCode
+    "security.workspace.trust.untrustedFiles": "open",
+
+    // slopcode
+    "chat.commandCenter.enabled": false,
+    "workbench.welcomePage.walkthroughs.openOnInstall": false,
+
+    // Git
+    "git.autofetch": true,
+    "git.confirmSync": false,
+    "git.replaceTagsWhenPull": true,
+    "git.suggestSmartCommit": false,
+    "git.openRepositoryInParentFolders": "always",
+
+    // why tf is this a thing, I trust them bro
+    "json.schemaDownload.trustedDomains": {
+        "https://developer.microsoft.com/json-schemas/": true,
+        "https://docs.trickfirerobotics.com": true,
+        "https://github.com": true,
+        "https://json-schema.org/": true,
+        "https://json.schemastore.org/": true,
+        "https://raw.githubusercontent.com": true,
+        "https://raw.githubusercontent.com/devcontainers/spec/": true,
+        "https://raw.githubusercontent.com/microsoft/vscode/": true,
+        "https://schemastore.azurewebsites.net/": true,
+        "https://www.schemastore.org/": true
+    },
+
+    // ------------------------------------------------------------
+    // EXTENSIONS CONFIG
+    // ------------------------------------------------------------
+
+
+    // @ext esbenp.prettier-vscode
+    "prettier.tabWidth": 4,
+    "prettier.printWidth": 100,
+
+    // @ext ms-azuretools.vscode-docker
+    "docker.extension.dockerEngineAvailabilityPrompt": false,
+    "[dockerfile]": {
+        "editor.semanticHighlighting.enabled": false
+    },
+
+    // @ext geequlim.godot-tools
+    "godotTools.editorPath.godot4": "/Applications/Godot.app/Contents/MacOS/Godot",
+
+    // @ext pixl-garden.BongoCat
+    "workbench.productIconTheme": "bongocat",
+    "docker.extension.enableComposeLanguageServer": false,
+
+    // @ext github.vscode-github-actions
+    "yaml.disableSchemaDetection": [
+        "**/.github/workflows/*.yml",
+        "**/.github/workflows/*.yaml",
+        "**/.gitea/workflows/*.yml",
+        "**/.gitea/workflows/*.yaml",
+        "**/.forgejo/workflows/*.yml",
+        "**/.forgejo/workflows/*.yaml"
+    ],
+
+
+    // Rest of unsorted autogened settings slop :3
+    "prettier.trailingComma": "none",
+    "lldb.suppressUpdateNotifications": true,
+    "shfmt.executablePath": "/home/elara/.local/bin/shfmt",
+    "redhat.telemetry.enabled": false,
+    "makefile.configureOnOpen": true,
+
+}

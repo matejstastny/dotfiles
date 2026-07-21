@@ -50,6 +50,7 @@ def main():
         sys.exit(f"configs/ directory not found at {CONFIGS_DIR}")
 
     conf = ConfigParser()
+    conf.optionxform = str
     conf.read(CONF_FILE)
 
     path_overrides = dict(conf["path_overrides"]) if "path_overrides" in conf else {}

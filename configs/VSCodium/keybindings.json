@@ -1,0 +1,97 @@
+[
+    // Sidebar --------------------------------------------------------------------------
+    {
+        "key": "ctrl+d",
+        "command": "workbench.view.explorer"
+    },
+    {
+        "key": "ctrl+r",
+        "command": "copilot-chat.open"
+    },
+    {
+        "key": "ctrl+g",
+        "command": "workbench.view.scm"
+    },
+    {
+        "key": "ctrl+shift+e",
+        "command": "workbench.view.extensions"
+    },
+    {
+        // Close sidebar
+        "key": "ctrl+b",
+        "command": "workbench.action.closeSidebar"
+    },
+    {
+        "key": "ctrl+n",
+        "command": "extension.advancedNewFile"
+    },
+    {
+        // Toast clear
+        "key": "escape",
+        "command": "notifications.hideToasts",
+        "when": "notificationToastsVisible"
+    },
+    {
+        // Reset zoom
+        "key": "ctrl+0",
+        "command": "workbench.action.zoomReset"
+    },
+    {
+        // Declaration
+        "key": "ctrl+l",
+        "command": "editor.action.goToDeclaration",
+        "when": "editorTextFocus"
+    },
+    {
+        // Insert date string
+        "key": "ctrl+shift+d",
+        "command": "insertDateString.insertDate",
+        "when": "editorTextFocus"
+    },
+    {
+        "command": "runCommands",
+        "key": "ctrl+k",
+        "args": {
+            "commands": [
+                "workbench.files.action.collapseExplorerFolders",
+                "openEditors.closeAll"
+            ]
+        }
+    },
+    // Mini windows --------------------------------------------------------------------
+    {
+        // Open command panel
+        "key": "ctrl+p",
+        "command": "workbench.action.showCommands"
+    },
+    {
+        // Line finder
+        "key": "ctrl+m",
+        "command": "workbench.action.gotoLine"
+    },
+    {
+        // Method finder
+        "key": "ctrl+e",
+        "command": "workbench.action.gotoSymbol"
+    },
+    {
+        // Quick open menu
+        "key": "ctrl+o",
+        "command": "workbench.action.quickOpen"
+    },
+    // Open folder
+    {
+        "key": "ctrl+u",
+        "command": "workbench.action.files.openFileFolder"
+    },
+    {
+        "key": "ctrl+shift+i",
+        "command": "workbench.panel.chat",
+        "when": "workbench.panel.chat.view.copilot.active"
+    },
+    {
+        "key": "ctrl+alt+i",
+        "command": "-workbench.panel.chat",
+        "when": "workbench.panel.chat.view.copilot.active"
+    }
+]

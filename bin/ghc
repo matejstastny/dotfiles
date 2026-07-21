@@ -4,9 +4,8 @@
 
 set -euo pipefail
 
-if [ $# -eq 0 ]
-  then
-    echo "No repo passed"
+if [ $# -eq 0 ]; then
+	echo "no repo passed"
 	exit 1
 fi
 
@@ -17,22 +16,22 @@ declare -a accounts=(
 )
 
 check_repo_exists() {
-    repoUrl="$1"
-    myStr="$(git ls-remote -q "$repoUrl" &> /dev/null)";
-    return_code=$?
+	repoUrl="$1"
+	myStr="$(git ls-remote -q "$repoUrl" &>/dev/null)"
+	return_code=$?
 	if [ $return_code -eq 0 ]; then
-		echo "REPO EXISTS"
+		echo "yesh"
 	else
-		echo "REPO DOES NOT EXIST"
+		echo "no :("
 	fi
 }
 
 for account in "${accounts[@]}"; do
 	URL="https://github.com/${account}/$REPO"
-	if [[ $(check_repo_exists "$URL") == "REPO EXISTS" ]]; then
+	if [[ $(check_repo_exists "$URL") == "yesh" ]]; then
 		git clone "$URL"
 		exit 0
 	fi
 done
-echo "Repo not found in any of the accounts"
+echo "repo not found in any of the accounts"
 exit 1

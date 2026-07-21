@@ -50,3 +50,6 @@
 
 [rebase]
 	autoStash = true
+[feature]
+	manyFiles = true
+w

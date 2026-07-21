@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+
+sudo chown -R "$(whoami)" /usr/share/codium/resources
+
+echo "Done"

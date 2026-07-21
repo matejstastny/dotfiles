@@ -7,7 +7,7 @@ get_list() {
 	python3 - <<'EOF'
 import json, os
 
-storage = os.path.expanduser("~/.config/Code/User/globalStorage/storage.json")
+storage = os.path.expanduser("~/.config/VSCodium/User/globalStorage/storage.json")
 history_file = os.path.expanduser("~/.local/share/vscode-projects")
 home = os.environ["HOME"]
 
@@ -86,6 +86,6 @@ while true; do
 	grep -Fxv "$abs" "$history_file" | head -49 >>"$tmp"
 	mv "$tmp" "$history_file"
 
-	code "$abs"
+	codium "$abs"
 	exit 0
 done
