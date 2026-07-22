@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+config="${XDG_CONFIG_HOME:-$HOME/.config}/waypaper/config.ini"
+wallpaper=$(grep -m1 '^wallpaper' "$config" | cut -d= -f2 | xargs)
+wallpaper="${wallpaper/#\~/$HOME}"
+
+until swww query &>/dev/null; do sleep 0.1; done
+
+exec swww img "$wallpaper" \
+    --transition-type fade \
+    --transition-duration 1.5 \
+    --transition-fps 60
