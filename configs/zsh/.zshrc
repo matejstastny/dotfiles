@@ -30,6 +30,7 @@ path=(
 
 alias dots='cd ~/dotfiles'
 alias s='ls ~/dotfiles/bin'
+alias z='source ~/.zshrc'
 
 alias lg='lazygit'
 alias gs='git status -sb'
@@ -263,3 +264,5 @@ esac
 
 # Vite+ bin (https://viteplus.dev)
 . "$HOME/.vite-plus/env"
+
+export PATH="/home/elara/.pixi/bin:$PATH"
