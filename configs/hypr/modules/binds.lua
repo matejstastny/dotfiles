@@ -25,9 +25,10 @@ hl.bind(mod .. " + SHIFT + L", hl.dsp.exec_cmd("hyprlock"))
 hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"))
 hl.bind(mod .. " + SHIFT + D", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/fix-dp1"))
 
--- screenshot
+-- screenshot / record
 hl.bind("CTRL + SHIFT + 4", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/screenshot"))
 hl.bind("CTRL + SHIFT + 3", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/screenshot-full"))
+hl.bind("CTRL + SHIFT + R", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/record"))
 
 -- session
 hl.bind(mod .. " + SHIFT + O", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/session"))

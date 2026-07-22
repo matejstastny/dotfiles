@@ -39,9 +39,6 @@
 [diff]
   colorMoved = default
 
-[init]
-	defaultBranch = main
-
 [pull]
 	rebase = true
 
@@ -50,6 +47,6 @@
 
 [rebase]
 	autoStash = true
+
 [feature]
 	manyFiles = true
-w

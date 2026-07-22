@@ -96,6 +96,16 @@ window#waybar.hidden {
   border-radius: 6px;
 }
 
+/* Recording indicator */
+
+#custom-record {
+  padding: 0 10px 0 8px;
+}
+
+#custom-record.recording {
+  color: #e05c7a;
+}
+
 /* Media player */
 
 #mpris {

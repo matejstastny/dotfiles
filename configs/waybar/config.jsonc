@@ -8,8 +8,11 @@
         "custom/sep",
         "hyprland/window"
     ],
-    "modules-center": [],
+    "modules-center": [
+        "mpris"
+    ],
     "modules-right": [
+        "custom/record",
         "tray",
         "custom/sep",
         "cpu",
@@ -106,6 +109,26 @@
         "interval": 5,
         "format": "{}",
         "on-click": "kitty -e sh -c 'docker ps; read'"
+    },
+
+    "custom/record": {
+        "exec": "~/.config/waybar/scripts/record.sh",
+        "return-type": "json",
+        "interval": 1,
+        "on-click": "/home/elara/dotfiles/bin/record",
+        "tooltip": false
+    },
+
+    "mpris": {
+        "format": "{status_icon} {title}  {artist}",
+        "format-icons": {
+            "Playing": "󰝚",
+            "Paused": "󰏤",
+            "Stopped": ""
+        },
+        "max-length": 50,
+        "on-click": "playerctl play-pause",
+        "tooltip-format": "{player}: {album}"
     },
 
     "tray": {
