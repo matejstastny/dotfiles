@@ -30,7 +30,7 @@ path=(
 
 alias dots='cd ~/dotfiles'
 alias s='ls ~/dotfiles/bin'
-alias z='source ~/.zshrc'
+alias r='source ~/.zshrc'
 
 alias lg='lazygit'
 alias gs='git status -sb'

@@ -6,6 +6,15 @@ hl.window_rule({ name = "session-ws-vesktop", match = { class = "^vesktop$" }, w
 hl.window_rule({ name = "session-ws-obsidian", match = { class = "^obsidian$" }, workspace = "5 silent" })
 hl.window_rule({ name = "session-ws-t3code", match = { class = "^t3code$" }, workspace = "6 silent" })
 
+-- helium save file dialog
+hl.window_rule({ name = "helium-save-file-float",  match = { class = "^helium$", title = "^Save File$" }, float  = true })
+hl.window_rule({ name = "helium-save-file-center", match = { class = "^helium$", title = "^Save File$" }, center = true })
+
+-- waypaper
+hl.window_rule({ name = "waypaper-float", match = { class = "^waypaper$" }, float = true })
+hl.window_rule({ name = "waypaper-size",  match = { class = "^waypaper$" }, size = "800 600" })
+hl.window_rule({ name = "waypaper-center", match = { class = "^waypaper$" }, center = true })
+
 -- floating windows
 hl.on("window.open", function(window)
     -- bluetooth window

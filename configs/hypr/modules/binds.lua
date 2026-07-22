@@ -20,6 +20,7 @@ hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/powermenu
 hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/todo.sh stars"))
 
 -- utils
+hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("waypaper"))
 hl.bind(mod .. " + SHIFT + L", hl.dsp.exec_cmd("hyprlock"))
 hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"))
 hl.bind(mod .. " + SHIFT + D", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/fix-dp1"))
