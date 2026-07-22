@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+# cloud — sync local dirs to/from OneDrive via rclone
+# Usage: cloud <push|pull|status> [dir-filter]
+
+# from rclone config
+REMOTE="onedrive"
+
+SYNC_DIRS=(
+	"$HOME/school:school/uw"
+	"$HOME/work:work"
+)
+
+# -------------------------------------------------
+
+usage() {
+	cat <<EOF
+usage: cloud <command> [filter]
+
+commands:
+  push    copy local dirs → OneDrive (safe: never deletes remote files)
+  pull    copy OneDrive dirs → local (safe: never deletes local files)
+  sync    two-way: push then pull (still no deletions)
+  status  dry-run push to show what would be uploaded
+
+filter (optional): partial match on local dir name, e.g. "school"
+
+examples:
+  cloud push             # upload all configured dirs
+  cloud pull school      # download only school from OneDrive
+  cloud status           # preview changes without uploading
+EOF
+}
+
+run_rclone() {
+	local src="$1" dst="$2" dry="$3"
+	local flags=(--progress --transfers=4)
+	[[ "$dry" == "dry" ]] && flags+=(--dry-run)
+	rclone copy "$src" "$dst" "${flags[@]}"
+}
+
+do_dirs() {
+	local direction="$1" dry="$2" filter="$3"
+	local matched=0
+
+	for entry in "${SYNC_DIRS[@]}"; do
+		local local_dir="${entry%%:*}"
+		local remote_dir="${entry##*:}"
+
+		[[ -n "$filter" && "$local_dir" != *"$filter"* ]] && continue
+		matched=1
+
+		echo "==> $local_dir  <->  onedrive:$remote_dir"
+		case "$direction" in
+		push) run_rclone "$local_dir/" "$REMOTE:$remote_dir" "$dry" ;;
+		pull) run_rclone "$REMOTE:$remote_dir" "$local_dir/" "$dry" ;;
+		esac
+		echo
+	done
+
+	if ((matched == 0)); then
+		echo "cloud: no dirs matched filter '$filter'" >&2
+		exit 1
+	fi
+}
+
+cmd="${1:-}"
+filter="${2:-}"
+
+case "$cmd" in
+push) do_dirs push "" "$filter" ;;
+pull) do_dirs pull "" "$filter" ;;
+sync)
+	do_dirs push "" "$filter"
+	do_dirs pull "" "$filter"
+	;;
+status) do_dirs push dry "$filter" ;;
+*)
+	usage
+	exit 1
+	;;
+esac
