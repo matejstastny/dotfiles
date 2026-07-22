@@ -31,3 +31,7 @@ Do not suggest or add these - they have been deliberately rejected:
 
 - **atuin** - vanilla shell history is preferred
 - **color-switcher** - singular perfected theme
+
+## Notes
+
+When asking for suggestions on what to add, do not be afraid of changing worfkflows, changing programs or refactoring things.

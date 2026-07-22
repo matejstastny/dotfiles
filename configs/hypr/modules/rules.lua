@@ -7,14 +7,14 @@ hl.window_rule({ name = "session-ws-obsidian", match = { class = "^obsidian$" },
 hl.window_rule({ name = "session-ws-t3code", match = { class = "^t3code$" }, workspace = "6 silent" })
 
 -- helium file dialogs
-hl.window_rule({ name = "helium-save-file-float",  match = { class = "^helium$", title = "^Save File$" }, float  = true })
+hl.window_rule({ name = "helium-save-file-float", match = { class = "^helium$", title = "^Save File$" }, float = true })
 hl.window_rule({ name = "helium-save-file-center", match = { class = "^helium$", title = "^Save File$" }, center = true })
-hl.window_rule({ name = "helium-open-files-float",  match = { class = "^helium$", title = "^Open Files$" }, float  = true })
+hl.window_rule({ name = "helium-open-files-float", match = { class = "^helium$", title = "^Open Files$" }, float = true })
 hl.window_rule({ name = "helium-open-files-center", match = { class = "^helium$", title = "^Open Files$" }, center = true })
 
 -- waypaper
 hl.window_rule({ name = "waypaper-float", match = { class = "^waypaper$" }, float = true })
-hl.window_rule({ name = "waypaper-size",  match = { class = "^waypaper$" }, size = "800 600" })
+hl.window_rule({ name = "waypaper-size", match = { class = "^waypaper$" }, size = "800 600" })
 hl.window_rule({ name = "waypaper-center", match = { class = "^waypaper$" }, center = true })
 
 -- floating windows

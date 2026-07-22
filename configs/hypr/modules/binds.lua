@@ -2,37 +2,34 @@ local mod = "ALT"
 
 -- apps
 hl.bind(mod .. " + Return", hl.dsp.exec_cmd("kitty"))
-hl.bind(mod .. " + H", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/helium"))
-hl.bind(mod .. " + V", hl.dsp.exec_cmd("vesktop"))
 
 -- rofi
 hl.bind(mod .. " + Space", hl.dsp.exec_cmd("rofi -show drun"))
-hl.bind(mod .. " + N", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/wifi.sh"))
-hl.bind(mod .. " + A", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/calc.sh"))
-hl.bind(mod .. " + V", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/clip.sh"))
-hl.bind(mod .. " + E", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/emoji.sh"))
-hl.bind(mod .. " + P", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/vscode.sh"))
-hl.bind(mod .. " + B", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/bluetooth.sh"))
-hl.bind(mod .. " + T", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/todo.sh personal"))
-hl.bind(mod .. " + O", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/notes.sh"))
-hl.bind(mod .. " + I", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/capture.sh"))
-hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/powermenu.sh"))
-hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("/home/elara/dotfiles/rofi/todo.sh stars"))
+hl.bind(mod .. " + N", hl.dsp.exec_cmd(DOTS .. "/rofi/wifi.sh"))
+hl.bind(mod .. " + A", hl.dsp.exec_cmd(DOTS .. "/rofi/calc.sh"))
+hl.bind(mod .. " + V", hl.dsp.exec_cmd(DOTS .. "/rofi/clip.sh"))
+hl.bind(mod .. " + E", hl.dsp.exec_cmd(DOTS .. "/rofi/emoji.sh"))
+hl.bind(mod .. " + P", hl.dsp.exec_cmd(DOTS .. "/rofi/vscode.sh"))
+hl.bind(mod .. " + B", hl.dsp.exec_cmd(DOTS .. "/rofi/bluetooth.sh"))
+hl.bind(mod .. " + T", hl.dsp.exec_cmd(DOTS .. "/rofi/todo.sh personal"))
+hl.bind(mod .. " + O", hl.dsp.exec_cmd(DOTS .. "/rofi/notes.sh"))
+hl.bind(mod .. " + I", hl.dsp.exec_cmd(DOTS .. "/rofi/capture.sh"))
+hl.bind(mod .. " + Escape", hl.dsp.exec_cmd(DOTS .. "/rofi/powermenu.sh"))
+hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd(DOTS .. "/rofi/todo.sh stars"))
 
 -- utils
 hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("waypaper"))
 hl.bind(mod .. " + SHIFT + L", hl.dsp.exec_cmd("hyprlock"))
 hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"))
-hl.bind(mod .. " + SHIFT + D", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/fix-dp1"))
 
 -- screenshot / record
-hl.bind("CTRL + SHIFT + 4", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/screenshot"))
-hl.bind("CTRL + SHIFT + 3", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/screenshot-full"))
-hl.bind("CTRL + SHIFT + R", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/record"))
+hl.bind("CTRL + SHIFT + 4", hl.dsp.exec_cmd(DOTS .. "/bin/screenshot"))
+hl.bind("CTRL + SHIFT + 3", hl.dsp.exec_cmd(DOTS .. "/bin/screenshot-full"))
+hl.bind("CTRL + SHIFT + R", hl.dsp.exec_cmd(DOTS .. "/bin/record"))
 
 -- session
-hl.bind(mod .. " + SHIFT + O", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/session"))
-hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd("/home/elara/dotfiles/bin/close-session"))
+hl.bind(mod .. " + SHIFT + O", hl.dsp.exec_cmd(DOTS .. "/bin/session"))
+hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd(DOTS .. "/bin/close-session"))
 
 -- window managment
 hl.bind(mod .. " + W", hl.dsp.window.close())
@@ -50,9 +47,6 @@ for i = 1, 9 do
     hl.bind(mod .. " + " .. key, hl.dsp.focus({ workspace = i }))
     hl.bind(mod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
 end
-
-hl.bind(mod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
-hl.bind(mod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
 
 -- switch monitors
 hl.bind(mod .. " + tab", function()

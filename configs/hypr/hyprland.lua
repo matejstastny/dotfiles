@@ -4,7 +4,10 @@
 --  \ \_\ \ \_\  \ \_____\  \ \_____\  \ \__/".~\_\
 --   \/_/  \/_/   \/_____/   \/_____/   \/_/   \/_/
 
-local dir = os.getenv("HOME") .. "/.config/hypr/modules/"
+HOME = os.getenv("HOME")
+DOTS = HOME .. "/dotfiles"
+
+local dir = HOME .. "/.config/hypr/modules/"
 local function load(m) dofile(dir .. m .. ".lua") end
 
 load("env")
