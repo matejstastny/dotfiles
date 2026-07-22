@@ -6,7 +6,7 @@
 REMOTE="onedrive"
 
 SYNC_DIRS=(
-	"$HOME/school:school/uw"
+	"$HOME/school:uw"
 	"$HOME/work:work"
 )
 
@@ -17,10 +17,11 @@ usage() {
 usage: cloud <command> [filter]
 
 commands:
-  push    copy local dirs → OneDrive (safe: never deletes remote files)
-  pull    copy OneDrive dirs → local (safe: never deletes local files)
-  sync    two-way: push then pull (still no deletions)
-  status  dry-run push to show what would be uploaded
+  push      copy local dirs → OneDrive (safe: never deletes remote files)
+  pull      copy OneDrive dirs → local (safe: never deletes local files)
+  sync      two-way: push then pull (still no deletions)
+  status    dry-run push to show what would be uploaded
+  analyze   run ncdu
 
 filter (optional): partial match on local dir name, e.g. "school"
 
@@ -74,6 +75,7 @@ sync)
 	do_dirs pull "" "$filter"
 	;;
 status) do_dirs push dry "$filter" ;;
+analyze) rclone ncdu $REMOTE: ;;
 *)
 	usage
 	exit 1

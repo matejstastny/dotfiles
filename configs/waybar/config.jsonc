@@ -8,9 +8,9 @@
         "custom/sep",
         "hyprland/window"
     ],
-    "modules-center": [
-        "mpris"
-    ],
+    // "modules-center": [
+    //     "mpris"
+    // ],
     "modules-right": [
         "custom/record",
         "tray",
