@@ -12,6 +12,11 @@ hl.window_rule({ name = "helium-save-file-center", match = { class = "^helium$",
 hl.window_rule({ name = "helium-open-files-float", match = { class = "^helium$", title = "^Open Files$" }, float = true })
 hl.window_rule({ name = "helium-open-files-center", match = { class = "^helium$", title = "^Open Files$" }, center = true })
 
+-- restore wallpaper on monitor hotplug
+hl.on("monitor.added", function()
+    hl.exec_cmd("/home/elara/dotfiles/bin/wallpaper-restore")
+end)
+
 -- waypaper
 hl.window_rule({ name = "waypaper-float", match = { class = "^waypaper$" }, float = true })
 hl.window_rule({ name = "waypaper-size", match = { class = "^waypaper$" }, size = "800 600" })

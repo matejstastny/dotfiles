@@ -62,15 +62,15 @@
 
 body {
   /* Ellie palette */
-  --ellie-base: #0a0812; /* primary background      */
-  --ellie-surface: #110d1a; /* secondary background    */
-  --ellie-overlay: #1c1528; /* raised surfaces         */
-  --ellie-muted: #3d2f52; /* borders / dividers      */
-  --ellie-purple: #7c5cbf; /* accent                  */
-  --ellie-rose: #c47a9b; /* secondary accent        */
-  --ellie-text: #e0d4f0; /* normal text             */
-  --ellie-dim: #9b8ab0; /* muted text              */
-  --ellie-bright: #f4eeff; /* headings / emphasis     */
+  --ellie-base: #11111b; /* primary background      */
+  --ellie-surface: #181825; /* secondary background    */
+  --ellie-overlay: #25253a; /* raised surfaces         */
+  --ellie-muted: #3d3d5c; /* borders / dividers      */
+  --ellie-purple: #7878c8; /* accent                  */
+  --ellie-rose: #c47ab8; /* secondary accent        */
+  --ellie-text: #dce0f4; /* normal text             */
+  --ellie-dim: #9898c0; /* muted text              */
+  --ellie-bright: #f0f0ff; /* headings / emphasis     */
 
   /* Fonts — theme-level so they win unless you set an explicit Appearance
      override (leave the Appearance font fields blank). */
@@ -80,40 +80,40 @@ body {
   --font-monospace-theme: "Maple Mono NF", ui-monospace, monospace;
 
   /* Accent as HSL parts (Obsidian derives links, buttons, hovers from these) */
-  --accent-h: 259;
-  --accent-s: 44%;
-  --accent-l: 60%;
+  --accent-h: 240;
+  --accent-s: 42%;
+  --accent-l: 63%;
 }
 
 /* --- Dark palette wiring (Ellie is a dark, midnight theme) ----------------- */
 
 .theme-dark {
-  --color-base-00: #0a0812;
-  --color-base-05: #0c0916;
-  --color-base-10: #110d1a;
-  --color-base-20: #16101f;
-  --color-base-25: #1c1528;
-  --color-base-30: #241a33;
-  --color-base-35: #2c2040;
-  --color-base-40: #3d2f52;
-  --color-base-50: #4d3d63;
-  --color-base-60: #9b8ab0;
-  --color-base-70: #b7a8cc;
-  --color-base-100: #e0d4f0;
+  --color-base-00: #11111b;
+  --color-base-05: #14141f;
+  --color-base-10: #181825;
+  --color-base-20: #1e1e2e;
+  --color-base-25: #25253a;
+  --color-base-30: #2e2e48;
+  --color-base-35: #363658;
+  --color-base-40: #3d3d5c;
+  --color-base-50: #4e4e72;
+  --color-base-60: #9898c0;
+  --color-base-70: #b4b4d4;
+  --color-base-100: #dce0f4;
 
   --background-primary: var(--ellie-base);
   --background-primary-alt: var(--ellie-surface);
   --background-secondary: var(--ellie-surface);
   --background-secondary-alt: var(--ellie-overlay);
   --background-modifier-border: var(--ellie-muted);
-  --background-modifier-border-hover: #4d3d63;
-  --background-modifier-hover: rgba(124, 92, 191, 0.1);
+  --background-modifier-border-hover: #4e4e72;
+  --background-modifier-hover: rgba(120, 120, 200, 0.1);
 
   --text-normal: var(--ellie-text);
   --text-muted: var(--ellie-dim);
-  --text-faint: #6f6188;
-  --text-on-accent: #f4eeff;
-  --text-selection: rgba(124, 92, 191, 0.3);
+  --text-faint: #6868a0;
+  --text-on-accent: #f0f0ff;
+  --text-selection: rgba(120, 120, 200, 0.3);
 
   /* Headings — dusty rose leading into bright */
   --h1-color: var(--ellie-rose);
@@ -124,19 +124,19 @@ body {
   --h6-color: var(--ellie-dim);
 
   --interactive-accent: var(--ellie-purple);
-  --interactive-accent-hover: #8f6fd1;
-  --link-color: #a888e0;
+  --interactive-accent-hover: #8888d8;
+  --link-color: #9898e0;
   --link-color-hover: var(--ellie-rose);
 
   --checkbox-color: var(--ellie-purple);
-  --code-background: #140f1e;
+  --code-background: #17172a;
   --hr-color: var(--ellie-muted);
 }
 
 /* Active editor line — a faint purple wash */
 .theme-dark .cm-active.cm-line,
 .theme-dark .HyperMD-header.cm-active {
-  background: rgba(124, 92, 191, 0.06);
+  background: rgba(120, 120, 200, 0.06);
 }
 
 /* ============================================================================

@@ -7,11 +7,11 @@ local config  = wezterm.config_builder()
 -- ── Palette ───────────────────────────────────────────────────────────────────
 
 local P = {
-  bg     = '#0a0812', bg1  = '#110d1a', bg2  = '#1c1528', bg3  = '#3d2f52',
-  fg     = '#e0d4f0', dim  = '#9b8ab0',
-  purple = '#7c5cbf', lila = '#9b7cd8', pink = '#c47a9b',
+  bg     = '#11111b', bg1  = '#181825', bg2  = '#25253a', bg3  = '#3d3d5c',
+  fg     = '#dce0f4', dim  = '#9898c0',
+  purple = '#7878c8', lila = '#9898e0', pink = '#c47ab8',
   teal   = '#7abfc4', blue = '#7a9bbf', yell = '#c4a87a',
-  white  = '#f4eeff',
+  white  = '#f0f0ff',
 }
 
 -- ── Colors ────────────────────────────────────────────────────────────────────
@@ -25,7 +25,7 @@ config.colors = {
   selection_bg  = P.bg3,
   selection_fg  = P.white,
   ansi    = { P.bg1, P.pink,     P.blue,     P.yell,     P.purple, P.pink,      P.teal,      P.fg    },
-  brights = { P.bg3, '#d48faf',  '#8fb8d8',  '#d4b890',  P.lila,   '#d494b5',   '#90d0d4',   P.white },
+  brights = { P.bg3, '#d48fc8',  '#8fb8d8',  '#d4b890',  P.lila,   '#d494cc',   '#90d0d4',   P.white },
   tab_bar = {
     background         = P.bg,
     active_tab         = { bg_color = P.purple, fg_color = P.white, intensity = 'Bold' },

@@ -1,6 +1,5 @@
 // meowsers :3
 {
-    "workbench.colorTheme": "Catppuccin Noir",
     "workbench.iconTheme": "material-icon-theme",
     "workbench.editor.showTabs": "single",
     "workbench.editor.empty.hint": "hidden",
@@ -56,14 +55,68 @@
     "editor.cursorStyle": "line",
     "editor.cursorWidth": 2,
     "workbench.colorCustomizations": {
-        // Remote host
         "statusBarItem.remoteBackground": "#FFFFFF00",
         "statusBarItem.remoteForeground": "#9DA5B4",
-
-        // Borders
         "statusBar.border": "#FFFFFF26",
         "sideBar.border": "#FFFFFF26",
-        "panel.border": "#FFFFFF26"
+        "panel.border": "#FFFFFF26",
+        "[Tara*]": {
+            "statusBar.background": "#80CBC414",
+            "statusBar.foreground": "#80CBC4",
+            "statusBarItem.prominentBackground": "#80CBC426",
+            "statusBarItem.prominentForeground": "#80CBC4",
+            "statusBar.debuggingBackground": "#80CBC433",
+            "statusBar.debuggingForeground": "#80CBC4",
+            "toolbar.activeBackground": "#80CBC426",
+            "button.background": "#80CBC4",
+            "button.hoverBackground": "#80CBC4cc",
+            "extensionButton.separator": "#80CBC433",
+            "extensionButton.background": "#80CBC414",
+            "extensionButton.foreground": "#80CBC4",
+            "extensionButton.hoverBackground": "#80CBC433",
+            "extensionButton.prominentForeground": "#80CBC4",
+            "extensionButton.prominentBackground": "#80CBC414",
+            "extensionButton.prominentHoverBackground": "#80CBC433",
+            "activityBarBadge.background": "#80CBC4",
+            "activityBar.activeBorder": "#80CBC4",
+            "activityBarTop.activeBorder": "#80CBC4",
+            "list.inactiveSelectionIconForeground": "#80CBC4",
+            "list.activeSelectionForeground": "#80CBC4",
+            "list.inactiveSelectionForeground": "#80CBC4",
+            "list.highlightForeground": "#80CBC4",
+            "sash.hoverBorder": "#80CBC480",
+            "list.activeSelectionIconForeground": "#80CBC4",
+            "scrollbarSlider.activeBackground": "#80CBC480",
+            "editorSuggestWidget.highlightForeground": "#80CBC4",
+            "textLink.foreground": "#80CBC4",
+            "progressBar.background": "#80CBC4",
+            "pickerGroup.foreground": "#80CBC4",
+            "tab.activeBorder": "#80CBC4",
+            "tab.activeBorderTop": "#80CBC400",
+            "tab.unfocusedActiveBorder": "#80CBC4",
+            "tab.unfocusedActiveBorderTop": "#80CBC400",
+            "tab.activeModifiedBorder": "#80CBC400",
+            "notificationLink.foreground": "#80CBC4",
+            "editorWidget.resizeBorder": "#80CBC4",
+            "editorWidget.border": "#80CBC4",
+            "settings.modifiedItemIndicator": "#80CBC4",
+            "panelTitle.activeBorder": "#80CBC4",
+            "breadcrumb.activeSelectionForeground": "#80CBC4",
+            "menu.selectionForeground": "#80CBC4",
+            "menubar.selectionForeground": "#80CBC4",
+            "editor.findMatchBorder": "#80CBC4",
+            "selection.background": "#80CBC440",
+            "statusBarItem.remoteBackground": "#80CBC414",
+            "statusBarItem.remoteHoverBackground": "#80CBC4",
+            "statusBarItem.remoteForeground": "#80CBC4",
+            "notebook.inactiveFocusedCellBorder": "#80CBC480",
+            "commandCenter.activeBorder": "#80CBC480",
+            "chat.slashCommandForeground": "#80CBC4",
+            "chat.avatarForeground": "#80CBC4",
+            "activityBarBadge.foreground": "#FFFFFF",
+            "button.foreground": "#FFFFFF",
+            "statusBarItem.remoteHoverForeground": "#FFFFFF"
+        }
     },
 
     // Typography
@@ -180,5 +233,9 @@
     "shfmt.executablePath": "/home/elara/.local/bin/shfmt",
     "redhat.telemetry.enabled": false,
     "makefile.configureOnOpen": true,
-    "cmake.ignoreCMakeListsMissing": true
+    "cmake.ignoreCMakeListsMissing": true,
+    "workbench.colorTheme": "Catppuccin Noir",
+    "[markdown]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }

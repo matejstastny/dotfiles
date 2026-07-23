@@ -135,13 +135,13 @@ body {
   --text-5: hsl(265deg, 18%, 52%); /* muted channels/chats and timestamps */
 
   /* background and dark colors */
-  --bg-1: hsl(262deg, 25%, 20%); /* dark buttons when clicked */
-  --bg-2: hsl(260deg, 26%, 16%); /* dark buttons */
-  --bg-3: hsl(258deg, 26%, 13%); /* spacing behind panels (shows in the gaps) */
+  --bg-1: hsl(240deg, 22%, 20%); /* dark buttons when clicked */
+  --bg-2: hsl(240deg, 22%, 16%); /* dark buttons */
+  --bg-3: hsl(240deg, 21%, 13%); /* spacing behind panels (shows in the gaps) */
   --bg-4: hsl(
-    258deg,
-    28%,
-    10%
+    240deg,
+    23%,
+    9%
   ); /* main bg — all panels: server list / channels / members / chat */
   --hover: hsla(259deg, 44%, 60%, 0.08); /* channels and buttons when hovered */
   --active: hsla(259deg, 44%, 60%, 0.16); /* channels and buttons when clicked or selected */

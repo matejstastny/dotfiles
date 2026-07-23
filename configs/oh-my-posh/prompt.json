@@ -2,14 +2,14 @@
   "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
   "console_title_template": "{{ .Folder }}",
   "palette": {
-    "base": "#0a0812",
-    "surface": "#110d1a",
-    "muted": "#3d2f52",
-    "purple": "#7c5cbf",
-    "rose": "#c47a9b",
-    "text": "#e0d4f0",
-    "dim": "#9b8ab0",
-    "bright": "#f4eeff",
+    "base": "#11111b",
+    "surface": "#181825",
+    "muted": "#3d3d5c",
+    "purple": "#7878c8",
+    "rose": "#c47ab8",
+    "text": "#dce0f4",
+    "dim": "#9898c0",
+    "bright": "#f0f0ff",
     "t-background": "p:base"
   },
   "blocks": [

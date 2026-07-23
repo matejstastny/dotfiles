@@ -1,0 +1,231 @@
+#!/usr/bin/env bash
+
+# palette
+BASE="#11111b" BASE_NAME="base"
+SURFACE="#181825" SURFACE_NAME="surface"
+OVERLAY="#25253a" OVERLAY_NAME="overlay"
+MUTED="#3d3d5c" MUTED_NAME="muted"
+PURPLE="#7878c8" PURPLE_NAME="purple"
+ROSE="#c47ab8" ROSE_NAME="rose"
+TEXT="#dce0f4" TEXT_NAME="text"
+DIM="#9898c0" DIM_NAME="dim"
+BRIGHT="#f0f0ff" BRIGHT_NAME="bright"
+
+# terminal
+ANSI_0="#181825" ANSI_8="#3d3d5c"
+ANSI_1="#c47ab8" ANSI_9="#d48fc8"
+ANSI_2="#7a9bbf" ANSI_10="#8fb8d8"
+ANSI_3="#c4a87a" ANSI_11="#d4b890"
+ANSI_4="#7878c8" ANSI_12="#9898e0"
+ANSI_5="#c47ab8" ANSI_13="#d494cc"
+ANSI_6="#7abfc4" ANSI_14="#90d0d4"
+ANSI_7="#dce0f4" ANSI_15="#f0f0ff"
+
+# ─────────────────────────────────────────────────────────────────
+
+OUT="${1:-$HOME/dotfiles/assets/palette.png}"
+TMPHTML=$(mktemp /tmp/elara-palette-XXXX.html)
+trap 'rm -f "$TMPHTML"' EXIT
+
+cat >"$TMPHTML" <<HTMLEOF
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+@font-face {
+  font-family: "Maple Mono NF";
+  font-weight: 400;
+  src: url("file:///home/elara/.local/share/fonts/MapleMono/MapleMono-NF-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Maple Mono NF";
+  font-weight: 700;
+  src: url("file:///home/elara/.local/share/fonts/MapleMono/MapleMono-NF-SemiBold.ttf") format("truetype");
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+::-webkit-scrollbar { display: none; }
+
+body {
+  background: $BASE;
+  width: 860px;
+  padding: 28px 32px 24px;
+  overflow: hidden;
+  font-family: "Maple Mono NF", monospace;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.title {
+  color: $PURPLE;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 3px;
+}
+.subtitle {
+  color: $DIM;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(to right, $MUTED 0%, transparent 100%);
+  opacity: 0.5;
+}
+
+.swatches {
+  display: flex;
+  gap: 10px;
+}
+.swatch {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.block {
+  height: 72px;
+  border-radius: 8px;
+  border: 1px solid rgba(152,152,192,0.1);
+}
+.swatch-name {
+  color: $DIM;
+  font-size: 10px;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+.swatch-hex {
+  color: $MUTED;
+  font-size: 9px;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+
+.ansi-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ansi-label {
+  color: $MUTED;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.ansi-row {
+  display: flex;
+  gap: 6px;
+}
+.ansi-cell {
+  flex: 1;
+  height: 22px;
+  border-radius: 4px;
+  border: 1px solid rgba(152,152,192,0.08);
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="title">✦ elara dotfiles</span>
+  <span class="subtitle">midnight with stars ✧</span>
+</div>
+
+<div class="divider"></div>
+
+<div class="swatches">
+  <div class="swatch">
+    <div class="block" style="background:$BASE"></div>
+    <div class="swatch-name">$BASE_NAME</div>
+    <div class="swatch-hex">$BASE</div>
+  </div>
+  <div class="swatch">
+    <div class="block" style="background:$SURFACE"></div>
+    <div class="swatch-name">$SURFACE_NAME</div>
+    <div class="swatch-hex">$SURFACE</div>
+  </div>
+  <div class="swatch">
+    <div class="block" style="background:$OVERLAY"></div>
+    <div class="swatch-name">$OVERLAY_NAME</div>
+    <div class="swatch-hex">$OVERLAY</div>
+  </div>
+  <div class="swatch">
+    <div class="block" style="background:$MUTED"></div>
+    <div class="swatch-name">$MUTED_NAME</div>
+    <div class="swatch-hex">$MUTED</div>
+  </div>
+  <div class="swatch">
+    <div class="block" style="background:$PURPLE"></div>
+    <div class="swatch-name">$PURPLE_NAME</div>
+    <div class="swatch-hex">$PURPLE</div>
+  </div>
+  <div class="swatch">
+    <div class="block" style="background:$ROSE"></div>
+    <div class="swatch-name">$ROSE_NAME</div>
+    <div class="swatch-hex">$ROSE</div>
+  </div>
+  <div class="swatch">
+    <div class="block" style="background:$TEXT"></div>
+    <div class="swatch-name">$TEXT_NAME</div>
+    <div class="swatch-hex">$TEXT</div>
+  </div>
+  <div class="swatch">
+    <div class="block" style="background:$DIM"></div>
+    <div class="swatch-name">$DIM_NAME</div>
+    <div class="swatch-hex">$DIM</div>
+  </div>
+  <div class="swatch">
+    <div class="block" style="background:$BRIGHT"></div>
+    <div class="swatch-name">$BRIGHT_NAME</div>
+    <div class="swatch-hex">$BRIGHT</div>
+  </div>
+</div>
+
+<div class="ansi-section">
+  <div class="ansi-label">terminal</div>
+  <div class="ansi-row">
+    <div class="ansi-cell" style="background:$ANSI_0"></div>
+    <div class="ansi-cell" style="background:$ANSI_1"></div>
+    <div class="ansi-cell" style="background:$ANSI_2"></div>
+    <div class="ansi-cell" style="background:$ANSI_3"></div>
+    <div class="ansi-cell" style="background:$ANSI_4"></div>
+    <div class="ansi-cell" style="background:$ANSI_5"></div>
+    <div class="ansi-cell" style="background:$ANSI_6"></div>
+    <div class="ansi-cell" style="background:$ANSI_7"></div>
+  </div>
+  <div class="ansi-row">
+    <div class="ansi-cell" style="background:$ANSI_8"></div>
+    <div class="ansi-cell" style="background:$ANSI_9"></div>
+    <div class="ansi-cell" style="background:$ANSI_10"></div>
+    <div class="ansi-cell" style="background:$ANSI_11"></div>
+    <div class="ansi-cell" style="background:$ANSI_12"></div>
+    <div class="ansi-cell" style="background:$ANSI_13"></div>
+    <div class="ansi-cell" style="background:$ANSI_14"></div>
+    <div class="ansi-cell" style="background:$ANSI_15"></div>
+  </div>
+</div>
+
+</body>
+</html>
+HTMLEOF
+
+/usr/bin/helium \
+	--headless=new \
+	--no-sandbox \
+	--disable-gpu \
+	--force-device-scale-factor=2 \
+	--window-size=860,300 \
+	--screenshot="$OUT" \
+	"file://$TMPHTML" 2>/dev/null
+
+notify-send -t 3000 "✦ palette" "saved to $OUT"
+echo "$OUT"
