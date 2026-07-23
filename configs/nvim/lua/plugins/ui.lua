@@ -1,16 +1,13 @@
--- Ellie palette (from the Hyprland rice) applied to Neovim.
--- catppuccin-mocha is retinted via color_overrides so every integration
--- (telescope, neo-tree, lualine, gitsigns…) inherits the "midnight with stars" look.
 local ellie = {
-    base    = "#0a0812",
-    surface = "#110d1a",
-    overlay = "#1c1528",
-    muted   = "#3d2f52",
-    purple  = "#7c5cbf", -- accent
-    rose    = "#c47a9b", -- dusty rose
-    text    = "#e0d4f0",
-    dim     = "#9b8ab0",
-    bright  = "#f4eeff",
+    base    = "#11111b",
+    surface = "#181825",
+    overlay = "#25253a",
+    muted   = "#3d3d5c",
+    purple  = "#7878c8", -- accent
+    rose    = "#c47ab8", -- dusty rose
+    text    = "#dce0f4",
+    dim     = "#9898c0",
+    bright  = "#f0f0ff",
 }
 
 return {
@@ -55,7 +52,7 @@ return {
                         overlay1  = "#6d5d88",
                         overlay0  = "#544666",
                         surface2  = ellie.muted,
-                        surface1  = "#2a2038",
+                        surface1  = "#2f2f48",
                         surface0  = ellie.overlay,
                         base      = ellie.base,
                         mantle    = ellie.surface,
@@ -63,47 +60,50 @@ return {
                     },
                 },
                 integrations = {
-                    treesitter        = true,
-                    telescope         = { enabled = true },
-                    lualine           = true,
-                    gitsigns          = true,
-                    mason             = true,
-                    which_key         = true,
-                    blink_cmp         = true,
-                    native_lsp        = { enabled = true, underlines = {
-                        errors      = { "undercurl" },
-                        hints       = { "undercurl" },
-                        warnings    = { "undercurl" },
-                        information = { "undercurl" },
-                    } },
-                    indent_blankline  = { enabled = true, colored_indent_levels = false },
-                    illuminate        = { enabled = true },
-                    neotree           = true,
-                    snacks            = true,
+                    treesitter       = true,
+                    telescope        = { enabled = true },
+                    lualine          = true,
+                    gitsigns         = true,
+                    mason            = true,
+                    which_key        = true,
+                    blink_cmp        = true,
+                    native_lsp       = {
+                        enabled = true,
+                        underlines = {
+                            errors      = { "undercurl" },
+                            hints       = { "undercurl" },
+                            warnings    = { "undercurl" },
+                            information = { "undercurl" },
+                        }
+                    },
+                    indent_blankline = { enabled = true, colored_indent_levels = false },
+                    illuminate       = { enabled = true },
+                    neotree          = true,
+                    snacks           = true,
                 },
                 highlight_overrides = {
                     mocha = function(c)
                         return {
                             -- Telescope — clear all pane backgrounds for the floating look
-                            TelescopeNormal          = { bg = "NONE" },
-                            TelescopePromptNormal     = { bg = "NONE" },
-                            TelescopeResultsNormal    = { bg = "NONE" },
-                            TelescopePreviewNormal    = { bg = "NONE" },
-                            TelescopeBorder           = { bg = "NONE", fg = c.surface1 },
-                            TelescopePromptBorder     = { bg = "NONE", fg = c.surface1 },
-                            TelescopeResultsBorder    = { bg = "NONE", fg = c.surface1 },
-                            TelescopePreviewBorder    = { bg = "NONE", fg = c.surface1 },
-                            TelescopePromptTitle      = { bg = "NONE", fg = c.mauve },
-                            TelescopeResultsTitle     = { bg = "NONE", fg = c.mauve },
-                            TelescopePreviewTitle     = { bg = "NONE", fg = c.mauve },
-                            TelescopeSelection        = { bg = c.surface0 },
-                            TelescopeSelectionCaret   = { fg = c.mauve },
-                            TelescopeMatching         = { fg = c.pink, style = { "bold" } },
+                            TelescopeNormal            = { bg = "NONE" },
+                            TelescopePromptNormal      = { bg = "NONE" },
+                            TelescopeResultsNormal     = { bg = "NONE" },
+                            TelescopePreviewNormal     = { bg = "NONE" },
+                            TelescopeBorder            = { bg = "NONE", fg = c.subtext1 },
+                            TelescopePromptBorder      = { bg = "NONE", fg = c.subtext1 },
+                            TelescopeResultsBorder     = { bg = "NONE", fg = c.subtext1 },
+                            TelescopePreviewBorder     = { bg = "NONE", fg = c.subtext1 },
+                            TelescopePromptTitle       = { bg = "NONE", fg = c.mauve },
+                            TelescopeResultsTitle      = { bg = "NONE", fg = c.mauve },
+                            TelescopePreviewTitle      = { bg = "NONE", fg = c.mauve },
+                            TelescopeSelection         = { bg = c.surface0 },
+                            TelescopeSelectionCaret    = { fg = c.mauve },
+                            TelescopeMatching          = { fg = c.pink, style = { "bold" } },
                             -- Floating windows (hover, signature, blink menu)
-                            NormalFloat               = { bg = "NONE" },
-                            FloatBorder               = { bg = "NONE", fg = c.surface1 },
+                            NormalFloat                = { bg = "NONE" },
+                            FloatBorder                = { bg = "NONE", fg = c.overlay2 },
                             -- Cursor line / column subtle
-                            CursorLine                = { bg = c.mantle },
+                            CursorLine                 = { bg = c.mantle },
                             -- Diagnostics virtual text a touch dimmer
                             DiagnosticVirtualTextError = { fg = c.red, bg = "NONE" },
                             DiagnosticVirtualTextWarn  = { fg = c.yellow, bg = "NONE" },
@@ -131,11 +131,11 @@ return {
 
             -- transparent middle sections, coloured mode pill, star-accented
             local theme = {
-                normal   = { a = { fg = ellie.base, bg = c.mauve,    gui = "bold" }, b = { fg = c.text, bg = "NONE" }, c = { fg = c.subtext0, bg = "NONE" } },
-                insert   = { a = { fg = ellie.base, bg = c.green,    gui = "bold" }, b = { fg = c.text, bg = "NONE" }, c = { fg = c.subtext0, bg = "NONE" } },
+                normal   = { a = { fg = ellie.base, bg = c.mauve, gui = "bold" }, b = { fg = c.text, bg = "NONE" }, c = { fg = c.subtext0, bg = "NONE" } },
+                insert   = { a = { fg = ellie.base, bg = c.green, gui = "bold" }, b = { fg = c.text, bg = "NONE" }, c = { fg = c.subtext0, bg = "NONE" } },
                 visual   = { a = { fg = ellie.base, bg = c.flamingo, gui = "bold" }, b = { fg = c.text, bg = "NONE" }, c = { fg = c.subtext0, bg = "NONE" } },
-                replace  = { a = { fg = ellie.base, bg = c.pink,     gui = "bold" }, b = { fg = c.text, bg = "NONE" }, c = { fg = c.subtext0, bg = "NONE" } },
-                command  = { a = { fg = ellie.base, bg = c.peach,    gui = "bold" }, b = { fg = c.text, bg = "NONE" }, c = { fg = c.subtext0, bg = "NONE" } },
+                replace  = { a = { fg = ellie.base, bg = c.pink, gui = "bold" }, b = { fg = c.text, bg = "NONE" }, c = { fg = c.subtext0, bg = "NONE" } },
+                command  = { a = { fg = ellie.base, bg = c.peach, gui = "bold" }, b = { fg = c.text, bg = "NONE" }, c = { fg = c.subtext0, bg = "NONE" } },
                 inactive = { a = { fg = c.overlay0, bg = "NONE" }, b = { fg = c.overlay0, bg = "NONE" }, c = { fg = c.overlay0, bg = "NONE" } },
             }
 
@@ -178,11 +178,11 @@ return {
                     lualine_x = {
                         {
                             "diagnostics",
-                            sources  = { "nvim_lsp" },
-                            symbols  = { error = " ", warn = " ", info = " ", hint = " " },
+                            sources = { "nvim_lsp" },
+                            symbols = { error = " ", warn = " ", info = " ", hint = " " },
                         },
-                        { lsp_names, color = { fg = c.mauve } },
-                        { "filetype", colored = true, icon_only = false },
+                        { lsp_names,  color = { fg = c.mauve } },
+                        { "filetype", colored = true,          icon_only = false },
                     },
                     lualine_y = {},
                     lualine_z = {
@@ -202,4 +202,13 @@ return {
             })
         end,
     },
+
+    -- Transparent
+    {
+        "xiyaowong/transparent.nvim",
+        lazy = false,
+        opts = {
+            extra_groups = { "NormalFloat" },
+        },
+    }
 }

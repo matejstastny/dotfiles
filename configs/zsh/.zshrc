@@ -30,7 +30,9 @@ path=(
 
 alias dots='cd ~/dotfiles'
 alias s='ls ~/dotfiles/bin'
-alias r='source ~/.zshrc'
+
+alias sr='source ~/.zshrc && echo "shell reloaded"'
+alias hr='hyprctl reload && echo "hyprland reloaded" && bar'
 
 alias lg='lazygit'
 alias gs='git status -sb'
@@ -86,7 +88,6 @@ function y() {
 
 export NOTES_DIR="$HOME/notes"
 
-# open the vault, or a specific note, in the editor
 note() {
 	if [ $# -eq 0 ]; then
 		builtin cd "$NOTES_DIR" && "$EDITOR" .
@@ -98,7 +99,6 @@ note() {
 	"$EDITOR" "$f"
 }
 
-# open / create today's daily note
 today() {
 	local dir="$NOTES_DIR/daily" f
 	mkdir -p "$dir"
@@ -107,7 +107,6 @@ today() {
 	"$EDITOR" "$f"
 }
 
-# fuzzy-find a note by name and open it
 nn() {
 	local f
 	f=$( (builtin cd "$NOTES_DIR" && rg --files -g '*.md') |
@@ -116,7 +115,6 @@ nn() {
 	[ -n "$f" ] && "$EDITOR" "$NOTES_DIR/$f"
 }
 
-# ripgrep the vault, pick a match, open at that line
 ns() {
 	local sel file line
 	sel=$( (builtin cd "$NOTES_DIR" && rg --line-number --no-heading --color=always -g '*.md' "${*:-.}") |

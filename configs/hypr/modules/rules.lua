@@ -1,27 +1,17 @@
+-- file dialogs
+hl.window_rule({ name = "save-file-float", match = { title = "^Save File$" }, float = true, center = true })
+hl.window_rule({ name = "open-files-float", match = { title = "^Open Files$" }, float = true, center = true })
+hl.window_rule({ name = "select-folder-float", match = { title = "^Select Folder$" }, float = true, center = true })
+
+-- workspace assignments (declarative — rule engine applies per-window, no dispatch race on simultaneous opens)
+hl.window_rule({ name = "session-ws-kitty",    match = { class = "^kitty$"    }, workspace = "1 silent" })
+hl.window_rule({ name = "session-ws-code",     match = { class = "^codium$"   }, workspace = "2 silent" })
+hl.window_rule({ name = "session-ws-helium",   match = { class = "^helium$"   }, workspace = "3 silent" })
+hl.window_rule({ name = "session-ws-vesktop",  match = { class = "^vesktop$"  }, workspace = "4 silent" })
+hl.window_rule({ name = "session-ws-obsidian", match = { class = "^obsidian$" }, workspace = "5 silent" })
+hl.window_rule({ name = "session-ws-t3code",   match = { class = "^t3code$"   }, workspace = "6 silent" })
+
 hl.on("window.open", function(window)
-    -- file dialogs: float, center, and stop — prevents class-based rules below from also firing
-    if window.title:find("^Save File$") or window.title:find("^Open Files$") or window.title:find("^Select Folder$") then
-        hl.dispatch(hl.dsp.window.float({ action = "set" }))
-        hl.dispatch(hl.dsp.window.center())
-        return
-    end
-
-    -- workspace assignments
-    local ws_map = {
-        ["^kitty$"]    = 1,
-        ["^codium$"]   = 2,
-        ["^helium$"]   = 3,
-        ["^vesktop$"]  = 4,
-        ["^obsidian$"] = 5,
-        ["^t3code$"]   = 6,
-    }
-    for pattern, ws in pairs(ws_map) do
-        if window.class:find(pattern) then
-            hl.dispatch(hl.dsp.window.move({ workspace = ws, silent = true }))
-            return
-        end
-    end
-
     -- bluetooth window
     if window.class:find("^blueman") then
         hl.dispatch(hl.dsp.window.float({ action = "set" }))

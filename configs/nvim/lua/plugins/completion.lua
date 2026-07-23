@@ -27,6 +27,11 @@ return {
             sources = {
                 default = { "lsp", "path", "snippets", "buffer" },
             },
+            cmdline = {
+                sources = { "cmdline" },
+                enabled = true,
+                completion = { menu = { auto_show = true } },
+            },
             fuzzy = { implementation = "prefer_rust_with_warning" },
         },
         opts_extend = { "sources.default" },

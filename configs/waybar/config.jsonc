@@ -4,9 +4,9 @@
     "height": 38,
     "spacing": 0,
     "modules-left": [
-        "hyprland/workspaces",
-        "custom/sep",
-        "hyprland/window"
+        "hyprland/workspaces"
+        // "custom/sep"
+        // "hyprland/window"
     ],
     // "modules-center": [
     //     "mpris"
@@ -66,18 +66,7 @@
         "format": "{icon} {capacity}%",
         "format-charging": "󰂄 {capacity}%",
         "format-plugged": "󰚥 {capacity}%",
-        "format-icons": [
-            "󰁺",
-            "󰁻",
-            "󰁼",
-            "󰁽",
-            "󰁾",
-            "󰁿",
-            "󰂀",
-            "󰂁",
-            "󰂂",
-            "󰁹"
-        ]
+        "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
     },
     "cpu": {
         "format": "󰍛 {usage}%",

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+pkill waybar || true
+waybar >/dev/null 2>&1 &
+disown
+
+echo "waybar reloaded"

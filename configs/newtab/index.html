@@ -3,249 +3,264 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>~</title>
+    <title>✦</title>
     <link
       rel="icon"
       href="https://github.com/matejstastny/dotfiles/blob/asahi/configs/newtab/icon.png?raw=true"
     />
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&display=swap");
 
-      /* Ellie — midnight with stars */
       :root {
-        --base: #11111b;
+        --base:    #11111b;
         --surface: #181825;
         --overlay: #25253a;
-        --muted: #3d3d5c;
-        --purple: #7878c8;
-        --lavender: #9898e0;
-        --rose: #c47ab8;
-        --rose-deep: #b068a5;
-        --text: #dce0f4;
-        --dim: #9898c0;
-        --bright: #f0f0ff;
+        --muted:   #3d3d5c;
+        --purple:  #7878c8;
+        --lila:    #9898e0;
+        --rose:    #c47ab8;
+        --text:    #dce0f4;
+        --dim:     #9898c0;
+        --bright:  #f0f0ff;
       }
 
-      * {
-        box-sizing: border-box;
-      }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      html, body { height: 100%; }
 
       body {
-        background-color: var(--base);
+        background:
+          radial-gradient(ellipse 80% 55% at 50% -5%, rgba(120, 120, 200, 0.07) 0%, transparent 70%),
+          var(--base);
         color: var(--text);
         font-family: "Maple Mono NF", "JetBrains Mono", monospace;
         -webkit-font-smoothing: antialiased;
         display: flex;
-        justify-content: center;
         align-items: center;
-        min-height: 100vh;
-        margin: 0;
-        font-size: 13px;
-        line-height: 1.6;
+        justify-content: center;
+        overflow: hidden;
       }
 
-      .container {
-        width: 640px;
-        padding: 20px;
+      canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
       }
 
-      /* Prompt segments: user@host path $ */
-      .user {
-        color: var(--rose);
-        font-weight: 700;
+      .page {
+        position: relative;
+        z-index: 1;
+        width: min(680px, calc(100vw - 48px));
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 36px;
+        animation: rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
       }
-      .at {
+
+      @keyframes rise {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      /* ── clock ── */
+      .clock-wrap {
+        text-align: center;
+        user-select: none;
+      }
+
+      #clock {
+        font-size: clamp(60px, 9vw, 92px);
+        font-weight: 300;
+        letter-spacing: -3px;
+        line-height: 1;
+        background: linear-gradient(130deg, var(--rose) 0%, var(--lila) 52%, var(--purple) 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      #date {
+        margin-top: 10px;
         color: var(--dim);
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
       }
-      .host {
-        color: var(--purple);
-        font-weight: 700;
-      }
-      .path {
-        color: var(--dim);
-      }
-      .sign {
-        color: var(--purple);
-      }
-      .cmd {
-        color: var(--bright);
-      }
-      .comment {
+
+      /* ── rule ── */
+      .rule {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 14px;
         color: var(--muted);
+        font-size: 10px;
+        letter-spacing: 2px;
       }
+      .rule::before,
+      .rule::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+      }
+      .rule::before { background: linear-gradient(to right,  transparent, var(--muted)); }
+      .rule::after  { background: linear-gradient(to left,   transparent, var(--muted)); }
 
-      /* A shell line: prompt + command */
-      .line {
-        margin-bottom: 4px;
-      }
-
-      /* neofetch-style header */
-      .header {
-        margin-bottom: 24px;
-      }
-      .header .row {
-        color: var(--dim);
-      }
-      .header .row .key {
-        color: var(--rose);
-      }
-
-      /* ls-style grid */
-      .grid {
+      /* ── link groups ── */
+      .links {
+        width: 100%;
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 22px;
-        margin: 14px 0 28px;
+        gap: 12px;
       }
 
-      .cat {
-        margin-bottom: 8px;
-        font-weight: 700;
+      .group {
+        padding: 16px 16px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(120, 120, 200, 0.1);
+        background: rgba(24, 24, 37, 0.55);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
       }
-      .cat::before {
-        content: "✦ ";
-        color: inherit;
-        opacity: 0.7;
+      .group:hover {
+        border-color: rgba(120, 120, 200, 0.22);
+        box-shadow: 0 0 0 1px rgba(120, 120, 200, 0.06) inset;
       }
-      .cat-media {
-        color: var(--rose);
+
+      .group-name {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
       }
-      .cat-code {
-        color: var(--purple);
+      .group-name::before {
+        content: "✦";
+        font-size: 7px;
+        opacity: 0.75;
       }
-      .cat-crypto {
-        color: var(--lavender);
-      }
-      .cat-reddit {
-        color: var(--rose-deep);
-      }
-      .cat-dailies {
-        color: var(--purple);
-      }
+
+      .c-rose   { color: var(--rose); }
+      .c-purple { color: var(--purple); }
+      .c-lila   { color: var(--lila); }
+      .c-dim    { color: var(--dim); }
 
       a {
-        color: var(--text);
-        text-decoration: none;
         display: block;
-        margin-bottom: 5px;
-      }
-      a::before {
-        content: "› ";
-        color: var(--muted);
+        color: var(--dim);
+        font-size: 12px;
+        text-decoration: none;
+        padding: 3px 0;
+        transition: color 0.15s ease, transform 0.15s ease;
       }
       a:hover {
         color: var(--bright);
-      }
-      a:hover::before {
-        color: var(--rose);
+        transform: translateX(5px);
       }
 
-      /* Search line */
-      .search-container {
-        display: flex;
-        align-items: center;
+      /* ── search ── */
+      .search-wrap {
         width: 100%;
-        white-space: nowrap;
-      }
-      .search-container form {
-        display: flex;
-        flex-grow: 1;
-        margin: 0;
         position: relative;
       }
-      input {
-        background: transparent;
-        border: none;
-        color: var(--text);
-        font-family: inherit;
-        font-size: inherit;
-        outline: none;
-        margin-left: 8px;
-        width: 100%;
-        caret-color: transparent;
+
+      form { display: contents; }
+
+      .search-icon {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--muted);
+        font-size: 11px;
+        pointer-events: none;
+        user-select: none;
+        z-index: 1;
       }
 
-      /* Blinking block cursor that follows the typed text */
-      .cursor {
+      input[type="text"] {
+        width: 100%;
+        padding: 13px 120px 13px 44px;
+        border-radius: 100px;
+        border: 1px solid rgba(120, 120, 200, 0.14);
+        background: rgba(24, 24, 37, 0.6);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        color: var(--text);
+        font-family: inherit;
+        font-size: 13px;
+        outline: none;
+        transition: border-color 0.2s ease, background 0.2s ease;
+        caret-color: var(--purple);
+      }
+      input[type="text"]::placeholder { color: var(--muted); }
+      input[type="text"]:focus {
+        border-color: rgba(152, 152, 224, 0.32);
+        background: rgba(37, 37, 58, 0.75);
+      }
+
+      #hint {
         position: absolute;
+        right: 18px;
         top: 50%;
-        left: 8px;
         transform: translateY(-50%);
-        width: 8px;
-        height: 15px;
-        background: var(--purple);
-        animation: blink 1s step-end infinite;
+        color: var(--muted);
+        font-size: 11px;
         pointer-events: none;
+        user-select: none;
+        white-space: nowrap;
       }
-      @keyframes blink {
-        50% {
-          opacity: 0;
-        }
-      }
+      #hint .arrow { color: var(--rose); }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="header">
-        <div class="line">
-          <span class="user">elara</span><span class="at">@</span
-          ><span class="host">helium</span> <span class="path">~</span>
-          <span class="sign">$</span>
-          <span class="cmd">neofetch</span>
-        </div>
-        <div class="row"><span class="key">os</span>........ ellie ✧</div>
-        <div class="row"><span class="key">shell</span>..... zsh</div>
-        <div class="row">
-          <span class="key">uptime</span>.... <span id="clock">--:--:--</span>
-        </div>
+    <canvas id="canvas"></canvas>
+
+    <div class="page">
+
+      <div class="clock-wrap">
+        <div id="clock">00:00</div>
+        <div id="date">─</div>
       </div>
 
-      <div class="line">
-        <span class="user">elara</span><span class="at">@</span
-        ><span class="host">helium</span> <span class="path">~/bookmarks</span>
-        <span class="sign">$</span>
-        <span class="cmd">ls</span>
-      </div>
+      <div class="rule">✦ ✧ ✦</div>
 
-      <div class="grid">
-        <div>
-          <div class="cat cat-reddit">me/</div>
+      <div class="links">
+        <div class="group">
+          <div class="group-name c-rose">me</div>
           <a href="https://github.com/matejstastny">github</a>
           <a href="https://github.com/matejstastny/dotfiles">dotfiles</a>
         </div>
-        <div>
-          <div class="cat cat-code">trickfire/</div>
+        <div class="group">
+          <div class="group-name c-purple">trickfire</div>
           <a href="https://github.com/TrickfireRobotics">org</a>
           <a href="https://github.com/TrickfireRobotics/dashboard">dashboard</a>
           <a href="https://github.com/TrickfireRobotics/docs">docs</a>
-          <a href="https://github.com/TrickfireRobotics/gazebo-simulations"
-            >simulation</a
-          >
+          <a href="https://github.com/TrickfireRobotics/gazebo-simulations">simulation</a>
         </div>
-        <div>
-          <div class="cat cat-crypto">repos/</div>
+        <div class="group">
+          <div class="group-name c-lila">repos</div>
           <a href="https://github.com/TrickfireRobotics/trickfire-urc">urc</a>
-          <a href="https://github.com/TrickfireRobotics/ak-series-lib"
-            >motors</a
-          >
-          <a href="https://github.com/TrickfireRobotics/trickfire-drone"
-            >drone</a
-          >
+          <a href="https://github.com/TrickfireRobotics/ak-series-lib">motors</a>
+          <a href="https://github.com/TrickfireRobotics/trickfire-drone">drone</a>
         </div>
-        <div>
-          <div class="cat cat-media">web/</div>
+        <div class="group">
+          <div class="group-name c-dim">web</div>
           <a href="http://trickfirerobotics.com/">website</a>
           <a href="http://docs.trickfirerobotics.com/">docs</a>
           <a href="http://dashboard.trickfirerobotics.com/">dashboard</a>
         </div>
       </div>
 
-      <div class="search-container">
-        <span class="user">elara</span><span class="at">@</span
-        ><span class="host">helium</span>
-        <span class="path" style="margin-left: 6px">~</span>
-        <span class="sign" style="margin-left: 6px">$</span>
-        <form action="https://www.duckduckgo.com/" method="get" autofocus>
+      <div class="search-wrap">
+        <span class="search-icon">✦</span>
+        <form action="https://www.duckduckgo.com/" method="get" id="search-form">
           <input
             id="search"
             type="text"
@@ -253,10 +268,12 @@
             autofocus
             autocomplete="off"
             spellcheck="false"
+            placeholder="search or jump..."
           />
-          <span class="cursor" id="cursor"></span>
         </form>
+        <span id="hint"></span>
       </div>
+
     </div>
 
     <script src="script.js"></script>
