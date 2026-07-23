@@ -1,10 +1,10 @@
 * {
-    bg:      rgba(10, 8, 18, 0.97);
-    surface: #110d1a;
-    accent:  #7c5cbf;
-    fg:      #e0d4f0;
-    dim:     #9b8ab0;
-    bright:  #f4eeff;
+    bg:      rgba(17, 17, 27, 0.97);
+    surface: #181825;
+    accent:  #7878c8;
+    fg:      #dce0f4;
+    dim:     #9898c0;
+    bright:  #f0f0ff;
 
     background-color: transparent;
     text-color:       @fg;
@@ -14,7 +14,7 @@
 window {
     background-color: @bg;
     border:           1px;
-    border-color:     rgba(124, 92, 191, 0.5);
+    border-color:     rgba(120, 120, 200, 0.5);
     border-radius:    12px;
     width:            520px;
     location:         north;
@@ -31,7 +31,7 @@ mainbox {
 inputbar {
     background-color: @surface;
     border:           1px;
-    border-color:     rgba(124, 92, 191, 0.3);
+    border-color:     rgba(120, 120, 200, 0.3);
     border-radius:    8px;
     padding:          10px 14px;
     spacing:          8px;
@@ -66,7 +66,7 @@ element {
 
 element.normal.normal   { background-color: transparent;             text-color: @fg;     }
 element.alternate.normal{ background-color: transparent;             text-color: @fg;     }
-element.selected.normal { background-color: rgba(124,92,191,0.2);   text-color: @bright; }
+element.selected.normal { background-color: rgba(120,120,200,0.2);  text-color: @bright; }
 
 element-icon {
     background-color: transparent;
