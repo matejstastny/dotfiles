@@ -1,0 +1,85 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+palette = "ellie"
+
+format = """
+[✦ ](purple)$directory$git_branch$git_status$character"""
+
+right_format = """$cmd_duration$bun$nodejs$golang$python$rust$ruby"""
+
+add_newline = false
+
+[palettes.ellie]
+purple = "#7878c8"
+rose   = "#c47ab8"
+dim    = "#9898c0"
+
+[directory]
+style              = "#dce0f4 bold"
+truncation_length  = 4
+fish_style_pwd_dir_length = 1
+format             = "[$path]($style)"
+truncation_symbol  = "…/"
+
+[git_branch]
+style  = "dim"
+symbol = " "
+format = "[ $symbol$branch]($style)"
+
+[git_status]
+format     = "[$modified$ahead_behind](rose)"
+modified   = " ·"
+staged     = ""
+ahead      = " ↑$count"
+behind     = " ↓$count"
+diverged   = " ↕"
+conflicted = " ✗"
+untracked  = ""
+deleted    = ""
+renamed    = ""
+stashed    = ""
+up_to_date = ""
+
+[character]
+success_symbol = "[ ❯](purple)"
+error_symbol   = "[ ❯](rose)"
+
+[cmd_duration]
+min_time = 2000
+format   = "[$duration ](dim)"
+
+[bun]
+style          = "dim"
+symbol         = " "
+format         = "[$symbol$version ]($style)"
+version_format = "$raw"
+
+[nodejs]
+style          = "dim"
+symbol         = " "
+format         = "[$symbol$version ]($style)"
+version_format = "$raw"
+
+[golang]
+style          = "dim"
+symbol         = " "
+format         = "[$symbol$version ]($style)"
+version_format = "$raw"
+
+[python]
+style          = "dim"
+symbol         = " "
+format         = "[$symbol$version ]($style)"
+version_format = "$raw"
+
+[rust]
+style          = "dim"
+symbol         = " "
+format         = "[$symbol$version ]($style)"
+version_format = "$raw"
+
+[ruby]
+style          = "rose"
+symbol         = " "
+format         = "[$symbol$version ]($style)"
+version_format = "$raw"

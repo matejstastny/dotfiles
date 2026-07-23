@@ -16,7 +16,7 @@
 | **Wallpaper**     | [Waypaper](https://github.com/anufrievroman/waypaper) + [swww](https://github.com/LGFae/swww) |
 | **Terminal**      | [Kitty](https://sw.kovidgoyal.net/kitty/)                                                     |
 | **Multiplexer**   | [Tmux](https://github.com/tmux/tmux)                                                          |
-| **Shell**         | [Zsh](https://www.zsh.org) + [oh-my-posh](https://ohmyposh.dev)                               |
+| **Shell**         | [Zsh](https://www.zsh.org) + [starship](https://starship.rs/)                                 |
 | **Editor**        | [VSCodium](https://vscodium.com) · [Neovim](https://neovim.io)                                |
 | **Fetch**         | [Fastfetch](https://github.com/fastfetch-cli/fastfetch)                                       |
 | **Browser**       | [Helium](https://github.com/helium-browser/helium)                                            |

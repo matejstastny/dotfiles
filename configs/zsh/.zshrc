@@ -178,8 +178,8 @@ nsync() {
 
 # Prompt & Plugins ---------------------------------------------------------------------------
 
-# Oh My Posh
-eval "$(oh-my-posh init zsh --config $HOME/.config/oh-my-posh/prompt.json)"
+# Starship
+eval "$(starship init zsh)"
 
 # Zoxide
 eval "$(zoxide init zsh)"

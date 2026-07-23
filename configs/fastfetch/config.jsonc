@@ -1,80 +1,121 @@
+// elara handcrafted <3
 {
-    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+
+    "logo": { "type": "none" },
+
     "display": {
-        "key": {
+        "separator": "  ",
+        "color": { "separator": "38;2;61;61;92" },
+        "percent": {
+            "type": 11,
+            "color": {
+                "green": "38;2;122;191;196",
+                "yellow": "38;2;196;168;122",
+                "red": "38;2;196;122;184"
+            }
+        },
+        "bar": {
+            "border": { "left": "", "right": "  " },
+            "char": { "elapsed": "━", "total": "━" },
             "width": 10
         },
-        "size": {
-            "binaryPrefix": "jedec"
-        },
-        "separator": ""
+        "constants": ["──────────────────────────────"]
     },
-    "logo": {
-        "type": "file",
-        "source": "~/.config/fastfetch/ascii.txt",
-        "width": 1,
-        "height": 10
-    },
+
     "modules": [
         "break",
+
+        {
+            "type": "title",
+            "key": " ",
+            "format": "{#38;2;196;122;184}{user-name}{#38;2;61;61;92}  ·  {#38;2;122;191;196}{host-name}"
+        },
+        {
+            "type": "custom",
+            "format": "{#38;2;61;61;92}  {$1}  {#38;2;196;122;184}✦"
+        },
+        "break",
+
         {
             "type": "os",
-            "key": "os",
-            "keyColor": "#c47a9b",
-            "format": "{name}"
+            "keyWidth": 11,
+            "key": "{#38;2;196;122;184}{icon} {#38;2;120;120;200}os"
         },
         {
             "type": "kernel",
-            "key": "ker",
-            "keyColor": "#7c5cbf"
-        },
-        {
-            "type": "packages",
-            "key": "pkgs",
-            "keyColor": "#9b8ab0"
-        },
-        {
-            "type": "shell",
-            "key": "sh",
-            "keyColor": "#9b8ab0",
-            "format": "{pretty-name}"
-        },
-        {
-            "type": "wm",
-            "key": "wm",
-            "keyColor": "#7c5cbf",
-            "format": "{pretty-name}"
+            "keyWidth": 11,
+            "key": "{#38;2;196;122;184}{icon} {#38;2;120;120;200}kernel"
         },
         {
             "type": "uptime",
-            "key": "up",
-            "keyColor": "#9b8ab0"
+            "keyWidth": 11,
+            "key": "{#38;2;196;122;184}{icon} {#38;2;120;120;200}uptime"
         },
         {
+            "type": "packages",
+            "keyWidth": 11,
+            "key": "{#38;2;196;122;184}{icon} {#38;2;120;120;200}pkgs"
+        },
+        "break",
+
+        {
+            "type": "shell",
+            "keyWidth": 11,
+            "key": "{#38;2;196;122;184}{icon} {#38;2;120;120;200}shell"
+        },
+        {
+            "type": "wm",
+            "keyWidth": 11,
+            "key": "{#38;2;196;122;184}{icon} {#38;2;120;120;200}wm"
+        },
+        {
+            "type": "terminal",
+            "keyWidth": 11,
+            "key": "{#38;2;196;122;184}{icon} {#38;2;120;120;200}term"
+        },
+        {
+            "type": "terminalfont",
+            "keyWidth": 11,
+            "key": "{#38;2;196;122;184}{icon} {#38;2;120;120;200}font"
+        },
+        "break",
+
+        {
             "type": "cpu",
-            "key": "cpu",
-            "keyColor": "#c47a9b",
-            "format": "{name}"
+            "keyWidth": 11,
+            "key": "{#38;2;196;122;184}{icon} {#38;2;120;120;200}cpu"
+        },
+        {
+            "type": "gpu",
+            "keyWidth": 11,
+            "key": "{#38;2;196;122;184}{icon} {#38;2;120;120;200}gpu"
         },
         {
             "type": "memory",
-            "key": "ram",
-            "keyColor": "#7c5cbf",
-            "format": "{used} / {total}"
+            "keyWidth": 11,
+            "key": "{#38;2;196;122;184}{icon} {#38;2;120;120;200}ram"
+        },
+        {
+            "type": "swap",
+            "keyWidth": 11,
+            "key": "{#38;2;196;122;184}{icon} {#38;2;120;120;200}swap"
         },
         {
             "type": "disk",
-            "key": "disk",
-            "keyColor": "#9b8ab0",
-            "folders": [
-                "/"
-            ],
-            "format": "{size-used} / {size-total}"
+            "keyWidth": 11,
+            "key": "{#38;2;196;122;184}{icon} {#38;2;120;120;200}disk",
+            "folders": "/"
         },
         "break",
+
         {
             "type": "custom",
-            "format": "\u001b[33m \u001b[32m \u001b[34m \u001b[31m \u001b[36m \u001b[35m \u001b[37m \u001b[97m "
-        }
+            "format": "{#38;2;61;61;92}  {$1}  {#38;2;196;122;184}✦"
+        },
+        "break",
+
+        { "type": "colors", "symbol": "circle", "paddingLeft": 2 },
+        "break"
     ]
 }
