@@ -1,10 +1,8 @@
 ![palette](assets/palette.png)
 
-> Elara is a moon of Jupiter btw :3
+> Elara is a moon of Jupiter! Pallete above generated using a custom script :3
 
-## Pallette
-
-## Stack
+## Stacka
 
 | Category          | Tool                                                                                          |
 | ----------------- | --------------------------------------------------------------------------------------------- |
