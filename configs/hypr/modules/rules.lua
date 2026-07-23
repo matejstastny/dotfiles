@@ -1,16 +1,43 @@
--- workspaces
-hl.window_rule({ name = "session-ws-kitty", match = { class = "^kitty$" }, workspace = "1 silent" })
-hl.window_rule({ name = "session-ws-code", match = { class = "^codium$" }, workspace = "2 silent" })
-hl.window_rule({ name = "session-ws-helium", match = { class = "^helium$" }, workspace = "3 silent" })
-hl.window_rule({ name = "session-ws-vesktop", match = { class = "^vesktop$" }, workspace = "4 silent" })
-hl.window_rule({ name = "session-ws-obsidian", match = { class = "^obsidian$" }, workspace = "5 silent" })
-hl.window_rule({ name = "session-ws-t3code", match = { class = "^t3code$" }, workspace = "6 silent" })
+hl.on("window.open", function(window)
+    -- file dialogs: float, center, and stop — prevents class-based rules below from also firing
+    if window.title:find("^Save File$") or window.title:find("^Open Files$") or window.title:find("^Select Folder$") then
+        hl.dispatch(hl.dsp.window.float({ action = "set" }))
+        hl.dispatch(hl.dsp.window.center())
+        return
+    end
 
--- helium file dialogs
-hl.window_rule({ name = "helium-save-file-float", match = { class = "^helium$", title = "^Save File$" }, float = true })
-hl.window_rule({ name = "helium-save-file-center", match = { class = "^helium$", title = "^Save File$" }, center = true })
-hl.window_rule({ name = "helium-open-files-float", match = { class = "^helium$", title = "^Open Files$" }, float = true })
-hl.window_rule({ name = "helium-open-files-center", match = { class = "^helium$", title = "^Open Files$" }, center = true })
+    -- workspace assignments
+    local ws_map = {
+        ["^kitty$"]    = 1,
+        ["^codium$"]   = 2,
+        ["^helium$"]   = 3,
+        ["^vesktop$"]  = 4,
+        ["^obsidian$"] = 5,
+        ["^t3code$"]   = 6,
+    }
+    for pattern, ws in pairs(ws_map) do
+        if window.class:find(pattern) then
+            hl.dispatch(hl.dsp.window.move({ workspace = ws, silent = true }))
+            return
+        end
+    end
+
+    -- bluetooth window
+    if window.class:find("^blueman") then
+        hl.dispatch(hl.dsp.window.float({ action = "set" }))
+        hl.dispatch(hl.dsp.window.resize({ exact = true, x = 400, y = 600 }))
+        hl.dispatch(hl.dsp.window.center())
+        return
+    end
+
+    -- bitwarden password manager window
+    if window.class:find("chrome%-nngceckbapebfimnlniiiahkandclblb") then
+        hl.dispatch(hl.dsp.window.float({ action = "set" }))
+        hl.dispatch(hl.dsp.window.resize({ exact = true, x = 400, y = 600 }))
+        hl.dispatch(hl.dsp.window.center())
+        return
+    end
+end)
 
 -- restore wallpaper on monitor hotplug
 hl.on("monitor.added", function()
@@ -21,23 +48,6 @@ end)
 hl.window_rule({ name = "waypaper-float", match = { class = "^waypaper$" }, float = true })
 hl.window_rule({ name = "waypaper-size", match = { class = "^waypaper$" }, size = "800 600" })
 hl.window_rule({ name = "waypaper-center", match = { class = "^waypaper$" }, center = true })
-
--- floating windows
-hl.on("window.open", function(window)
-    -- bluetooth window
-    if window.class:find("^blueman") then
-        hl.dispatch(hl.dsp.window.float({ action = "set" }))
-        hl.dispatch(hl.dsp.window.resize({ exact = true, x = 400, y = 600 }))
-        hl.dispatch(hl.dsp.window.center())
-    end
-    -- bitwarden password manager window
-    if window.class:find("chrome%-nngceckbapebfimnlniiiahkandclblb") then
-        hl.dispatch(hl.dsp.window.float({ action = "set" }))
-        hl.dispatch(hl.dsp.window.resize({ exact = true, x = 400, y = 600 }))
-        hl.dispatch(hl.dsp.window.center())
-    end
-end)
-
 
 -- swayosd: disable blur so the transparent window bg doesn't create a liquid-glass circle
 hl.layer_rule({
