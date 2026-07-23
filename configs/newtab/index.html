@@ -1,281 +1,351 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>✦</title>
-    <link
-      rel="icon"
-      href="https://github.com/matejstastny/dotfiles/blob/asahi/configs/newtab/icon.png?raw=true"
-    />
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&display=swap");
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>~</title>
+        <link
+            rel="icon"
+            href="https://github.com/matejstastny/dotfiles/blob/asahi/configs/newtab/icon.ico?raw=true"
+        />
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&display=swap");
 
-      :root {
-        --base:    #11111b;
-        --surface: #181825;
-        --overlay: #25253a;
-        --muted:   #3d3d5c;
-        --purple:  #7878c8;
-        --lila:    #9898e0;
-        --rose:    #c47ab8;
-        --text:    #dce0f4;
-        --dim:     #9898c0;
-        --bright:  #f0f0ff;
-      }
+            :root {
+                --base: #11111b;
+                --surface: #181825;
+                --overlay: #25253a;
+                --muted: #3d3d5c;
+                --purple: #7878c8;
+                --lila: #9898e0;
+                --rose: #c47ab8;
+                --text: #dce0f4;
+                --dim: #9898c0;
+                --bright: #f0f0ff;
+            }
 
-      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
 
-      html, body { height: 100%; }
+            html,
+            body {
+                height: 100%;
+            }
 
-      body {
-        background:
-          radial-gradient(ellipse 80% 55% at 50% -5%, rgba(120, 120, 200, 0.07) 0%, transparent 70%),
-          var(--base);
-        color: var(--text);
-        font-family: "Maple Mono NF", "JetBrains Mono", monospace;
-        -webkit-font-smoothing: antialiased;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-      }
+            body {
+                background:
+                    radial-gradient(
+                        ellipse 80% 55% at 50% -5%,
+                        rgba(120, 120, 200, 0.07) 0%,
+                        transparent 70%
+                    ),
+                    var(--base);
+                color: var(--text);
+                font-family: "Maple Mono NF", "JetBrains Mono", monospace;
+                -webkit-font-smoothing: antialiased;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+            }
 
-      canvas {
-        position: fixed;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-      }
+            canvas {
+                position: fixed;
+                inset: 0;
+                z-index: 0;
+                pointer-events: none;
+            }
 
-      .page {
-        position: relative;
-        z-index: 1;
-        width: min(680px, calc(100vw - 48px));
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 36px;
-        animation: rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
-      }
+            .page {
+                position: relative;
+                z-index: 1;
+                width: min(680px, calc(100vw - 48px));
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 36px;
+                animation: rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+            }
 
-      @keyframes rise {
-        from { opacity: 0; transform: translateY(10px); }
-        to   { opacity: 1; transform: translateY(0); }
-      }
+            @keyframes rise {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
 
-      /* ── clock ── */
-      .clock-wrap {
-        text-align: center;
-        user-select: none;
-      }
+            /* ── clock ── */
+            .clock-wrap {
+                text-align: center;
+                user-select: none;
+            }
 
-      #clock {
-        font-size: clamp(60px, 9vw, 92px);
-        font-weight: 300;
-        letter-spacing: -3px;
-        line-height: 1;
-        background: linear-gradient(130deg, var(--rose) 0%, var(--lila) 52%, var(--purple) 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-      }
+            #clock {
+                font-size: clamp(60px, 9vw, 92px);
+                font-weight: 300;
+                letter-spacing: -3px;
+                line-height: 1;
+                background: linear-gradient(
+                    130deg,
+                    var(--rose) 0%,
+                    var(--lila) 52%,
+                    var(--purple) 100%
+                );
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+            }
 
-      #date {
-        margin-top: 10px;
-        color: var(--dim);
-        font-size: 10px;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-      }
+            #date {
+                margin-top: 10px;
+                color: var(--dim);
+                font-size: 10px;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+            }
 
-      /* ── rule ── */
-      .rule {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        color: var(--muted);
-        font-size: 10px;
-        letter-spacing: 2px;
-      }
-      .rule::before,
-      .rule::after {
-        content: "";
-        flex: 1;
-        height: 1px;
-      }
-      .rule::before { background: linear-gradient(to right,  transparent, var(--muted)); }
-      .rule::after  { background: linear-gradient(to left,   transparent, var(--muted)); }
+            /* ── rule ── */
+            .rule {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                color: var(--muted);
+                font-size: 10px;
+                letter-spacing: 2px;
+            }
+            .rule::before,
+            .rule::after {
+                content: "";
+                flex: 1;
+                height: 1px;
+            }
+            .rule::before {
+                background: linear-gradient(
+                    to right,
+                    transparent,
+                    var(--muted)
+                );
+            }
+            .rule::after {
+                background: linear-gradient(to left, transparent, var(--muted));
+            }
 
-      /* ── link groups ── */
-      .links {
-        width: 100%;
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
-      }
+            /* ── link groups ── */
+            .links {
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 12px;
+            }
 
-      .group {
-        padding: 16px 16px 14px;
-        border-radius: 12px;
-        border: 1px solid rgba(120, 120, 200, 0.1);
-        background: rgba(24, 24, 37, 0.55);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-      }
-      .group:hover {
-        border-color: rgba(120, 120, 200, 0.22);
-        box-shadow: 0 0 0 1px rgba(120, 120, 200, 0.06) inset;
-      }
+            .group {
+                padding: 16px 16px 14px;
+                border-radius: 12px;
+                border: 1px solid rgba(120, 120, 200, 0.1);
+                background: rgba(24, 24, 37, 0.55);
+                backdrop-filter: blur(14px);
+                -webkit-backdrop-filter: blur(14px);
+                transition:
+                    border-color 0.2s ease,
+                    box-shadow 0.2s ease;
+            }
+            .group:hover {
+                border-color: rgba(120, 120, 200, 0.22);
+                box-shadow: 0 0 0 1px rgba(120, 120, 200, 0.06) inset;
+            }
 
-      .group-name {
-        font-size: 10px;
-        font-weight: 600;
-        letter-spacing: 2.5px;
-        text-transform: uppercase;
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-      }
-      .group-name::before {
-        content: "✦";
-        font-size: 7px;
-        opacity: 0.75;
-      }
+            .group-name {
+                font-size: 10px;
+                font-weight: 600;
+                letter-spacing: 2.5px;
+                text-transform: uppercase;
+                margin-bottom: 12px;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+            .group-name::before {
+                content: "✦";
+                font-size: 7px;
+                opacity: 0.75;
+            }
 
-      .c-rose   { color: var(--rose); }
-      .c-purple { color: var(--purple); }
-      .c-lila   { color: var(--lila); }
-      .c-dim    { color: var(--dim); }
+            .c-rose {
+                color: var(--rose);
+            }
+            .c-purple {
+                color: var(--purple);
+            }
+            .c-lila {
+                color: var(--lila);
+            }
+            .c-dim {
+                color: var(--dim);
+            }
 
-      a {
-        display: block;
-        color: var(--dim);
-        font-size: 12px;
-        text-decoration: none;
-        padding: 3px 0;
-        transition: color 0.15s ease, transform 0.15s ease;
-      }
-      a:hover {
-        color: var(--bright);
-        transform: translateX(5px);
-      }
+            a {
+                display: block;
+                color: var(--dim);
+                font-size: 12px;
+                text-decoration: none;
+                padding: 3px 0;
+                transition:
+                    color 0.15s ease,
+                    transform 0.15s ease;
+            }
+            a:hover {
+                color: var(--bright);
+                transform: translateX(5px);
+            }
 
-      /* ── search ── */
-      .search-wrap {
-        width: 100%;
-        position: relative;
-      }
+            /* ── search ── */
+            .search-wrap {
+                width: 100%;
+                position: relative;
+            }
 
-      form { display: contents; }
+            form {
+                display: contents;
+            }
 
-      .search-icon {
-        position: absolute;
-        left: 18px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--muted);
-        font-size: 11px;
-        pointer-events: none;
-        user-select: none;
-        z-index: 1;
-      }
+            .search-icon {
+                position: absolute;
+                left: 18px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--muted);
+                font-size: 11px;
+                pointer-events: none;
+                user-select: none;
+                z-index: 1;
+            }
 
-      input[type="text"] {
-        width: 100%;
-        padding: 13px 120px 13px 44px;
-        border-radius: 100px;
-        border: 1px solid rgba(120, 120, 200, 0.14);
-        background: rgba(24, 24, 37, 0.6);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        color: var(--text);
-        font-family: inherit;
-        font-size: 13px;
-        outline: none;
-        transition: border-color 0.2s ease, background 0.2s ease;
-        caret-color: var(--purple);
-      }
-      input[type="text"]::placeholder { color: var(--muted); }
-      input[type="text"]:focus {
-        border-color: rgba(152, 152, 224, 0.32);
-        background: rgba(37, 37, 58, 0.75);
-      }
+            input[type="text"] {
+                width: 100%;
+                padding: 13px 120px 13px 44px;
+                border-radius: 100px;
+                border: 1px solid rgba(120, 120, 200, 0.14);
+                background: rgba(24, 24, 37, 0.6);
+                backdrop-filter: blur(14px);
+                -webkit-backdrop-filter: blur(14px);
+                color: var(--text);
+                font-family: inherit;
+                font-size: 13px;
+                outline: none;
+                transition:
+                    border-color 0.2s ease,
+                    background 0.2s ease;
+                caret-color: var(--purple);
+            }
+            input[type="text"]::placeholder {
+                color: var(--muted);
+            }
+            input[type="text"]:focus {
+                border-color: rgba(152, 152, 224, 0.32);
+                background: rgba(37, 37, 58, 0.75);
+            }
 
-      #hint {
-        position: absolute;
-        right: 18px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--muted);
-        font-size: 11px;
-        pointer-events: none;
-        user-select: none;
-        white-space: nowrap;
-      }
-      #hint .arrow { color: var(--rose); }
-    </style>
-  </head>
-  <body>
-    <canvas id="canvas"></canvas>
+            #hint {
+                position: absolute;
+                right: 18px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--muted);
+                font-size: 11px;
+                pointer-events: none;
+                user-select: none;
+                white-space: nowrap;
+            }
+            #hint .arrow {
+                color: var(--rose);
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
 
-    <div class="page">
+        <div class="page">
+            <div class="clock-wrap">
+                <div id="clock">00:00</div>
+                <div id="date">─</div>
+            </div>
 
-      <div class="clock-wrap">
-        <div id="clock">00:00</div>
-        <div id="date">─</div>
-      </div>
+            <div class="rule">✦ ✧ ✦</div>
 
-      <div class="rule">✦ ✧ ✦</div>
+            <div class="links">
+                <div class="group">
+                    <div class="group-name c-rose">me</div>
+                    <a href="https://github.com/matejstastny">github</a>
+                    <a href="https://github.com/matejstastny/dotfiles"
+                        >dotfiles</a
+                    >
+                </div>
+                <div class="group">
+                    <div class="group-name c-purple">trickfire</div>
+                    <a href="https://github.com/TrickfireRobotics">org</a>
+                    <a href="https://github.com/TrickfireRobotics/dashboard"
+                        >dashboard</a
+                    >
+                    <a href="https://github.com/TrickfireRobotics/docs">docs</a>
+                    <a
+                        href="https://github.com/TrickfireRobotics/gazebo-simulations"
+                        >simulation</a
+                    >
+                </div>
+                <div class="group">
+                    <div class="group-name c-lila">repos</div>
+                    <a href="https://github.com/TrickfireRobotics/trickfire-urc"
+                        >urc</a
+                    >
+                    <a href="https://github.com/TrickfireRobotics/ak-series-lib"
+                        >motors</a
+                    >
+                    <a
+                        href="https://github.com/TrickfireRobotics/trickfire-drone"
+                        >drone</a
+                    >
+                </div>
+                <div class="group">
+                    <div class="group-name c-dim">web</div>
+                    <a href="http://trickfirerobotics.com/">website</a>
+                    <a href="http://docs.trickfirerobotics.com/">docs</a>
+                    <a href="http://dashboard.trickfirerobotics.com/"
+                        >dashboard</a
+                    >
+                </div>
+            </div>
 
-      <div class="links">
-        <div class="group">
-          <div class="group-name c-rose">me</div>
-          <a href="https://github.com/matejstastny">github</a>
-          <a href="https://github.com/matejstastny/dotfiles">dotfiles</a>
+            <div class="search-wrap">
+                <span class="search-icon">✦</span>
+                <form
+                    action="https://www.duckduckgo.com/"
+                    method="get"
+                    id="search-form"
+                >
+                    <input
+                        id="search"
+                        type="text"
+                        name="q"
+                        autofocus
+                        autocomplete="off"
+                        spellcheck="false"
+                        placeholder="search or jump..."
+                    />
+                </form>
+                <span id="hint"></span>
+            </div>
         </div>
-        <div class="group">
-          <div class="group-name c-purple">trickfire</div>
-          <a href="https://github.com/TrickfireRobotics">org</a>
-          <a href="https://github.com/TrickfireRobotics/dashboard">dashboard</a>
-          <a href="https://github.com/TrickfireRobotics/docs">docs</a>
-          <a href="https://github.com/TrickfireRobotics/gazebo-simulations">simulation</a>
-        </div>
-        <div class="group">
-          <div class="group-name c-lila">repos</div>
-          <a href="https://github.com/TrickfireRobotics/trickfire-urc">urc</a>
-          <a href="https://github.com/TrickfireRobotics/ak-series-lib">motors</a>
-          <a href="https://github.com/TrickfireRobotics/trickfire-drone">drone</a>
-        </div>
-        <div class="group">
-          <div class="group-name c-dim">web</div>
-          <a href="http://trickfirerobotics.com/">website</a>
-          <a href="http://docs.trickfirerobotics.com/">docs</a>
-          <a href="http://dashboard.trickfirerobotics.com/">dashboard</a>
-        </div>
-      </div>
 
-      <div class="search-wrap">
-        <span class="search-icon">✦</span>
-        <form action="https://www.duckduckgo.com/" method="get" id="search-form">
-          <input
-            id="search"
-            type="text"
-            name="q"
-            autofocus
-            autocomplete="off"
-            spellcheck="false"
-            placeholder="search or jump..."
-          />
-        </form>
-        <span id="hint"></span>
-      </div>
-
-    </div>
-
-    <script src="script.js"></script>
-  </body>
+        <script src="script.js"></script>
+    </body>
 </html>

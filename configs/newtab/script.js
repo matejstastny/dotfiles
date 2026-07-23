@@ -1,4 +1,3 @@
-// ─── clock + date ───
 const DAYS   = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
 const MONTHS = ["january","february","march","april","may","june","july","august","september","october","november","december"];
 
@@ -12,7 +11,6 @@ function tick() {
 tick();
 setInterval(tick, 1000);
 
-// ─── parallax starfield ───
 const canvas = document.getElementById("canvas");
 const ctx    = canvas.getContext("2d");
 let W, H, stars;
@@ -63,7 +61,6 @@ window.addEventListener("resize", resize);
 resize();
 requestAnimationFrame(draw);
 
-// ─── command jumps ───
 const commands = {
   gh:        ["github",     "https://github.com/matejstastny"],
   github:    ["github",     "https://github.com/matejstastny"],
@@ -100,7 +97,6 @@ document.getElementById("search-form").addEventListener("submit", e => {
   if (m) { e.preventDefault(); window.location.href = m[1]; }
 });
 
-// grab any keystroke while input is not focused
 document.addEventListener("keydown", e => {
   if (document.activeElement === input) return;
   if (e.ctrlKey || e.metaKey || e.altKey) return;
