@@ -1,31 +1,46 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-abs="$(realpath "${1:-$PWD}")"
+rebuild=false
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+	--rebuild)
+		rebuild=true
+		shift
+		;;
+	*)
+		echo "devcon: unknown argument: $1" >&2
+		exit 1
+		;;
+	esac
+done
 
-if [ ! -d "$abs/.devcontainer" ] && [ ! -f "$abs/.devcontainer.json" ]; then
-    echo "error: no .devcontainer config in $abs" >&2
-    [[ -t 0 ]] && read -r -p "Press Enter to close..."
-    exit 1
-fi
+find_workspace() {
+	local dir="$PWD"
+	while [[ "$dir" != "/" ]]; do
+		[[ -f "$dir/.devcontainer/devcontainer.json" || -f "$dir/.devcontainer.json" ]] && {
+			echo "$dir"
+			return 0
+		}
+		dir="$(dirname "$dir")"
+	done
+	return 1
+}
 
-echo "✦ devcontainer up: $(basename "$abs")"
-result=$(devcontainer up --workspace-folder "$abs")
+workspace="$(find_workspace)" || {
+	echo "devcon: no devcontainer config found" >&2
+	exit 1
+}
 
-outcome=$(printf '%s' "$result" | python3 -c "import sys,json; print(json.load(sys.stdin).get('outcome',''))")
-if [ "$outcome" != "success" ]; then
-    echo "error: outcome=$outcome"
-    printf '%s\n' "$result"
-    [[ -t 0 ]] && read -r -p "Press Enter to close..."
-    exit 1
-fi
+up_args=(--workspace-folder "$workspace")
+$rebuild && up_args+=(--remove-existing-container)
 
-remote=$(printf '%s' "$result" | python3 -c "import sys,json; print(json.load(sys.stdin)['remoteWorkspaceFolder'])")
-uri=$(python3 -c "
-import json, sys
-auth = json.dumps({'localFolder': sys.argv[1]}, separators=(',', ':')).encode().hex()
-print('vscode-remote://dev-container+' + auth + sys.argv[2])
-" "$abs" "$remote")
-
-echo "✦ Attaching VSCodium..."
-codium --folder-uri "$uri"
+devcontainer up "${up_args[@]}"
+preferred="${SHELL##*/}"
+shell=$(devcontainer exec --workspace-folder "$workspace" -- sh -c \
+	"for s in $preferred bash sh; do command -v \"\$s\" 2>/dev/null && break; done")
+[[ -z "$shell" ]] && {
+	echo "devcon: no usable shell found in container" >&2
+	exit 1
+}
+exec devcontainer exec --workspace-folder "$workspace" -- "$shell"

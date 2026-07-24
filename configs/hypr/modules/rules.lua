@@ -1,15 +1,15 @@
+-- workspace assignments (declarative — rule engine applies per-window, no dispatch race on simultaneous opens)
+hl.window_rule({ name = "session-ws-kitty", match = { class = "^kitty$" }, workspace = "1 silent" })
+hl.window_rule({ name = "session-ws-code", match = { class = "^codium$" }, workspace = "2 silent" })
+hl.window_rule({ name = "session-ws-helium", match = { class = "^helium$" }, workspace = "3 silent" })
+hl.window_rule({ name = "session-ws-vesktop", match = { class = "^vesktop$" }, workspace = "4 silent" })
+hl.window_rule({ name = "session-ws-obsidian", match = { class = "^obsidian$" }, workspace = "5 silent" })
+hl.window_rule({ name = "session-ws-t3code", match = { class = "^t3code$" }, workspace = "6 silent" })
+
 -- file dialogs
 hl.window_rule({ name = "save-file-float", match = { title = "^Save File$" }, float = true, center = true })
 hl.window_rule({ name = "open-files-float", match = { title = "^Open Files$" }, float = true, center = true })
 hl.window_rule({ name = "select-folder-float", match = { title = "^Select Folder$" }, float = true, center = true })
-
--- workspace assignments (declarative — rule engine applies per-window, no dispatch race on simultaneous opens)
-hl.window_rule({ name = "session-ws-kitty",    match = { class = "^kitty$"    }, workspace = "1 silent" })
-hl.window_rule({ name = "session-ws-code",     match = { class = "^codium$"   }, workspace = "2 silent" })
-hl.window_rule({ name = "session-ws-helium",   match = { class = "^helium$"   }, workspace = "3 silent" })
-hl.window_rule({ name = "session-ws-vesktop",  match = { class = "^vesktop$"  }, workspace = "4 silent" })
-hl.window_rule({ name = "session-ws-obsidian", match = { class = "^obsidian$" }, workspace = "5 silent" })
-hl.window_rule({ name = "session-ws-t3code",   match = { class = "^t3code$"   }, workspace = "6 silent" })
 
 hl.on("window.open", function(window)
     -- bluetooth window
@@ -45,6 +45,14 @@ hl.layer_rule({
     match = { namespace = "swayosd" },
     blur  = false,
 })
+
+-- ros sim tools
+hl.window_rule({ name = "gazebo-workspace", match = { class = "^Gazebo GUI$" }, workspace = "7 silent" })
+hl.window_rule({ name = "joint-gui-workspace", match = { class = "^Tk$", title = "^Joint GUI$" }, workspace = "7 silent" })
+hl.window_rule({ name = "joint-gui-float",   match = { class = "^Tk$", title = "^Joint GUI$" }, float = true })
+hl.window_rule({ name = "joint-gui-size",    match = { class = "^Tk$", title = "^Joint GUI$" }, size = "420 191" })
+hl.window_rule({ name = "joint-gui-topleft", match = { class = "^Tk$", title = "^Joint GUI$" }, move = "8 46" })
+hl.window_rule({ name = "rviz-workspace", match = { class = "^rviz2$" }, workspace = "8 silent" })
 
 -- other rules
 hl.window_rule({
