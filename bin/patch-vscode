@@ -12,7 +12,7 @@ JS_MARKER="/* dotfiles:font */"
 FONT="Maple Mono NF"
 
 # Selectors covering all text-bearing UI zones, excluding codicon icon elements
-FONT_CSS=".monaco-workbench .part>.content,.monaco-workbench .sidebar,.monaco-workbench .menubar,.monaco-workbench .statusbar,.monaco-workbench .tabs-container .tab,.monaco-workbench .breadcrumbs-control,.monaco-workbench .quick-input-widget,.monaco-workbench .monaco-list .monaco-list-row,.monaco-workbench .pane-header,.monaco-workbench .notification-list-item,.monaco-workbench .activity-label{font-family:\"$FONT\",monospace!important;}"
+FONT_CSS=".monaco-workbench,.monaco-workbench input,.monaco-workbench select,.monaco-workbench textarea,.monaco-workbench .monaco-inputbox{font-family:\"$FONT\",monospace!important;}"
 
 update_checksums() {
     python3 - "$CSS_TARGET" "$JS_TARGET" "$PRODUCT_JSON" <<'EOF'

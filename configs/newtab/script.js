@@ -77,7 +77,7 @@ const commands = {
   urc:       ["urc",        "https://github.com/TrickfireRobotics/trickfire-urc"],
   motors:    ["motors",     "https://github.com/TrickfireRobotics/ak-series-lib"],
   drone:     ["drone",      "https://github.com/TrickfireRobotics/trickfire-drone"],
-  sim:       ["simulation", "https://github.com/TrickfireRobotics/gazebo-simulations"],
+  sim:       ["simulation", "https://github.com/TrickfireRobotics/simulations"],
 };
 
 function resolve(v) { return commands[v.trim().toLowerCase()] ?? null; }

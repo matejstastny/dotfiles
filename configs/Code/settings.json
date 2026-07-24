@@ -167,5 +167,6 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "chat.disableAIFeatures": true,
-    "myFont.font": "Maple Mono NF"
+    "myFont.font": "Maple Mono NF",
+    "js/ts.experimental.useTsgo": true
 }
