@@ -27,12 +27,34 @@ fi
 echo ""
 if [ -d "$REPO_DIR/.git" ]; then
     echo "✦ Updating existing checkout at $REPO_DIR..."
+    git -C "$REPO_DIR" restore --staged . 2>/dev/null || true
+    git -C "$REPO_DIR" restore . 2>/dev/null || true
     git -C "$REPO_DIR" pull --ff-only
 else
     echo "✦ Cloning t3code into $REPO_DIR..."
     mkdir -p "$(dirname "$REPO_DIR")"
     git clone "$REPO_URL" "$REPO_DIR"
 fi
+
+echo ""
+echo "✦ Applying background color patch..."
+git -C "$REPO_DIR" restore apps/web/src/index.css
+cat >> "$REPO_DIR/apps/web/src/index.css" <<'PATCH'
+
+/* dotfiles: #11111b background override */
+:root {
+  @variant dark {
+    --background: #11111b;
+    --app-chrome-background: #11111b;
+  }
+}
+
+.dark [data-sidebar-version="v1"],
+.dark [data-sidebar-version="v2"] {
+  --card: #11111b;
+  --sidebar: #11111b;
+}
+PATCH
 
 echo ""
 echo "✦ Installing workspace dependencies..."

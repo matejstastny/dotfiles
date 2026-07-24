@@ -2,10 +2,15 @@
 set -euo pipefail
 
 rebuild=false
+no_cache=false
 while [[ $# -gt 0 ]]; do
 	case "$1" in
 	--rebuild)
 		rebuild=true
+		shift
+		;;
+	--no-cache)
+		no_cache=true
 		shift
 		;;
 	*)
@@ -34,6 +39,7 @@ workspace="$(find_workspace)" || {
 
 up_args=(--workspace-folder "$workspace")
 $rebuild && up_args+=(--remove-existing-container)
+$no_cache && up_args+=(--build-no-cache)
 
 devcontainer up "${up_args[@]}"
 preferred="${SHELL##*/}"

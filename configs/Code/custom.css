@@ -1,0 +1,19 @@
+/* command palette vertical position */
+.quick-input-widget { top: 25vh !important; }
+
+/* hide decorative chrome */
+.monaco-scrollable-element > .shadow.top { display: none; }
+.monaco-editor .scroll-decoration { display: none; }
+
+/* sidebar title */
+.sidebar .title-label { padding: 0 !important; }
+
+/* single-tab mode: center icon and add breathing room */
+.title.show-file-icons .label-container .monaco-icon-label.file-icon {
+    justify-content: center;
+    padding: 0 !important;
+}
+.monaco-workbench .part.editor > .content .editor-group-container > .title > .label-container > .title-label {
+    padding-left: 80px;
+}
+.title .monaco-icon-label.file-icon { margin: 0 60px; }
