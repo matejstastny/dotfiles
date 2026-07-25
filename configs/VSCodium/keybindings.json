@@ -5,6 +5,10 @@
         "command": "workbench.view.explorer"
     },
     {
+        "key": "ctrl+g",
+        "command": "workbench.view.scm"
+    },
+    {
         "key": "ctrl+shift+e",
         "command": "workbench.view.extensions"
     },
@@ -44,7 +48,10 @@
         "command": "runCommands",
         "key": "ctrl+k",
         "args": {
-            "commands": ["workbench.files.action.collapseExplorerFolders", "openEditors.closeAll"]
+            "commands": [
+                "workbench.files.action.collapseExplorerFolders",
+                "openEditors.closeAll"
+            ]
         }
     },
     // Mini windows --------------------------------------------------------------------

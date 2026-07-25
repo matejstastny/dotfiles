@@ -10,7 +10,8 @@ if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
 else
 	mkdir -p "$OUT_DIR"
 	FILE="$OUT_DIR/$(date +%Y-%m-%d_%H-%M-%S).mkv"
-	wf-recorder -a -f "$FILE" &
+	MONITOR=$(hyprctl monitors -j | jq -r '.[] | select(.focused) | .name')
+	wf-recorder -o "$MONITOR" -a -f "$FILE" &
 	echo $! >"$PID_FILE"
 	notify-send -t 2000 "✦ recording" "Started · $FILE"
 fi

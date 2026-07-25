@@ -2,8 +2,10 @@
 
 set -e
 
+hyprctl reload
+
 pkill waybar || true
 waybar >/dev/null 2>&1 &
 disown
 
-echo "waybar reloaded"
+notify-send "hyprland reloaded"

@@ -32,7 +32,6 @@ alias dots='cd ~/dotfiles'
 alias s='ls ~/dotfiles/bin'
 
 alias sr='source ~/.zshrc && echo "shell reloaded"'
-alias hr='hyprctl reload && echo "hyprland reloaded" && bar'
 
 alias lg='lazygit'
 alias gs='git status -sb'

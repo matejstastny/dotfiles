@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+
+sudo chown -R "$(whoami)" /usr/share/codium/resources
+
+python3 - /usr/share/codium/resources/app/product.json <<'EOF'
+import sys, json
+path = sys.argv[1]
+product = json.loads(open(path).read())
+product["extensionsGallery"] = {
+    "serviceUrl": "https://marketplace.visualstudio.com/_apis/public/gallery",
+    "cacheUrl": "https://vscode.blob.core.windows.net/gallery/index",
+    "itemUrl": "https://marketplace.visualstudio.com/items",
+    "controlUrl": "",
+    "recommendationsUrl": ""
+}
+open(path, "w").write(json.dumps(product, indent="\t"))
+print("patched: extensionsGallery -> VS Marketplace")
+EOF
+
+echo "Done"

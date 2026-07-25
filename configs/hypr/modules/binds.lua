@@ -2,6 +2,7 @@ local mod = "ALT"
 
 -- apps
 hl.bind(mod .. " + Return", hl.dsp.exec_cmd("kitty"))
+hl.bind(mod .. " + G", hl.dsp.exec_cmd(DOTS .. "/bin/git-ui"))
 
 -- rofi
 hl.bind(mod .. " + Space", hl.dsp.exec_cmd("rofi -show drun"))
@@ -18,6 +19,7 @@ hl.bind(mod .. " + Escape", hl.dsp.exec_cmd(DOTS .. "/rofi/powermenu.sh"))
 hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd(DOTS .. "/rofi/todo.sh stars"))
 
 -- utils
+hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd(DOTS .. "/bin/hr"))
 hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("waypaper"))
 hl.bind(mod .. " + SHIFT + L", hl.dsp.exec_cmd("hyprlock"))
 hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"))
@@ -26,6 +28,7 @@ hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"))
 hl.bind("CTRL + SHIFT + 4", hl.dsp.exec_cmd(DOTS .. "/bin/screenshot"))
 hl.bind("CTRL + SHIFT + 3", hl.dsp.exec_cmd(DOTS .. "/bin/screenshot-full"))
 hl.bind("CTRL + SHIFT + R", hl.dsp.exec_cmd(DOTS .. "/bin/record"))
+hl.bind("CTRL + SHIFT + P", hl.dsp.exec_cmd(DOTS .. "/rofi/screenrecord.sh"))
 
 -- session
 hl.bind(mod .. " + SHIFT + O", hl.dsp.exec_cmd(DOTS .. "/bin/session"))
@@ -36,10 +39,10 @@ hl.bind(mod .. " + W", hl.dsp.window.close())
 hl.bind(mod .. " + F", hl.dsp.window.fullscreen())
 hl.bind(mod .. " + C", hl.dsp.window.center())
 
-hl.bind(mod .. " + SHIFT + left", hl.dsp.window.move({ direction = "left" }))
+hl.bind(mod .. " + SHIFT + left",  hl.dsp.window.move({ direction = "left" }))
 hl.bind(mod .. " + SHIFT + right", hl.dsp.window.move({ direction = "right" }))
-hl.bind(mod .. " + SHIFT + up", hl.dsp.window.move({ direction = "up" }))
-hl.bind(mod .. " + SHIFT + down", hl.dsp.window.move({ direction = "down" }))
+hl.bind(mod .. " + SHIFT + up",    hl.dsp.window.move({ direction = "up" }))
+hl.bind(mod .. " + SHIFT + down",  hl.dsp.window.move({ direction = "down" }))
 
 -- workspaces
 for i = 1, 9 do
@@ -48,12 +51,16 @@ for i = 1, 9 do
     hl.bind(mod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
 end
 
--- switch monitors
+-- switch monitors, or cycle windows when on workspace 2
 hl.bind(mod .. " + tab", function()
+    local ws = hl.get_active_workspace()
+    if ws and ws.id == 2 then
+        hl.dispatch(hl.dsp.exec_cmd("hyprctl dispatch changegroupactive f"))
+        return
+    end
     local mon = hl.get_active_monitor()
     if not mon then return end
     local target = mon.name == "eDP-1" and "DP-1" or "eDP-1"
-    local ws = hl.get_active_workspace()
     if not ws then return end
     hl.dispatch(hl.dsp.workspace.move({ workspace = ws.id, monitor = target }))
 end)

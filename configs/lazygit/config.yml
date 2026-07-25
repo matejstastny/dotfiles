@@ -22,3 +22,7 @@ gui:
 
   authorColors:
     '*': '#9b8ab0'
+
+keybinding:
+  universal:
+    quit-alt1: '<esc>'

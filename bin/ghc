@@ -27,7 +27,7 @@ check_repo_exists() {
 }
 
 for account in "${accounts[@]}"; do
-	URL="https://github.com/${account}/$REPO"
+	URL="git@github.com:${account}/$REPO"
 	if [[ $(check_repo_exists "$URL") == "yesh" ]]; then
 		git clone "$URL"
 		exit 0

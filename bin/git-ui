@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+repos=()
+for dir in ~/devel ~/trickfire; do
+    [ -d "$dir" ] || continue
+    base=$(basename "$dir")
+    while IFS= read -r repo; do
+        repos+=("$base/$(basename "$repo")|$repo")
+    done < <(find "$dir" -maxdepth 1 -mindepth 1 -type d -exec test -d "{}/.git" \; -print 2>/dev/null | sort)
+done
+repos=("dotfiles|$HOME/dotfiles" "${repos[@]}")
+
+display=()
+declare -A path_map
+for entry in "${repos[@]}"; do
+    name="${entry%%|*}"
+    path="${entry##*|}"
+    display+=("$name")
+    path_map["$name"]="$path"
+done
+
+choice=$(printf '%s\n' "${display[@]}" | rofi -dmenu -p "✦ git ✦")
+
+if hyprctl clients -j | jq -e '[.[] | select(.class == "lazygit")] | length > 0' > /dev/null 2>&1; then
+    hyprctl dispatch closewindow class:lazygit
+fi
+[ -z "$choice" ] && exit 0
+
+kitty --class lazygit --directory "${path_map[$choice]}" -e lazygit &

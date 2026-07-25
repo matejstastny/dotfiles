@@ -1,6 +1,7 @@
 hl.on("hyprland.start", function()
     hl.exec_cmd("hypridle")
     hl.exec_cmd("hyprlock")
+    hl.exec_cmd("hyprpm reload -n")
     hl.exec_cmd("swww-daemon")
     hl.exec_cmd(DOTS .. "/bin/wallpaper-restore")
     hl.exec_cmd("swayosd-server")

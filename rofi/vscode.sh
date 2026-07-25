@@ -7,7 +7,7 @@ get_list() {
 	python3 - <<'EOF'
 import json, os
 
-storage = os.path.expanduser("~/.config/Code/User/globalStorage/storage.json")
+storage = os.path.expanduser("~/.config/VSCodium/User/globalStorage/storage.json")
 history_file = os.path.expanduser("~/.local/share/vscode-projects")
 home = os.environ["HOME"]
 
@@ -101,7 +101,7 @@ while true; do
 	if [ $exit_code -eq 11 ]; then
 		kitty devcon "$abs" &
 	else
-		code "$abs"
+		codium "$abs"
 	fi
 	exit 0
 done
