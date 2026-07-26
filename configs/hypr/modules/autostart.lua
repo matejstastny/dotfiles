@@ -1,4 +1,5 @@
 hl.on("hyprland.start", function()
+    hl.exec_cmd("hyprctl plugin load /var/cache/hyprpm/elara/hy3/hy3.so")
     hl.exec_cmd("hypridle")
     hl.exec_cmd("hyprlock")
     hl.exec_cmd("hyprpm reload -n")

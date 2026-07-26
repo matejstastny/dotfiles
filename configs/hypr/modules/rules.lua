@@ -1,3 +1,6 @@
+-- workspace 2 uses hy3 layout
+hl.workspace_rule({ workspace = "2", layout = "hy3" })
+
 -- workspace assignments (declarative — rule engine applies per-window, no dispatch race on simultaneous opens)
 hl.window_rule({ name = "session-ws-kitty", match = { class = "^kitty$" }, workspace = "1 silent" })
 hl.window_rule({ name = "session-ws-code", match = { class = "^codium$" }, workspace = "2 silent" })
@@ -10,6 +13,16 @@ hl.window_rule({ name = "session-ws-t3code", match = { class = "^t3code$" }, wor
 hl.window_rule({ name = "save-file-float", match = { title = "^Save File$" }, float = true, center = true })
 hl.window_rule({ name = "open-files-float", match = { title = "^Open Files$" }, float = true, center = true })
 hl.window_rule({ name = "select-folder-float", match = { title = "^Select Folder$" }, float = true, center = true })
+
+-- merge a window into the ws2 hy3 tab group, preserving the active workspace
+local function ws2_tab(window)
+    local prev_ws = hl.get_active_workspace()
+    hl.dispatch(hl.dsp.focus({ window = "address:" .. window.address }))
+    hl.dispatch(hl.plugin.hy3.change_group('tab'))
+    if prev_ws and prev_ws.id ~= 2 then
+        hl.dispatch(hl.dsp.focus({ workspace = prev_ws.id }))
+    end
+end
 
 hl.on("window.open", function(window)
     -- bluetooth window
@@ -28,11 +41,15 @@ hl.on("window.open", function(window)
         return
     end
 
-    -- workspace 2: group all windows so only one is visible at a time.
-    -- focuswindow targets THIS window by address before togglegroup so the dispatch
-    -- doesn't accidentally apply to the already-grouped window instead of the new one
     if window.workspace and window.workspace.id == 2 then
-        hl.exec_cmd("hyprctl --batch 'dispatch focuswindow address:" .. window.address .. " ; dispatch togglegroup'")
+        ws2_tab(window)
+    end
+end)
+
+-- also handle windows moved to ws2 after creation (alt+shift+2 etc.)
+hl.on("window.move_to_workspace", function(window)
+    if window.workspace and window.workspace.id == 2 then
+        ws2_tab(window)
     end
 end)
 

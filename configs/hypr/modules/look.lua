@@ -22,6 +22,36 @@ hl.config({
     dwindle = {
         preserve_split = true,
     },
+    plugin = {
+        hy3 = {
+            tab_first_window = true,
+            tabs = {
+                height       = 20,
+                padding      = 6,
+                from_top     = true,
+                radius       = 6,
+                border_width = 1,
+                render_text  = true,
+                text_font    = "Maple Mono NF",
+                text_height  = 8,
+                text_padding = 6,
+                colors       = {
+                    active                    = "rgba(25253aff)",
+                    active_border             = "rgba(7878c8ff)",
+                    active_text               = "rgba(dce0f4ff)",
+                    active_alt_monitor        = "rgba(181825ff)",
+                    active_alt_monitor_border = "rgba(7878c866)",
+                    active_alt_monitor_text   = "rgba(9898c0ff)",
+                    focused                   = "rgba(181825ff)",
+                    focused_border            = "rgba(7878c8aa)",
+                    focused_text              = "rgba(9898c0ff)",
+                    inactive                  = "rgba(11111bff)",
+                    inactive_border           = "rgba(25253aff)",
+                    inactive_text             = "rgba(3d3d5cff)",
+                },
+            },
+        },
+    },
     misc = {
         disable_hyprland_logo   = true,
         force_default_wallpaper = 0,

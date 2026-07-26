@@ -39,10 +39,10 @@ hl.bind(mod .. " + W", hl.dsp.window.close())
 hl.bind(mod .. " + F", hl.dsp.window.fullscreen())
 hl.bind(mod .. " + C", hl.dsp.window.center())
 
-hl.bind(mod .. " + SHIFT + left",  hl.dsp.window.move({ direction = "left" }))
-hl.bind(mod .. " + SHIFT + right", hl.dsp.window.move({ direction = "right" }))
-hl.bind(mod .. " + SHIFT + up",    hl.dsp.window.move({ direction = "up" }))
-hl.bind(mod .. " + SHIFT + down",  hl.dsp.window.move({ direction = "down" }))
+hl.bind(mod .. " + SHIFT + left",  function() hl.dispatch(hl.plugin.hy3.move_window('left'))  end)
+hl.bind(mod .. " + SHIFT + right", function() hl.dispatch(hl.plugin.hy3.move_window('right')) end)
+hl.bind(mod .. " + SHIFT + up",    function() hl.dispatch(hl.plugin.hy3.move_window('up'))    end)
+hl.bind(mod .. " + SHIFT + down",  function() hl.dispatch(hl.plugin.hy3.move_window('down'))  end)
 
 -- workspaces
 for i = 1, 9 do
@@ -50,6 +50,10 @@ for i = 1, 9 do
     hl.bind(mod .. " + " .. key, hl.dsp.focus({ workspace = i }))
     hl.bind(mod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
 end
+
+-- cycle hy3 tabs (works anywhere, no-op outside tab groups)
+hl.bind("CTRL + tab",         function() hl.dispatch(hl.plugin.hy3.focus_tab({ direction = 'right', wrap = true })) end)
+hl.bind("CTRL + SHIFT + tab", function() hl.dispatch(hl.plugin.hy3.focus_tab({ direction = 'left',  wrap = true })) end)
 
 -- switch monitors, or cycle windows when on workspace 2
 hl.bind(mod .. " + tab", function()
