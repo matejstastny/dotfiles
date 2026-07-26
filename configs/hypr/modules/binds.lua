@@ -2,7 +2,6 @@ local mod = "ALT"
 
 -- apps
 hl.bind(mod .. " + Return", hl.dsp.exec_cmd("kitty"))
-hl.bind(mod .. " + G", hl.dsp.exec_cmd(DOTS .. "/bin/git-ui"))
 
 -- rofi
 hl.bind(mod .. " + Space", hl.dsp.exec_cmd("rofi -show drun"))
@@ -10,7 +9,7 @@ hl.bind(mod .. " + N", hl.dsp.exec_cmd(DOTS .. "/rofi/wifi.sh"))
 hl.bind(mod .. " + A", hl.dsp.exec_cmd(DOTS .. "/rofi/calc.sh"))
 hl.bind(mod .. " + V", hl.dsp.exec_cmd(DOTS .. "/rofi/clip.sh"))
 hl.bind(mod .. " + E", hl.dsp.exec_cmd(DOTS .. "/rofi/emoji.sh"))
-hl.bind(mod .. " + P", hl.dsp.exec_cmd(DOTS .. "/rofi/vscode.sh"))
+hl.bind(mod .. " + P", hl.dsp.exec_cmd(DOTS .. "/rofi/code.sh"))
 hl.bind(mod .. " + B", hl.dsp.exec_cmd(DOTS .. "/rofi/bluetooth.sh"))
 hl.bind(mod .. " + T", hl.dsp.exec_cmd(DOTS .. "/rofi/todo.sh personal"))
 hl.bind(mod .. " + O", hl.dsp.exec_cmd(DOTS .. "/rofi/notes.sh"))
@@ -19,6 +18,7 @@ hl.bind(mod .. " + Escape", hl.dsp.exec_cmd(DOTS .. "/rofi/powermenu.sh"))
 hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd(DOTS .. "/rofi/todo.sh stars"))
 
 -- utils
+hl.bind(mod .. " + G", hl.dsp.exec_cmd(DOTS .. "/bin/git-ui"))
 hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd(DOTS .. "/bin/hr"))
 hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("waypaper"))
 hl.bind(mod .. " + SHIFT + L", hl.dsp.exec_cmd("hyprlock"))
@@ -39,10 +39,10 @@ hl.bind(mod .. " + W", hl.dsp.window.close())
 hl.bind(mod .. " + F", hl.dsp.window.fullscreen())
 hl.bind(mod .. " + C", hl.dsp.window.center())
 
-hl.bind(mod .. " + SHIFT + left",  function() hl.dispatch(hl.plugin.hy3.move_window('left'))  end)
+hl.bind(mod .. " + SHIFT + left", function() hl.dispatch(hl.plugin.hy3.move_window('left')) end)
 hl.bind(mod .. " + SHIFT + right", function() hl.dispatch(hl.plugin.hy3.move_window('right')) end)
-hl.bind(mod .. " + SHIFT + up",    function() hl.dispatch(hl.plugin.hy3.move_window('up'))    end)
-hl.bind(mod .. " + SHIFT + down",  function() hl.dispatch(hl.plugin.hy3.move_window('down'))  end)
+hl.bind(mod .. " + SHIFT + up", function() hl.dispatch(hl.plugin.hy3.move_window('up')) end)
+hl.bind(mod .. " + SHIFT + down", function() hl.dispatch(hl.plugin.hy3.move_window('down')) end)
 
 -- workspaces
 for i = 1, 9 do
@@ -51,21 +51,16 @@ for i = 1, 9 do
     hl.bind(mod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
 end
 
--- cycle hy3 tabs (works anywhere, no-op outside tab groups)
-hl.bind("CTRL + tab",         function() hl.dispatch(hl.plugin.hy3.focus_tab({ direction = 'right', wrap = true })) end)
-hl.bind("CTRL + SHIFT + tab", function() hl.dispatch(hl.plugin.hy3.focus_tab({ direction = 'left',  wrap = true })) end)
+-- cycle hy3 tabs
+hl.bind("CTRL + tab", function() hl.dispatch(hl.plugin.hy3.focus_tab({ direction = 'right', wrap = true })) end)
+hl.bind("CTRL + SHIFT + tab", function() hl.dispatch(hl.plugin.hy3.focus_tab({ direction = 'left', wrap = true })) end)
 
--- switch monitors, or cycle windows when on workspace 2
+-- switch monitors
 hl.bind(mod .. " + tab", function()
     local ws = hl.get_active_workspace()
-    if ws and ws.id == 2 then
-        hl.dispatch(hl.dsp.exec_cmd("hyprctl dispatch changegroupactive f"))
-        return
-    end
     local mon = hl.get_active_monitor()
-    if not mon then return end
+    if not ws or not mon then return end
     local target = mon.name == "eDP-1" and "DP-1" or "eDP-1"
-    if not ws then return end
     hl.dispatch(hl.dsp.workspace.move({ workspace = ws.id, monitor = target }))
 end)
 

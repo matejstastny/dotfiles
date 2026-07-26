@@ -1,5 +1,6 @@
 // meowsers :3
 {
+    "workbench.colorTheme": "Catppuccin Noir",
     "workbench.iconTheme": "material-icon-theme",
     "workbench.editor.showTabs": "single",
     "workbench.editor.empty.hint": "hidden",
@@ -234,15 +235,5 @@
     "redhat.telemetry.enabled": false,
     "makefile.configureOnOpen": true,
     "cmake.ignoreCMakeListsMissing": true,
-    "workbench.colorTheme": "Catppuccin Noir",
-    "[markdown]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[jsonc]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "chat.disableAIFeatures": true,
-    "myFont.font": "Maple Mono NF",
-    "js/ts.experimental.useTsgo": true,
-    "diffEditor.ignoreTrimWhitespace": false
+    "js/ts.experimental.useTsgo": true
 }

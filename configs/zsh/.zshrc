@@ -1,4 +1,5 @@
 # Defaults
+export WHICH_CODE="codium"
 export EDITOR="nvim"
 export BROWSER="helium"
 export DOTFILES_DIR="$HOME/dotfiles"

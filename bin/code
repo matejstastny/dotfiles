@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-exec codium "$@"
+exec $WHICH_CODE "$@"
