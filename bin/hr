@@ -2,10 +2,19 @@
 
 set -e
 
-hyprctl reload
+if ! output=$(hyprctl reload 2>&1); then
+	notify-send -u critical "✦ hr" "Reload failed: $output"
+	exit 1
+fi
+
+errors=$(hyprctl configerrors)
+if [ -n "$errors" ]; then
+	notify-send -u critical "✦ hr" "Config error: $errors"
+	exit 1
+fi
 
 pkill waybar || true
 waybar >/dev/null 2>&1 &
 disown
 
-notify-send "hyprland reloaded"
+notify-send -t 2000 "✦ hr" "hyprland reloaded"

@@ -61,7 +61,7 @@
         "statusBarItem.remoteForeground": "#9DA5B4",
         "statusBar.border": "#FFFFFF26",
         "sideBar.border": "#FFFFFF26",
-        "panel.border": "#FFFFFF26",
+        "panel.border": "#FFFFFF26"
     },
 
     // Typography
@@ -179,5 +179,10 @@
     "redhat.telemetry.enabled": false,
     "makefile.configureOnOpen": true,
     "cmake.ignoreCMakeListsMissing": true,
-    "js/ts.experimental.useTsgo": true
+    "js/ts.experimental.useTsgo": true,
+    "[markdown]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "diffEditor.ignoreTrimWhitespace": false
 }
