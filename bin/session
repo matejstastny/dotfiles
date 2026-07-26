@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 kitty &
-$WHICH_CODE ~/dotfiles &
+code ~/dotfiles &
 "$(dirname "$0")/helium" --profile-directory=Default &
 vesktop &
 /home/elara/.local/share/obsidian/obsidian.AppImage --appimage-extract-and-run %u &

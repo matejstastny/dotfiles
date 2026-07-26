@@ -1,20 +1,29 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-container="$1"
-shift || true
-shell="${1:-bash}"
-
 if ! command -v docker >/dev/null 2>&1; then
 	echo "docker not found in PATH" >&2
 	exit 1
 fi
 
-if ! docker ps --format '{{.Names}}' | grep -w -- "$container" >/dev/null 2>&1; then
-	echo "Container '$container' is not running" >&2
-	echo "Running containers:" >&2
-	docker ps --format '  {{.Names}} ({{.Image}})'
-	exit 1
+if [[ $# -eq 0 ]]; then
+	container=$(docker ps --filter "label=devcontainer.local_folder=$(pwd)" --format '{{.Names}}' | head -n1)
+	if [[ -z "$container" ]]; then
+		echo "No devcontainer running for $(pwd)" >&2
+		exit 1
+	fi
+	shell="bash"
+else
+	container="$1"
+	shift
+	shell="${1:-bash}"
+
+	if ! docker ps --format '{{.Names}}' | grep -w -- "$container" >/dev/null 2>&1; then
+		echo "Container '$container' is not running" >&2
+		echo "Running containers:" >&2
+		docker ps --format '  {{.Names}} ({{.Image}})'
+		exit 1
+	fi
 fi
 
 if docker exec "$container" sh -c "command -v $shell >/dev/null 2>&1" >/dev/null 2>&1; then

@@ -4,7 +4,7 @@ set -euo pipefail
 sudo chown -R "$(whoami)" /usr/share/codium/resources
 
 ROOT="$(dirname "$(realpath "$0")")/.."
-CSS_SRC="$ROOT/configs/Code/custom.css"
+CSS_SRC="$ROOT/configs/code/custom.css"
 VSCODE="/usr/share/code/resources/app"
 CSS_TARGET="$VSCODE/out/vs/workbench/workbench.desktop.main.css"
 JS_TARGET="$VSCODE/out/vs/workbench/workbench.desktop.main.js"
@@ -13,8 +13,10 @@ CSS_MARKER="/* dotfiles:custom-css */"
 JS_MARKER="/* dotfiles:font */"
 FONT="Maple Mono NF"
 
-# Selectors covering all text-bearing UI zones, excluding codicon icon elements
-FONT_CSS=".monaco-workbench,.monaco-workbench input,.monaco-workbench select,.monaco-workbench textarea,.monaco-workbench .monaco-inputbox{font-family:\"$FONT\",monospace!important;}"
+# Sets the VSCode font CSS variable + overrides the Linux platform body class.
+# The .linux class is what VSCode uses on <html> on Linux — this covers everything
+# that doesn't have an explicit font-family set further down the tree.
+FONT_CSS="body{--vscode-font-family:\"$FONT\";}.linux{font-family:\"$FONT\",sans-serif!important;}.monaco-workbench input,.monaco-workbench select,.monaco-workbench textarea,.monaco-workbench .monaco-inputbox{font-family:\"$FONT\",sans-serif!important;}"
 
 update_checksums() {
 	python3 - "$CSS_TARGET" "$JS_TARGET" "$PRODUCT_JSON" <<'EOF'
@@ -56,10 +58,29 @@ if idx != -1:
 else:
     print("  nothing to strip")
 EOF
+
+	# Reverse the renderer font replacement. Safe to do after stripping the injection
+	# above, since that removes all other occurrences of the font name from the file.
+	echo "✦ Restoring renderer font strings..."
+	python3 - "$JS_TARGET" "$FONT" <<'EOF'
+import sys, subprocess
+path, font = sys.argv[1], sys.argv[2]
+orig = 'system-ui, "Ubuntu", "Droid Sans"'
+content = open(path).read()
+if font not in content:
+    print("  nothing to restore")
+    sys.exit(0)
+count = content.count(font)
+new = content.replace(font, orig)
+subprocess.run(["sudo","tee",path], input=new.encode(), capture_output=True, check=True)
+print(f"  restored {count} occurrences")
+EOF
 fi
 
-# CSS layout tweaks
-if grep -qF "$CSS_MARKER" "$CSS_TARGET" 2>/dev/null; then
+# CSS layout tweaks (optional — only applied if configs/code/custom.css exists)
+if [[ ! -f "$CSS_SRC" ]]; then
+	echo "✦ No custom.css found, skipping CSS patch"
+elif grep -qF "$CSS_MARKER" "$CSS_TARGET" 2>/dev/null; then
 	echo "✦ CSS already patched"
 else
 	{
@@ -69,7 +90,7 @@ else
 	echo "✦ CSS patched"
 fi
 
-# JS font injection
+# JS style tag injection (font + css var override)
 if grep -qF "$JS_MARKER" "$JS_TARGET" 2>/dev/null; then
 	echo "✦ JS font already injected"
 else
@@ -88,6 +109,28 @@ subprocess.run(["sudo","tee",path], input=new.encode(), capture_output=True, che
 print("  injected")
 EOF
 	echo "✦ JS font injected"
+fi
+
+# Renderer font replacement: replaces the 7 hardcoded Linux sans-serif font strings
+# in the compiled JS bundle. These override CSS-level rules so must be patched here.
+if python3 -c "
+import sys
+content = open(sys.argv[1]).read()
+sys.exit(0 if 'system-ui, \"Ubuntu\", \"Droid Sans\"' in content else 1)
+" "$JS_TARGET" 2>/dev/null; then
+	python3 - "$JS_TARGET" "$FONT" <<'EOF'
+import sys, subprocess
+path, font = sys.argv[1], sys.argv[2]
+orig = 'system-ui, "Ubuntu", "Droid Sans"'
+content = open(path).read()
+count = content.count(orig)
+new = content.replace(orig, font)
+subprocess.run(["sudo","tee",path], input=new.encode(), capture_output=True, check=True)
+print(f"  replaced {count} occurrences")
+EOF
+	echo "✦ Renderer font patched"
+else
+	echo "✦ Renderer font already patched"
 fi
 
 update_checksums
