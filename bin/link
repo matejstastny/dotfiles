@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import sys
 from pathlib import Path
-from configparser import ConfigParser
 
 _ROOT = Path(__file__).resolve().parent.parent
 CONFIGS_DIR = _ROOT / "configs"
@@ -37,24 +36,39 @@ def symlink(src: Path, dst: Path):
         dst.symlink_to(src)
 
 
+def parse_conf(path: Path) -> dict[str, dict[str, list[str]]]:
+    sections: dict[str, dict[str, list[str]]] = {}
+    current = None
+    if not path.exists():
+        return sections
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#') or line.startswith(';'):
+                continue
+            if line.startswith('[') and line.endswith(']'):
+                current = line[1:-1]
+                sections[current] = {}
+            elif '=' in line and current is not None:
+                key, _, val = line.partition('=')
+                sections[current].setdefault(key.strip(), []).append(val.strip())
+    return sections
+
+
 def main():
     item_len = 0
     for src in CONFIGS_DIR.iterdir():
         if not src.is_dir():
             continue
-        name = src.name
-        item_len = max(item_len, len(name))
-    item_len +=2
+        item_len = max(item_len, len(src.name))
+    item_len += 2
 
     if not CONFIGS_DIR.is_dir():
         sys.exit(f"configs/ directory not found at {CONFIGS_DIR}")
 
-    conf = ConfigParser()
-    conf.optionxform = str
-    conf.read(CONF_FILE)
-
-    path_overrides = dict(conf["path_overrides"]) if "path_overrides" in conf else {}
-    file_overrides = dict(conf["file_overrides"]) if "file_overrides" in conf else {}
+    conf = parse_conf(CONF_FILE)
+    path_overrides = conf.get("path_overrides", {})
+    file_overrides = conf.get("file_overrides", {})
 
     if dry_run:
         print("[dry run]")
@@ -65,14 +79,18 @@ def main():
         name = src.name
 
         if name in file_overrides:
-            target_dir = Path(file_overrides[name]).expanduser()
-            log(get_pad(item_len, name, f" files link    -> {target_dir}"))
-            for f in sorted(src.iterdir()):
-                symlink(f, target_dir / f.name)
+            targets = [Path(t) for t in file_overrides[name]]
+            label = ", ".join(str(t) for t in targets)
+            log(get_pad(item_len, name, f" files link    -> {label}"))
+            for target_dir in targets:
+                for f in sorted(src.iterdir()):
+                    symlink(f, target_dir / f.name)
         elif name in path_overrides:
-            target = Path(path_overrides[name]).expanduser()
-            log(get_pad(item_len, name, f" path override -> {target}"))
-            symlink(src, target)
+            targets = [Path(t) for t in path_overrides[name]]
+            label = ", ".join(str(t) for t in targets)
+            log(get_pad(item_len, name, f" path override -> {label}"))
+            for target in targets:
+                symlink(src, target)
         else:
             log(get_pad(item_len, name, f" default       -> {DEFAULT_TARGET / name}"))
             symlink(src, DEFAULT_TARGET / name)
