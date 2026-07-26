@@ -26,7 +26,7 @@
     // Custom UI Style extension
     "window.customMenuBarAltFocus": false,
     "window.newWindowDimensions": "maximized",
-    "window.menuBarVisibility": "toggle",
+    "window.menuBarVisibility": "hidden",
     "window.enableMenuBarMnemonics": false,
     "window.customTitleBarVisibility": "never",
     "window.titleBarStyle": "native",
