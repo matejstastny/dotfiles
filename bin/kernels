@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PURPLE=$'\033[38;2;120;120;200m'
+ROSE=$'\033[38;2;196;122;184m'
+TEXT=$'\033[38;2;220;224;244m'
+DIM=$'\033[38;2;152;152;192m'
+MUTED=$'\033[38;2;61;61;92m'
+BOLD=$'\033[1m'
+RESET=$'\033[0m'
+
+use_sudo=false
+[[ "${1:-}" == "-s" || "${1:-}" == "--sudo" ]] && use_sudo=true
+
+running="$(uname -r)"
+
+default_kernel=""
+if command -v grubby >/dev/null 2>&1; then
+	if $use_sudo; then
+		raw=$(sudo grubby --default-kernel 2>/dev/null || true)
+	else
+		raw=$(grubby --default-kernel 2>/dev/null || true)
+	fi
+	[[ "$raw" == /boot/vmlinuz-* && -f "$raw" ]] && default_kernel="${raw#/boot/vmlinuz-}"
+fi
+
+mapfile -t vmlinuz_files < <(ls -t /boot/vmlinuz-* 2>/dev/null)
+
+if [[ ${#vmlinuz_files[@]} -eq 0 ]]; then
+	echo "kernels: no /boot/vmlinuz-* found" >&2
+	exit 1
+fi
+
+row() {
+	printf "    %s%-11s%s %s%s%s\n" "$DIM" "$1" "$RESET" "$TEXT" "$2" "$RESET"
+}
+
+printf '\n%s%s✦ kernels ✦%s\n\n' "$BOLD" "$PURPLE" "$RESET"
+
+for f in "${vmlinuz_files[@]}"; do
+	ver="${f#/boot/vmlinuz-}"
+
+	name_color="$TEXT"
+	badges=""
+	if [[ "$ver" == "$running" ]]; then
+		name_color="$ROSE"
+		badges+="  ${ROSE}● running${RESET}"
+	fi
+	if [[ -n "$default_kernel" && "$ver" == "$default_kernel" ]]; then
+		badges+="  ${TEXT}★ default${RESET}"
+	fi
+
+	printf '  %s%s%s%s%s\n' "$name_color" "$BOLD" "$ver" "$RESET" "$badges"
+
+	pkg=$(rpm -qf "$f" 2>/dev/null || true)
+	[[ -z "$pkg" || "$pkg" == *"not owned by any package"* ]] && pkg="custom build"
+
+	mtime=$(stat -c '%y' "$f" 2>/dev/null | cut -d'.' -f1)
+	vsize=$(du -h "$f" 2>/dev/null | cut -f1)
+
+	initramfs="/boot/initramfs-$ver.img"
+	isize="—"
+	[[ -f "$initramfs" ]] && isize=$(du -h "$initramfs" | cut -f1)
+
+	cfg="✗"
+	[[ -f "/boot/config-$ver" ]] && cfg="✓"
+
+	dtb="✗"
+	[[ -d "/boot/dtbs/$ver" ]] && dtb="✓"
+
+	moddir="/usr/lib/modules/$ver"
+	msize="—"
+	[[ -d "$moddir" ]] && msize=$(du -sh "$moddir" 2>/dev/null | cut -f1)
+
+	row "package" "$pkg"
+	row "installed" "$mtime"
+	row "vmlinuz" "$vsize"
+	row "initramfs" "$isize"
+	row "config" "$cfg"
+	row "dtbs" "$dtb"
+	row "modules" "$msize"
+	printf '\n'
+done

@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+
+# memleak - check for the apple-dcp/aquamarine dma-buf framebuffer leak
+# Buffers get allocated for display scanout, marked "signalled" once the GPU
+# is done with them, but sometimes never get released back - they pile up as
+# Shmem that no process (ps/smem) can account for. See dotfiles history
+# around 2026-07 for the full debugging story.
+#
+# Usage: memleak [-w|--watch [interval_seconds]]
+
+set -euo pipefail
+
+BUFINFO=/sys/kernel/debug/dma_buf/bufinfo
+STATE_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/memleak.state"
+WARN_RATE_MB_PER_MIN=1
+
+mkdir -p "$(dirname "$STATE_FILE")"
+
+red() { echo -e "\033[31m$*\033[0m"; }
+green() { echo -e "\033[32m$*\033[0m"; }
+yellow() { echo -e "\033[33m$*\033[0m"; }
+dim() { echo -e "\033[2m$*\033[0m"; }
+
+to_gb() { awk -v kb="$1" 'BEGIN{printf "%.2f", kb/1024/1024}'; }
+to_mb() { awk -v b="$1" 'BEGIN{printf "%.1f", b/1024/1024}'; }
+
+check_once() {
+	if [ ! -r "$BUFINFO" ]; then
+		if [ "$(id -u)" -ne 0 ]; then
+			exec sudo --preserve-env=HOME "$0" "$@"
+		fi
+		red "Cannot read $BUFINFO - debugfs not mounted or dma-buf debug not available"
+		exit 1
+	fi
+
+	read -r mem_total mem_avail shmem_kb cached_kb free_kb <<<"$(awk '
+		/^MemTotal:/     {t=$2}
+		/^MemAvailable:/ {a=$2}
+		/^Shmem:/        {s=$2}
+		/^Cached:/       {c=$2}
+		/^MemFree:/      {f=$2}
+		END {print t, a, s, c, f}
+	' /proc/meminfo)"
+
+	swap_used_kb=$(awk '/^SwapTotal:/{t=$2} /^SwapFree:/{f=$2} END{print t-f}' /proc/meminfo)
+
+	# sum Pss (proportional share of shared pages) across every process -
+	# a fair "how much RAM do running programs actually account for" number,
+	# same idea as `mem`/smem but done inline so we don't shell out to it
+	processes_kb=0
+	for smaps in /proc/[0-9]*/smaps_rollup; do
+		pss=$(awk '/^Pss:/{print $2; exit}' "$smaps" 2>/dev/null) || continue
+		[ -n "$pss" ] && processes_kb=$((processes_kb + pss))
+	done
+
+	# whatever's left after processes, page cache, and free is kernel/other
+	# overhead (slab, page tables, kernel stacks, etc) - clamp at 0 since Pss
+	# and Cached can overlap slightly (e.g. shared library pages)
+	kernel_kb=$((mem_total - free_kb - cached_kb - processes_kb))
+	[ "$kernel_kb" -lt 0 ] && kernel_kb=0
+
+	echo "Breakdown (of $(to_gb "$mem_total")G total):"
+	echo "  processes: $(to_gb "$processes_kb")G   cached: $(to_gb "$cached_kb")G   kernel/other: $(to_gb "$kernel_kb")G   free: $(to_gb "$free_kb")G"
+
+	# sum size + count of dma-buf objects exported by drm and attached to
+	# soc:display-subsystem (the DCP) - these are the ones that leak
+	read -r dcp_count dcp_bytes <<<"$(awk '
+		NF>=6 && $1 ~ /^[0-9]+$/ {
+			size=$1; exporter=$5; has_display=0; in_block=1; next
+		}
+		/soc:display-subsystem/ { has_display=1; next }
+		/^Total [0-9]+ devices attached/ {
+			if (in_block && exporter=="drm" && has_display) { count++; bytes+=size }
+			in_block=0; next
+		}
+		END { print count+0, bytes+0 }
+	' "$BUFINFO")"
+
+	echo "Memory:  $(to_gb "$mem_total")G total, $(to_gb "$mem_avail")G available, Shmem: $(to_gb "$shmem_kb")G, swap used: $(to_gb "$swap_used_kb")G"
+	echo "DCP bufs: $dcp_count objects, $(to_mb "$dcp_bytes")MB attached to soc:display-subsystem"
+
+	now=$(date +%s)
+	if [ -f "$STATE_FILE" ]; then
+		read -r prev_time prev_bytes <<<"$(cat "$STATE_FILE")"
+		elapsed=$((now - prev_time))
+		if [ "$elapsed" -gt 5 ]; then
+			delta_bytes=$((dcp_bytes - prev_bytes))
+			rate=$(awk -v d="$delta_bytes" -v e="$elapsed" 'BEGIN{printf "%.2f", (d/1024/1024)/(e/60)}')
+			dim "  since last check (${elapsed}s ago): $(to_mb "$delta_bytes")MB delta, ${rate}MB/min"
+			if awk -v r="$rate" -v w="$WARN_RATE_MB_PER_MIN" 'BEGIN{exit !(r>w)}'; then
+				red "LEAK LIKELY - DCP buffers growing at ${rate}MB/min"
+			else
+				green "OK - no significant DCP buffer growth"
+			fi
+		fi
+	else
+		yellow "First run, no baseline yet - run again later to see the growth rate"
+	fi
+
+	echo "$now $dcp_bytes" >"$STATE_FILE"
+}
+
+if [ "${1:-}" = "-w" ] || [ "${1:-}" = "--watch" ]; then
+	interval="${2:-30}"
+	while true; do
+		echo "── $(date '+%H:%M:%S') ──"
+		check_once
+		sleep "$interval"
+	done
+else
+	check_once "$@"
+fi

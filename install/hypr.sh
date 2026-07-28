@@ -112,11 +112,28 @@ Datadir=\${datadir}
 EOF
 fi
 
+# Versions below are pinned to exactly what Hyprland's own flake.lock uses
+# for HYPRLAND_TAG - i.e. the combination the maintainers actually built and
+# tested together. Don't bump individual libs to "latest" independently of
+# Hyprland - that's what caused a whole debugging saga once already.
+# To upgrade: bump HYPRLAND_TAG, then re-derive these from
+# https://raw.githubusercontent.com/hyprwm/Hyprland/<tag>/flake.lock
+HYPRLAND_TAG="v0.56.1"
+HYPRUTILS_REF="v0.14.0"
+HYPRLANG_REF="090117506ddc3d7f26e650ff344d378c2ec329cc"
+HYPRCURSOR_REF="39435900785d0c560c6ae8777d29f28617d031ef"
+HYPRGRAPHICS_REF="c6e7b9f673f4360bc813d3dc75028f75ee88d3f8"
+AQUAMARINE_REF="v0.13.0"
+HYPRWIRE_REF="85148a8e612808cf5ddb25d0b3c5840f3498a7dc"
+
 # COPR has hyprlang 0.6.4 but hyprland 0.55 needs >= 0.6.7 - build from source
 build_hypr_lib() {
-	local repo="$1" tmpdir
+	local repo="$1" ref="$2" tmpdir
 	tmpdir=$(mktemp -d)
-	git clone --depth 1 "https://github.com/hyprwm/${repo}.git" "$tmpdir"
+	git -C "$tmpdir" init -q
+	git -C "$tmpdir" remote add origin "https://github.com/hyprwm/${repo}.git"
+	git -C "$tmpdir" fetch --depth 1 origin "$ref"
+	git -C "$tmpdir" checkout -q FETCH_HEAD
 	cmake -S "$tmpdir" -B "$tmpdir/build" \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
@@ -127,35 +144,40 @@ build_hypr_lib() {
 	rm -rf "$tmpdir"
 }
 
-log "Building hyprlang from source..."
-build_hypr_lib hyprlang
+read -rp "Install Hyprland ${HYPRLAND_TAG} + pinned deps from source? [y/N] " hl_confirm
+if [[ "$hl_confirm" =~ ^[Yy]$ ]]; then
+	log "Building hyprlang (${HYPRLANG_REF}) from source..."
+	build_hypr_lib hyprlang "$HYPRLANG_REF"
 
-log "Building hyprwire from source..."
-build_hypr_lib hyprwire
+	log "Building hyprwire (${HYPRWIRE_REF}) from source..."
+	build_hypr_lib hyprwire "$HYPRWIRE_REF"
 
-log "Building hyprutils from source..."
-build_hypr_lib hyprutils
+	log "Building hyprutils (${HYPRUTILS_REF}) from source..."
+	build_hypr_lib hyprutils "$HYPRUTILS_REF"
 
-log "Building hyprgraphics from source..."
-build_hypr_lib hyprgraphics
+	log "Building hyprgraphics (${HYPRGRAPHICS_REF}) from source..."
+	build_hypr_lib hyprgraphics "$HYPRGRAPHICS_REF"
 
-log "Building hyprcursor from source..."
-build_hypr_lib hyprcursor
+	log "Building hyprcursor (${HYPRCURSOR_REF}) from source..."
+	build_hypr_lib hyprcursor "$HYPRCURSOR_REF"
 
-log "Building aquamarine from source..."
-build_hypr_lib aquamarine
+	log "Building aquamarine (${AQUAMARINE_REF}) from source..."
+	build_hypr_lib aquamarine "$AQUAMARINE_REF"
 
-log "Building Hyprland latest from source (Lua support)..."
-HLDIR=$(mktemp -d)
-git clone --recurse-submodules --depth 1 \
-	https://github.com/hyprwm/Hyprland.git "$HLDIR"
-cmake -S "$HLDIR" -B "$HLDIR/build" \
-	-DCMAKE_BUILD_TYPE=Release \
-	-DCMAKE_INSTALL_PREFIX=/usr \
-	-DCMAKE_INSTALL_LIBDIR=/usr/lib64
-cmake --build "$HLDIR/build" -j$(nproc)
-sudo cmake --install "$HLDIR/build"
-rm -rf "$HLDIR"
+	log "Building Hyprland ${HYPRLAND_TAG} from source (Lua support)..."
+	HLDIR=$(mktemp -d)
+	git clone --recurse-submodules --depth 1 --branch "$HYPRLAND_TAG" \
+		https://github.com/hyprwm/Hyprland.git "$HLDIR"
+	cmake -S "$HLDIR" -B "$HLDIR/build" \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=/usr/lib64
+	cmake --build "$HLDIR/build" -j$(nproc)
+	sudo cmake --install "$HLDIR/build"
+	rm -rf "$HLDIR"
+else
+	log "Skipping Hyprland source build."
+fi
 
 log "Installing Wayland utilities..."
 sudo dnf install -y \

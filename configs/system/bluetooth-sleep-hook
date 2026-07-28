@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+[ "$1" = "post" ] || exit 0
+
+bt_dev="$(basename "$(readlink -f /sys/class/bluetooth/hci0/device)")"
+echo -n "$bt_dev" >/sys/bus/pci/drivers/hci_bcm4377/unbind
+echo -n "$bt_dev" >/sys/bus/pci/drivers/hci_bcm4377/bind

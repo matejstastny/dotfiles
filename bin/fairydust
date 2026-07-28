@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -eu
+
+FAIRYDUST_DIR="$HOME/dotfiles/fairydust"
+
+if [ -d "$FAIRYDUST_DIR" ]; then
+	echo "==> Repo exists. Pulling..."
+	cd "$FAIRYDUST_DIR" && git pull
+else
+	echo "==> Cloning installer..."
+	git clone https://github.com/bharambetejas/asahi-fairydust-display.git "$FAIRYDUST_DIR"
+fi
+
+echo "==> Adding exec perms..."
+chmod +x "$FAIRYDUST_DIR"/*.sh
+
+echo "==> Done"
