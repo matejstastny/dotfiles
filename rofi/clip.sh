@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-cliphist list \
-    | rofi -dmenu -p "✦ clipboard ✦" \
-    | cliphist decode \
-    | wl-copy
+cliphist list |
+	rofi -dmenu -p "✦ clipboard ✦" |
+	cliphist decode |
+	wl-copy

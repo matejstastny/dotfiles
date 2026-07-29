@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Quick-capture a timestamped line into the vault inbox.
-# reqs: rofi, notify-send
+# obsidian
 
 NOTES_DIR="$HOME/notes"
 INBOX="$NOTES_DIR/inbox.md"

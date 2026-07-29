@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# reqs: rofi, python3, wl-copy, notify-send
-# supports standard math ops + sin/cos/tan/sqrt/log/pi/e/abs/round/floor/ceil
+# ermmmmmmm calc is short for caluclator 🤓
 
 HISTORY="${XDG_CACHE_HOME:-$HOME/.cache}/rofi-calc-history"
 touch "$HISTORY" 2>/dev/null
