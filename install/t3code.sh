@@ -15,33 +15,33 @@ echo "✦ T3 Code build/install (fedora linux-arm64)"
 echo ""
 echo "✦ Checking system dependencies..."
 if ! command -v magick &>/dev/null; then
-    echo "  installing ImageMagick (needed to resize app icons)..."
-    sudo dnf install -y ImageMagick
+	echo "  installing ImageMagick (needed to resize app icons)..."
+	sudo dnf install -y ImageMagick
 fi
 
 if ! command -v vp &>/dev/null; then
-    echo "  installing vite.plus (vp)..."
-    curl -fsSL https://vite.plus | bash
+	echo "  installing vite.plus (vp)..."
+	curl -fsSL https://vite.plus | bash
 fi
 
 echo ""
 if [ -d "$REPO_DIR/.git" ]; then
-    echo "✦ Updating existing checkout at $REPO_DIR..."
-    git -C "$REPO_DIR" restore --staged . 2>/dev/null || true
-    git -C "$REPO_DIR" restore . 2>/dev/null || true
-    git -C "$REPO_DIR" pull --ff-only
+	echo "✦ Updating existing checkout at $REPO_DIR..."
+	git -C "$REPO_DIR" restore --staged . 2>/dev/null || true
+	git -C "$REPO_DIR" restore . 2>/dev/null || true
+	git -C "$REPO_DIR" pull --ff-only
 else
-    echo "✦ Cloning t3code into $REPO_DIR..."
-    mkdir -p "$(dirname "$REPO_DIR")"
-    git clone "$REPO_URL" "$REPO_DIR"
+	echo "✦ Cloning t3code into $REPO_DIR..."
+	mkdir -p "$(dirname "$REPO_DIR")"
+	git clone "$REPO_URL" "$REPO_DIR"
 fi
 
 echo ""
 echo "✦ Applying background color patch..."
 git -C "$REPO_DIR" restore apps/web/src/index.css
-cat >> "$REPO_DIR/apps/web/src/index.css" <<'PATCH'
+cat >>"$REPO_DIR/apps/web/src/index.css" <<'PATCH'
 
-/* dotfiles: #11111b background override */
+/* elara theme override */
 :root {
   @variant dark {
     --background: #11111b;
@@ -78,16 +78,16 @@ rmdir "$tmpdir"
 echo ""
 echo "✦ Installing icons..."
 for icon in "$INSTALL_DIR"/usr/share/icons/hicolor/*/apps/t3code.png; do
-    size=$(basename "$(dirname "$(dirname "$icon")")")
-    mkdir -p "$ICON_BASE/$size/apps"
-    cp "$icon" "$ICON_BASE/$size/apps/t3code.png"
+	size=$(basename "$(dirname "$(dirname "$icon")")")
+	mkdir -p "$ICON_BASE/$size/apps"
+	cp "$icon" "$ICON_BASE/$size/apps/t3code.png"
 done
 command -v gtk-update-icon-cache &>/dev/null && gtk-update-icon-cache -f -t "$ICON_BASE" 2>/dev/null || true
 
 echo ""
 echo "✦ Writing launcher entry..."
 mkdir -p "$(dirname "$DESKTOP_FILE")"
-cat > "$DESKTOP_FILE" <<EOF
+cat >"$DESKTOP_FILE" <<EOF
 [Desktop Entry]
 Type=Application
 Name=T3 Code
