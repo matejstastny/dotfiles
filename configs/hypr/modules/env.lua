@@ -1,5 +1,5 @@
 hl.env("XCURSOR_SIZE", "24")
-hl.env("XCURSOR_THEME", "rose-pine-hyprcursor")
+hl.env("XCURSOR_THEME", "BreezeX-RosePine-Linux")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_THEME", "rose-pine-hyprcursor")
 hl.env("GTK_THEME", "catppuccin-mocha-mauve-standard+default")

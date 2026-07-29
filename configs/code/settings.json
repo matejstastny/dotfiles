@@ -184,5 +184,9 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "C_Cpp.intelliSenseEngine": "disabled",
-    "diffEditor.ignoreTrimWhitespace": false
+    "diffEditor.ignoreTrimWhitespace": false,
+    "workbench.editorAssociations": {
+        "{git,gitlens,chat-editing-snapshot-text-model,copilot,git-graph,git-graph-3}:/**/*.qrc": "default",
+        "*.qrc": "qt-core.qrcEditor"
+    }
 }

@@ -31,6 +31,7 @@ path=(
 
 alias dots='cd ~/dotfiles'
 alias s='ls ~/dotfiles/bin'
+alias qsd='xdg-open $HOME/source/quickshell-docs/quickshell.org/index.html'
 
 alias sr='source ~/.zshrc && echo "shell reloaded"'
 

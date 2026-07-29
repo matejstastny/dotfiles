@@ -6,6 +6,6 @@ wallpaper="${wallpaper/#\~/$HOME}"
 until swww query &>/dev/null; do sleep 0.1; done
 
 exec swww img "$wallpaper" \
-    --transition-type fade \
-    --transition-duration 1.5 \
-    --transition-fps 60
+	--transition-type fade \
+	--transition-duration 1.5 \
+	--transition-fps 60
