@@ -1,21 +1,5 @@
 #!/usr/bin/env python3
-# ani-cli Discord Rich Presence
-#
-# DEPENDENCIES
-#   pip install pypresence requests
-#
-# DISCORD APP
-#   1. Go to https://discord.com/developers/applications
-#   2. Create an application, copy the Application ID
-#   3. Set it below or export DRPC_CLIENT_ID=<id>
-#
-# MPV IPC (for pause detection + accurate timestamps)
-#   Add to ~/.config/mpv/mpv.conf:
-#     input-ipc-server=/tmp/mpvsocket
-#   Override with: export MPV_IPC_SOCKET=/your/path
-#
-# INSTALL AS SERVICE
-#   anipresence --install
+#@
 
 import json
 import os
@@ -216,7 +200,7 @@ def run():
 
                 if raw_title != current_title:
                     current_title = raw_title
-                    print(f"Watching: {title_display} — Episode {ep}", flush=True)
+                    print(f"Watching: {title_display} - Episode {ep}", flush=True)
 
                 state = f"Episode {ep}" + (f" / {total}" if total else "")
 
@@ -253,12 +237,4 @@ def run():
 
 
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description="Discord Rich Presence for ani-cli")
-    parser.add_argument("--install", action="store_true", help="Install and enable systemd user service")
-    args = parser.parse_args()
-
-    if args.install:
-        install()
-    else:
-        run()
+    install()

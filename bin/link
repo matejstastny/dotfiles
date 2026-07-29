@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+#@ dotfiles manager/symlinker
+
 import sys
 from pathlib import Path
 

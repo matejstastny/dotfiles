@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+#@ list bin scripts or show what one does
+
+import sys
+from pathlib import Path
+
+R = "\033[0m"
+BOLD = "\033[1m"
+DIM = "\033[2m"
+CYAN = "\033[96m"
+WHITE = "\033[97m"
+GRAY = "\033[90m"
+RED = "\033[91m"
+
+BIN_DIR = Path(__file__).resolve().parent
+
+
+def describe(path):
+    try:
+        with path.open() as f:
+            for _, line in zip(range(10), f):
+                line = line.strip()
+                if line.startswith("#@"):
+                    return line[2:].strip()
+    except (OSError, UnicodeDecodeError):
+        pass
+    return None
+
+
+def scripts():
+    return sorted(
+        (p for p in BIN_DIR.iterdir() if p.is_file() and not p.name.startswith(".")),
+        key=lambda p: p.name.lower(),
+    )
+
+
+def list_all():
+    entries = [(p.name, describe(p)) for p in scripts()]
+    width = max(len(name) for name, _ in entries)
+    for name, desc in entries:
+        desc_str = f"{WHITE}{desc}{R}" if desc else f"{GRAY}(no description){R}"
+        print(f"  {BOLD}{CYAN}{name.ljust(width)}{R}  {desc_str}")
+
+
+def show_one(name):
+    path = BIN_DIR / name
+    if not path.is_file():
+        print(f"{RED}no such script:{R} {name}", file=sys.stderr)
+        sys.exit(1)
+    desc = describe(path)
+    if desc:
+        print(f"{BOLD}{CYAN}{name}{R}  {WHITE}{desc}{R}")
+    else:
+        print(f"{BOLD}{CYAN}{name}{R}  {GRAY}(no description){R}")
+
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        show_one(sys.argv[1])
+    else:
+        list_all()

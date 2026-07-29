@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
-kitty &
-code ~/dotfiles &
-"$(dirname "$0")/helium" --profile-directory=Default &
-vesktop &
-/home/elara/.local/share/obsidian/obsidian.AppImage --appimage-extract-and-run %u &
-/home/elara/.local/share/t3code/t3code --no-sandbox
+#@ app autostart
+
+running() {
+	pgrep -x "$1" >/dev/null
+}
+
+running kitty || kitty &
+running code || code ~/dotfiles &
+running helium || "$(dirname "$0")/helium" --profile-directory=Default &
+running vesktop || vesktop &
+pgrep -f obsidian.AppImage >/dev/null || /home/elara/.local/share/obsidian/obsidian.AppImage --appimage-extract-and-run %u &
+running t3code || /home/elara/.local/share/t3code/t3code --no-sandbox

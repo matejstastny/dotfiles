@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#@ convert and AVCHD file into mp4's
 
 INPUT_DIR=$1
 OUTPUT_DIR="${2:-avchd-export}"

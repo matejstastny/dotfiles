@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#@ patch vscode with custom css and system font and asset perms
 set -euo pipefail
 
 sudo chown -R "$(whoami)" /usr/share/codium/resources
@@ -13,9 +14,7 @@ CSS_MARKER="/* dotfiles:custom-css */"
 JS_MARKER="/* dotfiles:font */"
 FONT="Maple Mono NF"
 
-# Sets the VSCode font CSS variable + overrides the Linux platform body class.
-# The .linux class is what VSCode uses on <html> on Linux — this covers everything
-# that doesn't have an explicit font-family set further down the tree.
+# fonts 1
 FONT_CSS="body{--vscode-font-family:\"$FONT\";}.linux{font-family:\"$FONT\",sans-serif!important;}.monaco-workbench input,.monaco-workbench select,.monaco-workbench textarea,.monaco-workbench .monaco-inputbox{font-family:\"$FONT\",sans-serif!important;}"
 
 update_checksums() {
@@ -77,7 +76,7 @@ print(f"  restored {count} occurrences")
 EOF
 fi
 
-# CSS layout tweaks (optional — only applied if configs/code/custom.css exists)
+# CSS layout tweaks (optional - only applied if configs/code/custom.css exists)
 if [[ ! -f "$CSS_SRC" ]]; then
 	echo "✦ No custom.css found, skipping CSS patch"
 elif grep -qF "$CSS_MARKER" "$CSS_TARGET" 2>/dev/null; then
@@ -138,4 +137,4 @@ update_checksums
 echo "✦ giving perms..."
 sudo chown -R "$(whoami)" /usr/share/code
 
-echo "✦ done — restart VSCode to apply"
+echo "✦ done - restart VSCode to apply"

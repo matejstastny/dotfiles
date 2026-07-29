@@ -1,5 +1,5 @@
 return {
-    -- blink.cmp — fast completion. `version = "*"` pulls the prebuilt Rust
+    -- blink.cmp - fast completion. `version = "*"` pulls the prebuilt Rust
     -- fuzzy matcher so no local `cargo` toolchain is required to build it.
     {
         "saghen/blink.cmp",

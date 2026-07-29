@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
+#@ obsidian launch wrapper
 exec "$HOME/.local/share/obsidian/obsidian.AppImage" --appimage-extract-and-run "$@"

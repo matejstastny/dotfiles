@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hold W key for Minecraft. Press Ctrl+C to stop."""
+#@ holds w for happy ghast riding
 
 import time
 import sys

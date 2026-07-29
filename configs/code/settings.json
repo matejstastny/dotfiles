@@ -188,5 +188,11 @@
     "workbench.editorAssociations": {
         "{git,gitlens,chat-editing-snapshot-text-model,copilot,git-graph,git-graph-3}:/**/*.qrc": "default",
         "*.qrc": "qt-core.qrcEditor"
-    }
+    },
+    "qt-core.additionalQtPaths": [
+        {
+            "name": "Qt-6.10.2-linux-g++-arm64_from_PATH",
+            "path": "/usr/bin/qmake"
+        }
+    ]
 }

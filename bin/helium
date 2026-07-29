@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
+#@ wrapper for helium browser launch with my extensions
+
 DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 exec /usr/bin/helium --load-extension="$DOTFILES_DIR/configs/newtab,$DOTFILES_DIR/configs/helium-theme" "$@"

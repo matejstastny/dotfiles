@@ -1,4 +1,6 @@
 #!/bin/bash
+#@ fix external display (sometimes inits wrong)
+
 output="DP-1"
 native_mode="3840x2160@59.997002"
 native_scale="1.5"

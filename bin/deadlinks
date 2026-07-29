@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+#@ delete symlinks without valid target
+
 set -euo pipefail
 
 dir="$1"

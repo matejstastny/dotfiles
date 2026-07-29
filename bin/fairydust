@@ -1,4 +1,5 @@
 #!/bin/bash
+#@ clone/setup fairydust installer
 
 set -eu
 

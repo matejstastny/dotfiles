@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+#@ build and attach to a devcontainer using microslop's cli
+
 set -euo pipefail
 
 rebuild=false

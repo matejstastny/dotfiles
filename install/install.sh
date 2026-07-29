@@ -56,7 +56,7 @@ if command -v go &>/dev/null; then
 	go install github.com/sentriz/cliphist@latest
 	echo "  installed to $GOPATH/bin/cliphist"
 else
-	echo "  warning: Go not found — install cliphist manually:"
+	echo "  warning: Go not found - install cliphist manually:"
 	echo "  https://github.com/sentriz/cliphist/releases"
 fi
 

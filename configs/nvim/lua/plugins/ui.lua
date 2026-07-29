@@ -84,7 +84,7 @@ return {
                 highlight_overrides = {
                     mocha = function(c)
                         return {
-                            -- Telescope — clear all pane backgrounds for the floating look
+                            -- Telescope - clear all pane backgrounds for the floating look
                             TelescopeNormal            = { bg = "NONE" },
                             TelescopePromptNormal      = { bg = "NONE" },
                             TelescopeResultsNormal     = { bg = "NONE" },

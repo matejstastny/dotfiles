@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#@ pallete generator for repo readme
 
 # palette
 BASE="#11111b" BASE_NAME="base"
@@ -21,7 +22,7 @@ ANSI_5="#c47ab8" ANSI_13="#d494cc"
 ANSI_6="#7abfc4" ANSI_14="#90d0d4"
 ANSI_7="#dce0f4" ANSI_15="#f0f0ff"
 
-# ─────────────────────────────────────────────────────────────────
+# -------------------------------------------------
 
 OUT="${1:-$HOME/dotfiles/assets/palette.png}"
 TMPHTML=$(mktemp /tmp/elara-palette-XXXX.html)

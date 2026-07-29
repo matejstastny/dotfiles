@@ -1,10 +1,10 @@
 ## Repo layout
 
 - `configs/` - one subdir per app; `bin/link` symlinks each to `~/.config/<name>` by default
-- `bin/`     - scripts; this directory is in `$PATH` via `.zshrc`, so anything dropped here is immediately available as a command
-- `rofi/`    - rofi launcher scripts
+- `bin/` - scripts; this directory is in `$PATH` via `.zshrc`, so anything dropped here is immediately available as a command
+- `rofi/` - rofi launcher scripts
 - `install/` - random install scripts I might need for things not installed only through dnf, make a new one for each thing (do not append to existing ones unless specifically asked)
-- `assets/`  - fonts, screenshots, misc static files for repo and system
+- `assets/` - fonts, screenshots, misc static files for repo and system
 
 ## Link system
 
@@ -23,7 +23,7 @@
 
 ## Path conventions
 
-- All directory paths in scripts must be **lowercase** — e.g. `~/videos/recordings`, not `~/Videos/Recordings`
+- All directory paths in scripts must be **lowercase** - e.g. `~/videos/recordings`, not `~/Videos/Recordings`
 
 ## Blacklisted features
 

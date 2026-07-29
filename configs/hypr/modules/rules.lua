@@ -1,7 +1,7 @@
--- workspace 2 uses hy3 layout
+-- workspace 2 uses hy3
 hl.workspace_rule({ workspace = "2", layout = "hy3" })
 
--- workspace assignments (declarative — rule engine applies per-window, no dispatch race on simultaneous opens)
+-- workspace assignments
 hl.window_rule({ name = "session-ws-kitty", match = { class = "^kitty$" }, workspace = "1 silent" })
 hl.window_rule({ name = "session-ws-codium", match = { class = "^codium$" }, workspace = "2 silent" })
 hl.window_rule({ name = "session-ws-code", match = { class = "^code$" }, workspace = "2 silent" })

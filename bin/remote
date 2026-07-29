@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#@ way better ssh
 
 import sys
 import tomllib

@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
-
-# memleak - check for the apple-dcp/aquamarine dma-buf framebuffer leak
-# Buffers get allocated for display scanout, marked "signalled" once the GPU
-# is done with them, but sometimes never get released back - they pile up as
-# Shmem that no process (ps/smem) can account for. See dotfiles history
-# around 2026-07 for the full debugging story.
-#
-# Usage: memleak [-w|--watch [interval_seconds]]
+#@ check for the apple-dcp/aquamarine dma-buf framebuffer leak
 
 set -euo pipefail
 

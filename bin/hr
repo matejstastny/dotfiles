@@ -1,4 +1,5 @@
 #!/bin/bash
+#@ hyprland system reload
 
 set -e
 

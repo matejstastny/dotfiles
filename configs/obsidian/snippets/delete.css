@@ -3,40 +3,39 @@
    ------------------------------------------------------------------------- */
 
 .workspace-tab-header-container {
-  display: none !important;
+    display: none !important;
 }
 
 .empty-state-container {
-  display: none !important;
+    display: none !important;
 }
 
 .nav-header {
-  display: none !important;
+    display: none !important;
 }
 
 .workspace-ribbon {
-  display: none !important;
+    display: none !important;
 }
 
 .plugin-sync {
-  display: none !important;
+    display: none !important;
 }
 
 .clickable-icon {
-  display: none !important;
+    display: none !important;
 }
 
-/* Re-add breathing room since the deleted nav-header used to provide it */
 .nav-files-container.node-insert-event {
-  padding-top: 12px !important;
+    padding-top: 12px !important;
 }
 
 * {
-  scrollbar-width: none !important;
+    scrollbar-width: none !important;
 }
 
 *::-webkit-scrollbar {
-  display: none !important;
+    display: none !important;
 }
 
 .cm-scroller,
@@ -44,8 +43,8 @@ pre,
 pre code,
 div[class^="block-language-"],
 div[class*=" block-language-"] {
-  scrollbar-width: none !important;
-  scrollbar-gutter: auto !important;
+    scrollbar-width: none !important;
+    scrollbar-gutter: auto !important;
 }
 
 .cm-scroller::-webkit-scrollbar,
@@ -53,7 +52,7 @@ pre::-webkit-scrollbar,
 pre code::-webkit-scrollbar,
 div[class^="block-language-"]::-webkit-scrollbar,
 div[class*=" block-language-"]::-webkit-scrollbar {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
 }

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#@ git cleanup local branches without remote
 
 set -euo pipefail
 
@@ -16,7 +17,7 @@ info() {
 
 usage() {
 	cat <<'EOF'
-gitc — cleanup local branches
+gitc - cleanup local branches
 
 Usage:
   gitc            delete branches without a usable remote (after confirmation)

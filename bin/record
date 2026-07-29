@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#@ start/stop screen recording
 
 PID_FILE="/tmp/gpu-screen-recorder.pid"
 OUT_DIR="$HOME/pictures/screenrecord"

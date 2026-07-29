@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 ZSH_HIGHLIGHT_STYLES[command]='fg=#7878c8,bold'

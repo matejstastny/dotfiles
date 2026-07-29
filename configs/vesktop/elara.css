@@ -1,6 +1,6 @@
 /**
- * @name Starlight
- * @description The Starlight theme for Discord, meant to be pretty without bs :3
+ * @name Elara Teme
+ * @description Elara is a moon of Jupiter
  * @author matejstastny
  * @version 0.1.0
  * @website https://github.com/matejstastny/dotfiles
@@ -8,7 +8,7 @@
  * @authorLink https://github.com/matejstastny
 */
 
-/* import theme modules */
+/* ty refactor :3 */
 @import url("https://refact0r.github.io/midnight-discord/build/midnight.css");
 
 :root {
@@ -142,7 +142,7 @@ body {
     240deg,
     23%,
     9%
-  ); /* main bg — all panels: server list / channels / members / chat */
+  ); /* main bg - all panels: server list / channels / members / chat */
   --hover: hsla(259deg, 44%, 60%, 0.08); /* channels and buttons when hovered */
   --active: hsla(259deg, 44%, 60%, 0.16); /* channels and buttons when clicked or selected */
     259deg,
@@ -207,7 +207,7 @@ body {
   ); /* neutral border color of buttons */
 
   /* base colors */
-  /* softened to the Ellie register — hues kept semantic (red=danger, etc.) */
+  /* softened to the Ellie register - hues kept semantic (red=danger, etc.) */
   --red-1: hsl(338deg, 50%, 74%);
   --red-2: hsl(338deg, 50%, 68%);
   --red-3: hsl(338deg, 50%, 68%);

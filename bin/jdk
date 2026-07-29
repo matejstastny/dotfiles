@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
-
-# simple java manager
-# adds all Java managers from `$HOME/java` into jenv and then lets you select
-# the one you want to use
+#@ java jdk manager
 
 JAVA_DIR="$HOME/java"
 

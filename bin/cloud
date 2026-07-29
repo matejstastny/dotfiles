@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
-# cloud — sync local dirs to/from OneDrive via rclone
-# Usage: cloud <push|pull|status> [dir-filter]
+#@ sync local dirs to/from OneDrive via rclone
 
-# from rclone config
 REMOTE="onedrive"
-
 SYNC_DIRS=(
 	"$HOME/school:uw"
 	"$HOME/work:work"

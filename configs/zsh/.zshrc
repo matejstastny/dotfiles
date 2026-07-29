@@ -1,19 +1,19 @@
-# Defaults
+# defaults
 export WHICH_CODE="codium"
 export EDITOR="nvim"
 export BROWSER="helium"
 export DOTFILES_DIR="$HOME/dotfiles"
 
-# Locale
+# locale
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 
-# SDKS
+# sdks
 export GOPATH="$HOME/go"
 export PROTO_HOME="$HOME/.proto"
 export BUN_INSTALL="$HOME/.bun"
 
-# Path
+# path
 typeset -U path
 path=(
 	"$HOME/dotfiles/bin"
@@ -24,13 +24,14 @@ path=(
 	"$HOME/.local/bin"
 	"$HOME/.cargo/bin"
 	"$HOME/.devcontainers/bin"
+	"$HOME/.pixi/bin"
 	$path
 )
 
 # Aliases ------------------------------------------------------------------------------------
 
 alias dots='cd ~/dotfiles'
-alias s='ls ~/dotfiles/bin'
+alias s='scripts'
 alias qsd='xdg-open $HOME/source/quickshell-docs/quickshell.org/index.html'
 
 alias sr='source ~/.zshrc && echo "shell reloaded"'
@@ -75,128 +76,27 @@ alias n='clear && fastfetch'
 alias cc='clear && claude --dangerously-skip-permissions'
 alias ccc='clear && claude --dangerously-skip-permissions --continue'
 
-# Yazi — cd into directory on exit
-function y() {
-	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
-	yazi "$@" --cwd-file="$tmp"
-	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-		builtin cd -- "$cwd"
-	fi
-	rm -f -- "$tmp"
-}
+# plugins ------------------------------------------------------------------------------------
 
-# Notes / Obsidian ---------------------------------------------------------------------------
-
-export NOTES_DIR="$HOME/notes"
-
-note() {
-	if [ $# -eq 0 ]; then
-		builtin cd "$NOTES_DIR" && "$EDITOR" .
-		return
-	fi
-	local f="$NOTES_DIR/$*"
-	[[ "$f" == *.md ]] || f="$f.md"
-	mkdir -p "$(dirname "$f")"
-	"$EDITOR" "$f"
-}
-
-today() {
-	local dir="$NOTES_DIR/daily" f
-	mkdir -p "$dir"
-	f="$dir/$(date +%Y-%m-%d).md"
-	[ -f "$f" ] || printf '# %s\n\n' "$(date '+%A, %B %d %Y')" >"$f"
-	"$EDITOR" "$f"
-}
-
-nn() {
-	local f
-	f=$( (builtin cd "$NOTES_DIR" && rg --files -g '*.md') |
-		fzf --prompt '✦ notes ✦ ' \
-			--preview "bat --style=numbers --color=always '$NOTES_DIR'/{}")
-	[ -n "$f" ] && "$EDITOR" "$NOTES_DIR/$f"
-}
-
-ns() {
-	local sel file line
-	sel=$( (builtin cd "$NOTES_DIR" && rg --line-number --no-heading --color=always -g '*.md' "${*:-.}") |
-		fzf --ansi --delimiter : \
-			--prompt '✦ search ✦ ' \
-			--preview "bat --style=numbers --color=always --highlight-line {2} '$NOTES_DIR'/{1}")
-	[ -z "$sel" ] && return
-	file=${sel%%:*}
-	line=${${sel#*:}%%:*}
-	"$EDITOR" "+$line" "$NOTES_DIR/$file"
-}
-
-# quick-capture a timestamped line into the inbox (no args → edit inbox)
-qn() {
-	local inbox="$NOTES_DIR/inbox.md"
-	mkdir -p "$NOTES_DIR"
-	[ -f "$inbox" ] || printf '# Inbox\n\n' >"$inbox"
-	if [ $# -eq 0 ]; then
-		"$EDITOR" "$inbox"
-		return
-	fi
-	printf -- '- %s %s\n' "$(date '+%Y-%m-%d %H:%M')" "$*" >>"$inbox"
-	echo "✦ captured → inbox.md"
-}
-
-# append a todo (matches rofi/todo.sh format; no args → edit list)
-todo() {
-	local file="$NOTES_DIR/todo/personal.md" tmp
-	mkdir -p "$(dirname "$file")"
-	[ -f "$file" ] || printf '# Personal\n\n' >"$file"
-	if [ $# -eq 0 ]; then
-		"$EDITOR" "$file"
-		return
-	fi
-	tmp=$(mktemp)
-	{
-		head -1 "$file"
-		printf -- '- [ ] %s %s\n' "$(date +%Y-%m-%d)" "$*"
-		tail -n +2 "$file"
-	} >"$tmp"
-	mv "$tmp" "$file"
-	echo "✦ todo added"
-}
-
-# commit + push the vault, if it is a git repo
-nsync() {
-	if ! git -C "$NOTES_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-		echo "notes is not a git repo — run:  git -C $NOTES_DIR init"
-		return 1
-	fi
-	git -C "$NOTES_DIR" add -A
-	git -C "$NOTES_DIR" diff --cached --quiet && {
-		echo "✦ nothing to sync"
-		return 0
-	}
-	git -C "$NOTES_DIR" commit -q -m "notes: $(date '+%Y-%m-%d %H:%M')"
-	git -C "$NOTES_DIR" push -q 2>/dev/null && echo "✦ synced" || echo "✦ committed (no remote/push)"
-}
-
-# Prompt & Plugins ---------------------------------------------------------------------------
-
-# Starship
 eval "$(starship init zsh)"
-
-# Zoxide
 eval "$(zoxide init zsh)"
 
-# Zsh autosuggestions
+# plugins
+source $HOME/.config/shell/zsh-highlighting.sh || echo "error: zsh-syntax-highliting failed to source"
+source $HOME/.config/shell/obsidian.sh || echo "error: obsidian failed to source"
+source $HOME/.config/shell/yazi.sh || echo "error: yazi failed to source"
+
+# zsh-autosuggestions
 source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#9b8ab0,italic"
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 
-# Zsh syntax highlighting
-source ~/dotfiles/zsh-highlighting.sh || true
-
-# Bat
+# bat
 export BAT_THEME="base16"
 export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08/, \"\", \$0); print }'\'' | bat -p -lman'"
 
-# Fzf
+# fzf
 source <(fzf --zsh)
 export FZF_CTRL_R_OPTS="--style minimal --color 16 --info inline --no-sort --no-preview"
 export FZF_DEFAULT_COMMAND="find -L"
@@ -206,7 +106,7 @@ export FZF_DEFAULT_OPTS="
   --color=header:#9b8ab0,spinner:#7c5cbf
 "
 
-# Completions ---------------------------------------------------------------------------------
+# completions ---------------------------------------------------------------------------------
 
 fpath=($HOME/.docker/completions $fpath)
 [ -s "${BUN_INSTALL:-$HOME/.bun}/_bun" ] && source "${BUN_INSTALL:-$HOME/.bun}/_bun"
@@ -214,13 +114,12 @@ fpath=($HOME/.docker/completions $fpath)
 autoload -Uz compinit
 compinit
 
-# Completion settings
 zstyle ':completion:*' menu select
 zstyle ':completion:*' special-dirs true
 zstyle ':completion:*' list-colors "$LS_COLORS" ma=0\;35
 zstyle ':completion:*' squeeze-slashes false
 
-# Shell Options ------------------------------------------------------------------------------
+# shell options ------------------------------------------------------------------------------
 
 setopt append_history inc_append_history share_history hist_ignore_dups hist_ignore_space
 setopt autocd
@@ -233,7 +132,7 @@ unsetopt prompt_sp
 stty stop undef
 bindkey -e
 
-# History ------------------------------------------------------------------------------------
+# history ------------------------------------------------------------------------------------
 
 HISTSIZE=1000000
 SAVEHIST=1000000
@@ -249,9 +148,7 @@ if [[ -n $TMUX_PANE ]]; then
 	fi
 fi
 
-if [[ "$TERM" == "xterm-kitty" ]]; then
-	tm
-fi
+# other --------------------------------------------------------------------------------------
 
 # pnpm
 export PNPM_HOME="/home/elara/.local/share/pnpm"
@@ -259,9 +156,11 @@ case ":$PATH:" in
 *":$PNPM_HOME/bin:"*) ;;
 *) export PATH="$PNPM_HOME/bin:$PATH" ;;
 esac
-# pnpm end
 
-# Vite+ bin (https://viteplus.dev)
+# vite plus
 . "$HOME/.vite-plus/env"
 
-export PATH="/home/elara/.pixi/bin:$PATH"
+# LEAVE AT THE BOTTOM
+if [[ "$TERM" == "xterm-kitty" ]]; then
+	tm
+fi

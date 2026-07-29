@@ -1,6 +1,5 @@
 #!/usr/bin/env sh
-
-# months. i use it more that you think...
+#@ just months. i use it more that you think...
 
 echo "01 january"
 echo "02 february"

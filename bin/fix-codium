@@ -1,4 +1,5 @@
 #!/bin/bash
+#@ add microsoft store to product.json & fix asset perms
 
 set -e
 

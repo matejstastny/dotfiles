@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+#@ restore wallpaper
+
 config="${XDG_CONFIG_HOME:-$HOME/.config}/waypaper/config.ini"
 wallpaper=$(grep -m1 '^wallpaper' "$config" | cut -d= -f2 | xargs)
 wallpaper="${wallpaper/#\~/$HOME}"

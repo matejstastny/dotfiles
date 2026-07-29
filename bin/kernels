@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+#@ all kernels info
 
 PURPLE=$'\033[38;2;120;120;200m'
 ROSE=$'\033[38;2;196;122;184m'
@@ -59,7 +60,7 @@ for f in "${vmlinuz_files[@]}"; do
 	vsize=$(du -h "$f" 2>/dev/null | cut -f1)
 
 	initramfs="/boot/initramfs-$ver.img"
-	isize="—"
+	isize="-"
 	[[ -f "$initramfs" ]] && isize=$(du -h "$initramfs" | cut -f1)
 
 	cfg="✗"
@@ -69,7 +70,7 @@ for f in "${vmlinuz_files[@]}"; do
 	[[ -d "/boot/dtbs/$ver" ]] && dtb="✓"
 
 	moddir="/usr/lib/modules/$ver"
-	msize="—"
+	msize="-"
 	[[ -d "$moddir" ]] && msize=$(du -sh "$moddir" 2>/dev/null | cut -f1)
 
 	row "package" "$pkg"

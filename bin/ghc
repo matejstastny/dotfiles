@@ -1,6 +1,5 @@
 #!/bin/bash
-
-# neat script for cloning cause git clone is long to write and gh repo clone sucks
+#@ better github clone command
 
 set -euo pipefail
 

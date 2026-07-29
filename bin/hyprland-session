@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
+#@ safe hyprland launch, ran on system init
 
 LOG="$HOME/.cache/hyprland-session.log"
 mkdir -p "$HOME/.cache"
-exec >> "$LOG" 2>&1
+exec >>"$LOG" 2>&1
 echo "=== hyprland-session start $(date) ==="
 
 export XDG_CURRENT_DESKTOP=Hyprland

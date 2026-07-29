@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#@ kill all standard apps
 
 classes=("kitty" "code" "helium" "vesktop" "t3code" "obsidian")
 clients=$(hyprctl clients -j)
