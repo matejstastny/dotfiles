@@ -238,3 +238,12 @@ body {
   --purple-4: hsl(259deg, 55%, 67%);
   --purple-5: hsl(259deg, 55%, 62%);
 }
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
