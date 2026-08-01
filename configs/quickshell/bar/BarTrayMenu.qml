@@ -19,9 +19,6 @@ Item {
         if (menuOpen) PopoutState.current = ""
     }
 
-    // grabs focus for the enclosing (Bar) window only while this menu is
-    // open; HyprlandFocusGrab passes the dismissing click through to
-    // whatever's underneath instead of swallowing it like a MouseArea scrim
     HyprlandFocusGrab {
         active: root.menuOpen
         windows: [QsWindow.window]
@@ -32,6 +29,8 @@ Item {
         id: opener
         menu: root.menuHandle
     }
+
+    property alias boxItem: box
 
     Rectangle {
         id: box

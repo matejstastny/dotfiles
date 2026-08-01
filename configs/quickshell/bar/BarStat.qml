@@ -12,6 +12,7 @@ Item {
 
     readonly property Theme theme: Theme {}
     readonly property bool hovered: hoverArea.containsMouse
+    property alias popoutItem: popout
 
     implicitWidth: rowContent.implicitWidth + 12
     implicitHeight: 38

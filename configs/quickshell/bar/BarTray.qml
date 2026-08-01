@@ -6,14 +6,26 @@ import Quickshell.Services.SystemTray
 Row {
     id: root
 
+    required property var screen
+
     spacing: 4
 
+    readonly property var activeMenuBox: {
+        for (let i = 0; i < trayRepeater.count; i++) {
+            const item = trayRepeater.itemAt(i)
+            if (item && item.menu.menuOpen) return item.menu.boxItem
+        }
+        return null
+    }
+
     Repeater {
+        id: trayRepeater
         model: SystemTray.items
         delegate: Item {
             id: trayItem
             required property var modelData
             required property int index
+            property alias menu: menu
 
             width: 22
             height: 38
@@ -40,7 +52,7 @@ Row {
 
             BarTrayMenu {
                 id: menu
-                popoutName: "traymenu" + trayItem.index
+                popoutName: "traymenu|" + root.screen.name + "|" + trayItem.index
                 menuHandle: trayItem.modelData.hasMenu ? trayItem.modelData.menu : null
             }
         }
