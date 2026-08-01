@@ -182,9 +182,7 @@ fi
 log "Installing Wayland utilities..."
 sudo dnf install -y \
 	kitty \
-	waybar \
 	rofi \
-	swaync \
 	swayosd \
 	grim \
 	slurp \

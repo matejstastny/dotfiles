@@ -14,3 +14,5 @@ fi
 wlr-randr --output "$output" --mode "$bounce_mode"
 sleep 5
 wlr-randr --output "$output" --mode "$native_mode" --scale "$native_scale"
+
+~/dotfiles/bin/wallpaper-restore "$output"

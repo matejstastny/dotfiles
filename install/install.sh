@@ -13,9 +13,6 @@ echo "✦ Enabling COPRs..."
 # hyprlock, swww, hyprpicker, and other Hyprland ecosystem tools
 sudo dnf copr enable -y solopasha/hyprland
 
-# SwayNotificationCenter (swaync)
-sudo dnf copr enable -y erikreider/SwayNotificationCenter
-
 # SwayOSD (volume/brightness on-screen display)
 sudo dnf copr enable -y erikreider/swayosd
 
@@ -24,12 +21,10 @@ echo ""
 echo "✦ Installing packages..."
 
 sudo dnf install -y \
-	waybar \
 	wofi \
 	wlogout \
 	swayosd \
 	hyprpicker \
-	swaync \
 	hyprlock \
 	swww \
 	wl-clipboard \
@@ -165,7 +160,8 @@ echo ""
 echo "✦ ✧ ✦  Done! Restart Hyprland to apply the Ellie theme."
 echo ""
 echo "Next steps:"
-echo "  1. Set a wallpaper:  swww img ~/Pictures/Wallpapers/your-image.jpg"
-echo "  2. Reload waybar:    killall waybar && waybar &"
-echo "  3. Test lock screen: hyprlock"
+echo "  1. Set a wallpaper:      swww img ~/Pictures/Wallpapers/your-image.jpg"
+echo "  2. Reload the shell:     killall qs; qs &"
+echo "  3. Test lock screen:     hyprlock"
+echo "  4. Build quickshell:     $DOTFILES_DIR/install/quickshell.sh"
 echo ""

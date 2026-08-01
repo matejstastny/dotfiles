@@ -14,6 +14,7 @@ hl.bind(mod .. " + B", hl.dsp.exec_cmd(DOTS .. "/rofi/bluetooth.sh"))
 hl.bind(mod .. " + T", hl.dsp.exec_cmd(DOTS .. "/rofi/todo.sh personal"))
 hl.bind(mod .. " + O", hl.dsp.exec_cmd(DOTS .. "/rofi/notes.sh"))
 hl.bind(mod .. " + I", hl.dsp.exec_cmd(DOTS .. "/rofi/capture.sh"))
+hl.bind(mod .. " + D", hl.dsp.exec_cmd("qs ipc call panel toggle"))
 hl.bind(mod .. " + Escape", hl.dsp.exec_cmd(DOTS .. "/rofi/powermenu.sh"))
 hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd(DOTS .. "/rofi/todo.sh stars"))
 

@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+#@ retry a command every N seconds until it succeeds
+
+set -euo pipefail
+
+INTERVAL=5
+MAX_ATTEMPTS=""
+FOREVER=0
+
+die() {
+	echo "[ERR] $*" >&2
+	exit 1
+}
+
+info() {
+	echo "[INF] $*"
+}
+
+usage() {
+	cat <<'EOF'
+retry - run a command every N seconds until it succeeds
+
+Usage:
+  retry [options] -- COMMAND [ARGS...]
+  retry [options] COMMAND [ARGS...]
+
+Options:
+  -i, --interval SECONDS   Delay between attempts (default: 5)
+  -n, --attempts COUNT     Give up after COUNT attempts (default: unlimited)
+  -f, --forever            Keep running every interval even after success (like ping)
+  -h, --help               Show this help
+
+Examples:
+  retry curl -sf https://example.com
+  retry -i 2 -n 10 -- ping -c1 8.8.8.8
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+	-i | --interval)
+		[[ $# -ge 2 ]] || die "Missing value for $1"
+		INTERVAL="$2"
+		shift 2
+		;;
+	-n | --attempts)
+		[[ $# -ge 2 ]] || die "Missing value for $1"
+		MAX_ATTEMPTS="$2"
+		shift 2
+		;;
+	-f | --forever)
+		FOREVER=1
+		shift
+		;;
+	-h | --help)
+		usage
+		exit 0
+		;;
+	--)
+		shift
+		break
+		;;
+	-*)
+		die "Unknown option: $1"
+		;;
+	*)
+		break
+		;;
+	esac
+done
+
+CMD=("$@")
+[[ ${#CMD[@]} -gt 0 ]] || die "No command given (see --help)"
+[[ "$INTERVAL" =~ ^[0-9]+(\.[0-9]+)?$ ]] || die "Invalid interval: $INTERVAL"
+[[ -z "$MAX_ATTEMPTS" || "$MAX_ATTEMPTS" =~ ^[0-9]+$ ]] || die "Invalid attempts: $MAX_ATTEMPTS"
+
+trap 'echo; info "Interrupted"; exit 130' INT
+
+attempt=1
+while true; do
+	info "Attempt $attempt: ${CMD[*]}"
+	if "${CMD[@]}"; then
+		if ((FOREVER == 0)); then
+			info "Succeeded on attempt $attempt"
+			exit 0
+		fi
+	else
+		if [[ -n "$MAX_ATTEMPTS" ]] && ((attempt >= MAX_ATTEMPTS)); then
+			die "Giving up after $attempt attempts"
+		fi
+	fi
+	((attempt++))
+	sleep "$INTERVAL"
+done
