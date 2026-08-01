@@ -7,6 +7,7 @@ Rectangle {
 
     property var notification
     property bool compact: false
+    property bool dismissOnClick: false
     signal dismissed()
 
     readonly property Theme theme: Theme {}
@@ -17,6 +18,16 @@ Rectangle {
     color: theme.surface
     border.width: 1
     border.color: critical ? theme.rose : theme.muted
+
+    // declared first so it sits behind the close button / action buttons,
+    // which still take priority for their own smaller hit areas
+    MouseArea {
+        anchors.fill: parent
+        visible: root.dismissOnClick
+        enabled: root.dismissOnClick
+        cursorShape: Qt.PointingHandCursor
+        onClicked: root.dismissed()
+    }
 
     Column {
         id: content
@@ -50,6 +61,7 @@ Rectangle {
                 color: theme.dim
                 font.pixelSize: 11
                 font.family: theme.fontFamily
+                font.weight: Font.Normal
                 elide: Text.ElideRight
             }
 
@@ -59,6 +71,7 @@ Rectangle {
                 color: theme.dim
                 font.pixelSize: 12
                 font.family: theme.fontFamily
+                font.weight: Font.Normal
 
                 MouseArea {
                     anchors.fill: parent
@@ -77,6 +90,7 @@ Rectangle {
             font.pixelSize: 13
             font.bold: true
             font.family: theme.fontFamily
+            font.weight: Font.Normal
             wrapMode: Text.WordWrap
             maximumLineCount: 2
             elide: Text.ElideRight
@@ -89,6 +103,7 @@ Rectangle {
             color: theme.text
             font.pixelSize: 12
             font.family: theme.fontFamily
+            font.weight: Font.Normal
             wrapMode: Text.WordWrap
             maximumLineCount: compact ? 4 : 2
             elide: Text.ElideRight
@@ -97,7 +112,10 @@ Rectangle {
         Row {
             width: parent.width
             spacing: 6
-            visible: notification && notification.actions && notification.actions.length > 0
+            // action buttons (e.g. "View") mostly just try to focus the
+            // originating app, which does nothing useful without
+            // Hyprland's autofocus - not worth the clutter on toasts
+            visible: !compact && notification && notification.actions && notification.actions.length > 0
 
             Repeater {
                 model: notification ? notification.actions : []
@@ -114,6 +132,7 @@ Rectangle {
                         color: theme.text
                         font.pixelSize: 11
                         font.family: theme.fontFamily
+                        font.weight: Font.Normal
                     }
                     MouseArea {
                         anchors.fill: parent

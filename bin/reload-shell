@@ -3,6 +3,8 @@
 
 set -e
 
+QT_QPA_PLATFORMTHEME=gtk3
+
 if ! output=$(hyprctl reload 2>&1); then
 	notify-send -u critical "✦ hr" "Reload failed: $output"
 	exit 1
@@ -14,8 +16,8 @@ if [ -n "$errors" ]; then
 	exit 1
 fi
 
-pkill waybar || true
-waybar >/dev/null 2>&1 &
+pkill qs || true
+qs &
 disown
 
 notify-send -t 2000 "✦ hr" "hyprland reloaded"

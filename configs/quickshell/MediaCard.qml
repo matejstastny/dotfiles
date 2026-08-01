@@ -42,6 +42,7 @@ Rectangle {
             font.pixelSize: 13
             font.bold: true
             font.family: theme.fontFamily
+            font.weight: Font.Normal
             elide: Text.ElideRight
         }
         Text {
@@ -51,6 +52,7 @@ Rectangle {
             color: theme.dim
             font.pixelSize: 11
             font.family: theme.fontFamily
+            font.weight: Font.Normal
             elide: Text.ElideRight
         }
     }
@@ -68,6 +70,7 @@ Rectangle {
             color: theme.text
             font.pixelSize: 15
             font.family: theme.fontFamily
+            font.weight: Font.Normal
             MouseArea { anchors.fill: parent; anchors.margins: -6; cursorShape: Qt.PointingHandCursor; onClicked: player.previous() }
         }
         Text {
@@ -76,6 +79,7 @@ Rectangle {
             color: theme.purple
             font.pixelSize: 17
             font.family: theme.fontFamily
+            font.weight: Font.Normal
             MouseArea { anchors.fill: parent; anchors.margins: -6; cursorShape: Qt.PointingHandCursor; onClicked: player.togglePlaying() }
         }
         Text {
@@ -84,6 +88,7 @@ Rectangle {
             color: theme.text
             font.pixelSize: 15
             font.family: theme.fontFamily
+            font.weight: Font.Normal
             MouseArea { anchors.fill: parent; anchors.margins: -6; cursorShape: Qt.PointingHandCursor; onClicked: player.next() }
         }
     }

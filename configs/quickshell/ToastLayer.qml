@@ -57,6 +57,7 @@ PanelWindow {
 
                 width: column.width
                 compact: true
+                dismissOnClick: true
                 notification: modelData
                 onDismissed: root.popAt(index)
 

@@ -23,8 +23,9 @@ Item {
         anchors.centerIn: parent
         text: Qt.formatDateTime(root.now, "ddd dd · hh:mm")
         color: theme.text
-        font.pixelSize: 12
+        font.pixelSize: 15
         font.family: theme.fontFamily
+        font.weight: Font.Normal
     }
 
     MouseArea {

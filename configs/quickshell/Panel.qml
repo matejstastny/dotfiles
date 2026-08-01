@@ -103,6 +103,7 @@ PanelWindow {
                 font.pixelSize: 15
                 font.bold: true
                 font.family: theme.fontFamily
+                font.weight: Font.Normal
             }
 
             Text {
@@ -112,6 +113,7 @@ PanelWindow {
                 color: theme.dim
                 font.pixelSize: 11
                 font.family: theme.fontFamily
+                font.weight: Font.Normal
                 MouseArea {
                     anchors.fill: parent
                     anchors.margins: -6
@@ -193,6 +195,7 @@ PanelWindow {
                 color: theme.dim
                 font.pixelSize: 12
                 font.family: theme.fontFamily
+                font.weight: Font.Normal
             }
         }
     }

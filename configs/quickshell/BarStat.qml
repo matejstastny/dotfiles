@@ -23,14 +23,16 @@ Item {
         Text {
             text: root.icon
             color: theme.text
-            font.pixelSize: 13
+            font.pixelSize: 15
             font.family: theme.fontFamily
+            font.weight: Font.Bold
         }
         Text {
             text: root.valueText
             color: theme.text
-            font.pixelSize: 12
+            font.pixelSize: 14
             font.family: theme.fontFamily
+            font.weight: Font.Normal
         }
     }
 
@@ -64,8 +66,9 @@ Item {
                 text: root.title
                 color: theme.purple
                 font.bold: true
-                font.pixelSize: 12
+                font.pixelSize: 11
                 font.family: theme.fontFamily
+                font.weight: Font.Normal
             }
 
             Row {
@@ -93,8 +96,9 @@ Item {
                     width: popoutContent.width
                     text: modelData
                     color: theme.text
-                    font.pixelSize: 11
+                    font.pixelSize: 12
                     font.family: theme.fontFamily
+                    font.weight: Font.Normal
                     wrapMode: Text.WordWrap
                 }
             }

@@ -44,6 +44,7 @@ Item {
                     color: modelData.focused ? theme.bright : theme.dim
                     font.pixelSize: 12
                     font.family: theme.fontFamily
+                    font.weight: Font.Normal
                 }
 
                 MouseArea {

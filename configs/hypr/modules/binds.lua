@@ -20,7 +20,7 @@ hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd(DOTS .. "/rofi/todo.sh stars"))
 
 -- utils
 hl.bind(mod .. " + G", hl.dsp.exec_cmd(DOTS .. "/bin/git-ui"))
-hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd(DOTS .. "/bin/hr"))
+hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd(DOTS .. "/bin/reload-shell"))
 hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("waypaper"))
 hl.bind(mod .. " + SHIFT + L", hl.dsp.exec_cmd("hyprlock"))
 hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"))

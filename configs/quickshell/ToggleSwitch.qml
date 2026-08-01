@@ -32,6 +32,7 @@ Rectangle {
         color: root.checked ? theme.bright : theme.dim
         font.pixelSize: 16
         font.family: theme.fontFamily
+        font.weight: Font.Normal
     }
 
     Text {
@@ -44,6 +45,7 @@ Rectangle {
         color: root.checked ? theme.bright : theme.text
         font.pixelSize: 13
         font.family: theme.fontFamily
+        font.weight: Font.Normal
         elide: Text.ElideRight
     }
 

@@ -6,7 +6,7 @@ import Quickshell.Services.SystemTray
 Row {
     id: root
 
-    spacing: 8
+    spacing: 4
 
     Repeater {
         model: SystemTray.items
@@ -15,13 +15,13 @@ Row {
             required property var modelData
             required property int index
 
-            width: 18
+            width: 22
             height: 38
 
             IconImage {
                 anchors.centerIn: parent
-                width: 16
-                height: 16
+                width: 20
+                height: 20
                 source: trayItem.modelData.icon
             }
 

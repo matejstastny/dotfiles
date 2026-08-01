@@ -78,6 +78,7 @@ Item {
                         color: modelData.enabled ? theme.text : theme.muted
                         font.pixelSize: 12
                         font.family: theme.fontFamily
+                        font.weight: Font.Normal
                         elide: Text.ElideRight
                     }
 

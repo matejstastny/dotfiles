@@ -79,7 +79,7 @@ PanelWindow {
         anchors.top: parent.top
         height: root.barHeight
         anchors.rightMargin: 10
-        spacing: 12
+        spacing: 8
 
         BarScriptModule {
             anchors.verticalCenter: parent.verticalCenter

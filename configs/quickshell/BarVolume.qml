@@ -23,8 +23,9 @@ Item {
         anchors.centerIn: parent
         text: root.muted ? "󰝟" : "󰕾 " + root.pct + "%"
         color: theme.text
-        font.pixelSize: 12
+        font.pixelSize: 15
         font.family: theme.fontFamily
+        font.weight: Font.Normal
     }
 
     MouseArea {

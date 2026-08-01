@@ -22,7 +22,8 @@ Item {
         anchors.centerIn: parent
         text: root.icon + " " + root.pct + "%"
         color: root.pct <= 15 && !root.charging ? theme.rose : theme.text
-        font.pixelSize: 12
+        font.pixelSize: 15
         font.family: theme.fontFamily
+        font.weight: Font.Normal
     }
 }
