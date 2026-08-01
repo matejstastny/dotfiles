@@ -1,4 +1,5 @@
 import QtQuick
+import "../"
 
 Text {
     readonly property Theme theme: Theme {}

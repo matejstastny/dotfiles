@@ -58,19 +58,22 @@ def parse_conf(path: Path) -> dict[str, dict[str, list[str]]]:
 
 
 def main():
-    item_len = 0
-    for src in CONFIGS_DIR.iterdir():
-        if not src.is_dir():
-            continue
-        item_len = max(item_len, len(src.name))
-    item_len += 2
-
     if not CONFIGS_DIR.is_dir():
         sys.exit(f"configs/ directory not found at {CONFIGS_DIR}")
 
     conf = parse_conf(CONF_FILE)
     path_overrides = conf.get("path_overrides", {})
     file_overrides = conf.get("file_overrides", {})
+    file_links = conf.get("file_links", {})
+
+    item_len = 0
+    for src in CONFIGS_DIR.iterdir():
+        if not src.is_dir():
+            continue
+        item_len = max(item_len, len(src.name))
+    for src_rel in file_links:
+        item_len = max(item_len, len(src_rel))
+    item_len += 2
 
     if dry_run:
         print("[dry run]")
@@ -96,6 +99,14 @@ def main():
         else:
             log(get_pad(item_len, name, f" default       -> {DEFAULT_TARGET / name}"))
             symlink(src, DEFAULT_TARGET / name)
+
+    for src_rel, targets in sorted(file_links.items()):
+        src = _ROOT / src_rel
+        target_paths = [Path(t) for t in targets]
+        label = ", ".join(str(t) for t in target_paths)
+        log(get_pad(item_len, src_rel, f" file link     -> {label}"))
+        for target in target_paths:
+            symlink(src, target)
 
 
 if __name__ == "__main__":

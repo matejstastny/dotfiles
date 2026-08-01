@@ -2,7 +2,10 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
+import Quickshell.Hyprland
 import Quickshell.Services.Notifications
+import "./bar"
+import "./panel"
 
 ShellRoot {
     id: root
@@ -24,7 +27,6 @@ ShellRoot {
             notification.tracked = true
             if (!root.dndEnabled) {
                 toastLayer.push(notification)
-                Quickshell.execDetached(["paplay", "/usr/share/sounds/freedesktop/stereo/message-new-instant.oga"])
             }
         }
     }
@@ -36,7 +38,14 @@ ShellRoot {
         function hide(): void { root.panelOpen = false }
     }
 
-    // 1x1 always-mapped surface purely to host the idle inhibitor
+    IpcHandler {
+        target: "hypr"
+        function refresh(): void {
+            Hyprland.refreshWorkspaces()
+            Hyprland.refreshMonitors()
+        }
+    }
+
     PanelWindow {
         id: inhibitHost
         visible: true

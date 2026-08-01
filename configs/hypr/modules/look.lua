@@ -27,7 +27,7 @@ hl.config({
             tab_first_window = true,
             tabs = {
                 height       = 20,
-                padding      = 6,
+                padding      = 2,
                 from_top     = true,
                 radius       = 6,
                 border_width = 1,
@@ -35,6 +35,7 @@ hl.config({
                 text_font    = "Maple Mono NF",
                 text_height  = 8,
                 text_padding = 6,
+                opacity      = 0.8,
                 colors       = {
                     active                    = "rgba(25253aff)",
                     active_border             = "rgba(7878c8ff)",

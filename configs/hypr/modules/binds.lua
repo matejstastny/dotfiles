@@ -63,6 +63,7 @@ hl.bind(mod .. " + tab", function()
     if not ws or not mon then return end
     local target = mon.name == "eDP-1" and "DP-1" or "eDP-1"
     hl.dispatch(hl.dsp.workspace.move({ workspace = ws.id, monitor = target }))
+    hl.exec_cmd("qs ipc call hypr refresh") -- bar workspace pills go stale otherwise
 end)
 
 -- mouse

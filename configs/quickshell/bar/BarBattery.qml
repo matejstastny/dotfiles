@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell.Services.UPower
+import "../"
 
 Item {
     id: root

@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell.Services.Mpris
+import "../"
 
 Rectangle {
     id: root
