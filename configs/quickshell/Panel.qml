@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Hyprland
 import Quickshell.Services.Mpris
 
 PanelWindow {
@@ -14,6 +15,7 @@ PanelWindow {
     signal toggleCaffeinate()
     signal clearAll()
     signal dismissNotification(var notification)
+    signal closeRequested()
 
     readonly property Theme theme: Theme {}
 
@@ -36,11 +38,31 @@ PanelWindow {
 
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "quickshell:panel"
-    // never grabs keyboard/pointer focus - dismissal on outside click is
-    // driven externally (shell.qml watches Hyprland's active window instead
-    // of us stealing focus), so real apps never lose focus to this popup
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+    // keyboardFocus only flips to OnDemand while the grab below is active,
+    // so real apps never lose focus just because this window exists
+    WlrLayershell.keyboardFocus: open ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
     focusable: false
+
+    // HyprlandFocusGrab is Hyprland's own mechanism for "dismiss this popup
+    // when the user interacts elsewhere" - unlike a MouseArea scrim, the
+    // click that dismisses it is delivered normally to whatever's underneath
+    // instead of being swallowed by us
+    HyprlandFocusGrab {
+        active: root.open
+        windows: [QsWindow.window]
+        onCleared: root.closeRequested()
+    }
+
+    onOpenChanged: {
+        if (open) PopoutState.current = "panel"
+        else if (PopoutState.current === "panel") PopoutState.current = ""
+    }
+    Connections {
+        target: PopoutState
+        function onCurrentChanged() {
+            if (PopoutState.current !== "panel" && root.open) root.closeRequested()
+        }
+    }
 
     anchors {
         top: true

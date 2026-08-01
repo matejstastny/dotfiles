@@ -13,6 +13,7 @@ Row {
         delegate: Item {
             id: trayItem
             required property var modelData
+            required property int index
 
             width: 18
             height: 38
@@ -39,7 +40,7 @@ Row {
 
             BarTrayMenu {
                 id: menu
-                anchorItem: trayItem
+                popoutName: "traymenu" + trayItem.index
                 menuHandle: trayItem.modelData.hasMenu ? trayItem.modelData.menu : null
             }
         }

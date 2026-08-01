@@ -1,18 +1,31 @@
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 
 Item {
     id: root
 
-    property Item anchorItem: null
+    required property string popoutName
     property var menuHandle: null
-    property bool menuOpen: false
 
     readonly property Theme theme: Theme {}
+    readonly property bool menuOpen: PopoutState.current === popoutName
 
-    function open() { root.menuOpen = true }
-    function close() { root.menuOpen = false }
-    function toggle() { root.menuOpen = !root.menuOpen }
+    function toggle() {
+        PopoutState.current = menuOpen ? "" : popoutName
+    }
+    function close() {
+        if (menuOpen) PopoutState.current = ""
+    }
+
+    // grabs focus for the enclosing (Bar) window only while this menu is
+    // open; HyprlandFocusGrab passes the dismissing click through to
+    // whatever's underneath instead of swallowing it like a MouseArea scrim
+    HyprlandFocusGrab {
+        active: root.menuOpen
+        windows: [QsWindow.window]
+        onCleared: root.close()
+    }
 
     QsMenuOpener {
         id: opener
@@ -25,7 +38,7 @@ Item {
         y: 38
         x: -80
         width: 220
-        height: Math.min(300, list.implicitHeight + 12)
+        height: Math.min(380, list.implicitHeight + 12)
         radius: theme.radiusSmall
         color: theme.surface
         border.width: 1

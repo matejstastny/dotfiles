@@ -2,7 +2,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
-import Quickshell.Hyprland
 import Quickshell.Services.Notifications
 
 ShellRoot {
@@ -35,16 +34,6 @@ ShellRoot {
         function toggle(): void { root.panelOpen = !root.panelOpen }
         function open(): void { root.panelOpen = true }
         function hide(): void { root.panelOpen = false }
-    }
-
-    // the panel never grabs focus (so it never steals it from real apps), so
-    // "close on click outside" is implemented by watching Hyprland for a real
-    // app window becoming active instead of us intercepting the click
-    Connections {
-        target: Hyprland
-        function onActiveToplevelChanged() {
-            root.panelOpen = false
-        }
     }
 
     // 1x1 always-mapped surface purely to host the idle inhibitor
@@ -80,6 +69,7 @@ ShellRoot {
         onToggleDnd: root.dndEnabled = !root.dndEnabled
         onToggleCaffeinate: root.caffeinateEnabled = !root.caffeinateEnabled
         onDismissNotification: notification => notification.dismiss()
+        onCloseRequested: root.panelOpen = false
         onClearAll: {
             for (const notification of notifServer.trackedNotifications.values) {
                 notification.dismiss()

@@ -10,14 +10,21 @@ PanelWindow {
     readonly property Theme theme: Theme {}
     readonly property int barHeight: 38
 
+    readonly property int atticHeight: 400
+
     color: "transparent"
-    implicitHeight: barHeight + 220
+    implicitHeight: barHeight + atticHeight
     exclusiveZone: barHeight
+
+    readonly property bool trayMenuOpen: PopoutState.current.startsWith("traymenu")
+    readonly property bool anyPopoutOpen: trayMenuOpen || cpuStat.hovered || memStat.hovered || diskStat.hovered
 
     WlrLayershell.layer: WlrLayer.Top
     WlrLayershell.namespace: "quickshell:bar"
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-    focusable: false
+    // only becomes keyboard-interactive while a tray menu's HyprlandFocusGrab
+    // needs it - never grabs focus just for normal bar interaction
+    WlrLayershell.keyboardFocus: trayMenuOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+    focusable: trayMenuOpen
 
     anchors {
         top: true
@@ -25,12 +32,34 @@ PanelWindow {
         right: true
     }
 
+    // this window is taller than the visible bar strip so popouts have room
+    // to draw into, but a Wayland surface accepts input across its whole
+    // rectangle by default - without this mask, that entire extra "attic"
+    // area silently eats clicks meant for whatever's underneath, even when
+    // nothing is visibly open there
+    mask: Region {
+        item: barBg
+        Region {
+            item: atticArea
+        }
+    }
+
     Rectangle {
+        id: barBg
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
         height: root.barHeight
         color: Qt.rgba(theme.base.r, theme.base.g, theme.base.b, 0.75)
+    }
+
+    Item {
+        id: atticArea
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.topMargin: root.barHeight
+        height: root.anyPopoutOpen ? root.atticHeight : 0
     }
 
     Item {
@@ -65,9 +94,9 @@ PanelWindow {
 
         BarSep { anchors.verticalCenter: parent.verticalCenter }
 
-        BarCpu { anchors.verticalCenter: parent.verticalCenter }
-        BarMemory { anchors.verticalCenter: parent.verticalCenter }
-        BarDisk { anchors.verticalCenter: parent.verticalCenter }
+        BarCpu { id: cpuStat; anchors.verticalCenter: parent.verticalCenter }
+        BarMemory { id: memStat; anchors.verticalCenter: parent.verticalCenter }
+        BarDisk { id: diskStat; anchors.verticalCenter: parent.verticalCenter }
 
         BarSep { anchors.verticalCenter: parent.verticalCenter }
 
