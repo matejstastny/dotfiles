@@ -9,7 +9,7 @@ PanelWindow {
     signal clockClicked()
 
     readonly property Theme theme: Theme {}
-    readonly property int barHeight: 38
+    readonly property int barHeight: 35
 
     readonly property int atticHeight: 400
 
