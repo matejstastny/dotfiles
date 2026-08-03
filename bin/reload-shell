@@ -14,8 +14,9 @@ if [ -n "$errors" ]; then
 	exit 1
 fi
 
-pkill qs || true
-QT_QPA_PLATFORMTHEME=gtk3 qs &
-disown
+if ! pgrep -x qs > /dev/null; then
+	QT_QPA_PLATFORMTHEME=gtk3 qs &
+	disown
+fi
 
 notify-send -t 2000 "✦ hr" "hyprland reloaded"

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+#@ set wallpaper on all monitors and persist it for wallpaper-restore
+
+set -e
+
+path="$1"
+if [ -z "$path" ]; then
+	notify-send -t 3000 "✦ wallpaper" "no wallpaper given"
+	exit 1
+fi
+
+swww img "$path" \
+	--transition-type fade \
+	--transition-duration 1.5 \
+	--transition-fps 60
+
+config="${XDG_CONFIG_HOME:-$HOME/.config}/waypaper/config.ini"
+if [ -f "$config" ]; then
+	sed -i "s|^wallpaper = .*|wallpaper = $path|" "$config"
+fi
+
+notify-send -t 2000 "✦ wallpaper" "$(basename "$path")"

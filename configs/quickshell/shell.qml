@@ -6,11 +6,13 @@ import Quickshell.Hyprland
 import Quickshell.Services.Notifications
 import "./bar"
 import "./panel"
+import "./wallpaper"
 
 ShellRoot {
     id: root
 
     property bool panelOpen: false
+    property bool wallpaperOpen: false
     property bool dndEnabled: false
     property bool caffeinateEnabled: false
 
@@ -36,6 +38,13 @@ ShellRoot {
         function toggle(): void { root.panelOpen = !root.panelOpen }
         function open(): void { root.panelOpen = true }
         function hide(): void { root.panelOpen = false }
+    }
+
+    IpcHandler {
+        target: "wallpaper"
+        function toggle(): void { root.wallpaperOpen = !root.wallpaperOpen }
+        function open(): void { root.wallpaperOpen = true }
+        function hide(): void { root.wallpaperOpen = false }
     }
 
     IpcHandler {
@@ -84,6 +93,12 @@ ShellRoot {
                 notification.dismiss()
             }
         }
+    }
+
+    Wallpaper {
+        id: wallpanel
+        open: root.wallpaperOpen
+        onCloseRequested: root.wallpaperOpen = false
     }
 
     ToastLayer {
