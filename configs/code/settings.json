@@ -10,7 +10,7 @@
     "editor.minimap.enabled": false,
     "breadcrumbs.enabled": false,
 
-    // Sidebar & file explorer
+    // sidebar & file explorer
     "workbench.secondarySideBar.defaultVisibility": "hidden",
     "explorer.sortOrder": "type",
     "material-icon-theme.hidesExplorerArrows": true,
@@ -24,32 +24,14 @@
     "explorer.compactFolders": false,
     "explorer.confirmPasteNative": false,
 
-    // Custom UI Style extension
+    // style
+    "workbench.welcomePage.walkthroughs.openOnInstall": false,
     "window.customMenuBarAltFocus": false,
     "window.newWindowDimensions": "maximized",
     "window.menuBarVisibility": "hidden",
     "window.enableMenuBarMnemonics": false,
     "window.customTitleBarVisibility": "never",
     "window.titleBarStyle": "native",
-    "custom-ui-style.electron": {
-        "titleBarStyle": "hiddenInset",
-        "trafficLightPosition": {
-            "x": 16,
-            "y": 12
-        }
-    },
-
-    "custom-ui-style.stylesheet": {
-        ".quick-input-widget": "top: 25vh !important",
-        ".monaco-scrollable-element > .shadow.top": "display: none",
-        ".sidebar .title-label": "padding: 0 !important",
-        ".monaco-editor .scroll-decoration": "display: none",
-        ".title.show-file-icons .label-container .monaco-icon-label.file-icon": "justify-content: center; padding: 0 !important",
-        ".title .monaco-icon-label:after": "margin-rightw: 0",
-        ".monaco-workbench .part.editor > .content .editor-group-container > .title > .label-container > .title-label": "padding-left: 80px",
-        ".title .monaco-icon-label.file-icon": "margin: 0 60px"
-    },
-    "custom-ui-style.font.sansSerif": "Maple Mono NF",
 
     // Cursor
     "editor.multiCursorModifier": "ctrlCmd",
@@ -113,12 +95,7 @@
     "editor.formatOnPaste": true,
     "workbench.settings.editor": "json",
 
-    // Trust all files, I know what I'm doing VSCode
-    "security.workspace.trust.untrustedFiles": "open",
-
     // slopcode
-    "chat.commandCenter.enabled": false,
-    "workbench.welcomePage.walkthroughs.openOnInstall": false,
 
     // Git
     "git.autofetch": true,
@@ -128,6 +105,7 @@
     "git.openRepositoryInParentFolders": "always",
 
     // why tf is this a thing, I trust them bro
+    "security.workspace.trust.untrustedFiles": "open",
     "json.schemaDownload.trustedDomains": {
         "https://developer.microsoft.com/json-schemas/": true,
         "https://docs.trickfirerobotics.com": true,
@@ -183,7 +161,6 @@
     "[markdown]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "C_Cpp.intelliSenseEngine": "disabled",
     "diffEditor.ignoreTrimWhitespace": false,
     "workbench.editorAssociations": {
         "{git,gitlens,chat-editing-snapshot-text-model,copilot,git-graph,git-graph-3}:/**/*.qrc": "default",
@@ -194,8 +171,5 @@
             "name": "Qt-6.10.2-linux-g++-arm64_from_PATH",
             "path": "/usr/bin/qmake"
         }
-    ],
-    "[mdx]": {
-        "editor.defaultFormatter": "unifiedjs.vscode-mdx"
-    }
+    ]
 }

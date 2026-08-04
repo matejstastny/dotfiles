@@ -1,13 +1,17 @@
 {
-    "Lua.diagnostics.globals": [
-        "vim"
-    ],
+    "Lua.diagnostics.globals": ["vim"],
+
+    "editor.formatOnSave": true,
     "[lua]": {
-        "editor.defaultFormatter": "sumneko.lua",
-        "editor.formatOnSave": true
+        "editor.defaultFormatter": "sumneko.lua"
     },
     "[shellscript]": {
-        "editor.defaultFormatter": "mkhl.shfmt",
-        "editor.formatOnSave": true
+        "editor.defaultFormatter": "mkhl.shfmt"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     }
 }
