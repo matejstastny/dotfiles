@@ -6,7 +6,7 @@ BarStat {
 
     icon: "󰍛"
     title: "cpu"
-    valueText: usage.toFixed(0) + "%"
+    valueText: usage.toFixed(0).padStart(2, " ") + "%"
     lines: [usage.toFixed(1) + "% used"]
 
     property real usage: 0
