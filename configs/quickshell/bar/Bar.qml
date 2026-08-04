@@ -55,15 +55,28 @@ PanelWindow {
         color: Qt.rgba(theme.base.r, theme.base.g, theme.base.b, 0.75)
     }
 
-    Item {
+    Row {
         anchors.left: parent.left
         anchors.top: parent.top
         height: root.barHeight
         anchors.leftMargin: 10
+        spacing: 8
+
+        BarLogo {
+            anchors.verticalCenter: parent.verticalCenter
+        }
+
+        BarSep { anchors.verticalCenter: parent.verticalCenter }
 
         BarWorkspaces {
             anchors.verticalCenter: parent.verticalCenter
             screen: root.screen
+        }
+
+        BarSep { anchors.verticalCenter: parent.verticalCenter }
+
+        BarActiveWindow {
+            anchors.verticalCenter: parent.verticalCenter
         }
     }
 

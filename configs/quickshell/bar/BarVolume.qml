@@ -24,7 +24,7 @@ Item {
         anchors.centerIn: parent
         text: root.muted ? "󰝟" : "󰕾 " + root.pct + "%"
         color: theme.text
-        font.pixelSize: theme.barFontSize
+        font.pixelSize: theme.barFontSize -1
         font.family: theme.fontFamily
         font.weight: Font.Normal
     }
