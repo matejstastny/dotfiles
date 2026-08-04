@@ -17,6 +17,7 @@ class Host:
     path: str
     tags: list[str] = None
     password: str = ""
+    jump: str = ""
 
 def main() -> None:
     if len(sys.argv) == 1:
@@ -53,6 +54,10 @@ def connect_to_host(host: Host) -> None:
         "-o", "GSSAPIAuthentication=no",
         "-o", "LogLevel=ERROR",
         "-o", "StrictHostKeyChecking=no",
+    ]
+    if host.jump:
+        ssh_cmd += ["-J", host.jump]
+    ssh_cmd += [
         f"{host.user}@{host.host}",
         f"TERM=xterm-256color bash -c 'clear; cd {host.path} 2>/dev/null; exec $SHELL'"
     ]
