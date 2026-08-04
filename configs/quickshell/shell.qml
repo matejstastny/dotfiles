@@ -89,7 +89,7 @@ ShellRoot {
         onDismissNotification: notification => notification.dismiss()
         onCloseRequested: root.panelOpen = false
         onClearAll: {
-            for (const notification of notifServer.trackedNotifications.values) {
+            for (const notification of notifServer.trackedNotifications.values.slice()) {
                 notification.dismiss()
             }
         }

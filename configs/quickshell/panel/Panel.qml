@@ -20,9 +20,6 @@ PanelWindow {
 
     readonly property Theme theme: Theme {}
 
-    // NotificationServer's trackedNotifications is exposed as `property var`,
-    // and QML's implicit binding dependency tracking doesn't reliably follow
-    // through var -> .values.length chains, so count it explicitly instead.
     property int notifCount: notifications ? notifications.values.length : 0
     Connections {
         target: root.notifications
@@ -39,15 +36,9 @@ PanelWindow {
 
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "quickshell:panel"
-    // keyboardFocus only flips to OnDemand while the grab below is active,
-    // so real apps never lose focus just because this window exists
     WlrLayershell.keyboardFocus: open ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
     focusable: false
 
-    // HyprlandFocusGrab is Hyprland's own mechanism for "dismiss this popup
-    // when the user interacts elsewhere" - unlike a MouseArea scrim, the
-    // click that dismisses it is delivered normally to whatever's underneath
-    // instead of being swallowed by us
     HyprlandFocusGrab {
         active: root.open
         windows: [QsWindow.window]
@@ -108,14 +99,21 @@ PanelWindow {
             }
 
             Text {
+                id: clearText
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 text: "clear ✧"
-                color: theme.dim
+                color: clearArea.pressed ? theme.purple : theme.dim
                 font.pixelSize: 11
                 font.family: theme.fontFamily
                 font.weight: Font.Normal
+                scale: clearArea.pressed ? 0.92 : 1
+
+                Behavior on color { ColorAnimation { duration: 100 } }
+                Behavior on scale { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
+
                 MouseArea {
+                    id: clearArea
                     anchors.fill: parent
                     anchors.margins: -6
                     cursorShape: Qt.PointingHandCursor
@@ -182,11 +180,28 @@ PanelWindow {
             boundsBehavior: Flickable.StopAtBounds
 
             delegate: NotificationCard {
+                id: notifDelegate
                 required property var modelData
                 width: list.width
                 compact: false
                 notification: modelData
                 onDismissed: root.dismissNotification(modelData)
+
+                ListView.onRemove: removeAnimation.start()
+
+                SequentialAnimation {
+                    id: removeAnimation
+                    PropertyAction { target: notifDelegate; property: "ListView.delayRemove"; value: true }
+                    ParallelAnimation {
+                        NumberAnimation { target: notifDelegate; property: "opacity"; to: 0; duration: 160; easing.type: Easing.OutCubic }
+                        NumberAnimation { target: notifDelegate; property: "scale"; to: 0.9; duration: 160; easing.type: Easing.OutCubic }
+                    }
+                    PropertyAction { target: notifDelegate; property: "ListView.delayRemove"; value: false }
+                }
+            }
+
+            displaced: Transition {
+                NumberAnimation { properties: "y"; duration: 180; easing.type: Easing.OutCubic }
             }
 
             Text {
