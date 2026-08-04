@@ -13,7 +13,7 @@ Item {
 
     visible: present
     implicitWidth: visible ? label.implicitWidth + 8 : 0
-    implicitHeight: 38
+    implicitHeight: theme.barModuleHeight
 
     readonly property var icons: ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
     readonly property string icon: charging ? "󰂄" : icons[Math.min(9, Math.floor(pct / 10))]
@@ -23,7 +23,7 @@ Item {
         anchors.centerIn: parent
         text: root.icon + " " + root.pct + "%"
         color: root.pct <= 15 && !root.charging ? theme.rose : theme.text
-        font.pixelSize: 15
+        font.pixelSize: theme.barFontSize -1
         font.family: theme.fontFamily
         font.weight: Font.Normal
     }

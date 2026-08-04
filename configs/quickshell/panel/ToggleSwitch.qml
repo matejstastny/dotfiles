@@ -14,7 +14,7 @@ Rectangle {
     implicitHeight: 56
     radius: theme.radiusSmall
     color: checked ? Qt.rgba(theme.purple.r, theme.purple.g, theme.purple.b, 0.18) : theme.surface
-    border.width: 1
+    border.width: theme.borderWidth
     border.color: checked ? theme.purple : theme.muted
 
     Behavior on color { ColorAnimation { duration: 150 } }

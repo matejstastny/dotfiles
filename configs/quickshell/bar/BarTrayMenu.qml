@@ -41,7 +41,7 @@ Item {
         height: Math.min(380, list.implicitHeight + 12)
         radius: theme.radiusSmall
         color: theme.surface
-        border.width: 1
+        border.width: theme.borderWidth
         border.color: theme.muted
         clip: true
 
@@ -76,7 +76,7 @@ Item {
                         anchors.margins: 8
                         text: modelData.text
                         color: modelData.enabled ? theme.text : theme.muted
-                        font.pixelSize: 12
+                        font.pixelSize: theme.barFontSize - 3
                         font.family: theme.fontFamily
                         font.weight: Font.Normal
                         elide: Text.ElideRight

@@ -15,7 +15,7 @@ Item {
     property alias popoutItem: popout
 
     implicitWidth: rowContent.implicitWidth + 12
-    implicitHeight: 38
+    implicitHeight: theme.barModuleHeight
 
     Row {
         id: rowContent
@@ -25,14 +25,14 @@ Item {
         Text {
             text: root.icon
             color: theme.text
-            font.pixelSize: 15
+            font.pixelSize: theme.barFontSize
             font.family: theme.fontFamily
             font.weight: Font.Bold
         }
         Text {
             text: root.valueText
             color: theme.text
-            font.pixelSize: 14
+            font.pixelSize: theme.barFontSize - 1
             font.family: theme.fontFamily
             font.weight: Font.Normal
         }
@@ -53,7 +53,7 @@ Item {
         height: popoutContent.implicitHeight + 20
         radius: theme.radiusSmall
         color: theme.surface
-        border.width: 1
+        border.width: theme.borderWidth
         border.color: theme.muted
 
         Column {
@@ -68,7 +68,7 @@ Item {
                 text: root.title
                 color: theme.purple
                 font.bold: true
-                font.pixelSize: 11
+                font.pixelSize: theme.barFontSize - 4
                 font.family: theme.fontFamily
                 font.weight: Font.Normal
             }
@@ -98,7 +98,7 @@ Item {
                     width: popoutContent.width
                     text: modelData
                     color: theme.text
-                    font.pixelSize: 12
+                    font.pixelSize: theme.barFontSize - 3
                     font.family: theme.fontFamily
                     font.weight: Font.Normal
                     wrapMode: Text.WordWrap

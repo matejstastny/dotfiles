@@ -75,13 +75,13 @@ PanelWindow {
         anchors.fill: parent
         radius: theme.radius
         color: theme.base
-        border.width: 1
+        border.width: theme.borderWidth
         border.color: theme.muted
 
         opacity: root.open ? 1 : 0
         scale: root.open ? 1 : 0.96
-        Behavior on opacity { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
-        Behavior on scale { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
+        Behavior on opacity { NumberAnimation { duration: theme.transitionDuration; easing.type: Easing.OutCubic } }
+        Behavior on scale { NumberAnimation { duration: theme.transitionDuration; easing.type: Easing.OutCubic } }
 
         Item {
             id: header
@@ -149,7 +149,7 @@ PanelWindow {
                     anchors.fill: parent
                     radius: theme.radiusSmall
                     color: theme.surface
-                    border.width: 1
+                    border.width: theme.borderWidth
                     border.color: theme.muted
                     clip: true
 

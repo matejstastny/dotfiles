@@ -43,7 +43,7 @@ PanelWindow {
         top: root.panelOpen ? 720 : 10
         right: 10
     }
-    Behavior on margins.top { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
+    Behavior on margins.top { NumberAnimation { duration: theme.transitionDuration; easing.type: Easing.OutCubic } }
 
     Column {
         id: column

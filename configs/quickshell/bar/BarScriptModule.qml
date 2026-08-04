@@ -16,7 +16,7 @@ Item {
 
     visible: text !== ""
     implicitWidth: visible ? label.implicitWidth + 8 : 0
-    implicitHeight: 38
+    implicitHeight: theme.barModuleHeight
 
     Timer {
         interval: root.interval
@@ -47,7 +47,7 @@ Item {
         anchors.centerIn: parent
         text: root.text
         color: theme.text
-        font.pixelSize: 15
+        font.pixelSize: theme.barFontSize
         font.family: theme.fontFamily
         font.weight: Font.Normal
     }

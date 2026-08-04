@@ -12,7 +12,7 @@ Rectangle {
     implicitHeight: 74
     radius: theme.radius
     color: theme.surface
-    border.width: 1
+    border.width: theme.borderWidth
     border.color: theme.muted
 
     Image {

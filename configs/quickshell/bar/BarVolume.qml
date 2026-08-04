@@ -17,14 +17,14 @@ Item {
     }
 
     implicitWidth: label.implicitWidth + 8
-    implicitHeight: 38
+    implicitHeight: theme.barModuleHeight
 
     Text {
         id: label
         anchors.centerIn: parent
         text: root.muted ? "󰝟" : "󰕾 " + root.pct + "%"
         color: theme.text
-        font.pixelSize: 15
+        font.pixelSize: theme.barFontSize
         font.family: theme.fontFamily
         font.weight: Font.Normal
     }

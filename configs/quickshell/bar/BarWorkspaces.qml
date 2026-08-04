@@ -43,7 +43,7 @@ Item {
                     anchors.centerIn: parent
                     text: modelData.id
                     color: modelData.focused ? theme.bright : theme.dim
-                    font.pixelSize: 12
+                    font.pixelSize: theme.barFontSize - 3
                     font.family: theme.fontFamily
                     font.weight: Font.Normal
                 }

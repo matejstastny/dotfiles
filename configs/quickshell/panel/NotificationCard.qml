@@ -17,7 +17,7 @@ Rectangle {
     implicitHeight: content.implicitHeight + 24
     radius: theme.radius
     color: theme.surface
-    border.width: 1
+    border.width: theme.borderWidth
     border.color: critical ? theme.rose : theme.muted
 
     // declared first so it sits behind the close button / action buttons,

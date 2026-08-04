@@ -1,7 +1,6 @@
 import QtQuick
 
 QtObject {
-    // mirrors bin/palette - keep in sync by hand
     readonly property color base: "#11111b"
     readonly property color surface: "#181825"
     readonly property color overlay: "#25253a"
@@ -15,4 +14,8 @@ QtObject {
     readonly property int radius: 14
     readonly property int radiusSmall: 8
     readonly property string fontFamily: "Maple Mono NF"
+    readonly property int barFontSize: 14
+    readonly property int barModuleHeight: 38
+    readonly property int borderWidth: 1
+    readonly property int transitionDuration: 140
 }
