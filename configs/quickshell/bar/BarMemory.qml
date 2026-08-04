@@ -6,8 +6,9 @@ BarStat {
 
     icon: "󰘚"
     title: "memory"
-    valueText: percent.toFixed(0) + "%"
+    valueText: percent.toFixed(0).padStart(2, " ") + "%"
     lines: [usedGb.toFixed(1) + "G / " + totalGb.toFixed(1) + "G"]
+    fillPct: percent
 
     property real percent: 0
     property real usedGb: 0

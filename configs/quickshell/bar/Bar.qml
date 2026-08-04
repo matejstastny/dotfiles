@@ -102,12 +102,6 @@ PanelWindow {
 
         BarSep { anchors.verticalCenter: parent.verticalCenter }
 
-        BarCpu { id: cpuStat; anchors.verticalCenter: parent.verticalCenter }
-        BarMemory { id: memStat; anchors.verticalCenter: parent.verticalCenter }
-        BarDisk { id: diskStat; anchors.verticalCenter: parent.verticalCenter }
-
-        BarSep { anchors.verticalCenter: parent.verticalCenter }
-
         BarScriptModule {
             anchors.verticalCenter: parent.verticalCenter
             script: "/home/elara/dotfiles/bin/bar-tailscale"
@@ -120,6 +114,12 @@ PanelWindow {
             interval: 5000
             onClickCommand: "kitty -e sh -c 'docker ps; read'"
         }
+
+        BarSep { anchors.verticalCenter: parent.verticalCenter }
+
+        BarCpu { id: cpuStat; anchors.verticalCenter: parent.verticalCenter }
+        BarMemory { id: memStat; anchors.verticalCenter: parent.verticalCenter }
+        BarDisk { id: diskStat; anchors.verticalCenter: parent.verticalCenter }
 
         BarSep { anchors.verticalCenter: parent.verticalCenter }
 

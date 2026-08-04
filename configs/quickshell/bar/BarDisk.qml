@@ -6,8 +6,9 @@ BarStat {
 
     icon: "󰋊"
     title: "disk (/)"
-    valueText: percent.toFixed(0) + "%"
+    valueText: percent.toFixed(0).padStart(2, " ") + "%"
     lines: [usedStr + " / " + totalStr]
+    fillPct: percent
 
     property real percent: 0
     property string usedStr: ""

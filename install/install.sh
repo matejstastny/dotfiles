@@ -13,9 +13,6 @@ echo "✦ Enabling COPRs..."
 # hyprlock, swww, hyprpicker, and other Hyprland ecosystem tools
 sudo dnf copr enable -y solopasha/hyprland
 
-# SwayOSD (volume/brightness on-screen display)
-sudo dnf copr enable -y erikreider/swayosd
-
 # ── Main packages ─────────────────────────────────────────
 echo ""
 echo "✦ Installing packages..."
@@ -23,7 +20,6 @@ echo "✦ Installing packages..."
 sudo dnf install -y \
 	wofi \
 	wlogout \
-	swayosd \
 	hyprpicker \
 	hyprlock \
 	swww \

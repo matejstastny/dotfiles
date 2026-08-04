@@ -12,8 +12,6 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("hyprlock")                                     -- lock screen
     hl.exec_cmd("swww-daemon")                                  -- wallpaper daemon
     hl.exec_cmd(DOTS .. "/bin/wallpaper-restore")               -- get last wallpaper
-    hl.exec_cmd("swayosd-server")                               -- volume/brightness widget
-    -- hl.exec_cmd("QT_QPA_PLATFORMTHEME=gtk3 qs")              -- replaced by qs
     hl.exec_cmd("nm-applet --indicator")                        -- wifi
     hl.exec_cmd("blueman-applet")                               -- bluetooth
     hl.exec_cmd("wl-paste --type text  --watch cliphist store") -- clipboard

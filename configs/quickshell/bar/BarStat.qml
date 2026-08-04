@@ -9,32 +9,59 @@ Item {
     property string title: ""
     property var lines: []
     property var history: []
+    property real fillPct: 0
 
     readonly property Theme theme: Theme {}
     readonly property bool hovered: hoverArea.containsMouse
     property alias popoutItem: popout
 
-    implicitWidth: rowContent.implicitWidth + 12
+    implicitWidth: rowContent.implicitWidth + 20
     implicitHeight: theme.barModuleHeight
 
-    Row {
-        id: rowContent
-        anchors.centerIn: parent
-        spacing: 4
+    Rectangle {
+        id: pill
+        anchors.fill: parent
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+        radius: theme.radiusSmall
+        color: theme.surface
+        border.width: theme.borderWidth
+        border.color: theme.muted
+        clip: true
 
-        Text {
-            text: root.icon
-            color: theme.text
-            font.pixelSize: theme.barFontSize
-            font.family: theme.fontFamily
-            font.weight: Font.Bold
+        Rectangle {
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            anchors.margins: 3
+            height: 2
+            radius: 1
+            width: Math.max(height, (parent.width - 6) * Math.min(1, Math.max(0, root.fillPct / 100)))
+            color: theme.purple
+
+            Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
         }
-        Text {
-            text: root.valueText
-            color: theme.text
-            font.pixelSize: theme.barFontSize - 1
-            font.family: theme.fontFamily
-            font.weight: Font.Normal
+
+        Row {
+            id: rowContent
+            anchors.centerIn: parent
+            spacing: 4
+
+            Text {
+                text: root.icon
+                color: root.hovered ? theme.bright : theme.purple
+                font.pixelSize: theme.barFontSize
+                font.family: theme.fontFamily
+                font.weight: Font.Bold
+
+                Behavior on color { ColorAnimation { duration: theme.transitionDuration } }
+            }
+            Text {
+                text: root.valueText
+                color: theme.dim
+                font.pixelSize: theme.barFontSize - 1
+                font.family: theme.fontFamily
+                font.weight: Font.Normal
+            }
         }
     }
 

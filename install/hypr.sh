@@ -183,7 +183,6 @@ log "Installing Wayland utilities..."
 sudo dnf install -y \
 	kitty \
 	rofi \
-	swayosd \
 	grim \
 	slurp \
 	wl-clipboard \

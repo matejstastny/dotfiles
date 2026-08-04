@@ -7,6 +7,7 @@ import Quickshell.Services.Notifications
 import "./bar"
 import "./panel"
 import "./wallpaper"
+import "./osd"
 
 ShellRoot {
     id: root
@@ -104,6 +105,10 @@ ShellRoot {
     ToastLayer {
         id: toastLayer
         panelOpen: root.panelOpen
+    }
+
+    Osd {
+        id: osd
     }
 
     Variants {

@@ -64,13 +64,6 @@ hl.window_rule({ name = "waypaper-float", match = { class = "^waypaper$" }, floa
 hl.window_rule({ name = "waypaper-size", match = { class = "^waypaper$" }, size = "800 600" })
 hl.window_rule({ name = "waypaper-center", match = { class = "^waypaper$" }, center = true })
 
--- swayosd: disable blur so the transparent window bg doesn't create a liquid-glass circle
-hl.layer_rule({
-    name = "swayosd-noblur",
-    match = { namespace = "swayosd" },
-    blur = false,
-})
-
 -- ros sim tools
 hl.window_rule({ name = "chrono-sim", match = { class = "^vsg::Windo$" }, workspace = "7" })
 hl.window_rule({ name = "gazebo-workspace", match = { class = "^Gazebo GUI$" }, workspace = "7" })
