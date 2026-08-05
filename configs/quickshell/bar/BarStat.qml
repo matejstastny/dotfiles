@@ -13,55 +13,32 @@ Item {
 
     readonly property Theme theme: Theme {}
     readonly property bool hovered: hoverArea.containsMouse
+    readonly property bool high: fillPct >= 80
     property alias popoutItem: popout
 
-    implicitWidth: rowContent.implicitWidth + 20
+    implicitWidth: rowContent.implicitWidth + 8
     implicitHeight: theme.barModuleHeight
 
-    Rectangle {
-        id: pill
-        anchors.fill: parent
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
-        radius: theme.radiusSmall
-        color: theme.surface
-        border.width: theme.borderWidth
-        border.color: theme.muted
-        clip: true
+    Row {
+        id: rowContent
+        anchors.centerIn: parent
+        spacing: 4
 
-        Rectangle {
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
-            anchors.margins: 3
-            height: 2
-            radius: 1
-            width: Math.max(height, (parent.width - 6) * Math.min(1, Math.max(0, root.fillPct / 100)))
-            color: theme.purple
+        Text {
+            text: root.icon
+            color: root.high ? theme.rose : (root.hovered ? theme.bright : theme.purple)
+            font.pixelSize: theme.barFontSize
+            font.family: theme.fontFamily
+            font.weight: Font.Bold
 
-            Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+            Behavior on color { ColorAnimation { duration: theme.transitionDuration } }
         }
-
-        Row {
-            id: rowContent
-            anchors.centerIn: parent
-            spacing: 4
-
-            Text {
-                text: root.icon
-                color: root.hovered ? theme.bright : theme.purple
-                font.pixelSize: theme.barFontSize
-                font.family: theme.fontFamily
-                font.weight: Font.Bold
-
-                Behavior on color { ColorAnimation { duration: theme.transitionDuration } }
-            }
-            Text {
-                text: root.valueText
-                color: theme.dim
-                font.pixelSize: theme.barFontSize - 1
-                font.family: theme.fontFamily
-                font.weight: Font.Normal
-            }
+        Text {
+            text: root.valueText
+            color: theme.dim
+            font.pixelSize: theme.barFontSize - 1
+            font.family: theme.fontFamily
+            font.weight: Font.Normal
         }
     }
 

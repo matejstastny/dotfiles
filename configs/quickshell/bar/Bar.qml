@@ -52,7 +52,7 @@ PanelWindow {
         anchors.left: parent.left
         anchors.right: parent.right
         height: root.barHeight
-        color: Qt.rgba(theme.base.r, theme.base.g, theme.base.b, 0.75)
+        color: Qt.rgba(theme.base.r, theme.base.g, theme.base.b, 0.93)
     }
 
     Row {

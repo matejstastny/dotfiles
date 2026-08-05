@@ -17,54 +17,30 @@ Item {
         objects: root.sink ? [root.sink] : []
     }
 
-    implicitWidth: rowContent.implicitWidth + 20
+    implicitWidth: rowContent.implicitWidth + 8
     implicitHeight: theme.barModuleHeight
 
-    Rectangle {
-        id: pill
-        anchors.fill: parent
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
-        radius: theme.radiusSmall
-        color: theme.surface
-        border.width: theme.borderWidth
-        border.color: theme.muted
-        clip: true
+    Row {
+        id: rowContent
+        anchors.centerIn: parent
+        spacing: 4
 
-        Rectangle {
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
-            anchors.margins: 3
-            height: 2
-            radius: 1
-            width: Math.max(height, (parent.width - 6) * (root.muted ? 0 : Math.min(1, root.pct / 100)))
-            color: theme.purple
+        Text {
+            text: root.muted ? "󰝟" : "󰕾"
+            color: root.muted ? theme.rose : (root.hovered ? theme.bright : theme.purple)
+            font.pixelSize: theme.barFontSize
+            font.family: theme.fontFamily
+            font.weight: Font.Bold
 
-            Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+            Behavior on color { ColorAnimation { duration: theme.transitionDuration } }
         }
-
-        Row {
-            id: rowContent
-            anchors.centerIn: parent
-            spacing: 4
-
-            Text {
-                text: root.muted ? "󰝟" : "󰕾"
-                color: root.muted ? theme.rose : (root.hovered ? theme.bright : theme.purple)
-                font.pixelSize: theme.barFontSize
-                font.family: theme.fontFamily
-                font.weight: Font.Bold
-
-                Behavior on color { ColorAnimation { duration: theme.transitionDuration } }
-            }
-            Text {
-                visible: !root.muted
-                text: root.pct.toString().padStart(2, " ") + "%"
-                color: theme.dim
-                font.pixelSize: theme.barFontSize - 1
-                font.family: theme.fontFamily
-                font.weight: Font.Normal
-            }
+        Text {
+            visible: !root.muted
+            text: root.pct.toString().padStart(2, " ") + "%"
+            color: theme.dim
+            font.pixelSize: theme.barFontSize - 1
+            font.family: theme.fontFamily
+            font.weight: Font.Normal
         }
     }
 

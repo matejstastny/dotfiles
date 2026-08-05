@@ -18,8 +18,6 @@ echo ""
 echo "✦ Installing packages..."
 
 sudo dnf install -y \
-	wofi \
-	wlogout \
 	hyprpicker \
 	hyprlock \
 	swww \
@@ -134,8 +132,8 @@ echo "✦ Enabling bluetooth..."
 sudo systemctl enable --now bluetooth.service
 
 # ── Wallpaper directory ───────────────────────────────────
-mkdir -p "$HOME/Pictures/Screenshots"
-mkdir -p "$HOME/Pictures/Wallpapers"
+mkdir -p "$HOME/pictures/screenshots"
+mkdir -p "$HOME/wallpapers"
 
 # ── Link dotfiles ─────────────────────────────────────────
 echo ""
@@ -156,7 +154,7 @@ echo ""
 echo "✦ ✧ ✦  Done! Restart Hyprland to apply the Ellie theme."
 echo ""
 echo "Next steps:"
-echo "  1. Set a wallpaper:      swww img ~/Pictures/Wallpapers/your-image.jpg"
+echo "  1. Set a wallpaper:      swww img ~/wallpapers/your-image.jpg"
 echo "  2. Reload the shell:     killall qs; qs &"
 echo "  3. Test lock screen:     hyprlock"
 echo "  4. Build quickshell:     $DOTFILES_DIR/install/quickshell.sh"

@@ -171,5 +171,8 @@
             "name": "Qt-6.10.2-linux-g++-arm64_from_PATH",
             "path": "/usr/bin/qmake"
         }
-    ]
+    ],
+    "[mdx]": {
+        "editor.wordWrap": "on"
+    }
 }

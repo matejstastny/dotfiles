@@ -101,9 +101,9 @@ source <(fzf --zsh)
 export FZF_CTRL_R_OPTS="--style minimal --color 16 --info inline --no-sort --no-preview"
 export FZF_DEFAULT_COMMAND="find -L"
 export FZF_DEFAULT_OPTS="
-  --color=fg:#9b8ab0,fg+:#e0d4f0,bg+:#1c1528,hl:#7c5cbf,hl+:#c47a9b
-  --color=info:#9b8ab0,prompt:#7c5cbf,pointer:#7c5cbf,marker:#c47a9b,border:#3d2f52
-  --color=header:#9b8ab0,spinner:#7c5cbf
+  --color=fg:#9898c0,fg+:#f0f0ff,bg+:#181825,hl:#7878c8,hl+:#c47ab8
+  --color=info:#9898c0,prompt:#7878c8,pointer:#7878c8,marker:#c47ab8,border:#3d3d5c
+  --color=header:#9898c0,spinner:#7878c8
 "
 
 # completions ---------------------------------------------------------------------------------

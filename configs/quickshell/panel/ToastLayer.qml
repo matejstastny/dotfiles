@@ -8,23 +8,28 @@ PanelWindow {
     id: root
 
     readonly property Theme theme: Theme {}
-    property var queue: []
     property bool panelOpen: false
 
-    function push(notification) {
-        root.queue = root.queue.concat([notification])
-    }
-    function popAt(index) {
-        const copy = root.queue.slice()
-        copy.splice(index, 1)
-        root.queue = copy
-    }
-    function remove(notification) {
-        const idx = root.queue.indexOf(notification)
-        if (idx !== -1) root.popAt(idx)
+    ListModel {
+        id: queueModel
     }
 
-    visible: queue.length > 0
+    function push(notification) {
+        queueModel.append({modelData: notification})
+    }
+    function popAt(index) {
+        queueModel.remove(index)
+    }
+    function remove(notification) {
+        for (let i = 0; i < queueModel.count; i++) {
+            if (queueModel.get(i).modelData === notification) {
+                queueModel.remove(i)
+                return
+            }
+        }
+    }
+
+    visible: queueModel.count > 0
     color: "transparent"
     implicitWidth: 360
     implicitHeight: Math.max(1, column.implicitHeight)
@@ -51,7 +56,7 @@ PanelWindow {
         spacing: 10
 
         Repeater {
-            model: root.queue
+            model: queueModel
             delegate: NotificationCard {
                 required property var modelData
                 required property int index

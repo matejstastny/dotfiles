@@ -154,17 +154,17 @@ plugins {
 
 themes {
     ellie {
-        fg      "#9b8ab0"
-        bg      "#0a0812"
-        black   "#1c1528"
-        red     "#c47a9b"
-        green   "#7c5cbf"
-        yellow  "#e0d4f0"
-        blue    "#7c5cbf"
-        magenta "#c47a9b"
-        cyan    "#9b8ab0"
-        white   "#e0d4f0"
-        orange  "#c47a9b"
+        fg      "#dce0f4"
+        bg      "#11111b"
+        black   "#181825"
+        red     "#c47ab8"
+        green   "#7a9bbf"
+        yellow  "#c4a87a"
+        blue    "#7878c8"
+        magenta "#c47ab8"
+        cyan    "#7abfc4"
+        white   "#dce0f4"
+        orange  "#c4a87a"
     }
 }
 
