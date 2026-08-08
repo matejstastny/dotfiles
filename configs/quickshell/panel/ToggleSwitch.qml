@@ -22,7 +22,7 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onClicked: root.toggled()
+        onClicked: { console.log("DEBUG toggle clicked", root.label); root.toggled() }
     }
 
     Text {

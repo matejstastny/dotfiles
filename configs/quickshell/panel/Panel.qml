@@ -38,7 +38,7 @@ PanelWindow {
     implicitHeight: 700 + shadowPad * 2
     exclusiveZone: 0
 
-    mask: Region { item: card }
+    mask: Region { x: card.x; y: card.y; width: card.width; height: card.height }
 
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "quickshell:panel"
@@ -48,7 +48,7 @@ PanelWindow {
     HyprlandFocusGrab {
         active: root.open
         windows: [QsWindow.window]
-        onCleared: root.closeRequested()
+        onCleared: { console.log("DEBUG focusgrab cleared"); root.closeRequested() }
     }
 
     onOpenChanged: {
