@@ -3,23 +3,22 @@ local mod = "ALT"
 -- apps
 hl.bind(mod .. " + Return", hl.dsp.exec_cmd("kitty"))
 
--- rofi
-hl.bind(mod .. " + Space", hl.dsp.exec_cmd("rofi -show drun"))
-hl.bind(mod .. " + N", hl.dsp.exec_cmd(DOTS .. "/rofi/wifi.sh"))
-hl.bind(mod .. " + A", hl.dsp.exec_cmd(DOTS .. "/rofi/calc.sh"))
-hl.bind(mod .. " + V", hl.dsp.exec_cmd(DOTS .. "/rofi/clip.sh"))
-hl.bind(mod .. " + E", hl.dsp.exec_cmd(DOTS .. "/rofi/emoji.sh"))
-hl.bind(mod .. " + P", hl.dsp.exec_cmd(DOTS .. "/rofi/code.sh"))
-hl.bind(mod .. " + B", hl.dsp.exec_cmd(DOTS .. "/rofi/bluetooth.sh"))
-hl.bind(mod .. " + T", hl.dsp.exec_cmd(DOTS .. "/rofi/todo.sh personal"))
-hl.bind(mod .. " + O", hl.dsp.exec_cmd(DOTS .. "/rofi/notes.sh"))
-hl.bind(mod .. " + I", hl.dsp.exec_cmd(DOTS .. "/rofi/capture.sh"))
+-- quickshell menus
+hl.bind(mod .. " + Space", hl.dsp.exec_cmd("qs ipc call launcher toggle"))
+hl.bind(mod .. " + N", hl.dsp.exec_cmd("qs ipc call wifimenu toggle"))
+hl.bind(mod .. " + A", hl.dsp.exec_cmd("qs ipc call calc toggle"))
+hl.bind(mod .. " + V", hl.dsp.exec_cmd("qs ipc call clip toggle"))
+hl.bind(mod .. " + E", hl.dsp.exec_cmd("qs ipc call emoji toggle"))
+hl.bind(mod .. " + P", hl.dsp.exec_cmd("qs ipc call code toggle"))
+hl.bind(mod .. " + B", hl.dsp.exec_cmd("qs ipc call bluetoothmenu toggle"))
+hl.bind(mod .. " + T", hl.dsp.exec_cmd("qs ipc call todo toggle personal"))
+hl.bind(mod .. " + O", hl.dsp.exec_cmd("qs ipc call notes toggle"))
+hl.bind(mod .. " + I", hl.dsp.exec_cmd("qs ipc call capture toggle"))
 hl.bind(mod .. " + D", hl.dsp.exec_cmd("qs ipc call panel toggle"))
-hl.bind(mod .. " + Escape", hl.dsp.exec_cmd(DOTS .. "/rofi/powermenu.sh"))
-hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd(DOTS .. "/rofi/todo.sh stars"))
+hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("qs ipc call powermenu toggle"))
+hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("qs ipc call todo toggle stars"))
 
 -- utils
-hl.bind(mod .. " + G", hl.dsp.exec_cmd(DOTS .. "/bin/git-ui"))
 hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd(DOTS .. "/bin/reload-shell"))
 hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("qs ipc call wallpaper toggle"))
 hl.bind(mod .. " + SHIFT + L", hl.dsp.exec_cmd("hyprlock"))
@@ -28,8 +27,8 @@ hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"))
 -- screenshot / record
 hl.bind("CTRL + SHIFT + 4", hl.dsp.exec_cmd(DOTS .. "/bin/screenshot"))
 hl.bind("CTRL + SHIFT + 3", hl.dsp.exec_cmd(DOTS .. "/bin/screenshot-full"))
-hl.bind("CTRL + SHIFT + R", hl.dsp.exec_cmd(DOTS .. "/bin/record"))
-hl.bind("CTRL + SHIFT + P", hl.dsp.exec_cmd(DOTS .. "/rofi/screenrecord.sh"))
+hl.bind("CTRL + SHIFT + L", hl.dsp.exec_cmd(DOTS .. "/bin/record"))
+hl.bind("CTRL + SHIFT + P", hl.dsp.exec_cmd("qs ipc call screenrecord toggle"))
 
 -- session
 hl.bind(mod .. " + SHIFT + O", hl.dsp.exec_cmd(DOTS .. "/bin/session"))

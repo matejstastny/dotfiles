@@ -54,7 +54,7 @@ qn() {
 	echo "✦ captured → inbox.md"
 }
 
-# append a todo (matches rofi/todo.sh format; no args → edit list)
+# append a todo (matches quickshell todo picker format; no args → edit list)
 todo() {
 	local file="$NOTES_DIR/todo/personal.md" tmp
 	mkdir -p "$(dirname "$file")"

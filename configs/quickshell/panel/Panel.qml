@@ -161,6 +161,7 @@ PanelWindow {
                 delegate: MediaCard {
                     required property var modelData
                     width: mediaColumn.width
+                    visible: modelData.playbackState !== MprisPlaybackState.Stopped
                     player: modelData
                 }
             }

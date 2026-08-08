@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#@ emit iface|rx_bytes|tx_bytes|connection_name for the quickshell network bar module
+iface=$(ip -4 route show default 2>/dev/null | awk '{print $5; exit}')
+if [ -z "$iface" ]; then
+	echo "|0|0|disconnected"
+	exit 0
+fi
+
+rx=$(cat "/sys/class/net/$iface/statistics/rx_bytes" 2>/dev/null || echo 0)
+tx=$(cat "/sys/class/net/$iface/statistics/tx_bytes" 2>/dev/null || echo 0)
+name=$(nmcli -t -f NAME,DEVICE connection show --active 2>/dev/null | awk -F: -v i="$iface" '$2==i{print $1; exit}')
+[ -z "$name" ] && name="$iface"
+
+echo "$iface|$rx|$tx|$name"

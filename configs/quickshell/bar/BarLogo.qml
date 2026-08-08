@@ -28,6 +28,6 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: Quickshell.execDetached(["/home/elara/dotfiles/rofi/powermenu.sh"])
+        onClicked: Quickshell.execDetached(["qs", "ipc", "call", "powermenu", "toggle"])
     }
 }

@@ -3,6 +3,17 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("hyprpm reload")
 
     ---------------------------------
+    -- PORTALS
+    ---------------------------------
+    -- greetd launches hyprland directly (bin/hyprland-session), bypassing uwsm,
+    -- so graphical-session.target never activates and xdg-desktop-portal.service
+    -- (Requisite=graphical-session.target) refuses to start via systemd.
+    -- Start the binaries directly instead - they register on the session bus
+    -- the same way regardless of how they were spawned.
+    hl.exec_cmd("/usr/libexec/xdg-desktop-portal-hyprland")
+    hl.exec_cmd("/usr/libexec/xdg-desktop-portal")
+
+    ---------------------------------
     -- SHELL
     ---------------------------------
 

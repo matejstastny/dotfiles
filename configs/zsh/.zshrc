@@ -32,7 +32,8 @@ path=(
 
 alias dots='cd ~/dotfiles'
 alias s='scripts'
-alias qsd='xdg-open $HOME/source/quickshell-docs/quickshell.org/index.html'
+
+alias tfd='npx -y trickfire-docs@latest dev'
 
 alias sr='source ~/.zshrc && echo "shell reloaded"'
 

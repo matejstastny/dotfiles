@@ -182,7 +182,6 @@ fi
 log "Installing Wayland utilities..."
 sudo dnf install -y \
 	kitty \
-	rofi \
 	grim \
 	slurp \
 	wl-clipboard \

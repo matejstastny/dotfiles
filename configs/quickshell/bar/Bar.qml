@@ -17,12 +17,10 @@ PanelWindow {
     implicitHeight: barHeight + atticHeight
     exclusiveZone: barHeight
 
-    readonly property bool trayMenuOpen: PopoutState.current.startsWith("traymenu|" + root.screen.name + "|")
-
     WlrLayershell.layer: WlrLayer.Top
     WlrLayershell.namespace: "quickshell:bar"
-    WlrLayershell.keyboardFocus: trayMenuOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
-    focusable: trayMenuOpen
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+    focusable: false
 
     anchors {
         top: true
@@ -33,9 +31,6 @@ PanelWindow {
     mask: Region {
         item: barBg
         Region {
-            item: trayModule.activeMenuBox
-        }
-        Region {
             item: cpuStat.hovered ? cpuStat.popoutItem : null
         }
         Region {
@@ -43,6 +38,9 @@ PanelWindow {
         }
         Region {
             item: diskStat.hovered ? diskStat.popoutItem : null
+        }
+        Region {
+            item: netStat.hovered ? netStat.popoutItem : null
         }
     }
 
@@ -94,14 +92,6 @@ PanelWindow {
             onClickCommand: "/home/elara/dotfiles/bin/record"
         }
 
-        BarTray {
-            id: trayModule
-            anchors.verticalCenter: parent.verticalCenter
-            screen: root.screen
-        }
-
-        BarSep { anchors.verticalCenter: parent.verticalCenter }
-
         BarScriptModule {
             anchors.verticalCenter: parent.verticalCenter
             script: "/home/elara/dotfiles/bin/bar-tailscale"
@@ -117,6 +107,7 @@ PanelWindow {
 
         BarSep { anchors.verticalCenter: parent.verticalCenter }
 
+        BarNetwork { id: netStat; anchors.verticalCenter: parent.verticalCenter }
         BarCpu { id: cpuStat; anchors.verticalCenter: parent.verticalCenter }
         BarMemory { id: memStat; anchors.verticalCenter: parent.verticalCenter }
         BarDisk { id: diskStat; anchors.verticalCenter: parent.verticalCenter }

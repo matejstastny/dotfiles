@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+#@ pop the last inbox capture into the personal todo, used by the quickshell capture picker
+INBOX="$HOME/notes/inbox.md"
+[ -s "$INBOX" ] || exit 0
+
+last=$(tail -n 1 "$INBOX")
+text=$(printf '%s' "$last" | sed -E 's/^- [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2} //')
+[ -z "$text" ] && exit 0
+
+"$HOME/dotfiles/bin/todo-add" "$HOME/notes/todo/personal.md" "$text"
+sed -i '$d' "$INBOX"
