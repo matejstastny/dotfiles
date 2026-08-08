@@ -7,8 +7,8 @@ PopupWindow {
     id: root
     popoutName: "calc"
     title: "calc"
-    implicitWidth: 420
-    implicitHeight: 172
+    popupWidth: 420
+    popupHeight: 172
 
     property string resultText: ""
     property bool hasError: false

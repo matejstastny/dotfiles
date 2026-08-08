@@ -6,13 +6,13 @@ PopupWindow {
     id: root
     popoutName: "powermenu"
     title: "system"
-    implicitWidth: 560
-    implicitHeight: 200
+    popupWidth: 560
+    popupHeight: 200
 
     property int currentIndex: 0
 
     readonly property var actions: [
-        { icon: "󰌾", label: "lock", danger: false, cmd: ["hyprlock"] },
+        { icon: "󰌾", label: "lock", danger: false, cmd: [Quickshell.env("HOME") + "/dotfiles/bin/lock"] },
         { icon: "󰒲", label: "suspend", danger: false, cmd: ["systemctl", "suspend"] },
         { icon: "󰍃", label: "logout", danger: false, cmd: ["pkill", "-x", "Hyprland"] },
         { icon: "󰜉", label: "reboot", danger: true, cmd: ["systemctl", "reboot"] },

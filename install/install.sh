@@ -10,7 +10,7 @@ echo ""
 # ── COPRs ─────────────────────────────────────────────────
 echo "✦ Enabling COPRs..."
 
-# hyprlock, swww, hyprpicker, and other Hyprland ecosystem tools
+# swww, hyprpicker, and other Hyprland ecosystem tools
 sudo dnf copr enable -y solopasha/hyprland
 
 # ── Main packages ─────────────────────────────────────────
@@ -19,7 +19,6 @@ echo "✦ Installing packages..."
 
 sudo dnf install -y \
 	hyprpicker \
-	hyprlock \
 	swww \
 	wl-clipboard \
 	bluez \
@@ -37,6 +36,13 @@ sudo dnf install -y \
 	libnotify \
 	nwg-look \
 	papirus-icon-theme
+
+# ── PAM service for the quickshell lockscreen ─────────────
+echo ""
+echo "✦ Installing PAM service for the quickshell lockscreen..."
+if [ ! -f /etc/pam.d/quickshell-lock ]; then
+	echo 'auth        include     login' | sudo tee /etc/pam.d/quickshell-lock >/dev/null
+fi
 
 # ── cliphist (Go binary, not in Fedora repos) ─────────────
 echo ""
@@ -156,6 +162,6 @@ echo ""
 echo "Next steps:"
 echo "  1. Set a wallpaper:      swww img ~/wallpapers/your-image.jpg"
 echo "  2. Reload the shell:     killall qs; qs &"
-echo "  3. Test lock screen:     hyprlock"
+echo "  3. Test lock screen:     $DOTFILES_DIR/bin/lock"
 echo "  4. Build quickshell:     $DOTFILES_DIR/install/quickshell.sh"
 echo ""

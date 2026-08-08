@@ -7,8 +7,8 @@ PopupWindow {
     id: root
     popoutName: "bluetoothmenu"
     title: "bluetooth"
-    implicitWidth: 420
-    implicitHeight: 420
+    popupWidth: 420
+    popupHeight: 420
 
     property var deviceRows: []
 

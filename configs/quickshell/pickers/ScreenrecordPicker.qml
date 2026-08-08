@@ -7,8 +7,8 @@ PopupWindow {
     id: root
     popoutName: "screenrecord"
     title: "recordings"
-    implicitWidth: 480
-    implicitHeight: 520
+    popupWidth: 480
+    popupHeight: 520
 
     readonly property string recDir: Quickshell.env("HOME") + "/pictures/screenrecord"
 

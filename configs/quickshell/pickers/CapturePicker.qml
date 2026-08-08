@@ -6,8 +6,8 @@ PopupWindow {
     id: root
     popoutName: "capture"
     title: "capture"
-    implicitWidth: 480
-    implicitHeight: 130
+    popupWidth: 480
+    popupHeight: 130
 
     ListMenuPopup {
         anchors.fill: parent

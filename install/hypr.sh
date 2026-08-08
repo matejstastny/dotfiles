@@ -69,13 +69,16 @@ fi
 
 log "Installing hypr ecosystem from copr..."
 sudo dnf install -y \
-	hyprlock \
-	hyprpaper \
 	hypridle \
 	hyprpicker \
 	hyprwayland-scanner \
 	xdg-desktop-portal-hyprland \
 	xdg-desktop-portal-gtk
+
+log "Installing PAM service for the quickshell lockscreen..."
+if [ ! -f /etc/pam.d/quickshell-lock ]; then
+	echo 'auth        include     login' | sudo tee /etc/pam.d/quickshell-lock >/dev/null
+fi
 
 log "Installing hyprland build dependencies..."
 sudo dnf install -y \

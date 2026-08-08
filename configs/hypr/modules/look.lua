@@ -4,7 +4,7 @@ hl.config({
         gaps_out         = 8,
         border_size      = 2,
         col              = {
-            active_border   = "rgba(7878c8ff)",
+            active_border   = { colors = { "rgba(7878c8ff)", "rgba(c47ab8ff)" }, angle = 45 },
             inactive_border = "rgba(25253aaa)",
         },
         layout           = "dwindle",
@@ -66,5 +66,10 @@ hl.config({
 })
 
 hl.curve("snappy", { type = "bezier", points = { { 0.2, 1 }, { 0.2, 1 } } })
+hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })
 hl.animation({ leaf = "global", enabled = true, speed = 8, bezier = "snappy" })
 hl.animation({ leaf = "workspaces", enabled = true, speed = 6, bezier = "snappy", style = "slide" })
+hl.animation({ leaf = "windows", enabled = true, speed = 5, bezier = "snappy", style = "popin 90%" })
+hl.animation({ leaf = "fade", enabled = true, speed = 5, bezier = "snappy" })
+hl.animation({ leaf = "border", enabled = true, speed = 8, bezier = "snappy" })
+hl.animation({ leaf = "borderangle", enabled = true, speed = 30, bezier = "linear", style = "loop" })

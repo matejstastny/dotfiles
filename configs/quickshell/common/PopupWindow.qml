@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
@@ -14,14 +15,21 @@ PanelWindow {
     property bool centered: true
     property string keyboardFocusMode: "exclusive"
     property string title: ""
+    property int popupWidth: 400
+    property int popupHeight: 400
 
     readonly property Theme theme: Theme {}
+    readonly property int shadowPad: 56
 
     default property alias content: contentArea.data
 
     visible: root.open
     color: "transparent"
+    implicitWidth: popupWidth + shadowPad * 2
+    implicitHeight: popupHeight + shadowPad * 2
     exclusiveZone: 0
+
+    mask: Region { item: card }
 
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "quickshell:" + root.popoutName
@@ -52,13 +60,18 @@ PanelWindow {
         right: !root.centered
     }
     margins {
-        top: root.centered ? 0 : 10
-        right: root.centered ? 0 : 10
+        top: root.centered ? 0 : 10 - shadowPad
+        right: root.centered ? 0 : 10 - shadowPad
     }
 
     Rectangle {
         id: card
-        anchors.fill: parent
+        anchors.centerIn: root.centered ? parent : undefined
+        anchors.top: root.centered ? undefined : parent.top
+        anchors.right: root.centered ? undefined : parent.right
+        anchors.margins: root.centered ? 0 : shadowPad
+        width: root.popupWidth
+        height: root.popupHeight
         radius: theme.radius
         color: theme.base
         border.width: theme.borderWidth
@@ -68,6 +81,17 @@ PanelWindow {
         scale: root.open ? 1 : 0.96
         Behavior on opacity { NumberAnimation { duration: theme.transitionDuration; easing.type: Easing.OutCubic } }
         Behavior on scale { NumberAnimation { duration: theme.transitionDuration; easing.type: Easing.OutCubic } }
+
+        layer.enabled: true
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: "black"
+            blurMax: 40
+            shadowBlur: 1.0
+            shadowVerticalOffset: 10
+            shadowHorizontalOffset: 0
+            shadowOpacity: 0.55
+        }
 
         Item {
             id: header

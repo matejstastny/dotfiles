@@ -7,8 +7,8 @@ PopupWindow {
     id: root
     popoutName: "clip"
     title: "clipboard"
-    implicitWidth: 480
-    implicitHeight: 520
+    popupWidth: 480
+    popupHeight: 520
 
     ListModel { id: model }
 

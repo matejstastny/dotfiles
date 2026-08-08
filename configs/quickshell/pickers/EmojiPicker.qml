@@ -7,8 +7,8 @@ PopupWindow {
     id: root
     popoutName: "emoji"
     title: "emoji"
-    implicitWidth: 480
-    implicitHeight: 520
+    popupWidth: 480
+    popupHeight: 520
 
     readonly property string dataFile: Quickshell.env("HOME") + "/dotfiles/configs/quickshell/pickers/data/emoji.json"
 

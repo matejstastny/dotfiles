@@ -7,8 +7,8 @@ PopupWindow {
     id: root
     popoutName: "code"
     title: "code"
-    implicitWidth: 520
-    implicitHeight: 520
+    popupWidth: 520
+    popupHeight: 520
 
     readonly property string codeOpenScript: Quickshell.env("HOME") + "/dotfiles/bin/code-open"
     readonly property string codeForgetScript: Quickshell.env("HOME") + "/dotfiles/bin/code-forget"

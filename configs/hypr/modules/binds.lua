@@ -21,7 +21,7 @@ hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("qs ipc call todo toggle stars"))
 -- utils
 hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd(DOTS .. "/bin/reload-shell"))
 hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("qs ipc call wallpaper toggle"))
-hl.bind(mod .. " + SHIFT + L", hl.dsp.exec_cmd("hyprlock"))
+hl.bind(mod .. " + SHIFT + L", hl.dsp.exec_cmd(DOTS .. "/bin/lock"))
 hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"))
 
 -- screenshot / record

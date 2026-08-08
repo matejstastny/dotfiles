@@ -1,9 +1,11 @@
 import QtQuick
+import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import Quickshell.Services.Mpris
 import "../"
+import "../common"
 
 PanelWindow {
     id: root
@@ -28,11 +30,15 @@ PanelWindow {
         }
     }
 
+    readonly property int shadowPad: 56
+
     visible: open
     color: "transparent"
-    implicitWidth: 420
-    implicitHeight: 700
+    implicitWidth: 420 + shadowPad * 2
+    implicitHeight: 700 + shadowPad * 2
     exclusiveZone: 0
+
+    mask: Region { item: card }
 
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "quickshell:panel"
@@ -61,22 +67,46 @@ PanelWindow {
         right: true
     }
     margins {
-        top: 10
-        right: 10
+        top: 10 - shadowPad
+        right: 10 - shadowPad
     }
 
     Rectangle {
         id: card
-        anchors.fill: parent
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.margins: shadowPad
+        width: 420
+        height: 700
         radius: theme.radius
         color: theme.base
+        focus: root.open
+        Keys.onEscapePressed: root.closeRequested()
         border.width: theme.borderWidth
         border.color: theme.muted
 
         opacity: root.open ? 1 : 0
-        scale: root.open ? 1 : 0.96
         Behavior on opacity { NumberAnimation { duration: theme.transitionDuration; easing.type: Easing.OutCubic } }
-        Behavior on scale { NumberAnimation { duration: theme.transitionDuration; easing.type: Easing.OutCubic } }
+
+        layer.enabled: true
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: "black"
+            blurMax: 40
+            shadowBlur: 1.0
+            shadowVerticalOffset: 10
+            shadowHorizontalOffset: 0
+            shadowOpacity: 0.55
+        }
+
+        transform: Scale {
+            origin.x: card.width
+            origin.y: 0
+            xScale: root.open ? 1 : 0.35
+            yScale: root.open ? 1 : 0.1
+            Behavior on xScale { NumberAnimation { duration: 260; easing.type: Easing.OutBack; easing.overshoot: 1.3 } }
+            Behavior on yScale { NumberAnimation { duration: 360; easing.type: Easing.OutBack; easing.overshoot: 1.1 } }
+        }
 
         Item {
             id: header
@@ -84,18 +114,48 @@ PanelWindow {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.margins: 16
-            height: titleText.implicitHeight
+            height: avatar.height
 
-            Text {
-                id: titleText
+            Avatar {
+                id: avatar
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                text: "✦ control centre"
-                color: theme.purple
-                font.pixelSize: 15
-                font.bold: true
-                font.family: theme.fontFamily
-                font.weight: Font.Normal
+                size: 40
+                source: "file://" + Quickshell.env("HOME") + "/pictures/pfp.JPEG"
+            }
+
+            Column {
+                anchors.left: avatar.right
+                anchors.leftMargin: 10
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: clearText.left
+                anchors.rightMargin: 10
+                spacing: 2
+
+                Text {
+                    text: {
+                        const h = new Date().getHours()
+                        const greeting = h < 5 ? "still up" : h < 12 ? "good morning" : h < 18 ? "good afternoon" : h < 23 ? "good evening" : "good night"
+                        return greeting + " ✦"
+                    }
+                    color: theme.purple
+                    font.pixelSize: 15
+                    font.bold: true
+                    font.family: theme.fontFamily
+                    font.weight: Font.Normal
+                    elide: Text.ElideRight
+                    width: parent.width
+                }
+
+                Text {
+                    text: Quickshell.env("USER")
+                    color: theme.dim
+                    font.pixelSize: 11
+                    font.family: theme.fontFamily
+                    font.weight: Font.Normal
+                    elide: Text.ElideRight
+                    width: parent.width
+                }
             }
 
             Text {

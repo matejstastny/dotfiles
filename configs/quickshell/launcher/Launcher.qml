@@ -7,8 +7,8 @@ PopupWindow {
     id: root
     popoutName: "launcher"
     title: "launcher"
-    implicitWidth: 560
-    implicitHeight: 480
+    popupWidth: 560
+    popupHeight: 480
 
     readonly property string mruScript: Quickshell.env("HOME") + "/dotfiles/bin/launcher-touch"
     readonly property string mruFile: Quickshell.env("HOME") + "/.local/share/quickshell-launcher-mru"

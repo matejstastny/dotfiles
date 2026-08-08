@@ -6,8 +6,8 @@ import "../common"
 PopupWindow {
     id: root
     popoutName: "todo"
-    implicitWidth: 480
-    implicitHeight: 520
+    popupWidth: 480
+    popupHeight: 520
 
     property string profile: "personal"
     readonly property string label: root.profile === "stars" ? "stars" : "personal"

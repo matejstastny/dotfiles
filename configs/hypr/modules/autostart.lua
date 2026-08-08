@@ -5,11 +5,7 @@ hl.on("hyprland.start", function()
     ---------------------------------
     -- PORTALS
     ---------------------------------
-    -- greetd launches hyprland directly (bin/hyprland-session), bypassing uwsm,
-    -- so graphical-session.target never activates and xdg-desktop-portal.service
-    -- (Requisite=graphical-session.target) refuses to start via systemd.
-    -- Start the binaries directly instead - they register on the session bus
-    -- the same way regardless of how they were spawned.
+
     hl.exec_cmd("/usr/libexec/xdg-desktop-portal-hyprland")
     hl.exec_cmd("/usr/libexec/xdg-desktop-portal")
 
@@ -20,7 +16,7 @@ hl.on("hyprland.start", function()
     -- hl.exec_cmd("noctalia --daemon")                         -- noctalia
     hl.exec_cmd("QT_QPA_PLATFORMTHEME=gtk3 qs")                 -- dekstop shell
     hl.exec_cmd("hypridle")                                     -- sleep
-    hl.exec_cmd("hyprlock")                                     -- lock screen
+    hl.exec_cmd(DOTS .. "/bin/lock")                            -- lock screen
     hl.exec_cmd("swww-daemon")                                  -- wallpaper daemon
     hl.exec_cmd(DOTS .. "/bin/wallpaper-restore")               -- get last wallpaper
     hl.exec_cmd("nm-applet --indicator")                        -- wifi

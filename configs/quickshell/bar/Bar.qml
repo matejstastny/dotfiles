@@ -9,7 +9,8 @@ PanelWindow {
     signal clockClicked()
 
     readonly property Theme theme: Theme {}
-    readonly property int barHeight: 35
+    readonly property int barHeight: theme.barHeight
+    property bool panelOpen: false
 
     readonly property int atticHeight: 400
 
@@ -50,7 +51,7 @@ PanelWindow {
         anchors.left: parent.left
         anchors.right: parent.right
         height: root.barHeight
-        color: Qt.rgba(theme.base.r, theme.base.g, theme.base.b, 0.93)
+        color: theme.base
     }
 
     Row {
@@ -119,9 +120,30 @@ PanelWindow {
 
         BarSep { anchors.verticalCenter: parent.verticalCenter }
 
-        BarClock {
+        Item {
+            id: clockSlot
             anchors.verticalCenter: parent.verticalCenter
-            onClicked: root.clockClicked()
+            implicitWidth: clockBg.width
+            implicitHeight: clock.implicitHeight
+
+            Rectangle {
+                id: clockBg
+                anchors.centerIn: parent
+                width: clock.implicitWidth + 16
+                height: root.barHeight - 10
+                radius: theme.radiusSmall
+                bottomLeftRadius: 0
+                bottomRightRadius: 0
+                color: theme.overlay
+                opacity: root.panelOpen ? 1 : 0
+                Behavior on opacity { NumberAnimation { duration: theme.transitionDuration; easing.type: Easing.OutCubic } }
+            }
+
+            BarClock {
+                id: clock
+                anchors.centerIn: parent
+                onClicked: root.clockClicked()
+            }
         }
     }
 }

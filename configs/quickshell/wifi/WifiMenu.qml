@@ -7,8 +7,8 @@ PopupWindow {
     id: root
     popoutName: "wifimenu"
     title: "wifi"
-    implicitWidth: 420
-    implicitHeight: 520
+    popupWidth: 420
+    popupHeight: 520
 
     property var wifiDevice: null
     property var networkRows: []

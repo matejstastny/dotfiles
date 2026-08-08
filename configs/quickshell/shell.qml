@@ -299,6 +299,7 @@ ShellRoot {
         Bar {
             required property var modelData
             screen: modelData
+            panelOpen: root.panelOpen
             onClockClicked: root.panelOpen = !root.panelOpen
         }
     }
