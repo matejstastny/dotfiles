@@ -81,7 +81,7 @@ PanelWindow {
         opacity: root.open ? 1 : 0
         scale: root.open ? 1 : 0.96
         Behavior on opacity { NumberAnimation { duration: theme.transitionDuration; easing.type: Easing.OutCubic } }
-        Behavior on scale { NumberAnimation { duration: theme.transitionDuration; easing.type: Easing.OutCubic } }
+        Behavior on scale { NumberAnimation { duration: theme.popDuration; easing.type: Easing.OutBack; easing.overshoot: theme.popOvershoot } }
 
         Item {
             id: header

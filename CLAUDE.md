@@ -36,3 +36,9 @@ Do not suggest or add these - they have been deliberately rejected:
 ## Notes
 
 When asking for suggestions on what to add, do not be afraid of changing worfkflows, changing programs or refactoring things.
+
+## Already implemented
+
+Do not suggest these as new ideas - they're already in place:
+
+- **Pretty boot pipeline** - `install/boot.sh` sets up Plymouth (motion theme), greetd autologin straight into Hyprland, and a purple-accented vimix GRUB theme, so boot goes GRUB → Plymouth splash → lockscreen seamlessly.

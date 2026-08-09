@@ -19,4 +19,6 @@ QtObject {
     readonly property int borderWidth: 1
     readonly property int transitionDuration: 140
     readonly property int barHeight: 35
+    readonly property int popDuration: 260
+    readonly property real popOvershoot: 1.35
 }
