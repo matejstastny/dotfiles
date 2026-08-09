@@ -12,7 +12,8 @@ fi
 swww img "$path" \
 	--transition-type fade \
 	--transition-duration 1.5 \
-	--transition-fps 60
+	--transition-fps 60 \
+	--transition-bezier .2,1,.2,1
 
 config="${XDG_CONFIG_HOME:-$HOME/.config}/waypaper/config.ini"
 if [ -f "$config" ]; then

@@ -15,4 +15,5 @@ exec swww img "$wallpaper" \
 	"${outputs_flag[@]}" \
 	--transition-type fade \
 	--transition-duration 1.5 \
-	--transition-fps 60
+	--transition-fps 60 \
+	--transition-bezier .2,1,.2,1

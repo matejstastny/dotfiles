@@ -31,6 +31,7 @@ Do not suggest or add these - they have been deliberately rejected:
 
 - **atuin** - vanilla shell history is preferred
 - **color-switcher** - singular perfected theme
+- **hyprland shadows** - perf heavy
 
 ## Notes
 
