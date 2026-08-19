@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "id": "elara",
+  "name": "Elara",
+  "appearance": "dark",
+  "colors": {
+    "canvas": "#11111b",
+    "chrome": "#11111b",
+    "surface": "#11111b",
+    "sidebar": "#11111b"
+  }
+}

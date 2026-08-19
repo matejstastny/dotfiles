@@ -55,8 +55,8 @@ hl.on("window.move_to_workspace", function(window)
 end)
 
 -- restore wallpaper on monitor hotplug
-hl.on("monitor.added", function()
-    hl.exec_cmd("/home/elara/dotfiles/bin/wallpaper-restore")
+hl.on("monitor.added", function(monitor)
+    hl.exec_cmd("/home/elara/dotfiles/bin/wallpaper-restore " .. monitor.name)
 end)
 
 -- ros sim tools

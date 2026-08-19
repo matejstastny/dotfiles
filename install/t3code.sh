@@ -37,26 +37,6 @@ else
 fi
 
 echo ""
-echo "✦ Applying background color patch..."
-git -C "$REPO_DIR" restore apps/web/src/index.css
-cat >>"$REPO_DIR/apps/web/src/index.css" <<'PATCH'
-
-/* elara theme override */
-:root {
-  @variant dark {
-    --background: #11111b;
-    --app-chrome-background: #11111b;
-  }
-}
-
-.dark [data-sidebar-version="v1"],
-.dark [data-sidebar-version="v2"] {
-  --card: #11111b;
-  --sidebar: #11111b;
-}
-PATCH
-
-echo ""
 echo "✦ Installing workspace dependencies..."
 (cd "$REPO_DIR" && vp i)
 
@@ -104,3 +84,4 @@ command -v update-desktop-database &>/dev/null && update-desktop-database "$HOME
 echo ""
 echo "✦ Done. \"T3 Code\" should now show up in your app launcher!!"
 echo "  Manual launch: $INSTALL_DIR/t3code --no-sandbox"
+echo "  First run only: Settings → Themes → Import theme → ~/dotfiles/assets/t3code-elara-theme.json"

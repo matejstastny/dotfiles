@@ -4,9 +4,19 @@
 state="${XDG_STATE_HOME:-$HOME/.local/state}/wallpaper"
 wallpaper=$(<"$state")
 
+output="$1"
+
 until awww query &>/dev/null; do sleep 0.1; done
 
-output="$1"
+if [ -n "$output" ]; then
+	tries=0
+	until awww query | grep -q "^: ${output}:"; do
+		tries=$((tries + 1))
+		[ "$tries" -ge 50 ] && break
+		sleep 0.2
+	done
+fi
+
 outputs_flag=()
 [ -n "$output" ] && outputs_flag=(-o "$output")
 

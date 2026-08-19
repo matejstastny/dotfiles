@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+#@ bounce an external monitor through a different mode to clear the apple dcp valid_mode:0 race, then let hyprland reapply its config
+
+output="$1"
+if [ -z "$output" ]; then
+	notify-send -t 3000 "✦ monitor" "no output given"
+	exit 1
+fi
+
+modes=$(wlr-randr --json | jq -r --arg o "$output" '.[] | select(.name == $o) | .modes[] | "\(.width)x\(.height)@\(.refresh)Hz"')
+if [ -z "$modes" ]; then
+	echo "$output not connected" >&2
+	exit 1
+fi
+
+bounce_mode=$(echo "$modes" | sed -n '2p')
+[ -z "$bounce_mode" ] && bounce_mode=$(echo "$modes" | head -1)
+
+wlr-randr --output "$output" --mode "$bounce_mode"
+sleep 5
+wlr-randr --output "$output" --preferred
+
+hyprctl reload
+
+~/dotfiles/bin/wallpaper-restore "$output"
