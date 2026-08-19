@@ -173,6 +173,7 @@
         }
     ],
     "[mdx]": {
-        "editor.wordWrap": "on"
+        "editor.wordWrap": "on",
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     }
 }

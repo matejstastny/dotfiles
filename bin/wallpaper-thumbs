@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+#@ list wallpapers with cached thumbnails, favorites pinned first
+
+set -e
+
+src_dir="${1:-$HOME/wallpapers}"
+cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/wallpaper-thumbs"
+favorites="$HOME/.local/share/wallpaper-favorites"
+mkdir -p "$cache_dir" "$(dirname "$favorites")"
+touch "$favorites"
+
+find -L "$src_dir" -maxdepth 1 -type f \
+	\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' \) |
+	sort |
+	while IFS= read -r src; do
+		thumb="$cache_dir/$(basename "$src").thumb.jpg"
+		if [ ! -f "$thumb" ] || [ "$src" -nt "$thumb" ]; then
+			magick "${src}[0]" -auto-orient -thumbnail '320x200^' -gravity center -extent 320x200 "$thumb" 2>/dev/null || cp "$src" "$thumb"
+		fi
+		fav=0
+		grep -qxF "$src" "$favorites" && fav=1
+		printf '%s\t%s\t%s\n' "$fav" "$src" "$thumb"
+	done | sort -t $'\t' -k1,1r -s

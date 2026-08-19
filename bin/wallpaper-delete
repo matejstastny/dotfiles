@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+#@ trash a wallpaper and clean up its cached thumbnail + favorite entry
+
+set -e
+
+path="$1"
+[ -z "$path" ] && exit 1
+
+cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/wallpaper-thumbs"
+favorites="$HOME/.local/share/wallpaper-favorites"
+
+trash-put "$path" 2>/dev/null || rm -f "$path"
+rm -f "$cache_dir/$(basename "$path").thumb.jpg"
+if [ -f "$favorites" ]; then
+	grep -vxF "$path" "$favorites" >"$favorites.tmp" || true
+	mv "$favorites.tmp" "$favorites"
+fi
+
+notify-send -t 2000 "✦ wallpaper" "deleted $(basename "$path")"

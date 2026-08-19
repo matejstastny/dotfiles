@@ -237,4 +237,7 @@ def run():
 
 
 if __name__ == "__main__":
-    install()
+    if len(sys.argv) > 1 and sys.argv[1] == "install":
+        install()
+    else:
+        run()

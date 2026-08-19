@@ -15,6 +15,9 @@ PanelWindow {
     readonly property string homeDir: Quickshell.env("HOME")
     readonly property string wallpaperDir: homeDir + "/wallpapers"
     readonly property string setWallpaperScript: homeDir + "/dotfiles/bin/set-wallpaper"
+    readonly property string thumbsScript: homeDir + "/dotfiles/bin/wallpaper-thumbs"
+    readonly property string favoriteScript: homeDir + "/dotfiles/bin/wallpaper-favorite"
+    readonly property string deleteScript: homeDir + "/dotfiles/bin/wallpaper-delete"
 
     visible: open
     color: "transparent"
@@ -38,6 +41,29 @@ PanelWindow {
         root.closeRequested()
     }
 
+    function toggleFavorite(index) {
+        const item = wallpaperModel.get(index)
+        const next = !item.favorite
+        wallpaperModel.setProperty(index, "favorite", next)
+        Quickshell.execDetached([root.favoriteScript, item.path, next ? "add" : "remove"])
+
+        const entries = []
+        for (let i = 0; i < wallpaperModel.count; i++) entries.push(wallpaperModel.get(i))
+        entries.sort((a, b) => {
+            if (a.favorite !== b.favorite) return a.favorite ? -1 : 1
+            return a.path < b.path ? -1 : (a.path > b.path ? 1 : 0)
+        })
+        wallpaperModel.clear()
+        for (const e of entries) wallpaperModel.append({ path: e.path, thumb: e.thumb, favorite: e.favorite })
+    }
+
+    function deleteWallpaper(index) {
+        const item = wallpaperModel.get(index)
+        Quickshell.execDetached([root.deleteScript, item.path])
+        wallpaperModel.remove(index)
+        if (grid.currentIndex >= wallpaperModel.count) grid.currentIndex = wallpaperModel.count - 1
+    }
+
     onOpenChanged: {
         if (open) {
             wallpaperModel.clear()
@@ -58,13 +84,13 @@ PanelWindow {
 
     Process {
         id: lister
-        command: ["bash", "-c",
-            "find -L '" + root.wallpaperDir + "' -maxdepth 1 -type f " +
-            "\\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' \\) | sort"]
+        command: [root.thumbsScript, root.wallpaperDir]
         stdout: SplitParser {
             onRead: data => {
                 if (data.length === 0) return
-                wallpaperModel.append({ path: data })
+                const parts = data.split("\t")
+                if (parts.length < 3) return
+                wallpaperModel.append({ favorite: parts[0] === "1", path: parts[1], thumb: parts[2] })
                 if (wallpaperModel.count === 1) grid.currentIndex = 0
             }
         }
@@ -141,6 +167,8 @@ PanelWindow {
             delegate: Item {
                 id: cell
                 required property string path
+                required property string thumb
+                required property bool favorite
                 required property int index
                 width: grid.cellWidth - 8
                 height: grid.cellHeight - 8
@@ -155,7 +183,7 @@ PanelWindow {
 
                     Image {
                         anchors.fill: parent
-                        source: "file://" + cell.path
+                        source: "file://" + cell.thumb
                         fillMode: Image.PreserveAspectCrop
                         asynchronous: true
                         smooth: true
@@ -166,11 +194,55 @@ PanelWindow {
                 }
 
                 MouseArea {
+                    id: applyArea
                     anchors.fill: parent
+                    hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
                         grid.currentIndex = index
                         root.applyWallpaper(cell.path)
+                    }
+                }
+
+                Text {
+                    id: favIcon
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.margins: 5
+                    z: 10
+                    text: cell.favorite ? "✦" : "✧"
+                    color: cell.favorite ? theme.purple : theme.bright
+                    font.pixelSize: 14
+                    font.family: theme.fontFamily
+                    opacity: cell.favorite || applyArea.containsMouse ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 120 } }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        anchors.margins: -6
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.toggleFavorite(cell.index)
+                    }
+                }
+
+                Text {
+                    id: delIcon
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    anchors.margins: 5
+                    z: 10
+                    text: "✕"
+                    color: theme.rose
+                    font.pixelSize: 12
+                    font.family: theme.fontFamily
+                    opacity: applyArea.containsMouse ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 120 } }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        anchors.margins: -6
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.deleteWallpaper(cell.index)
                     }
                 }
             }
