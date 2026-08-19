@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+#@ serve a local media directory over jellyfin for the tv
+
+SRC="$1"
+if [ -z "$SRC" ]; then
+	echo "usage: jellyfin <source-dir>" >&2
+	exit 1
+fi
+
+SRC="$(realpath "$SRC" 2>/dev/null)"
+if [ -z "$SRC" ] || [ ! -d "$SRC" ]; then
+	echo "not a directory: $1" >&2
+	exit 1
+fi
+
+CONFIG_DIR="$HOME/.config/jellyfin-docker"
+mkdir -p "$CONFIG_DIR"
+
+docker rm -f jellyfin >/dev/null 2>&1
+
+docker run -d \
+	--name jellyfin \
+	-p 8096:8096 \
+	-v "$CONFIG_DIR:/config" \
+	-v "$SRC:/media:ro" \
+	jellyfin/jellyfin >/dev/null
+
+IP=$(hostname -I | tr ' ' '\n' | grep '^192\.168\.' | head -1)
+notify-send -t 4000 "✦ jellyfin" "Serving $SRC · http://${IP:-localhost}:8096"
+echo "http://${IP:-localhost}:8096"

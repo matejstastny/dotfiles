@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#@ recursively convert .MOV files in a directory to .mp4
+
+DIR="${1:-.}"
+DIR="$(realpath "$DIR" 2>/dev/null)"
+if [ -z "$DIR" ] || [ ! -d "$DIR" ]; then
+	echo "not a directory: $1" >&2
+	exit 1
+fi
+
+mapfile -d '' FILES < <(find "$DIR" -type f -iname '*.mov' -print0)
+COUNT=${#FILES[@]}
+
+if [ "$COUNT" -eq 0 ]; then
+	echo "no .MOV files found in $DIR"
+	exit 0
+fi
+
+read -rp "found $COUNT .MOV file(s) in $DIR, convert to .mp4? (y/n) " CONFIRM
+if [[ ! "$CONFIRM" =~ ^[Yy]$ ]]; then
+	echo "aborted"
+	exit 0
+fi
+
+for FILE in "${FILES[@]}"; do
+	OUT="${FILE%.*}.mp4"
+	ffmpeg -y -i "$FILE" -c copy "$OUT" >/dev/null 2>&1 && rm "$FILE"
+done
+
+notify-send -t 4000 "✦ mov" "Converted $COUNT file(s) to .mp4"
+echo "converted $COUNT file(s)"

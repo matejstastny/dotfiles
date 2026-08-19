@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#@ recursively convert .HEIC files in a directory to .jpg
+
+DIR="${1:-.}"
+DIR="$(realpath "$DIR" 2>/dev/null)"
+if [ -z "$DIR" ] || [ ! -d "$DIR" ]; then
+	echo "not a directory: $1" >&2
+	exit 1
+fi
+
+mapfile -d '' FILES < <(find "$DIR" -type f -iname '*.heic' -print0)
+COUNT=${#FILES[@]}
+
+if [ "$COUNT" -eq 0 ]; then
+	echo "no .HEIC files found in $DIR"
+	exit 0
+fi
+
+read -rp "found $COUNT .HEIC file(s) in $DIR, convert to .jpg? (y/n) " CONFIRM
+if [[ ! "$CONFIRM" =~ ^[Yy]$ ]]; then
+	echo "aborted"
+	exit 0
+fi
+
+for FILE in "${FILES[@]}"; do
+	OUT="${FILE%.*}.jpg"
+	heif-convert -q 95 "$FILE" "$OUT" >/dev/null && rm "$FILE"
+done
+
+notify-send -t 4000 "✦ heic" "Converted $COUNT file(s) to .jpg"
+echo "converted $COUNT file(s)"

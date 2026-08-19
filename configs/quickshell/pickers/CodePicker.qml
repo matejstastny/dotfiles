@@ -13,6 +13,13 @@ PopupWindow {
     readonly property string codeOpenScript: Quickshell.env("HOME") + "/dotfiles/bin/code-open"
     readonly property string codeForgetScript: Quickshell.env("HOME") + "/dotfiles/bin/code-forget"
 
+    function resolvePath(p) {
+        p = p.trim()
+        if (p === "~") return Quickshell.env("HOME")
+        if (p.startsWith("~/")) return Quickshell.env("HOME") + p.slice(1)
+        return p
+    }
+
     ListModel { id: model }
 
     function reload() {
@@ -46,9 +53,10 @@ PopupWindow {
     ListMenuPopup {
         anchors.fill: parent
         active: root.open
+        mode: "listOrFreeText"
         items: model
         emptyText: "no projects found ✧"
-        placeholder: "search projects..."
+        placeholder: "search projects, or paste a path to add..."
         secondaryActionKey: "remove"
         secondaryActionHint: "Alt+Backspace remove"
         tertiaryActionKey: "devcontainer"
@@ -65,6 +73,17 @@ PopupWindow {
                 Quickshell.execDetached([root.codeOpenScript, item.key])
                 root.closeRequested()
             }
+        }
+        onFreeTextSubmitted: (text, action) => {
+            if (action === "remove") return
+            const path = root.resolvePath(text)
+            if (path.length === 0) return
+            if (action === "devcontainer") {
+                Quickshell.execDetached([root.codeOpenScript, path, "--devcontainer"])
+            } else {
+                Quickshell.execDetached([root.codeOpenScript, path])
+            }
+            root.closeRequested()
         }
         onCloseRequested: root.closeRequested()
     }
