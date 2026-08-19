@@ -10,8 +10,8 @@ echo ""
 # ── COPRs ─────────────────────────────────────────────────
 echo "✦ Enabling COPRs..."
 
-# swww, hyprpicker, and other Hyprland ecosystem tools
-sudo dnf copr enable -y solopasha/hyprland
+# awww, hyprpicker, and other Hyprland ecosystem tools
+sudo dnf copr enable -y lionheartp/Hyprland
 
 # ── Main packages ─────────────────────────────────────────
 echo ""
@@ -19,7 +19,7 @@ echo "✦ Installing packages..."
 
 sudo dnf install -y \
 	hyprpicker \
-	swww \
+	awww \
 	wl-clipboard \
 	bluez \
 	bluez-tools \
@@ -160,7 +160,7 @@ echo ""
 echo "✦ ✧ ✦  Done! Restart Hyprland to apply the Ellie theme."
 echo ""
 echo "Next steps:"
-echo "  1. Set a wallpaper:      swww img ~/wallpapers/your-image.jpg"
+echo "  1. Set a wallpaper:      awww img ~/wallpapers/your-image.jpg"
 echo "  2. Reload the shell:     killall qs; qs &"
 echo "  3. Test lock screen:     $DOTFILES_DIR/bin/lock"
 echo "  4. Build quickshell:     $DOTFILES_DIR/install/quickshell.sh"

@@ -9,15 +9,13 @@ if [ -z "$path" ]; then
 	exit 1
 fi
 
-swww img "$path" \
-	--transition-type fade \
-	--transition-duration 1.5 \
-	--transition-fps 60 \
-	--transition-bezier .2,1,.2,1
+awww img "$path" \
+	--transition-type simple \
+	--transition-step 2 \
+	--transition-fps 60
 
-config="${XDG_CONFIG_HOME:-$HOME/.config}/waypaper/config.ini"
-if [ -f "$config" ]; then
-	sed -i "s|^wallpaper = .*|wallpaper = $path|" "$config"
-fi
+state="${XDG_STATE_HOME:-$HOME/.local/state}/wallpaper"
+mkdir -p "$(dirname "$state")"
+echo "$path" >"$state"
 
 notify-send -t 2000 "✦ wallpaper" "$(basename "$path")"

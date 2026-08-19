@@ -11,7 +11,7 @@ Item {
     property var screen
 
     readonly property Theme theme: Theme {}
-    readonly property string wallpaperConfig: Quickshell.env("HOME") + "/.config/waypaper/config.ini"
+    readonly property string wallpaperStateFile: Quickshell.env("HOME") + "/.local/state/wallpaper"
     property string wallpaperPath: ""
 
     opacity: context.unlocking ? 0 : 1
@@ -40,16 +40,16 @@ Item {
     }
 
     FileView {
-        id: wallpaperConfigFile
+        id: wallpaperStateFileView
         // blocking: this is a tiny file and we need the path before the
         // Image below can start its (much slower) async load - avoids
         // losing an extra subprocess-spawn's worth of time to a black flash
-        path: root.wallpaperConfig
+        path: root.wallpaperStateFile
         blockLoading: true
 
         Component.onCompleted: {
-            const match = text().match(/^wallpaper\s*=\s*(.+)$/m)
-            if (match) root.wallpaperPath = match[1].trim().replace(/^~/, Quickshell.env("HOME"))
+            const p = text().trim()
+            if (p) root.wallpaperPath = p
         }
     }
 

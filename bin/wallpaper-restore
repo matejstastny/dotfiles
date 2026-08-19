@@ -1,19 +1,17 @@
 #!/usr/bin/env bash
 #@ restore wallpaper
 
-config="${XDG_CONFIG_HOME:-$HOME/.config}/waypaper/config.ini"
-wallpaper=$(grep -m1 '^wallpaper' "$config" | cut -d= -f2 | xargs)
-wallpaper="${wallpaper/#\~/$HOME}"
+state="${XDG_STATE_HOME:-$HOME/.local/state}/wallpaper"
+wallpaper=$(<"$state")
 
-until swww query &>/dev/null; do sleep 0.1; done
+until awww query &>/dev/null; do sleep 0.1; done
 
 output="$1"
 outputs_flag=()
 [ -n "$output" ] && outputs_flag=(-o "$output")
 
-exec swww img "$wallpaper" \
+exec awww img "$wallpaper" \
 	"${outputs_flag[@]}" \
-	--transition-type fade \
-	--transition-duration 1.5 \
-	--transition-fps 60 \
-	--transition-bezier .2,1,.2,1
+	--transition-type simple \
+	--transition-step 2 \
+	--transition-fps 60

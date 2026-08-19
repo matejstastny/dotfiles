@@ -17,7 +17,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("QT_QPA_PLATFORMTHEME=gtk3 qs")                 -- dekstop shell
     hl.exec_cmd("hypridle")                                     -- sleep
     hl.exec_cmd(DOTS .. "/bin/lock")                            -- lock screen
-    hl.exec_cmd("swww-daemon")                                  -- wallpaper daemon
+    hl.exec_cmd("awww-daemon")                                  -- wallpaper daemon
     hl.exec_cmd(DOTS .. "/bin/wallpaper-restore")               -- get last wallpaper
     hl.exec_cmd("nm-applet --indicator")                        -- wifi
     hl.exec_cmd("blueman-applet")                               -- bluetooth

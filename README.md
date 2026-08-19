@@ -13,7 +13,7 @@
 | **Launcher**      | [Rofi](https://github.com/davatorium/rofi)                                                    |
 | **Notifications** | [SwayNC](https://github.com/ErikReider/SwayNotificationCenter)                                |
 | **OSD**           | [SwayOSD](https://github.com/ErikReider/SwayOSD)                                              |
-| **Wallpaper**     | [Waypaper](https://github.com/anufrievroman/waypaper) + [swww](https://github.com/LGFae/swww) |
+| **Wallpaper**     | [awww](https://codeberg.org/LGFae/awww)                                                          |
 | **Terminal**      | [Kitty](https://sw.kovidgoyal.net/kitty/)                                                     |
 | **Multiplexer**   | [Tmux](https://github.com/tmux/tmux)                                                          |
 | **Shell**         | [Zsh](https://www.zsh.org) + [starship](https://starship.rs/)                                 |
@@ -33,6 +33,6 @@
 | `session`           | Launch full desktop session                                                                              |
 | `screenshot`        | screenshot using [grim](https://github.com/emersion/grim) and [slurp](https://github.com/emersion/slurp) |
 | `record`            | screenrecord using [wf-recorder](https://github.com/ammen99/wf-recorder)                                 |
-| `wallpaper-restore` | re-apply last waypaper wallpaper                                                                         |
+| `wallpaper-restore` | re-apply last-set wallpaper                                                                              |
 | `cloud`             | onedrive syncer, wrapper of [rclone](https://rclone.org/)                                                |
 | `remote`            | better ssh command with a hosts config file                                                              |

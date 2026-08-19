@@ -59,11 +59,6 @@ hl.on("monitor.added", function()
     hl.exec_cmd("/home/elara/dotfiles/bin/wallpaper-restore")
 end)
 
--- waypaper
-hl.window_rule({ name = "waypaper-float", match = { class = "^waypaper$" }, float = true })
-hl.window_rule({ name = "waypaper-size", match = { class = "^waypaper$" }, size = "800 600" })
-hl.window_rule({ name = "waypaper-center", match = { class = "^waypaper$" }, center = true })
-
 -- ros sim tools
 hl.window_rule({ name = "chrono-sim", match = { class = "^vsg::Windo$" }, workspace = "7" })
 hl.window_rule({ name = "gazebo-workspace", match = { class = "^Gazebo GUI$" }, workspace = "7" })
