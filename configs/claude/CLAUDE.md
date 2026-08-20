@@ -10,6 +10,7 @@ Aesthetic matters!! I am a neatness freak, clean naming, good structure, clean c
 ## git commits
 
 **IMPORTANT:** do NOT add yourself as an author or co-author of anything git or github related!
+commit using the https://www.conventionalcommits.org/en/ standard
 
 ## recommendations
 

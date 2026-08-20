@@ -64,7 +64,7 @@ alias lsa='echo && eza --color=always --long --git --icons=always'
 alias lsaa='echo && eza --color=always --long --git --icons=always -a'
 alias lst='echo && eza --color=always --tree --git --no-filesize --icons=always --no-time --no-user --no-permissions'
 
-alias ip='echo "not configured"'
+alias ip='command ip -4 -br addr show | grep -v ^lo'
 
 alias q='tmux detach'
 alias qa='tmux kill-server'
