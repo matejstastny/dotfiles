@@ -14,7 +14,7 @@ hl.bind(mod .. " + B", hl.dsp.exec_cmd("qs ipc call bluetoothmenu toggle"))
 hl.bind(mod .. " + T", hl.dsp.exec_cmd("qs ipc call todo toggle personal"))
 hl.bind(mod .. " + O", hl.dsp.exec_cmd("qs ipc call notes toggle"))
 hl.bind(mod .. " + I", hl.dsp.exec_cmd("qs ipc call capture toggle"))
-hl.bind(mod .. " + D", hl.dsp.exec_cmd("qs ipc call panel toggle"))
+hl.bind(mod .. " + L", hl.dsp.exec_cmd("qs ipc call panel toggle"))
 hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("qs ipc call powermenu toggle"))
 hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("qs ipc call todo toggle stars"))
 

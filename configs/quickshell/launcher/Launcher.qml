@@ -12,6 +12,7 @@ PopupWindow {
 
     readonly property string mruScript: Quickshell.env("HOME") + "/dotfiles/bin/launcher-touch"
     readonly property string mruFile: Quickshell.env("HOME") + "/.local/share/quickshell-launcher-mru"
+    readonly property string editScript: Quickshell.env("HOME") + "/dotfiles/bin/launcher-edit"
 
     property var mruIds: []
     property var entries: []
@@ -62,6 +63,14 @@ PopupWindow {
         }
     }
 
+    function editCurrentDesktopFile() {
+        if (list.currentIndex >= 0 && list.currentIndex < root.filteredRows.length) {
+            const item = root.filteredRows[list.currentIndex]
+            Quickshell.execDetached([root.editScript, item.key])
+            root.closeRequested()
+        }
+    }
+
     Connections {
         target: DesktopEntries
         function onApplicationsChanged() { root.rebuildEntries() }
@@ -99,11 +108,24 @@ PopupWindow {
         onDownPressed: list.incrementCurrentIndex()
         onEscapePressed: root.closeRequested()
         onAccepted: root.launchCurrent()
+        onAltD: root.editCurrentDesktopFile()
+    }
+
+    Text {
+        id: hintText
+        anchors.top: search.bottom
+        anchors.topMargin: 8
+        anchors.left: parent.left
+        anchors.right: parent.right
+        text: "Alt+D edit desktop file"
+        color: theme.dim
+        font.pixelSize: 10
+        font.family: theme.fontFamily
     }
 
     ListView {
         id: list
-        anchors.top: search.bottom
+        anchors.top: hintText.bottom
         anchors.topMargin: 10
         anchors.left: parent.left
         anchors.right: parent.right

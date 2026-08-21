@@ -175,5 +175,6 @@
     "[mdx]": {
         "editor.wordWrap": "on",
         "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
+    },
+    "workbench.experimental.modernUI": false
 }

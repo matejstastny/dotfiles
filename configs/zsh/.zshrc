@@ -64,7 +64,7 @@ alias lsa='echo && eza --color=always --long --git --icons=always'
 alias lsaa='echo && eza --color=always --long --git --icons=always -a'
 alias lst='echo && eza --color=always --tree --git --no-filesize --icons=always --no-time --no-user --no-permissions'
 
-alias ip='command ip -4 -br addr show | grep -v ^lo'
+alias lip="hostname -I | cut -d ' ' -f 1"
 
 alias q='tmux detach'
 alias qa='tmux kill-server'
@@ -119,6 +119,13 @@ zstyle ':completion:*' menu select
 zstyle ':completion:*' special-dirs true
 zstyle ':completion:*' list-colors "$LS_COLORS" ma=0\;35
 zstyle ':completion:*' squeeze-slashes false
+
+_rmt() {
+	local -a hosts
+	hosts=(${(f)"$(rmt --complete 2>/dev/null)"})
+	_describe 'host' hosts
+}
+compdef _rmt rmt
 
 # shell options ------------------------------------------------------------------------------
 

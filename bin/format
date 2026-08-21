@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+#@ format a usb drive or sd card
+
+set -euo pipefail
+
+RED=$'\033[0;31m'
+GREEN=$'\033[0;32m'
+YELLOW=$'\033[0;33m'
+CYAN=$'\033[0;36m'
+BOLD=$'\033[1m'
+RESET=$'\033[0m'
+
+die() {
+	echo "${RED}✗${RESET} $*" >&2
+	exit 1
+}
+
+info() {
+	echo "${CYAN}→${RESET} $*"
+}
+
+usage() {
+	cat <<EOF
+format - format a usb drive or sd card
+
+Usage:
+  format
+EOF
+}
+
+[[ $# -eq 0 ]] || {
+	usage
+	exit 1
+}
+
+mapfile -t drives < <(lsblk -dpno NAME,SIZE,VENDOR,MODEL,RM | awk '$NF=="1"')
+[[ ${#drives[@]} -gt 0 ]] || die "no removable drives found"
+
+echo "${BOLD}available removable drives${RESET}"
+for i in "${!drives[@]}"; do
+	printf "  ${YELLOW}[%d]${RESET} %s\n" "$((i + 1))" "${drives[$i]}"
+done
+
+echo
+read -rp "select a drive [1-${#drives[@]}]: " choice
+[[ "$choice" =~ ^[0-9]+$ ]] && ((choice >= 1 && choice <= ${#drives[@]})) || die "invalid selection"
+
+target="${drives[$((choice - 1))]}"
+device=$(awk '{print $1}' <<<"$target")
+
+echo
+echo "${BOLD}filesystem${RESET}"
+echo "  ${YELLOW}[1]${RESET} fat32  (most compatible)"
+echo "  ${YELLOW}[2]${RESET} exfat  (files over 4gb)"
+echo "  ${YELLOW}[3]${RESET} ext4   (linux only)"
+echo
+read -rp "select a filesystem [1-3]: " fschoice
+
+case "$fschoice" in
+1) fstype=vfat ;;
+2) fstype=exfat ;;
+3) fstype=ext4 ;;
+*) die "invalid selection" ;;
+esac
+
+command -v "mkfs.$fstype" &>/dev/null || die "mkfs.$fstype not found"
+
+read -rp "label (optional): " label
+
+echo
+echo "${BOLD}${RED}this will erase all data on ${device}${RESET}"
+echo "  target:     $target"
+echo "  filesystem: $fstype"
+[[ -n "$label" ]] && echo "  label:      $label"
+echo
+read -rp "type the device name (${device##*/}) to confirm: " confirm
+[[ "$confirm" == "${device##*/}" ]] || die "confirmation did not match, aborting"
+
+info "unmounting ${device} partitions"
+for part in $(lsblk -lnpo NAME "$device" | tail -n +2); do
+	mnt=$(lsblk -no MOUNTPOINT "$part")
+	[[ -n "$mnt" ]] && sudo umount "$part"
+done
+
+if [[ "$device" =~ (mmcblk|nvme) ]]; then
+	partition="${device}p1"
+else
+	partition="${device}1"
+fi
+
+info "wiping ${device}"
+sudo wipefs -a "$device"
+
+info "creating partition table on ${device}"
+sudo parted -s "$device" mklabel msdos mkpart primary 1MiB 100%
+sudo partprobe "$device"
+
+info "formatting ${partition} as ${fstype}"
+case "$fstype" in
+vfat)
+	sudo mkfs.vfat -F 32 ${label:+-n "$label"} "$partition"
+	;;
+exfat)
+	sudo mkfs.exfat ${label:+-n "$label"} "$partition"
+	;;
+ext4)
+	sudo mkfs.ext4 -q ${label:+-L "$label"} "$partition"
+	;;
+esac
+
+notify-send -t 3000 "✦ format" "formatted $device as $fstype"
+echo "${GREEN}✓${RESET} done"

@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+#@ flash an iso to a usb drive with dd
+
+set -euo pipefail
+
+RED=$'\033[0;31m'
+GREEN=$'\033[0;32m'
+YELLOW=$'\033[0;33m'
+CYAN=$'\033[0;36m'
+BOLD=$'\033[1m'
+RESET=$'\033[0m'
+
+die() {
+	echo "${RED}✗${RESET} $*" >&2
+	exit 1
+}
+
+info() {
+	echo "${CYAN}→${RESET} $*"
+}
+
+usage() {
+	cat <<EOF
+flash - write an iso to a usb drive
+
+Usage:
+  flash <path-to-iso>
+EOF
+}
+
+[[ $# -eq 1 ]] || {
+	usage
+	exit 1
+}
+
+ISO="$1"
+[[ -f "$ISO" ]] || die "iso not found: $ISO"
+
+mapfile -t drives < <(lsblk -dpno NAME,SIZE,VENDOR,MODEL,TRAN | awk '$NF=="usb"')
+[[ ${#drives[@]} -gt 0 ]] || die "no usb drives found"
+
+echo "${BOLD}available usb drives${RESET}"
+for i in "${!drives[@]}"; do
+	printf "  ${YELLOW}[%d]${RESET} %s\n" "$((i + 1))" "${drives[$i]}"
+done
+
+echo
+read -rp "select a drive [1-${#drives[@]}]: " choice
+[[ "$choice" =~ ^[0-9]+$ ]] && ((choice >= 1 && choice <= ${#drives[@]})) || die "invalid selection"
+
+target="${drives[$((choice - 1))]}"
+device=$(awk '{print $1}' <<<"$target")
+
+echo
+echo "${BOLD}${RED}this will erase all data on ${device}${RESET}"
+echo "  iso:    $ISO"
+echo "  target: $target"
+echo
+read -rp "type the device name (${device}) to confirm: " confirm
+[[ "$confirm" == "$device" ]] || die "confirmation did not match, aborting"
+
+info "unmounting ${device} partitions"
+for part in $(lsblk -lnpo NAME "$device" | tail -n +2); do
+	mnt=$(lsblk -no MOUNTPOINT "$part")
+	[[ -n "$mnt" ]] && sudo umount "$part"
+done
+
+info "flashing $(basename "$ISO") -> $device"
+sudo dd if="$ISO" of="$device" bs=4M status=progress conv=fsync
+sync
+
+notify-send -t 3000 "✦ flash" "wrote $(basename "$ISO") to $device"
+echo "${GREEN}✓${RESET} done"

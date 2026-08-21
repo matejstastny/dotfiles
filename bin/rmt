@@ -20,8 +20,9 @@ class Host:
     jump: str = ""
 
 def main() -> None:
+    hosts = load_hosts()
+
     if len(sys.argv) == 1:
-        hosts = load_hosts()
         if not hosts:
             print("No hosts in config")
             return
@@ -29,7 +30,11 @@ def main() -> None:
         return
 
     selected_name = sys.argv[1]
-    hosts = load_hosts()
+
+    if selected_name == "--complete":
+        print("\n".join(host.name for host in hosts))
+        return
+
     selected_host = next((h for h in hosts if h.name == selected_name), None)
     if not selected_host:
         print(f"Host '{selected_name}' not found")
@@ -59,7 +64,7 @@ def connect_to_host(host: Host) -> None:
         ssh_cmd += ["-J", host.jump]
     ssh_cmd += [
         f"{host.user}@{host.host}",
-        f"TERM=xterm-256color bash -c 'clear; cd {host.path} 2>/dev/null; exec $SHELL'"
+        f"TERM=xterm-256color sh -c 'clear; cd {host.path} 2>/dev/null; exec $SHELL'"
     ]
     if host.password:
         subprocess.run(["sshpass", "-p", host.password] + ssh_cmd)

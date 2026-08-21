@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+profiles=$(sudo tailscale switch --list --json)
+colors=(6 5 3 2 4 1)
+
+rows=$(printf '%s' "$profiles" | jq -r '.[] | [.id, (.nickname // .account), .tailnet, (.selected|tostring)] | @tsv')
+
+menu=""
+i=0
+while IFS=$'\t' read -r id name tailnet selected; do
+	color=${colors[$((i % ${#colors[@]}))]}
+	icon="󰒎"
+	[ "$selected" = "true" ] && icon="󰒍"
+	label=$(printf '\033[1;3%sm%s %s\033[0m \033[2m%s\033[0m' "$color" "$icon" "$name" "$tailnet")
+	menu+="$id\t$label\n"
+	i=$((i + 1))
+done <<<"$rows"
+
+chosen=$(printf '%b' "$menu" | fzf \
+	--ansi --no-multi \
+	--delimiter='\t' --with-nth=2.. \
+	--prompt='tailnet ❯ ' --pointer='▶' --gutter=' ' \
+	--header='switch tailscale account' \
+	--height=~40% --layout=reverse --border=rounded \
+	--color='fg+:15,bg+:-1,hl:6,hl+:6,pointer:5,prompt:6,border:8,header:8')
+
+[ -z "$chosen" ] && exit 0
+
+id=$(cut -f1 <<<"$chosen")
+sudo tailscale switch "$id" >/dev/null
+name=$(printf '%s' "$profiles" | jq -r --arg id "$id" '.[] | select(.id == $id) | .nickname // .account')
+echo "tls: switched to $name"

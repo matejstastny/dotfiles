@@ -26,4 +26,4 @@ sshpass -p '<password>' ssh -J <jump_user>@<jump_host> <user>@<host>
 3. If there's no `password` field, connect with plain `ssh <user>@<host>` (key-based auth)
 4. Default to `path` as the working directory on the remote once connected, unless Ellie asks for somewhere else.
 
-Never print the resolved password back to Ellie or into commit messages/logs!
+Never print the resolved password back to me or into commit messages/logs!
