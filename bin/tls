@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+#@ tailnet switcher
+
 set -euo pipefail
 
 profiles=$(sudo tailscale switch --list --json)
