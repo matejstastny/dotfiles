@@ -1,6 +1,7 @@
 hl.config({
     input = {
-        kb_layout     = "us",
+        kb_layout     = "us,cz",
+        kb_variant    = ",qwerty",
         kb_options    = "ctrl:swap_lwin_lctl",
         follow_mouse  = 1,
         touchpad      = {

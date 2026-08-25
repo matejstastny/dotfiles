@@ -1,0 +1,263 @@
+#!/usr/bin/env python3
+import json
+import subprocess
+import tempfile
+from pathlib import Path
+from datetime import datetime
+
+WORDLE_DIR = Path.home() / "wordle"
+SESSIONS_DIR = WORDLE_DIR / "sessions"
+EXPORTS_DIR = WORDLE_DIR / "exports"
+CURRENT_FILE = WORDLE_DIR / "current.json"
+
+RESET = "\033[0m"
+BOLD = "\033[1m"
+DIM = "\033[2m"
+CYAN = "\033[36m"
+GREEN = "\033[32m"
+YELLOW = "\033[33m"
+RED = "\033[31m"
+MAGENTA = "\033[35m"
+
+UW_PURPLE = "#4b2e83"
+UW_GOLD = "#ffc700"
+UW_LAVENDER = "#c5b4e3"
+UW_PINK = "#e93cac"
+
+FONT_REGULAR = Path.home() / ".local/share/fonts/MapleMono/MapleMono-NF-Regular.ttf"
+FONT_BOLD = Path.home() / ".local/share/fonts/MapleMono/MapleMono-NF-SemiBold.ttf"
+
+
+def load():
+    if CURRENT_FILE.exists():
+        return json.loads(CURRENT_FILE.read_text())
+    return {"people": {}}
+
+
+def save(data):
+    WORDLE_DIR.mkdir(parents=True, exist_ok=True)
+    CURRENT_FILE.write_text(json.dumps(data, indent=2))
+
+
+def fmt_score(score):
+    return "X" if score == 7 else str(score)
+
+
+def print_header():
+    print(f"\n{BOLD}{MAGENTA}✦ wordle tracker ✦{RESET}\n")
+
+
+def print_people(people):
+    ordered = sorted(
+        people.items(),
+        key=lambda kv: (
+            kv[1]["games"] == 0,
+            kv[1]["total"] / kv[1]["games"] if kv[1]["games"] else 0,
+            kv[0].lower(),
+        ),
+    )
+    if not ordered:
+        print(f"{DIM}no one saved yet{RESET}\n")
+        return ordered
+    name_w = max(len(n) for n, _ in ordered) + 2
+    print(f"{DIM}{'#':<4}{'name':<{name_w}}{'games':>7}{'avg':>7}{RESET}")
+    for i, (name, stats) in enumerate(ordered, start=1):
+        games = stats["games"]
+        avg = f"{stats['total'] / games:.2f}" if games else "-"
+        print(f"{CYAN}{i:<4}{RESET}{name:<{name_w}}{games:>7}{GREEN}{avg:>7}{RESET}")
+    print()
+    return ordered
+
+
+def prompt_score(name):
+    while True:
+        raw = input(f"score for {BOLD}{name}{RESET} (1-6, 7=X): ").strip()
+        if raw.isdigit() and 1 <= int(raw) <= 7:
+            return int(raw)
+        print(f"{RED}enter a number 1-7{RESET}")
+
+
+def add_person(data):
+    name = input("new person's name: ").strip()
+    if not name:
+        return None
+    if name in data["people"]:
+        print(f"{YELLOW}{name} already exists{RESET}")
+        return name
+    data["people"][name] = {"total": 0, "games": 0}
+    save(data)
+    return name
+
+
+def record_round(data, name):
+    score = prompt_score(name)
+    stats = data["people"][name]
+    stats["games"] += 1
+    stats["total"] += score
+    save(data)
+    avg = stats["total"] / stats["games"]
+    print(f"{GREEN}saved{RESET} {name}: {fmt_score(score)} (avg {avg:.2f})\n")
+
+
+def save_session(data):
+    session_name = input("session name: ").strip()
+    if not session_name:
+        print(f"{RED}cancelled{RESET}\n")
+        return
+    SESSIONS_DIR.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    dest = SESSIONS_DIR / f"{session_name}_{stamp}.json"
+    dest.write_text(json.dumps(data, indent=2))
+    data["people"] = {}
+    save(data)
+    print(f"{GREEN}session saved{RESET} -> {dest}")
+    print(f"{DIM}current standings reset{RESET}\n")
+
+
+def export_leaderboard(data):
+    ranked = sorted(
+        ((n, s) for n, s in data["people"].items() if s["games"] > 0),
+        key=lambda kv: kv[1]["total"] / kv[1]["games"],
+    )
+    if not ranked:
+        print(f"{RED}no scored rounds to export yet{RESET}\n")
+        return
+
+    width, row_h, header_h, spacer_h = 380, 34, 36, 10
+    has_gap = len(ranked) > 1
+    height = header_h + row_h * len(ranked) + (spacer_h if has_gap else 0)
+
+    body_rows = ranked[:-1] if has_gap else ranked
+    rows_html = "".join(
+        f"""<tr style="background:{'#ffffff' if i % 2 else UW_LAVENDER + '33'}">
+              <td class="rank">{i}</td><td class="name">{name}</td>
+              <td class="avg">{stats['total'] / stats['games']:.3f}</td></tr>"""
+        for i, (name, stats) in enumerate(body_rows, start=1)
+    )
+    if has_gap:
+        last_name, last_stats = ranked[-1]
+        rows_html += (
+            f'<tr><td colspan="3" style="height:{spacer_h}px;'
+            f'line-height:{spacer_h}px;padding:0;border:none"></td></tr>'
+        )
+        rows_html += f"""<tr style="background:{UW_PINK};color:#ffffff">
+              <td class="rank">{len(ranked)}</td><td class="name">{last_name}</td>
+              <td class="avg">{last_stats['total'] / last_stats['games']:.3f}</td></tr>"""
+
+    html = f"""<!doctype html>
+<html><head><meta charset="UTF-8"><style>
+@font-face {{
+  font-family: "Maple Mono NF";
+  font-weight: 400;
+  src: url("file://{FONT_REGULAR}") format("truetype");
+}}
+@font-face {{
+  font-family: "Maple Mono NF";
+  font-weight: 700;
+  src: url("file://{FONT_BOLD}") format("truetype");
+}}
+* {{ box-sizing: border-box; margin: 0; padding: 0; }}
+::-webkit-scrollbar {{ display: none; }}
+html, body {{ overflow: hidden; }}
+body {{ width: {width}px; font-family: "Maple Mono NF", monospace; }}
+table {{ width: 100%; border-collapse: collapse; }}
+th {{
+  background: {UW_PURPLE};
+  color: {UW_GOLD};
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 0 12px;
+  height: {header_h}px;
+  line-height: {header_h}px;
+}}
+th.rank {{ width: 36px; text-align: center; }}
+th.avg {{ text-align: right; }}
+td {{
+  font-size: 14px;
+  font-weight: 700;
+  color: #221a35;
+  padding: 0 12px;
+  height: {row_h}px;
+  line-height: {row_h - 1}px;
+  border-bottom: 1px solid rgba(75,46,131,0.08);
+}}
+td.rank {{ text-align: center; opacity: 0.55; }}
+td.avg {{ text-align: right; }}
+</style></head>
+<body>
+<table>
+<thead><tr><th class="rank">#</th><th>name</th><th class="avg">avg guesses</th></tr></thead>
+<tbody>{rows_html}</tbody>
+</table>
+</body></html>"""
+
+    EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    out = EXPORTS_DIR / f"{stamp}.png"
+
+    tmp_html = Path(tempfile.mktemp(suffix=".html"))
+    tmp_html.write_text(html)
+    try:
+        subprocess.run(
+            [
+                "/usr/bin/helium",
+                "--headless=new",
+                "--no-sandbox",
+                "--disable-gpu",
+                "--force-device-scale-factor=2",
+                f"--window-size={width},{height}",
+                f"--screenshot={out}",
+                f"file://{tmp_html}",
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    finally:
+        tmp_html.unlink(missing_ok=True)
+
+    if not out.exists():
+        print(f"{RED}export failed (is helium installed?){RESET}\n")
+        return
+
+    subprocess.run(["wl-copy", "--type", "image/png"], input=out.read_bytes())
+    print(f"{GREEN}exported{RESET} -> {out}")
+    print(f"{DIM}copied to clipboard, paste into discord{RESET}\n")
+
+
+def main():
+    data = load()
+    print_header()
+    while True:
+        ordered = print_people(data["people"])
+        choice = input(
+            f"person {DIM}[number / a=add / s=save session / e=export / q=quit]{RESET}: "
+        ).strip().lower()
+        if choice in ("q", "quit", "exit"):
+            print(f"\n{MAGENTA}see you next round ✦{RESET}\n")
+            break
+        if choice == "a":
+            name = add_person(data)
+            if name:
+                record_round(data, name)
+            continue
+        if choice == "s":
+            save_session(data)
+            continue
+        if choice == "e":
+            export_leaderboard(data)
+            continue
+        if choice.isdigit() and 1 <= int(choice) <= len(ordered):
+            name = ordered[int(choice) - 1][0]
+            record_round(data, name)
+            continue
+        print(f"{RED}invalid choice{RESET}\n")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print(f"\n{MAGENTA}see you next round ✦{RESET}\n")

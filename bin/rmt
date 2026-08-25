@@ -72,4 +72,7 @@ def connect_to_host(host: Host) -> None:
         subprocess.run(ssh_cmd)
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit(130)

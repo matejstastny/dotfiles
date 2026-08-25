@@ -4,6 +4,7 @@
 set -eu
 
 FAIRYDUST_DIR="$HOME/dotfiles/fairydust"
+KERNEL_SRC_DIR="$HOME/linux-fairydust"
 
 if [ -d "$FAIRYDUST_DIR" ]; then
 	echo "==> Repo exists. Pulling..."
@@ -16,4 +17,24 @@ fi
 echo "==> Adding exec perms..."
 chmod +x "$FAIRYDUST_DIR"/*.sh
 
-echo "==> Done"
+if [ -d "$KERNEL_SRC_DIR" ]; then
+	echo "==> Removing stale kernel source at $KERNEL_SRC_DIR..."
+	rm -rf "$KERNEL_SRC_DIR"
+fi
+
+CURRENT_KVER="$(uname -r)"
+if [ ! -f "/boot/config-$CURRENT_KVER" ]; then
+	# arm64's install.sh never writes /boot/config-<version> (unlike x86), so
+	# once booted into a fairydust kernel there's no config for the build
+	# script to copy as its base. Seed it from the stock 16k kernel's config.
+	STOCK_CONFIG="$(ls -t /boot/config-*+16k 2>/dev/null | head -1)"
+	if [ -z "$STOCK_CONFIG" ]; then
+		echo "==> ERROR: no stock kernel config found to seed /boot/config-$CURRENT_KVER" >&2
+		exit 1
+	fi
+	echo "==> Seeding /boot/config-$CURRENT_KVER from $STOCK_CONFIG..."
+	sudo cp "$STOCK_CONFIG" "/boot/config-$CURRENT_KVER"
+fi
+
+echo "==> Running build script..."
+"$FAIRYDUST_DIR/asahi-fairydust-build.sh"
