@@ -25,7 +25,7 @@ hl.window_rule({ name = "select-folder-float", match = { title = "^Select Folder
 hl.window_rule({ name = "bluetooth-float", match = { class = "^blueman-manager$" }, float = true })
 hl.window_rule({ name = "bluetooth-size", match = { class = "^blueman-manager$" }, size = "400 600" })
 hl.window_rule({ name = "bluetooth-center", match = { class = "^blueman-manager$" }, center = true })
-hl.window_rule({ name = "bluetooth-no-group", match = { class = "^blueman-manager$" }, group = "override unset" })
+hl.window_rule({ name = "bluetooth-no-group", match = { class = "^blueman-manager$" }, group = "barred override unset" })
 
 -- bitwarden password manager window
 hl.window_rule({
@@ -46,7 +46,7 @@ hl.window_rule({
 hl.window_rule({
     name = "bitwarden-no-group",
     match = { class = "^chrome-nngceckbapebfimnlniiiahkandclblb$" },
-    group = "override unset",
+    group = "barred override unset",
 })
 
 -- restore wallpaper on monitor hotplug

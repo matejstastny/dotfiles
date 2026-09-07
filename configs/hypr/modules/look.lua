@@ -23,7 +23,6 @@ hl.config({
         preserve_split = true,
     },
     group = {
-        auto_group = false,
         col = {
             border_active   = "rgba(7878c8ff)",
             border_inactive = "rgba(25253aff)",
