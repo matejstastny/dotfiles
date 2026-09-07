@@ -101,7 +101,7 @@ vfat)
 	sudo mkfs.vfat -F 32 ${label:+-n "$label"} "$partition"
 	;;
 exfat)
-	sudo mkfs.exfat ${label:+-n "$label"} "$partition"
+	sudo mkfs.exfat ${label:+-L "$label"} "$partition"
 	;;
 ext4)
 	sudo mkfs.ext4 -q ${label:+-L "$label"} "$partition"

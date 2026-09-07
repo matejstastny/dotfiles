@@ -99,6 +99,11 @@ PanelWindow {
             interval: 10000
             onClickCommand: "tailscale up"
         }
+
+        BarSep { anchors.verticalCenter: parent.verticalCenter }
+
+        BarTray { anchors.verticalCenter: parent.verticalCenter }
+
         BarScriptModule {
             anchors.verticalCenter: parent.verticalCenter
             script: "/home/elara/dotfiles/bin/bar-docker"

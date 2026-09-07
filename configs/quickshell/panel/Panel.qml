@@ -1,26 +1,28 @@
 import QtQuick
-import QtQuick.Effects
 import Quickshell
-import Quickshell.Wayland
-import Quickshell.Hyprland
 import Quickshell.Services.Mpris
 import "../"
 import "../common"
 
-PanelWindow {
+PopupWindow {
     id: root
+    popoutName: "panel"
+    keyboardFocusMode: "onDemand"
+    centered: true
+    popupWidth: 780
+    popupHeight: 640
 
-    property bool open: false
     property bool dndEnabled: false
     property bool caffeinateEnabled: false
+    property bool kbdBacklightEnabled: true
     property var notifications
     signal toggleDnd()
     signal toggleCaffeinate()
+    signal toggleKbdBacklight()
+    signal openWifi()
+    signal openBluetooth()
     signal clearAll()
     signal dismissNotification(var notification)
-    signal closeRequested()
-
-    readonly property Theme theme: Theme {}
 
     property int notifCount: notifications ? notifications.values.length : 0
     Connections {
@@ -30,90 +32,31 @@ PanelWindow {
         }
     }
 
-    readonly property int shadowPad: 56
-
-    visible: open
-    color: "transparent"
-    implicitWidth: 420 + shadowPad * 2
-    implicitHeight: 700 + shadowPad * 2
-    exclusiveZone: 0
-
-    mask: Region { x: card.x; y: card.y; width: card.width; height: card.height }
-
-    WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.namespace: "quickshell:panel"
-    WlrLayershell.keyboardFocus: open ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
-    focusable: false
-
-    HyprlandFocusGrab {
-        active: root.open
-        windows: [QsWindow.window]
-        onCleared: { console.log("DEBUG focusgrab cleared"); root.closeRequested() }
-    }
-
-    onOpenChanged: {
-        if (open) PopoutState.current = "panel"
-        else if (PopoutState.current === "panel") PopoutState.current = ""
-    }
-    Connections {
-        target: PopoutState
-        function onCurrentChanged() {
-            if (PopoutState.current !== "panel" && root.open) root.closeRequested()
-        }
-    }
-
-    anchors {
-        top: true
-        right: true
-    }
-    margins {
-        top: 10 - shadowPad
-        right: 10 - shadowPad
-    }
+    readonly property int columnGap: 24
 
     Rectangle {
-        id: card
         anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.margins: shadowPad
-        width: 420
-        height: 700
-        radius: theme.radius
-        color: theme.base
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: 1
+        color: theme.muted
+        opacity: 0.5
+    }
+
+    Item {
+        id: leftColumn
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        width: (parent.width - root.columnGap) / 2
         focus: root.open
         Keys.onEscapePressed: root.closeRequested()
-        border.width: theme.borderWidth
-        border.color: theme.muted
-
-        opacity: root.open ? 1 : 0
-        Behavior on opacity { NumberAnimation { duration: theme.transitionDuration; easing.type: Easing.OutCubic } }
-
-        layer.enabled: true
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowColor: "black"
-            blurMax: 40
-            shadowBlur: 1.0
-            shadowVerticalOffset: 10
-            shadowHorizontalOffset: 0
-            shadowOpacity: 0.55
-        }
-
-        transform: Scale {
-            origin.x: card.width
-            origin.y: 0
-            xScale: root.open ? 1 : 0.35
-            yScale: root.open ? 1 : 0.1
-            Behavior on xScale { NumberAnimation { duration: 260; easing.type: Easing.OutBack; easing.overshoot: 1.3 } }
-            Behavior on yScale { NumberAnimation { duration: 360; easing.type: Easing.OutBack; easing.overshoot: 1.1 } }
-        }
 
         Item {
             id: header
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.margins: 16
             height: avatar.height
 
             Avatar {
@@ -128,8 +71,7 @@ PanelWindow {
                 anchors.left: avatar.right
                 anchors.leftMargin: 10
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.right: clearText.left
-                anchors.rightMargin: 10
+                anchors.right: parent.right
                 spacing: 2
 
                 Text {
@@ -157,6 +99,105 @@ PanelWindow {
                     width: parent.width
                 }
             }
+        }
+
+        Row {
+            id: toggles
+            anchors.top: header.bottom
+            anchors.topMargin: 14
+            anchors.left: parent.left
+            anchors.right: parent.right
+            spacing: 10
+
+            readonly property int toggleWidth: (width - spacing * 4) / 5
+
+            QuickToggle {
+                icon: "󰂛"
+                width: toggles.toggleWidth
+                height: width
+                checked: root.dndEnabled
+                onToggled: root.toggleDnd()
+            }
+            QuickToggle {
+                icon: "󰅶"
+                width: toggles.toggleWidth
+                height: width
+                checked: root.caffeinateEnabled
+                onToggled: root.toggleCaffeinate()
+            }
+            QuickToggle {
+                icon: "󰌌"
+                width: toggles.toggleWidth
+                height: width
+                checked: root.kbdBacklightEnabled
+                onToggled: root.toggleKbdBacklight()
+            }
+            QuickToggle {
+                icon: "󰤨"
+                width: toggles.toggleWidth
+                height: width
+                onToggled: root.openWifi()
+            }
+            QuickToggle {
+                icon: "󰂯"
+                width: toggles.toggleWidth
+                height: width
+                onToggled: root.openBluetooth()
+            }
+        }
+
+        Calendar {
+            id: calendar
+            anchors.top: toggles.bottom
+            anchors.topMargin: 14
+            anchors.left: parent.left
+            anchors.right: parent.right
+        }
+
+        Column {
+            id: mediaColumn
+            anchors.top: calendar.bottom
+            anchors.topMargin: 14
+            anchors.left: parent.left
+            anchors.right: parent.right
+            spacing: 10
+
+            Repeater {
+                model: Mpris.players.values
+                delegate: MediaCard {
+                    required property var modelData
+                    width: mediaColumn.width
+                    visible: modelData.playbackState !== MprisPlaybackState.Stopped
+                    player: modelData
+                }
+            }
+        }
+    }
+
+    Item {
+        id: rightColumn
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        width: (parent.width - root.columnGap) / 2
+
+        Item {
+            id: notifHeader
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: 18
+
+            Text {
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                text: "notifications" + (root.notifCount > 0 ? " · " + root.notifCount : "")
+                color: theme.purple
+                font.pixelSize: 13
+                font.bold: true
+                font.family: theme.fontFamily
+                font.weight: Font.Normal
+            }
 
             Text {
                 id: clearText
@@ -182,59 +223,13 @@ PanelWindow {
             }
         }
 
-        Row {
-            id: toggles
-            anchors.top: header.bottom
-            anchors.topMargin: 14
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.margins: 16
-            spacing: 10
-
-            ToggleSwitch {
-                width: (parent.width - 10) / 2
-                label: "do not disturb"
-                icon: "󰂛"
-                checked: root.dndEnabled
-                onToggled: root.toggleDnd()
-            }
-            ToggleSwitch {
-                width: (parent.width - 10) / 2
-                label: "caffeinate"
-                icon: "󰅶"
-                checked: root.caffeinateEnabled
-                onToggled: root.toggleCaffeinate()
-            }
-        }
-
-        Column {
-            id: mediaColumn
-            anchors.top: toggles.bottom
-            anchors.topMargin: 14
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.margins: 16
-            spacing: 10
-
-            Repeater {
-                model: Mpris.players.values
-                delegate: MediaCard {
-                    required property var modelData
-                    width: mediaColumn.width
-                    visible: modelData.playbackState !== MprisPlaybackState.Stopped
-                    player: modelData
-                }
-            }
-        }
-
         ListView {
             id: list
-            anchors.top: mediaColumn.bottom
-            anchors.topMargin: 14
+            anchors.top: notifHeader.bottom
+            anchors.topMargin: 10
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            anchors.margins: 16
             clip: true
             spacing: 10
             model: root.notifications

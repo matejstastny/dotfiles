@@ -39,11 +39,6 @@ hl.bind(mod .. " + W", hl.dsp.window.close())
 hl.bind(mod .. " + F", hl.dsp.window.fullscreen())
 hl.bind(mod .. " + C", hl.dsp.window.center())
 
-hl.bind(mod .. " + SHIFT + left", function() hl.dispatch(hl.plugin.hy3.move_window('left')) end)
-hl.bind(mod .. " + SHIFT + right", function() hl.dispatch(hl.plugin.hy3.move_window('right')) end)
-hl.bind(mod .. " + SHIFT + up", function() hl.dispatch(hl.plugin.hy3.move_window('up')) end)
-hl.bind(mod .. " + SHIFT + down", function() hl.dispatch(hl.plugin.hy3.move_window('down')) end)
-
 -- workspaces
 for i = 1, 9 do
     local key = tostring(i)
@@ -51,9 +46,9 @@ for i = 1, 9 do
     hl.bind(mod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
 end
 
--- cycle hy3 tabs
-hl.bind("CTRL + tab", function() hl.dispatch(hl.plugin.hy3.focus_tab({ direction = 'right', wrap = true })) end)
-hl.bind("CTRL + SHIFT + tab", function() hl.dispatch(hl.plugin.hy3.focus_tab({ direction = 'left', wrap = true })) end)
+-- cycle ws2 tab group
+hl.bind("CTRL + tab", hl.dsp.group.next())
+hl.bind("CTRL + SHIFT + tab", hl.dsp.group.prev())
 
 -- switch monitors
 hl.bind(mod .. " + tab", function()

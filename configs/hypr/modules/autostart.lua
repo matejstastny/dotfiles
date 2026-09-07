@@ -19,7 +19,6 @@ hl.on("hyprland.start", function()
     hl.exec_cmd(DOTS .. "/bin/lock")                            -- lock screen
     hl.exec_cmd("awww-daemon")                                  -- wallpaper daemon
     hl.exec_cmd(DOTS .. "/bin/wallpaper-restore")               -- get last wallpaper
-    hl.exec_cmd("nm-applet --indicator")                        -- wifi
     hl.exec_cmd("blueman-applet")                               -- bluetooth
     hl.exec_cmd("wl-paste --type text  --watch cliphist store") -- clipboard
     hl.exec_cmd("wl-paste --type image --watch cliphist store") -- clipboard img

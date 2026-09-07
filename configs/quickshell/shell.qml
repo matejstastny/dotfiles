@@ -22,6 +22,7 @@ ShellRoot {
     property bool wallpaperOpen: false
     property bool dndEnabled: false
     property bool caffeinateEnabled: false
+    property bool kbdBacklightEnabled: true
 
     property bool launcherOpen: false
     property bool powermenuOpen: false
@@ -188,15 +189,33 @@ ShellRoot {
         enabled: root.caffeinateEnabled
     }
 
+    function setKbdBacklight(enabled) {
+        kbdBacklightProc.command = ["brightnessctl", "-d", "kbd_backlight", "set", enabled ? "100%" : "0%"]
+        kbdBacklightProc.running = true
+    }
+
+    Process {
+        id: kbdBacklightProc
+    }
+
+    Component.onCompleted: root.setKbdBacklight(root.kbdBacklightEnabled)
+
     Panel {
         id: panel
         open: root.panelOpen
         dndEnabled: root.dndEnabled
         caffeinateEnabled: root.caffeinateEnabled
+        kbdBacklightEnabled: root.kbdBacklightEnabled
         notifications: notifServer.trackedNotifications
 
         onToggleDnd: root.dndEnabled = !root.dndEnabled
         onToggleCaffeinate: root.caffeinateEnabled = !root.caffeinateEnabled
+        onToggleKbdBacklight: {
+            root.kbdBacklightEnabled = !root.kbdBacklightEnabled
+            root.setKbdBacklight(root.kbdBacklightEnabled)
+        }
+        onOpenWifi: root.wifimenuOpen = true
+        onOpenBluetooth: root.bluetoothmenuOpen = true
         onDismissNotification: notification => notification.dismiss()
         onCloseRequested: root.panelOpen = false
         onClearAll: {

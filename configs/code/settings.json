@@ -176,5 +176,6 @@
         "editor.wordWrap": "on",
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "workbench.experimental.modernUI": false
+    "workbench.experimental.modernUI": false,
+    "qt-core.showWelcomePageOnActivation": false
 }
