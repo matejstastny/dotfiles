@@ -1,0 +1,11 @@
+- make time update to correct timezone (automatically? on reboot? script?)
+- implement the new bar (@bar.temp)
+- is there a way to remove the bluetooth indicator from the tray without removing the tray? (some flag passed to blueman-applet on start or smt)
+- update grub, its kinda plain now. I love minimalistic but it could look so much better and alligned with my theme
+- make a keyboard switcher dmenu on mainmod+k
+- increase the shadow behind the quickshell pannels:
+      - its not shadowy, just a black semitransparent sqare
+      - need to be way more saturated closer to the edges of the pop-up
+      - and fade out to transparent with a !soft edge!
+      - I asked you a couple of times to do this so it might be a hard task as you did not get it in the past
+

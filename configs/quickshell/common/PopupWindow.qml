@@ -19,7 +19,8 @@ PanelWindow {
     property int popupHeight: 400
 
     readonly property Theme theme: Theme {}
-    readonly property int shadowPad: 56
+    readonly property int shadowPad: 84
+    readonly property int shadowSpread: 68
 
     default property alias content: contentArea.data
 
@@ -64,6 +65,46 @@ PanelWindow {
         right: root.centered ? 0 : 10 - shadowPad
     }
 
+    // shadow is cast from its own padded item, not from `card` directly -
+    // a layer.effect's texture is sized to its own item, so blur applied
+    // straight to `card` has no room to bleed past its edges and gets clipped.
+    //
+    // shadowColor is purple, not black: this overlay layer composites with
+    // additive blending, so a black shadow contributes nothing and is
+    // invisible at any opacity - only a colored glow actually shows up
+    Item {
+        id: shadowCaster
+        anchors.centerIn: root.centered ? parent : undefined
+        anchors.top: root.centered ? undefined : parent.top
+        anchors.right: root.centered ? undefined : parent.right
+        anchors.margins: root.centered ? 0 : shadowPad - shadowSpread
+        width: root.popupWidth + shadowSpread * 2
+        height: root.popupHeight + shadowSpread * 2
+        z: -1
+
+        opacity: card.opacity
+        scale: card.scale
+
+        layer.enabled: true
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: "#9d79d6"
+            blurMax: 64
+            shadowBlur: 1.0
+            shadowVerticalOffset: 6
+            shadowHorizontalOffset: 0
+            shadowOpacity: 0.9
+        }
+
+        Rectangle {
+            anchors.centerIn: parent
+            width: root.popupWidth
+            height: root.popupHeight
+            radius: theme.radius
+            color: "black"
+        }
+    }
+
     Rectangle {
         id: card
         anchors.centerIn: root.centered ? parent : undefined
@@ -81,17 +122,6 @@ PanelWindow {
         scale: root.open ? 1 : 0.96
         Behavior on opacity { NumberAnimation { duration: theme.transitionDuration; easing.type: Easing.OutCubic } }
         Behavior on scale { NumberAnimation { duration: theme.popDuration; easing.type: Easing.OutBack; easing.overshoot: theme.popOvershoot } }
-
-        layer.enabled: true
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowColor: "black"
-            blurMax: 40
-            shadowBlur: 1.0
-            shadowVerticalOffset: 10
-            shadowHorizontalOffset: 0
-            shadowOpacity: 0.55
-        }
 
         Item {
             id: header

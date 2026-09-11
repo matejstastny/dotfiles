@@ -37,6 +37,7 @@ ShellRoot {
     property bool screenrecordOpen: false
     property bool codeOpen: false
     property bool emojiOpen: false
+    property bool keyboardOpen: false
 
     NotificationServer {
         id: notifServer
@@ -165,6 +166,13 @@ ShellRoot {
         function toggle(): void { root.emojiOpen = !root.emojiOpen }
         function open(): void { root.emojiOpen = true }
         function hide(): void { root.emojiOpen = false }
+    }
+
+    IpcHandler {
+        target: "keyboard"
+        function toggle(): void { root.keyboardOpen = !root.keyboardOpen }
+        function open(): void { root.keyboardOpen = true }
+        function hide(): void { root.keyboardOpen = false }
     }
 
     PanelWindow {
@@ -311,6 +319,12 @@ ShellRoot {
         id: emojiPicker
         open: root.emojiOpen
         onCloseRequested: root.emojiOpen = false
+    }
+
+    KeyboardPicker {
+        id: keyboardPicker
+        open: root.keyboardOpen
+        onCloseRequested: root.keyboardOpen = false
     }
 
     Variants {

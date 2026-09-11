@@ -11,3 +11,7 @@ running helium || "$(dirname "$0")/helium" --profile-directory=Default &
 running vesktop || vesktop &
 pgrep -f obsidian.AppImage >/dev/null || /home/elara/.local/share/obsidian/obsidian.AppImage --appimage-extract-and-run %u &
 running t3code || /home/elara/.local/share/t3code/t3code --no-sandbox
+
+# workspace-assignment rules relocate windows after they open, which races
+# our ws2 group rule; re-evaluate rules once things have settled
+(sleep 5 && hyprctl reload) &

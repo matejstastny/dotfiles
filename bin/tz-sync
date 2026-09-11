@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+#@ sync system timezone to current location via ip geolocation
+
+tz=$(curl -fsS --max-time 5 https://ipwho.is/ | jq -r '.timezone.id') || exit 0
+[ -n "$tz" ] && [ "$tz" != "null" ] || exit 0
+
+current=$(timedatectl show -p Timezone --value)
+[ "$tz" = "$current" ] && exit 0
+
+timedatectl set-timezone "$tz" || exit 0
+notify-send -t 4000 "✦ timezone" "switched to $tz"

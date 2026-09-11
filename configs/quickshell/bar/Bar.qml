@@ -40,9 +40,6 @@ PanelWindow {
         Region {
             item: diskStat.hovered ? diskStat.popoutItem : null
         }
-        Region {
-            item: netStat.hovered ? netStat.popoutItem : null
-        }
     }
 
     Rectangle {
@@ -86,6 +83,10 @@ PanelWindow {
         anchors.rightMargin: 10
         spacing: 8
 
+        BarTray { anchors.verticalCenter: parent.verticalCenter }
+
+        BarSep { anchors.verticalCenter: parent.verticalCenter }
+
         BarScriptModule {
             anchors.verticalCenter: parent.verticalCenter
             script: "/home/elara/dotfiles/bin/bar-recording"
@@ -100,10 +101,6 @@ PanelWindow {
             onClickCommand: "tailscale up"
         }
 
-        BarSep { anchors.verticalCenter: parent.verticalCenter }
-
-        BarTray { anchors.verticalCenter: parent.verticalCenter }
-
         BarScriptModule {
             anchors.verticalCenter: parent.verticalCenter
             script: "/home/elara/dotfiles/bin/bar-docker"
@@ -113,7 +110,6 @@ PanelWindow {
 
         BarSep { anchors.verticalCenter: parent.verticalCenter }
 
-        BarNetwork { id: netStat; anchors.verticalCenter: parent.verticalCenter }
         BarCpu { id: cpuStat; anchors.verticalCenter: parent.verticalCenter }
         BarMemory { id: memStat; anchors.verticalCenter: parent.verticalCenter }
         BarDisk { id: diskStat; anchors.verticalCenter: parent.verticalCenter }

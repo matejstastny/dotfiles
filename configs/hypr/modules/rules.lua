@@ -30,22 +30,22 @@ hl.window_rule({ name = "bluetooth-no-group", match = { class = "^blueman-manage
 -- bitwarden password manager window
 hl.window_rule({
     name = "bitwarden-float",
-    match = { class = "^chrome-nngceckbapebfimnlniiiahkandclblb$" },
+    match = { class = "^chrome-nngceckbapebfimnlniiiahkandclblb.*$" },
     float = true,
 })
 hl.window_rule({
     name = "bitwarden-size",
-    match = { class = "^chrome-nngceckbapebfimnlniiiahkandclblb$" },
+    match = { class = "^chrome-nngceckbapebfimnlniiiahkandclblb.*$" },
     size = "400 600",
 })
 hl.window_rule({
     name = "bitwarden-center",
-    match = { class = "^chrome-nngceckbapebfimnlniiiahkandclblb$" },
+    match = { class = "^chrome-nngceckbapebfimnlniiiahkandclblb.*$" },
     center = true,
 })
 hl.window_rule({
     name = "bitwarden-no-group",
-    match = { class = "^chrome-nngceckbapebfimnlniiiahkandclblb$" },
+    match = { class = "^chrome-nngceckbapebfimnlniiiahkandclblb.*$" },
     group = "barred override unset",
 })
 

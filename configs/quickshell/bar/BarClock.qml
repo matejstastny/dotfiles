@@ -23,7 +23,7 @@ Item {
     Text {
         id: label
         anchors.centerIn: parent
-        text: Qt.formatDateTime(root.now, "MM/dd · hh:mm")
+        text: Qt.formatDateTime(root.now, "hh:mm")
         color: root.hovered ? theme.bright : theme.text
         font.pixelSize: theme.barFontSize
         font.family: theme.fontFamily

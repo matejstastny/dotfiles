@@ -17,6 +17,7 @@ hl.bind(mod .. " + I", hl.dsp.exec_cmd("qs ipc call capture toggle"))
 hl.bind(mod .. " + L", hl.dsp.exec_cmd("qs ipc call panel toggle"))
 hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("qs ipc call powermenu toggle"))
 hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("qs ipc call todo toggle stars"))
+hl.bind(mod .. " + K", hl.dsp.exec_cmd("qs ipc call keyboard toggle"))
 
 -- utils
 hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd(DOTS .. "/bin/reload-shell"))
