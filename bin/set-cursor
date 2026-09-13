@@ -24,16 +24,12 @@ hyprctl setcursor "$theme" "$size" >/dev/null
 gsettings set org.gnome.desktop.interface cursor-theme "$theme" 2>/dev/null || true
 gsettings set org.gnome.desktop.interface cursor-size "$size" 2>/dev/null || true
 
-# hyprland caches the on-screen cursor image by shape name, not by theme/size,
+# hyprland caches the on-screen cursor image by shape *name*, not by theme/size,
 # so it won't actually repaint until some surface requests a differently-named
-# shape - which can take ages if the pointer just sits still. nudging it 2px
-# and back forces that shape-change round trip immediately instead of waiting
-# for it to happen on its own.
-pos=$(hyprctl cursorpos)
-nx=$(echo "$pos" | cut -d',' -f1 | tr -d ' ')
-ny=$(echo "$pos" | cut -d',' -f2 | tr -d ' ')
-hyprctl dispatch "hl.dsp.cursor.move({x=$((nx + 2)), y=$ny})" >/dev/null
-hyprctl dispatch "hl.dsp.cursor.move({x=$nx, y=$ny})" >/dev/null
+# shape (position doesn't matter, only the name does). CursorMenu.qml forces
+# that by toggling its own cursorShape after calling this script; a bare CLI
+# call here has no such trick available and may visually lag until you hover
+# something with a different cursor shape.
 
 echo "$theme" >"$state"
 awk -F'\t' -v t="$theme" -v s="$size" \

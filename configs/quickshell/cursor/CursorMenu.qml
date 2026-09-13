@@ -204,8 +204,32 @@ PopupWindow {
         }
 
         function commitSize(size) {
-            Quickshell.execDetached([root.setCursorScript, root.currentTheme, String(size)])
+            applyProc.command = [root.setCursorScript, root.currentTheme, String(size)]
+            applyProc.running = true
             cursorModel.setSize(root.currentTheme, size)
+        }
+
+        Process {
+            id: applyProc
+            // hyprland only repaints the on-screen cursor when a surface requests a
+            // differently-*named* shape - applying a new theme/size alone doesn't
+            // trigger that. flipping trackHit's cursorShape twice (deferred a tick
+            // apart so each change is a distinct request, not coalesced) forces two
+            // real shape transitions once the new theme/size is actually live.
+            onExited: nudgeStep1.start()
+        }
+        Timer {
+            id: nudgeStep1
+            interval: 0
+            onTriggered: {
+                trackHit.nudged = !trackHit.nudged
+                nudgeStep2.start()
+            }
+        }
+        Timer {
+            id: nudgeStep2
+            interval: 0
+            onTriggered: trackHit.nudged = !trackHit.nudged
         }
 
         Text {
@@ -227,6 +251,8 @@ PopupWindow {
             anchors.rightMargin: 10
             anchors.verticalCenter: parent.verticalCenter
             height: parent.height
+
+            property bool nudged: false
 
             Rectangle {
                 id: track
@@ -251,6 +277,7 @@ PopupWindow {
             MouseArea {
                 anchors.fill: parent
                 enabled: root.currentTheme.length > 0
+                cursorShape: trackHit.nudged ? Qt.SizeAllCursor : Qt.SizeHorCursor
                 onPressed: mouse => sizeRow.previewSize(sizeRow.valueForX(mouse.x, trackHit.width))
                 onPositionChanged: mouse => {
                     if (pressed) sizeRow.previewSize(sizeRow.valueForX(mouse.x, trackHit.width))

@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+#@ convert a windows cursor pack (.ani/.cur + .inf or .crs scheme) into an installed xcursor theme
+
+set -e
+
+src="$1"
+name="$2"
+if [ -z "$src" ] || [ ! -d "$src" ]; then
+	echo "usage: cursor-import-windows <source-dir> [theme-name]" >&2
+	exit 1
+fi
+command -v win2xcur >/dev/null || { echo "win2xcur not found, install with: pipx install win2xcur" >&2; exit 1; }
+
+[ -z "$name" ] && name=$(basename "$src")
+theme_dir="$HOME/.local/share/icons/$name"
+rm -rf "$theme_dir"
+
+inf=$(find "$src" -maxdepth 1 -iname "*.inf" | head -n1)
+if [ -n "$inf" ]; then
+	echo "✦ found .inf scheme, converting with win2xcurtheme..."
+	win2xcurtheme "$inf" -o "$theme_dir"
+	notify-send -t 3000 "✦ cursor" "$name imported" 2>/dev/null || true
+	echo "✦ installed to $theme_dir"
+	exit 0
+fi
+
+crs=$(find "$src" -maxdepth 1 -iname "*.crs" | head -n1)
+if [ -z "$crs" ]; then
+	echo "no .inf or .crs scheme found in $src, don't know how to map cursor roles" >&2
+	exit 1
+fi
+
+# windows role name -> x11 cursor names to write (first is the real file, rest are aliases)
+declare -A role_names=(
+	[Arrow]="left_ptr default arrow top_left_arrow"
+	[Hand]="pointer hand1 hand2 pointing_hand"
+	[Wait]="wait watch"
+	[AppStarting]="progress left_ptr_watch"
+	[SizeNS]="ns-resize v_double_arrow size_ver sb_v_double_arrow n-resize s-resize top_side bottom_side"
+	[SizeWE]="ew-resize h_double_arrow size_hor sb_h_double_arrow w-resize e-resize left_side right_side col-resize"
+	[SizeNWSE]="nwse-resize size_fdiag fd_double_arrow bottom_right_corner top_left_corner nw-resize se-resize"
+	[SizeNESW]="nesw-resize size_bdiag bd_double_arrow bottom_left_corner top_right_corner ne-resize sw-resize"
+	[SizeAll]="move size_all fleur all-scroll"
+	[No]="not-allowed no-drop crossed_circle"
+	[Help]="help question_arrow left_ptr_help whats_this"
+	[IBeam]="text xterm ibeam"
+	[Crosshair]="crosshair cross tcross"
+	[UpArrow]="up-arrow center_ptr"
+	[Pin]="pin"
+	[NWPen]="pencil"
+	[Person]="person"
+)
+
+# .crs is an ini-style "RealWorld Cursor Editor" scheme: [Role]\r\nPath=file.ani
+declare -A role_file
+role=""
+while IFS= read -r line; do
+	line="${line//$'\r'/}"
+	if [[ "$line" =~ ^\[(.+)\]$ ]]; then
+		role="${BASH_REMATCH[1]}"
+	elif [[ "$line" =~ ^Path=(.+)$ ]]; then
+		role_file["$role"]="${BASH_REMATCH[1]}"
+	fi
+done < <(sed '1s/^\xef\xbb\xbf//' "$crs")
+
+mkdir -p "$theme_dir/cursors"
+echo "✦ converting cursors for $name..."
+
+for role in "${!role_file[@]}"; do
+	file="${role_file[$role]}"
+	src_file="$src/$file"
+	names="${role_names[$role]:-}"
+
+	if [ ! -f "$src_file" ]; then
+		echo "  ! missing $file for role $role, skipping"
+		continue
+	fi
+	if [ -z "$names" ]; then
+		echo "  ? no x11 name mapping for role '$role', skipping"
+		continue
+	fi
+
+	set -- $names
+	primary="$1"
+	cursor-ani-to-xcursor "$src_file" "$theme_dir/cursors/$primary" || { echo "  ! failed converting $file"; continue; }
+	shift
+	for alias in "$@"; do
+		ln -sf "$primary" "$theme_dir/cursors/$alias"
+	done
+	echo "  + $role -> $names"
+done
+
+cat >"$theme_dir/index.theme" <<EOF
+[Icon Theme]
+Name=$name
+Comment=Imported from a Windows cursor pack
+EOF
+cp "$theme_dir/index.theme" "$theme_dir/cursor.theme"
+
+count=$(find "$theme_dir/cursors" -maxdepth 1 -type f | wc -l)
+notify-send -t 3000 "✦ cursor" "$name imported ($count shapes)" 2>/dev/null || true
+echo "✦ done: $theme_dir"

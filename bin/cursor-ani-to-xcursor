@@ -1,0 +1,45 @@
+#!/home/elara/.local/share/pipx/venvs/win2xcur/bin/python3
+import sys
+
+from win2xcur.parser import open_blob
+from win2xcur.writer.x11 import to_x11
+
+# windows .ani/.cur files only ever embed one native resolution - hyprland
+# (and every other xcursor consumer) can't scale that up or down on its own,
+# it just renders the single size it finds. real multi-size xcursor themes
+# (bibata, breezex, ...) ship a resampled copy of every shape at each of
+# these nominal sizes so the requested size actually has something to pick.
+SIZES = [16, 20, 22, 24, 28, 32, 40, 48, 56, 64, 72, 80, 88, 96]
+
+
+def main():
+    if len(sys.argv) != 3:
+        print("usage: cursor-ani-to-xcursor <input.ani|.cur> <output-file>", file=sys.stderr)
+        sys.exit(1)
+
+    src, dst = sys.argv[1], sys.argv[2]
+    with open(src, "rb") as f:
+        cursor = open_blob(f.read())
+
+    for frame in cursor.frames:
+        native_images = list(frame.images)
+        frame.images = []
+        for size in SIZES:
+            for base in native_images:
+                factor = size / base.image.width
+                scaled = base.clone()
+                scaled.image.scale(
+                    max(1, round(scaled.image.width * factor)),
+                    max(1, round(scaled.image.height * factor)),
+                )
+                hx, hy = scaled.hotspot
+                scaled.hotspot = (round(hx * factor), round(hy * factor))
+                scaled.nominal = size
+                frame.images.append(scaled)
+
+    with open(dst, "wb") as f:
+        f.write(to_x11(cursor.frames))
+
+
+if __name__ == "__main__":
+    main()

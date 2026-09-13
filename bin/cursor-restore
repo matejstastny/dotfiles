@@ -17,10 +17,3 @@ size="${size:-24}"
 hyprctl setcursor "$theme" "$size" >/dev/null
 gsettings set org.gnome.desktop.interface cursor-theme "$theme" 2>/dev/null || true
 gsettings set org.gnome.desktop.interface cursor-size "$size" 2>/dev/null || true
-
-# force an immediate shape-cache refresh, see set-cursor for why
-pos=$(hyprctl cursorpos)
-nx=$(echo "$pos" | cut -d',' -f1 | tr -d ' ')
-ny=$(echo "$pos" | cut -d',' -f2 | tr -d ' ')
-hyprctl dispatch "hl.dsp.cursor.move({x=$((nx + 2)), y=$ny})" >/dev/null
-hyprctl dispatch "hl.dsp.cursor.move({x=$nx, y=$ny})" >/dev/null
