@@ -19,9 +19,9 @@ hl.on("hyprland.start", function()
     hl.exec_cmd(DOTS .. "/bin/lock")                            -- lock screen
     hl.exec_cmd("awww-daemon")                                  -- wallpaper daemon
     hl.exec_cmd(DOTS .. "/bin/wallpaper-restore")               -- get last wallpaper
+    hl.exec_cmd(DOTS .. "/bin/cursor-restore")                  -- get last cursor theme
     hl.exec_cmd("wl-paste --type text  --watch cliphist store") -- clipboard
     hl.exec_cmd("wl-paste --type image --watch cliphist store") -- clipboard img
-    hl.exec_cmd(DOTS .. "/bin/tz-sync")                         -- timezone
     hl.exec_cmd("/usr/libexec/hyprpolkitagent")                 -- auth agent
     hl.exec_cmd("xhost +si:localuser:root")                     -- root gui perms
 

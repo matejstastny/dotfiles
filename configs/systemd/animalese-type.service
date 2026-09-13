@@ -1,0 +1,9 @@
+[Unit]
+Description=animal crossing style typing blips
+
+[Service]
+ExecStart=%h/dotfiles/bin/animalese-type
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

@@ -12,6 +12,7 @@ import "./launcher"
 import "./powermenu"
 import "./wifi"
 import "./bluetooth"
+import "./cursor"
 import "./calc"
 import "./pickers"
 
@@ -23,11 +24,13 @@ ShellRoot {
     property bool dndEnabled: false
     property bool caffeinateEnabled: false
     property bool kbdBacklightEnabled: true
+    property bool typingSoundEnabled: false
 
     property bool launcherOpen: false
     property bool powermenuOpen: false
     property bool wifimenuOpen: false
     property bool bluetoothmenuOpen: false
+    property bool cursorMenuOpen: false
     property bool calcOpen: false
     property bool clipOpen: false
     property bool todoOpen: false
@@ -104,6 +107,13 @@ ShellRoot {
         function toggle(): void { root.bluetoothmenuOpen = !root.bluetoothmenuOpen }
         function open(): void { root.bluetoothmenuOpen = true }
         function hide(): void { root.bluetoothmenuOpen = false }
+    }
+
+    IpcHandler {
+        target: "cursormenu"
+        function toggle(): void { root.cursorMenuOpen = !root.cursorMenuOpen }
+        function open(): void { root.cursorMenuOpen = true }
+        function hide(): void { root.cursorMenuOpen = false }
     }
 
     IpcHandler {
@@ -206,7 +216,27 @@ ShellRoot {
         id: kbdBacklightProc
     }
 
-    Component.onCompleted: root.setKbdBacklight(root.kbdBacklightEnabled)
+    function setTypingSound(enabled) {
+        typingSoundProc.command = ["systemctl", "--user", enabled ? "enable" : "disable", "--now", "animalese-type"]
+        typingSoundProc.running = true
+    }
+
+    Process {
+        id: typingSoundProc
+    }
+
+    Process {
+        id: typingSoundStatusProc
+        command: ["systemctl", "--user", "is-enabled", "animalese-type"]
+        stdout: StdioCollector {
+            onStreamFinished: root.typingSoundEnabled = text.trim() === "enabled"
+        }
+    }
+
+    Component.onCompleted: {
+        root.setKbdBacklight(root.kbdBacklightEnabled)
+        typingSoundStatusProc.running = true
+    }
 
     Panel {
         id: panel
@@ -214,6 +244,7 @@ ShellRoot {
         dndEnabled: root.dndEnabled
         caffeinateEnabled: root.caffeinateEnabled
         kbdBacklightEnabled: root.kbdBacklightEnabled
+        typingSoundEnabled: root.typingSoundEnabled
         notifications: notifServer.trackedNotifications
 
         onToggleDnd: root.dndEnabled = !root.dndEnabled
@@ -222,7 +253,10 @@ ShellRoot {
             root.kbdBacklightEnabled = !root.kbdBacklightEnabled
             root.setKbdBacklight(root.kbdBacklightEnabled)
         }
-        onOpenWifi: root.wifimenuOpen = true
+        onToggleTypingSound: {
+            root.typingSoundEnabled = !root.typingSoundEnabled
+            root.setTypingSound(root.typingSoundEnabled)
+        }
         onOpenBluetooth: root.bluetoothmenuOpen = true
         onDismissNotification: notification => notification.dismiss()
         onCloseRequested: root.panelOpen = false
@@ -270,6 +304,12 @@ ShellRoot {
         id: bluetoothmenu
         open: root.bluetoothmenuOpen
         onCloseRequested: root.bluetoothmenuOpen = false
+    }
+
+    CursorMenu {
+        id: cursormenu
+        open: root.cursorMenuOpen
+        onCloseRequested: root.cursorMenuOpen = false
     }
 
     Calc {

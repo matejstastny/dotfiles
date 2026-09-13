@@ -15,11 +15,12 @@ PopupWindow {
     property bool dndEnabled: false
     property bool caffeinateEnabled: false
     property bool kbdBacklightEnabled: true
+    property bool typingSoundEnabled: false
     property var notifications
     signal toggleDnd()
     signal toggleCaffeinate()
     signal toggleKbdBacklight()
-    signal openWifi()
+    signal toggleTypingSound()
     signal openBluetooth()
     signal clearAll()
     signal dismissNotification(var notification)
@@ -133,10 +134,11 @@ PopupWindow {
                 onToggled: root.toggleKbdBacklight()
             }
             QuickToggle {
-                icon: "󰤨"
+                icon: "󰏩"
                 width: toggles.toggleWidth
                 height: width
-                onToggled: root.openWifi()
+                checked: root.typingSoundEnabled
+                onToggled: root.toggleTypingSound()
             }
             QuickToggle {
                 icon: "󰂯"

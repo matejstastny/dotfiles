@@ -15,6 +15,7 @@ PopupWindow {
     property string pendingSsid: ""
     property var pendingNetwork: null
     property string passwordError: ""
+    property bool scanning: false
 
     function signalGlyph(strength) {
         const pct = strength <= 1.0 ? strength * 100 : strength
@@ -31,6 +32,7 @@ PopupWindow {
             if (d.type === DeviceType.Wifi) { found = d; break }
         }
         root.wifiDevice = found
+        if (root.wifiDevice) root.wifiDevice.scannerEnabled = true
         root.refreshNetworkRows()
     }
 
@@ -42,6 +44,13 @@ PopupWindow {
             return (b.signalStrength || 0) - (a.signalStrength || 0)
         })
         root.networkRows = nets
+    }
+
+    function doScan() {
+        if (!root.wifiDevice) return
+        root.scanning = true
+        root.refreshNetworkRows()
+        scanIndicatorTimer.start()
     }
 
     function activate(network) {
@@ -89,10 +98,17 @@ PopupWindow {
     }
 
     Timer {
-        interval: 2500
+        id: scanTimer
+        interval: 5000
         repeat: true
-        running: root.open
-        onTriggered: root.findWifiDevice()
+        running: root.open && Networking.wifiEnabled
+        onTriggered: root.doScan()
+    }
+
+    Timer {
+        id: scanIndicatorTimer
+        interval: 700
+        onTriggered: root.scanning = false
     }
 
     // -- network list view --
@@ -100,59 +116,23 @@ PopupWindow {
         anchors.fill: parent
         visible: root.pendingSsid.length === 0
 
-        Row {
-            id: actionRow
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            spacing: 10
-
-            IconButton {
-                width: (actionRow.width - actionRow.spacing) / 2
-                height: 44
-                icon: "󰑐"
-                label: "refresh"
-                onClicked: {
-                    if (root.wifiDevice && root.wifiDevice.scannerEnabled !== undefined) {
-                        root.wifiDevice.scannerEnabled = false
-                        rescanTimer.start()
-                    }
-                    root.refreshNetworkRows()
-                }
-            }
-            IconButton {
-                width: (actionRow.width - actionRow.spacing) / 2
-                height: 44
-                icon: Networking.wifiEnabled ? "󰖩" : "󰖪"
-                label: Networking.wifiEnabled ? "on" : "off"
-                active: Networking.wifiEnabled
-                onClicked: Networking.wifiEnabled = !Networking.wifiEnabled
-            }
-        }
-
-        Timer {
-            id: rescanTimer
-            interval: 300
-            onTriggered: if (root.wifiDevice) root.wifiDevice.scannerEnabled = true
-        }
-
-        Rectangle {
-            id: divider
-            anchors.top: actionRow.bottom
-            anchors.topMargin: 12
-            anchors.left: parent.left
-            anchors.right: parent.right
-            height: 1
-            color: theme.muted
-        }
-
         Text {
             id: caption
-            anchors.top: divider.bottom
-            anchors.topMargin: 10
+            anchors.top: parent.top
             anchors.left: parent.left
             text: "networks"
             color: theme.dim
+            font.pixelSize: 10
+            font.family: theme.fontFamily
+        }
+
+        Text {
+            id: scanIndicator
+            anchors.verticalCenter: caption.verticalCenter
+            anchors.right: parent.right
+            visible: root.scanning
+            text: "󰑐 refreshing…"
+            color: theme.purple
             font.pixelSize: 10
             font.family: theme.fontFamily
         }
