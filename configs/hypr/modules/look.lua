@@ -22,30 +22,34 @@ hl.config({
     dwindle = {
         preserve_split = true,
     },
-    group = {
-        col = {
-            border_active   = "rgba(7878c8ff)",
-            border_inactive = "rgba(25253aff)",
-        },
-        groupbar = {
-            height                     = 20,
-            gaps_in                    = 2,
-            gaps_out                   = 2,
-            gradients                  = true,
-            gradient_round_only_edges  = false,
-            gradient_rounding          = 10,
-            indicator_height           = 0,
-            render_titles              = true,
-            font_family                = "Maple Mono NF",
-            font_size                  = 10,
-            font_weight_active         = "bold",
-            font_weight_inactive       = "medium",
-            text_padding               = 6,
-            text_color                 = "rgba(dce0f4ff)",
-            text_color_inactive        = "rgba(3d3d5cff)",
-            col                        = {
-                active   = "rgba(25253aff)",
-                inactive = "rgba(11111bff)",
+    plugin = {
+        hy3 = {
+            tab_first_window = true,
+            tabs = {
+                height       = 20,
+                padding      = 2,
+                from_top     = true,
+                radius       = 6,
+                border_width = 1,
+                render_text  = true,
+                text_font    = "Maple Mono NF",
+                text_height  = 8,
+                text_padding = 6,
+                opacity      = 0.8,
+                colors       = {
+                    active                    = "rgba(25253aff)",
+                    active_border             = "rgba(7878c8ff)",
+                    active_text               = "rgba(dce0f4ff)",
+                    active_alt_monitor        = "rgba(181825ff)",
+                    active_alt_monitor_border = "rgba(7878c866)",
+                    active_alt_monitor_text   = "rgba(9898c0ff)",
+                    focused                   = "rgba(181825ff)",
+                    focused_border            = "rgba(7878c8aa)",
+                    focused_text              = "rgba(9898c0ff)",
+                    inactive                  = "rgba(11111bff)",
+                    inactive_border           = "rgba(25253aff)",
+                    inactive_text             = "rgba(3d3d5cff)",
+                },
             },
         },
     },
@@ -68,10 +72,10 @@ hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })
 
 hl.animation({ leaf = "global", enabled = true, speed = 5.5, bezier = "snap" })
 hl.animation({ leaf = "windows", enabled = true, speed = 3.6, bezier = "snap" })
-hl.animation({ leaf = "windowsIn", enabled = false })
-hl.animation({ leaf = "windowsOut", enabled = false })
+hl.animation({ leaf = "windowsIn", enabled = true, speed = 3.6, bezier = "pop", style = "popin 80%" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 2.4, bezier = "linear", style = "popin 85%" })
 hl.animation({ leaf = "windowsMove", enabled = true, speed = 3.6, bezier = "snap" })
-hl.animation({ leaf = "fade", enabled = false })
+hl.animation({ leaf = "fade", enabled = true, speed = 3.3, bezier = "snap" })
 hl.animation({ leaf = "border", enabled = true, speed = 5.3, bezier = "snap" })
 hl.animation({ leaf = "borderangle", enabled = true, speed = 25, bezier = "linear", style = "loop" })
 hl.animation({ leaf = "workspaces", enabled = true, speed = 3.7, bezier = "swoosh", style = "slide" })

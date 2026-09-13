@@ -1,10 +1,5 @@
--- workspace 2 stacks tiled windows into one tab group instead of tiling
--- (floating/modal windows, e.g. dialogs and the bluetooth manager, are excluded)
-hl.window_rule({
-    name = "ws2-auto-group",
-    match = { workspace = "2", float = false, modal = false },
-    group = "set always",
-})
+-- workspace 2 uses hy3
+hl.workspace_rule({ workspace = "2", layout = "hy3" })
 
 -- workspace assignments
 hl.window_rule({ name = "session-ws-kitty", match = { class = "^kitty$" }, workspace = "1 silent" })
@@ -21,33 +16,44 @@ hl.window_rule({ name = "save-file-float", match = { title = "^Save File$" }, fl
 hl.window_rule({ name = "open-files-float", match = { title = "^Open Files$" }, float = true, center = true })
 hl.window_rule({ name = "select-folder-float", match = { title = "^Select Folder$" }, float = true, center = true })
 
--- bluetooth manager
-hl.window_rule({ name = "bluetooth-float", match = { class = "^blueman-manager$" }, float = true })
-hl.window_rule({ name = "bluetooth-size", match = { class = "^blueman-manager$" }, size = "400 600" })
-hl.window_rule({ name = "bluetooth-center", match = { class = "^blueman-manager$" }, center = true })
-hl.window_rule({ name = "bluetooth-no-group", match = { class = "^blueman-manager$" }, group = "barred override unset" })
+-- merge a window into the ws2 hy3 tab group, preserving the active workspace
+local function ws2_tab(window)
+    local prev_ws = hl.get_active_workspace()
+    hl.dispatch(hl.dsp.focus({ window = "address:" .. window.address }))
+    hl.dispatch(hl.plugin.hy3.change_group('tab'))
+    if prev_ws and prev_ws.id ~= 2 then
+        hl.dispatch(hl.dsp.focus({ workspace = prev_ws.id }))
+    end
+end
 
--- bitwarden password manager window
-hl.window_rule({
-    name = "bitwarden-float",
-    match = { class = "^chrome-nngceckbapebfimnlniiiahkandclblb.*$" },
-    float = true,
-})
-hl.window_rule({
-    name = "bitwarden-size",
-    match = { class = "^chrome-nngceckbapebfimnlniiiahkandclblb.*$" },
-    size = "400 600",
-})
-hl.window_rule({
-    name = "bitwarden-center",
-    match = { class = "^chrome-nngceckbapebfimnlniiiahkandclblb.*$" },
-    center = true,
-})
-hl.window_rule({
-    name = "bitwarden-no-group",
-    match = { class = "^chrome-nngceckbapebfimnlniiiahkandclblb.*$" },
-    group = "barred override unset",
-})
+hl.on("window.open", function(window)
+    -- bluetooth window
+    if window.class:find("^blueman") then
+        hl.dispatch(hl.dsp.window.float({ action = "set" }))
+        hl.dispatch(hl.dsp.window.resize({ exact = true, x = 400, y = 600 }))
+        hl.dispatch(hl.dsp.window.center())
+        return
+    end
+
+    -- bitwarden password manager window
+    if window.class:find("chrome%-nngceckbapebfimnlniiiahkandclblb") then
+        hl.dispatch(hl.dsp.window.float({ action = "set" }))
+        hl.dispatch(hl.dsp.window.resize({ exact = true, x = 400, y = 600 }))
+        hl.dispatch(hl.dsp.window.center())
+        return
+    end
+
+    if window.workspace and window.workspace.id == 2 then
+        ws2_tab(window)
+    end
+end)
+
+-- also handle windows moved to ws2 after creation (alt+shift+2 etc.)
+hl.on("window.move_to_workspace", function(window)
+    if window.workspace and window.workspace.id == 2 then
+        ws2_tab(window)
+    end
+end)
 
 -- restore wallpaper on monitor hotplug
 hl.on("monitor.added", function(monitor)
