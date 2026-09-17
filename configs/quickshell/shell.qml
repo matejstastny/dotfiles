@@ -15,6 +15,7 @@ import "./bluetooth"
 import "./cursor"
 import "./calc"
 import "./pickers"
+import "./cava"
 
 ShellRoot {
     id: root
@@ -41,6 +42,7 @@ ShellRoot {
     property bool codeOpen: false
     property bool emojiOpen: false
     property bool keyboardOpen: false
+    property bool cavaOpen: false
 
     NotificationServer {
         id: notifServer
@@ -71,6 +73,13 @@ ShellRoot {
         function toggle(): void { root.wallpaperOpen = !root.wallpaperOpen }
         function open(): void { root.wallpaperOpen = true }
         function hide(): void { root.wallpaperOpen = false }
+    }
+
+    IpcHandler {
+        target: "cava"
+        function toggle(): void { root.cavaOpen = !root.cavaOpen }
+        function open(): void { root.cavaOpen = true }
+        function hide(): void { root.cavaOpen = false }
     }
 
     IpcHandler {
@@ -245,6 +254,7 @@ ShellRoot {
         caffeinateEnabled: root.caffeinateEnabled
         kbdBacklightEnabled: root.kbdBacklightEnabled
         typingSoundEnabled: root.typingSoundEnabled
+        cavaEnabled: root.cavaOpen
         notifications: notifServer.trackedNotifications
 
         onToggleDnd: root.dndEnabled = !root.dndEnabled
@@ -257,7 +267,7 @@ ShellRoot {
             root.typingSoundEnabled = !root.typingSoundEnabled
             root.setTypingSound(root.typingSoundEnabled)
         }
-        onOpenBluetooth: root.bluetoothmenuOpen = true
+        onToggleCava: root.cavaOpen = !root.cavaOpen
         onDismissNotification: notification => notification.dismiss()
         onCloseRequested: root.panelOpen = false
         onClearAll: {
@@ -271,6 +281,11 @@ ShellRoot {
         id: wallpanel
         open: root.wallpaperOpen
         onCloseRequested: root.wallpaperOpen = false
+    }
+
+    Cava {
+        id: cava
+        open: root.cavaOpen
     }
 
     ToastLayer {
