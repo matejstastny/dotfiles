@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+#@ extract an archive into a new dir named after the archive
+
+FILE="$1"
+
+if [ -z "$FILE" ] || [ ! -f "$FILE" ]; then
+	echo "usage: extr <archive>" >&2
+	exit 1
+fi
+
+BASENAME="$(basename "$FILE")"
+case "$BASENAME" in
+*.tar.gz | *.tgz) DIR="${BASENAME%.tar.gz}"; DIR="${DIR%.tgz}" ;;
+*.tar.bz2 | *.tbz2) DIR="${BASENAME%.tar.bz2}"; DIR="${DIR%.tbz2}" ;;
+*.tar.xz | *.txz) DIR="${BASENAME%.tar.xz}"; DIR="${DIR%.txz}" ;;
+*.tar.zst) DIR="${BASENAME%.tar.zst}" ;;
+*) DIR="${BASENAME%.*}" ;;
+esac
+
+if [ -e "$DIR" ]; then
+	echo "already exists: $DIR" >&2
+	exit 1
+fi
+
+mkdir -p "$DIR"
+
+case "$BASENAME" in
+*.zip) unzip -q "$FILE" -d "$DIR" ;;
+*.tar.gz | *.tgz) tar -xzf "$FILE" -C "$DIR" ;;
+*.tar.bz2 | *.tbz2) tar -xjf "$FILE" -C "$DIR" ;;
+*.tar.xz | *.txz) tar -xJf "$FILE" -C "$DIR" ;;
+*.tar.zst) tar --zstd -xf "$FILE" -C "$DIR" ;;
+*.tar) tar -xf "$FILE" -C "$DIR" ;;
+*.rar) unrar x -inul "$FILE" "$DIR/" ;;
+*.7z) 7z x -o"$DIR" "$FILE" >/dev/null ;;
+*.gz) gunzip -c "$FILE" >"$DIR/${BASENAME%.gz}" ;;
+*)
+	echo "unsupported archive type: $BASENAME" >&2
+	rmdir "$DIR"
+	exit 1
+	;;
+esac
+
+echo "extracted to $DIR"
