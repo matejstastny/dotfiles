@@ -7,11 +7,12 @@ PopupWindow {
     id: root
     popoutName: "calc"
     title: "calc"
-    popupWidth: 420
-    popupHeight: 172
+    popupWidth: 440
+    popupHeight: 208
 
     property string resultText: ""
     property bool hasError: false
+    property bool pendingCopy: false
 
     readonly property string evalScript: `
 import sys, math
@@ -28,13 +29,20 @@ except Exception as e:
     print('? ' + str(e))
 `
 
+    function tryCopy() {
+        if (root.resultText.length > 0 && !root.hasError) {
+            Quickshell.execDetached(["bash", "-c", "printf '%s' \"$1\" | wl-copy --type text/plain", "_", root.resultText])
+            root.closeRequested()
+        }
+    }
+
     SearchField {
         id: input
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        placeholder: "2 + 2 * sqrt(4)..."
-        fontSize: 14
+        placeholder: ""
+        fontSize: 16
 
         onTextChanged: {
             if (text.trim().length === 0) {
@@ -46,27 +54,86 @@ except Exception as e:
         }
         onEscapePressed: root.closeRequested()
         onAccepted: {
-            if (root.resultText.length > 0 && !root.hasError) {
-                Quickshell.execDetached(["bash", "-c", "printf '%s' \"$1\" | wl-copy", "_", root.resultText])
-                root.closeRequested()
+            if (input.text.trim().length === 0) return
+            if (!debounce.running && !evalProc.running) {
+                root.tryCopy()
+                return
+            }
+            // eval is still pending or in flight - copy once it lands instead of
+            // copying stale text. killing an in-flight process here would fire its
+            // onStreamFinished with empty output and consume this flag early.
+            root.pendingCopy = true
+            if (debounce.running) {
+                debounce.stop()
+                evalProc.running = true
             }
         }
     }
 
-    Text {
+    Item {
+        id: resultArea
         anchors.top: input.bottom
-        anchors.topMargin: 18
+        anchors.topMargin: 22
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: footer.top
+        anchors.bottomMargin: 10
+
+        Text {
+            id: equalsGlyph
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            visible: root.resultText.length > 0
+            text: root.hasError ? "⚠" : "="
+            color: root.hasError ? theme.rose : theme.dim
+            font.pixelSize: 16
+            font.family: theme.fontFamily
+        }
+
+        Text {
+            id: resultLabel
+            anchors.left: equalsGlyph.right
+            anchors.leftMargin: 10
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            horizontalAlignment: Text.AlignRight
+            text: root.hasError ? "invalid" : root.resultText
+            color: root.hasError ? theme.rose : theme.bright
+            font.pixelSize: 26
+            font.bold: true
+            font.family: theme.fontFamily
+            elide: Text.ElideRight
+            Behavior on color { ColorAnimation { duration: 150 } }
+        }
+    }
+
+    Item {
+        id: footer
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 14
-        verticalAlignment: Text.AlignTop
-        text: root.resultText.length > 0 ? root.resultText : " "
-        color: root.hasError ? theme.rose : theme.bright
-        font.pixelSize: 19
-        font.bold: true
-        font.family: theme.fontFamily
-        elide: Text.ElideRight
+        height: 14
+
+        Text {
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            text: "esc  close"
+            color: theme.dim
+            font.pixelSize: 10
+            font.family: theme.fontFamily
+            opacity: 0.55
+        }
+
+        Text {
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            text: "⏎  copy"
+            color: theme.dim
+            font.pixelSize: 10
+            font.family: theme.fontFamily
+            opacity: (root.resultText.length > 0 && !root.hasError) ? 0.7 : 0
+            Behavior on opacity { NumberAnimation { duration: 150 } }
+        }
     }
 
     Timer {
@@ -88,6 +155,10 @@ except Exception as e:
                     root.hasError = false
                     root.resultText = out
                 }
+                if (root.pendingCopy) {
+                    root.pendingCopy = false
+                    root.tryCopy()
+                }
             }
         }
     }
@@ -97,6 +168,7 @@ except Exception as e:
             input.clear()
             root.resultText = ""
             root.hasError = false
+            root.pendingCopy = false
             input.focusInput()
         }
     }
