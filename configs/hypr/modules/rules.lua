@@ -35,6 +35,14 @@ hl.on("window.open", function(window)
         return
     end
 
+    -- bluetooth window
+    if window.class:find("^org.pulseaudio.pavucontrol") then
+        hl.dispatch(hl.dsp.window.float({ action = "set" }))
+        hl.dispatch(hl.dsp.window.resize({ exact = true, x = 600, y = 800 }))
+        hl.dispatch(hl.dsp.window.center())
+        return
+    end
+
     -- bitwarden password manager window
     if window.class:find("chrome%-nngceckbapebfimnlniiiahkandclblb") then
         hl.dispatch(hl.dsp.window.float({ action = "set" }))

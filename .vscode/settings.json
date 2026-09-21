@@ -14,8 +14,13 @@
     "[jsonc]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
+    "[todo]": {
+        "editor.wordWrap": "on"
+    },
 
     "files.exclude": {
         "**/.mypy_cache": true
-    }
+    },
+
+    "qt-qml.qmlls.additionalImportPaths": ["/usr/lib64/qt6/qml"]
 }

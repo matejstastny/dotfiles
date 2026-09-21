@@ -6,6 +6,7 @@ Item {
 
     property string icon: ""
     property string label: ""
+    property int iconSize: 18
     property bool active: false
     property bool danger: false
     signal clicked()
@@ -30,13 +31,14 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: root.icon
                 color: root.danger ? theme.rose : (root.active ? theme.purple : theme.text)
-                font.pixelSize: 18
+                font.pixelSize: root.iconSize
                 font.family: theme.fontFamily
                 Behavior on color { ColorAnimation { duration: 140; easing.type: Easing.OutCubic } }
             }
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
+                visible: root.label.length > 0
                 text: root.label
                 color: theme.dim
                 font.pixelSize: 10

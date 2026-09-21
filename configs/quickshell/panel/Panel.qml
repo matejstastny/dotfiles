@@ -4,13 +4,15 @@ import Quickshell.Services.Mpris
 import "../"
 import "../common"
 
-PopupWindow {
+// content only - the surface under this is the drawer it sits in, drawn by the
+// blob field along with the bar it hangs off
+Item {
     id: root
-    popoutName: "panel"
-    keyboardFocusMode: "onDemand"
-    centered: true
-    popupWidth: 780
-    popupHeight: 640
+
+    readonly property Theme theme: Theme {}
+
+    property bool open: false
+    signal closeRequested()
 
     property bool dndEnabled: false
     property bool caffeinateEnabled: false

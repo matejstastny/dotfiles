@@ -7,11 +7,16 @@ layout(location = 0) out vec2 qt_TexCoord0;
 layout(std140, binding = 0) uniform buf {
     mat4 qt_Matrix;
     float qt_Opacity;
-    vec2 size;
     float smoothing;
     float borderWidth;
+    float frameEnabled;
+    float frameRadius;
+    float ownerIndex;
     vec4 fillColor;
     vec4 borderColor;
+    vec4 frameOuter;
+    vec4 frameInner;
+    vec4 quad;
     vec4 box0;
     vec4 box1;
     vec4 box2;

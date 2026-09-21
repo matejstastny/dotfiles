@@ -18,7 +18,7 @@ QtObject {
     readonly property int barModuleHeight: 38
     readonly property int borderWidth: 1
     readonly property int transitionDuration: 140
-    readonly property int barHeight: 35
+    readonly property int barHeight: 37
     readonly property int popDuration: 260
     readonly property real popOvershoot: 1.35
 
@@ -44,6 +44,26 @@ QtObject {
     // popout's top edge sinks into the bar before it starts emerging
     readonly property int blobSmoothing: 20
     readonly property int blobOverlap: 8
+
+    // the screen outline is part of that same field, not a separate decoration:
+    // the bar is its top side, and a drawer parked behind any side shares its
+    // skin, so opening one looks like the outline being pulled inwards.
+    // frameRadius rounds the inner corners only - the outer edge is the screen
+    readonly property int frameThickness: 10
+    readonly property int frameRadius: 25
+
+    // how far a closed drawer sits behind the outline. deep enough that the
+    // blend has nothing left to round off, shallow enough that the pocket the
+    // band opens for it never shows
+    readonly property int drawerPark: 5
+
+    // drawers get their own motion: easingSpatial overshoots by about 8%, which
+    // is a pleasant nudge on a button and a 50px lurch on something 600px tall.
+    // this curve settles about 1.5% past flush instead, and the deform is halved
+    // so the spring has less to ring out once the slide has finished
+    readonly property int drawerDuration: 220
+    readonly property var easingDrawer: [0.3, 1.25, 0.4, 1.0, 1.0, 1.0]
+    readonly property real drawerDeformScale: blobDeformScale * 0.5
 
     // toasts share one panel rather than getting a blob each, so the left edge
     // stays a straight run instead of pinching at every divider
