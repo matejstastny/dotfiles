@@ -39,7 +39,7 @@ hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd(DOTS .. "/bin/close-session"))
 -- window managment
 hl.bind(mod .. " + W", hl.dsp.window.close())
 hl.bind(mod .. " + F", hl.dsp.window.fullscreen())
-hl.bind(mod .. " + C", hl.dsp.window.center())
+hl.bind(mod .. " + C", hl.dsp.exec_cmd("qs ipc call panel clearOrCenter"))
 
 hl.bind(mod .. " + SHIFT + left", function() hl.dispatch(hl.plugin.hy3.move_window('left')) end)
 hl.bind(mod .. " + SHIFT + right", function() hl.dispatch(hl.plugin.hy3.move_window('right')) end)

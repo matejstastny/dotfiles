@@ -1,171 +1,126 @@
 import QtQuick
-import Quickshell
-import Quickshell.Io
-import Quickshell.Wayland
-import Quickshell.Services.Pipewire
 import "../"
 
-PanelWindow {
+Item {
     id: root
 
     readonly property Theme theme: Theme {}
-    readonly property int barHeight: 35
-    readonly property int gap: 12
-    readonly property int hideDelay: 1400
-    readonly property real step: 0.05
 
-    property bool shown: false
+    property bool open: false
     property string kind: "volume"
     property int pct: 0
     property bool muted: false
 
-    readonly property var sink: Pipewire.defaultAudioSink
-    readonly property bool sinkReady: sink && sink.audio
+    readonly property real level: Math.max(0, Math.min(1, root.pct / 100))
+    readonly property color accent: root.muted ? theme.muted : theme.purple
 
-    PwObjectTracker {
-        objects: root.sink ? [root.sink] : []
+    // the glyph carries the level too, so the readout can stay a bare number
+    readonly property string glyph: {
+        if (root.kind === "brightness")
+            return root.pct > 66 ? "󰃠" : (root.pct > 33 ? "󰃟" : "󰃞");
+        if (root.muted)
+            return "󰝟";
+        if (root.pct === 0)
+            return "󰕿";
+        return root.pct > 50 ? "󰕾" : "󰖀";
     }
 
-    visible: root.shown
-    color: "transparent"
-    implicitWidth: 240
-    implicitHeight: 68
-    exclusiveZone: 0
+    implicitWidth: 188
+    implicitHeight: 24
 
-    WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.namespace: "quickshell:osd"
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-    focusable: false
+    Text {
+        id: icon
 
-    anchors.top: true
-    margins.top: root.barHeight + root.gap
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        width: 20
+        horizontalAlignment: Text.AlignHCenter
 
-    IpcHandler {
-        target: "osd"
+        text: root.glyph
+        color: root.muted ? theme.rose : theme.purple
+        font.pixelSize: 15
+        font.family: theme.fontFamily
 
-        function volume(action: string): void {
-            if (action === "raise") root.raiseVolume()
-            else if (action === "lower") root.lowerVolume()
-            else if (action === "mute-toggle") root.toggleMuteVolume()
+        Behavior on color {
+            ColorAnimation {
+                duration: root.theme.effectsDuration
+            }
         }
-
-        function brightness(action: string): void {
-            if (action === "raise") root.raiseBrightness()
-            else if (action === "lower") root.lowerBrightness()
-        }
     }
 
-    Timer {
-        id: hideTimer
-        interval: root.hideDelay
-        onTriggered: root.shown = false
-    }
+    Text {
+        id: value
 
-    function reveal() {
-        root.shown = true
-        hideTimer.restart()
-    }
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        width: 24
+        horizontalAlignment: Text.AlignRight
 
-    function raiseVolume() {
-        if (!root.sinkReady) return
-        if (root.sink.audio.muted) root.sink.audio.muted = false
-        root.sink.audio.volume = Math.min(1, root.sink.audio.volume + root.step)
-        showVolumeState()
-    }
-    function lowerVolume() {
-        if (!root.sinkReady) return
-        root.sink.audio.volume = Math.max(0, root.sink.audio.volume - root.step)
-        showVolumeState()
-    }
-    function toggleMuteVolume() {
-        if (!root.sinkReady) return
-        root.sink.audio.muted = !root.sink.audio.muted
-        showVolumeState()
-    }
-    function showVolumeState() {
-        root.kind = "volume"
-        root.pct = root.sinkReady ? Math.round(root.sink.audio.volume * 100) : 0
-        root.muted = root.sinkReady && root.sink.audio.muted
-        root.reveal()
-    }
+        text: root.pct
+        color: root.muted ? theme.dim : theme.bright
+        font.pixelSize: 11
+        font.family: theme.fontFamily
+        font.weight: Font.DemiBold
 
-    function raiseBrightness() {
-        brightnessProc.command = ["brightnessctl", "-m", "set", "5%+"]
-        brightnessProc.running = true
-    }
-    function lowerBrightness() {
-        brightnessProc.command = ["brightnessctl", "-m", "set", "5%-"]
-        brightnessProc.running = true
-    }
-
-    Process {
-        id: brightnessProc
-        stdout: SplitParser {
-            onRead: data => {
-                // machine-readable brightnessctl output: device,class,current,percent,max
-                const pct = parseInt(data.trim().split(",")[3])
-                if (isNaN(pct)) return
-                root.kind = "brightness"
-                root.pct = pct
-                root.muted = false
-                root.reveal()
+        Behavior on color {
+            ColorAnimation {
+                duration: root.theme.effectsDuration
             }
         }
     }
 
     Rectangle {
-        id: card
-        anchors.fill: parent
-        radius: theme.radius
-        color: Qt.rgba(theme.base.r, theme.base.g, theme.base.b, 0.85)
-        border.width: theme.borderWidth
-        border.color: theme.muted
+        id: track
 
-        opacity: root.shown ? 1 : 0
-        scale: root.shown ? 1 : 0.94
-        Behavior on opacity { NumberAnimation { duration: theme.transitionDuration; easing.type: Easing.OutCubic } }
-        Behavior on scale { NumberAnimation { duration: theme.popDuration; easing.type: Easing.OutBack; easing.overshoot: theme.popOvershoot } }
+        anchors.left: icon.right
+        anchors.leftMargin: 10
+        anchors.right: value.left
+        anchors.rightMargin: 9
+        anchors.verticalCenter: parent.verticalCenter
 
-        Row {
-            anchors.centerIn: parent
-            spacing: 14
+        height: 4
+        radius: height / 2
+        color: theme.overlay
 
-            Text {
-                anchors.verticalCenter: parent.verticalCenter
-                text: root.kind === "brightness" ? "󰃠" : (root.muted ? "󰝟" : "󰕾")
-                color: root.muted ? theme.rose : theme.purple
-                font.pixelSize: 20
-                font.family: theme.fontFamily
-                font.weight: Font.Bold
-            }
+        Rectangle {
+            id: fill
 
-            Rectangle {
-                id: track
-                anchors.verticalCenter: parent.verticalCenter
-                width: 140
-                height: 6
-                radius: 3
-                color: theme.overlay
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            radius: parent.radius
+            width: Math.max(parent.radius * 2, parent.width * root.level)
+            color: root.accent
 
-                Rectangle {
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    height: parent.height
-                    radius: parent.radius
-                    width: Math.max(radius * 2, parent.width * (root.muted ? 0 : Math.min(1, root.pct / 100)))
-                    color: root.muted ? theme.rose : theme.purple
-
-                    Behavior on width { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+            Behavior on width {
+                NumberAnimation {
+                    duration: root.theme.spatialDuration
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: root.theme.easingDrawer
                 }
             }
 
-            Text {
-                anchors.verticalCenter: parent.verticalCenter
-                text: root.pct.toString().padStart(3, " ") + "%"
-                color: theme.dim
-                font.pixelSize: 13
-                font.family: theme.fontFamily
-                font.weight: Font.Normal
+            Behavior on color {
+                ColorAnimation {
+                    duration: root.theme.effectsDuration
+                }
+            }
+        }
+
+        Rectangle {
+            id: head
+
+            width: 8
+            height: 8
+            radius: width / 2
+            anchors.verticalCenter: parent.verticalCenter
+            x: Math.max(0, Math.min(track.width - width, fill.width - width / 2))
+            color: root.muted ? theme.rose : theme.bright
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: root.theme.effectsDuration
+                }
             }
         }
     }

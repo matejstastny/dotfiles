@@ -7,6 +7,8 @@ import "../common"
 import "../bar"
 import "../panel"
 import "../powermenu"
+import "../wallpaper"
+import "../osd"
 
 // one window per screen holding every fixed surface: the outline, the bar that
 // forms its top side, the toast stack and the drawers. they all have to share a
@@ -15,10 +17,11 @@ import "../powermenu"
 PanelWindow {
     id: root
 
-    signal clockClicked
+    signal panelRequested
     signal toastDismissed(var notification)
     signal panelCloseRequested
     signal powerMenuCloseRequested
+    signal wallpaperCloseRequested
     signal toggleDnd
     signal toggleCaffeinate
     signal toggleKbdBacklight
@@ -31,13 +34,18 @@ PanelWindow {
     required property var notifications
     property bool panelOpen: false
     property bool powerMenuOpen: false
+    property bool wallpaperOpen: false
+    property bool osdOpen: false
+    property string osdKind: "volume"
+    property int osdPct: 0
+    property bool osdMuted: false
     property bool dndEnabled: false
     property bool caffeinateEnabled: false
     property bool kbdBacklightEnabled: true
     property bool typingSoundEnabled: false
     property bool cavaEnabled: false
 
-    readonly property bool anyDrawerOpen: panelOpen || powerMenuOpen
+    readonly property bool anyDrawerOpen: panelOpen || powerMenuOpen || wallpaperOpen
 
     readonly property Theme theme: Theme {}
     readonly property int barHeight: theme.barHeight
@@ -109,6 +117,12 @@ PanelWindow {
         Region {
             item: powerDrawer
         }
+        Region {
+            item: wallpaperDrawer
+        }
+        Region {
+            item: osdDrawer
+        }
     }
 
     // only the screen the drawer actually opened on may grab: a second grab
@@ -131,7 +145,7 @@ PanelWindow {
         borderWidth: theme.borderWidth
 
         frame: frame
-        shapes: [bar.cpuStat.popoutItem, bar.memStat.popoutItem, bar.diskStat.popoutItem, toastPanel, panelDrawer, powerDrawer]
+        shapes: [bar.cpuStat.popoutItem, bar.memStat.popoutItem, bar.diskStat.popoutItem, toastPanel, panelDrawer, powerDrawer, wallpaperDrawer, osdDrawer]
 
         // overhangs the screen on every side, so the outer edge, its blend and
         // the bulge of a parked drawer all land off-screen and the only thing
@@ -160,7 +174,7 @@ PanelWindow {
 
         screen: root.screen
         panelOpen: root.panelOpen
-        onClockClicked: root.clockClicked()
+        onPanelRequested: root.panelRequested()
     }
 
     // one panel for the whole stack rather than a blob per card: per-card blobs
@@ -249,6 +263,42 @@ PanelWindow {
 
             open: root.powerMenuOpen
             onCloseRequested: root.powerMenuCloseRequested()
+        }
+    }
+
+    BlobDrawer {
+        id: wallpaperDrawer
+
+        edge: "bottom"
+        open: root.wallpaperOpen
+        area: root.contentArea
+        width: Math.min(root.contentArea.width - 80, 1120)
+        height: 250
+
+        Wallpaper {
+            anchors.fill: parent
+            anchors.margins: 20
+            open: root.wallpaperOpen
+            onCloseRequested: root.wallpaperCloseRequested()
+        }
+    }
+
+    BlobDrawer {
+        id: osdDrawer
+
+        edge: "bottom"
+        open: root.osdOpen
+        area: root.contentArea
+        width: osdContent.implicitWidth + 36
+        height: osdContent.implicitHeight + 28
+
+        Osd {
+            id: osdContent
+            anchors.centerIn: parent
+            open: root.osdOpen
+            kind: root.osdKind
+            pct: root.osdPct
+            muted: root.osdMuted
         }
     }
 }

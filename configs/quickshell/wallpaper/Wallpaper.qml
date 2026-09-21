@@ -1,11 +1,10 @@
 import QtQuick
+import QtQuick.Effects
 import Quickshell
 import Quickshell.Io
-import Quickshell.Wayland
-import Quickshell.Hyprland
 import "../"
 
-PanelWindow {
+Item {
     id: root
 
     property bool open: false
@@ -19,22 +18,8 @@ PanelWindow {
     readonly property string favoriteScript: homeDir + "/dotfiles/bin/wallpaper-favorite"
     readonly property string deleteScript: homeDir + "/dotfiles/bin/wallpaper-delete"
 
-    visible: open
-    color: "transparent"
-    implicitWidth: 640
-    implicitHeight: 460
-    exclusiveZone: 0
-
-    WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.namespace: "quickshell:wallpaper"
-    WlrLayershell.keyboardFocus: open ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
-    focusable: false
-
-    HyprlandFocusGrab {
-        active: root.open
-        windows: [QsWindow.window]
-        onCleared: root.closeRequested()
-    }
+    implicitWidth: 1080
+    implicitHeight: 230
 
     function applyWallpaper(path) {
         Quickshell.execDetached([root.setWallpaperScript, path])
@@ -96,68 +81,53 @@ PanelWindow {
         }
     }
 
-    Rectangle {
+    Item {
         id: card
         anchors.fill: parent
-        radius: theme.radius
-        color: theme.base
-        border.width: theme.borderWidth
-        border.color: theme.muted
 
-        opacity: root.open ? 1 : 0
-        scale: root.open ? 1 : 0.96
-        Behavior on opacity { NumberAnimation { duration: theme.transitionDuration; easing.type: Easing.OutCubic } }
-        Behavior on scale { NumberAnimation { duration: theme.popDuration; easing.type: Easing.OutBack; easing.overshoot: theme.popOvershoot } }
-
-        Item {
-            id: header
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.margins: 16
-            height: titleText.implicitHeight
-
-            Text {
-                id: titleText
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                text: "✦ wallpaper"
-                color: theme.purple
-                font.pixelSize: 15
-                font.bold: true
-                font.family: theme.fontFamily
-                font.weight: Font.Normal
-            }
-        }
-
-        GridView {
+        PathView {
             id: grid
-            anchors.top: header.bottom
-            anchors.topMargin: 14
+            anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             anchors.margins: 16
             clip: true
-            cellWidth: 152
-            cellHeight: 96
+            property int cardWidth: Math.min(340, Math.max(230, Math.round(height * 1.62)))
+            property int cardHeight: Math.round(cardWidth * 9 / 16)
             model: wallpaperModel
-            boundsBehavior: Flickable.StopAtBounds
+            pathItemCount: Math.min(5, Math.max(1, count))
+            cacheItemCount: 4
+            snapMode: PathView.SnapToItem
+            preferredHighlightBegin: 0.5
+            preferredHighlightEnd: 0.5
+            highlightRangeMode: PathView.StrictlyEnforceRange
+
+            path: Path {
+                startY: grid.height / 2
+
+                PathAttribute {
+                    name: "z"
+                    value: 0
+                }
+                PathLine {
+                    x: grid.width / 2
+                    relativeY: 0
+                }
+                PathAttribute {
+                    name: "z"
+                    value: 1
+                }
+                PathLine {
+                    x: grid.width
+                    relativeY: 0
+                }
+            }
 
             focus: root.open
-            keyNavigationEnabled: true
-            highlightFollowsCurrentItem: true
-            highlightMoveDuration: 100
-            highlight: Rectangle {
-                width: grid.cellWidth - 8
-                height: grid.cellHeight - 8
-                radius: theme.radiusSmall
-                color: "transparent"
-                border.width: 2
-                border.color: theme.purple
-                z: 10
-            }
             Keys.onEscapePressed: root.closeRequested()
+            Keys.onLeftPressed: grid.decrementCurrentIndex()
+            Keys.onRightPressed: grid.incrementCurrentIndex()
             function confirmCurrent() {
                 if (grid.currentIndex >= 0) root.applyWallpaper(wallpaperModel.get(grid.currentIndex).path)
             }
@@ -170,18 +140,37 @@ PanelWindow {
                 required property string thumb
                 required property bool favorite
                 required property int index
-                width: grid.cellWidth - 8
-                height: grid.cellHeight - 8
+                width: grid.cardWidth
+                height: grid.cardHeight
+                scale: PathView.isCurrentItem ? 1 : (PathView.onPath ? 0.78 : 0.5)
+                opacity: PathView.onPath ? (PathView.isCurrentItem ? 1 : 0.5) : 0
+                z: PathView.isCurrentItem ? 100 : (PathView.z ?? 0)
+
+                Behavior on scale {
+                    NumberAnimation {
+                        duration: theme.drawerDuration
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: theme.easingDrawer
+                    }
+                }
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: theme.effectsDuration
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: theme.easingEffects
+                    }
+                }
 
                 Rectangle {
                     anchors.fill: parent
-                    radius: theme.radiusSmall
+                    radius: theme.radius
                     color: theme.surface
-                    border.width: theme.borderWidth
-                    border.color: theme.muted
+                    border.width: PathView.isCurrentItem ? 2 : theme.borderWidth
+                    border.color: PathView.isCurrentItem ? theme.purple : theme.muted
                     clip: true
 
                     Image {
+                        id: thumbnail
                         anchors.fill: parent
                         source: "file://" + cell.thumb
                         fillMode: Image.PreserveAspectCrop
@@ -190,7 +179,36 @@ PanelWindow {
                         cache: true
                         sourceSize.width: width
                         sourceSize.height: height
+                        layer.enabled: true
+                        layer.effect: MultiEffect {
+                            maskEnabled: true
+                            maskSource: thumbnailMask
+                        }
                     }
+
+                    Item {
+                        id: thumbnailMask
+                        anchors.fill: thumbnail
+                        visible: false
+                        layer.enabled: true
+
+                        Rectangle {
+                            anchors.fill: parent
+                            radius: theme.radius - 1
+                        }
+                    }
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    anchors.margins: -5
+                    radius: theme.radius + 5
+                    color: "transparent"
+                    border.width: 1
+                    border.color: theme.purple
+                    opacity: PathView.isCurrentItem ? 0.45 : 0
+
+                    Behavior on opacity { NumberAnimation { duration: theme.effectsDuration } }
                 }
 
                 MouseArea {

@@ -11,6 +11,7 @@ ShaderEffect {
     property real radius: 0
     property real borderWidth: 0
     property real smoothing: root.theme.smoothing
+    property bool animateColor: true
 
     property size size: Qt.size(width, height)
     property color fillColor: root.color
@@ -23,6 +24,7 @@ ShaderEffect {
         }
     }
     Behavior on color {
+        enabled: root.animateColor
         ColorAnimation {
             duration: root.theme.effectsDuration
             easing.type: Easing.BezierSpline

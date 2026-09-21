@@ -20,6 +20,9 @@ Item {
         anchors.fill: parent
         radius: mouseArea.pressed ? theme.radiusPressed : (root.active ? theme.radiusActive : theme.radiusRest)
         color: root.active ? Qt.rgba(theme.purple.r, theme.purple.g, theme.purple.b, 0.18) : theme.surface
+        // changing keyboard selection must not retarget a half-finished fill
+        // animation, which is what caused the purple flash in the power menu
+        animateColor: false
         borderWidth: theme.borderWidth
         borderColor: mouseArea.containsMouse ? theme.purple : theme.muted
 
@@ -33,7 +36,7 @@ Item {
                 color: root.danger ? theme.rose : (root.active ? theme.purple : theme.text)
                 font.pixelSize: root.iconSize
                 font.family: theme.fontFamily
-                Behavior on color { ColorAnimation { duration: 140; easing.type: Easing.OutCubic } }
+                Behavior on color { ColorAnimation { duration: 100; easing.type: Easing.OutCubic } }
             }
 
             Text {

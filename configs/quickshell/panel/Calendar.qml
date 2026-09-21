@@ -14,6 +14,7 @@ Rectangle {
     function daysInMonth(y, m) { return new Date(y, m + 1, 0).getDate() }
     function firstWeekday(y, m) { return (new Date(y, m, 1).getDay() + 6) % 7 }
     function shiftMonth(delta) { root.viewDate = new Date(root.viewDate.getFullYear(), root.viewDate.getMonth() + delta, 1) }
+    readonly property int weekCount: Math.ceil((firstWeekday(viewDate.getFullYear(), viewDate.getMonth()) + daysInMonth(viewDate.getFullYear(), viewDate.getMonth())) / 7)
 
     implicitHeight: 264
     radius: theme.radius
@@ -112,17 +113,15 @@ Rectangle {
         columns: 7
 
         Repeater {
-            model: 42
+            model: root.weekCount * 7
             delegate: Item {
                 id: cell
                 required property int index
-                readonly property int dayNum: index - root.firstWeekday(root.viewDate.getFullYear(), root.viewDate.getMonth()) + 1
-                readonly property int monthLen: root.daysInMonth(root.viewDate.getFullYear(), root.viewDate.getMonth())
-                readonly property bool inMonth: dayNum >= 1 && dayNum <= monthLen
-                readonly property bool isToday: inMonth
-                    && root.viewDate.getFullYear() === root.today.getFullYear()
-                    && root.viewDate.getMonth() === root.today.getMonth()
-                    && dayNum === root.today.getDate()
+                readonly property date cellDate: new Date(root.viewDate.getFullYear(), root.viewDate.getMonth(), index - root.firstWeekday(root.viewDate.getFullYear(), root.viewDate.getMonth()) + 1)
+                readonly property bool inMonth: cellDate.getMonth() === root.viewDate.getMonth()
+                readonly property bool isToday: cellDate.getFullYear() === root.today.getFullYear()
+                    && cellDate.getMonth() === root.today.getMonth()
+                    && cellDate.getDate() === root.today.getDate()
 
                 width: daysGrid.width / 7
                 height: 30
@@ -138,8 +137,9 @@ Rectangle {
 
                 Text {
                     anchors.centerIn: parent
-                    text: cell.inMonth ? cell.dayNum : ""
-                    color: cell.isToday ? theme.bright : theme.text
+                    text: cell.cellDate.getDate()
+                    color: cell.isToday ? theme.bright : (cell.inMonth ? theme.text : theme.dim)
+                    opacity: cell.inMonth ? 1 : 0.55
                     font.pixelSize: 11
                     font.family: theme.fontFamily
                     font.weight: Font.Normal

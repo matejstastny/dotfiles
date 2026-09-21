@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell.Services.Mpris
 import Quickshell
 import "../"
 
@@ -8,7 +9,7 @@ import "../"
 Item {
     id: root
 
-    signal clockClicked
+    signal panelRequested
 
     required property var screen
     property bool panelOpen: false
@@ -20,6 +21,15 @@ Item {
     readonly property alias diskStat: diskStat
 
     implicitHeight: theme.barHeight
+
+    readonly property bool isLaptopScreen: screen && screen.name === "eDP-1"
+    readonly property var activePlayer: {
+        const players = Mpris.players.values;
+        for (let i = 0; i < players.length; i++)
+            if (players[i].isPlaying)
+                return players[i];
+        return players.length > 0 ? players[0] : null;
+    }
 
     Row {
         anchors.left: parent.left
@@ -58,11 +68,13 @@ Item {
         spacing: 8
 
         BarTray {
+            id: tray
             anchors.verticalCenter: parent.verticalCenter
         }
 
         BarSep {
             anchors.verticalCenter: parent.verticalCenter
+            visible: tray.visible
         }
 
         BarScriptModule {
@@ -118,35 +130,39 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
         }
 
-        Item {
-            id: clockSlot
+        BarClock {
             anchors.verticalCenter: parent.verticalCenter
-            implicitWidth: clockBg.width
-            implicitHeight: clock.implicitHeight
-
-            Rectangle {
-                id: clockBg
-                anchors.centerIn: parent
-                width: clock.implicitWidth + 16
-                height: root.theme.barHeight - 10
-                radius: root.theme.radiusSmall
-                bottomLeftRadius: 0
-                bottomRightRadius: 0
-                color: root.theme.overlay
-                opacity: root.panelOpen ? 1 : 0
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: root.theme.transitionDuration
-                        easing.type: Easing.OutCubic
-                    }
-                }
-            }
-
-            BarClock {
-                id: clock
-                anchors.centerIn: parent
-                onClicked: root.clockClicked()
-            }
         }
+    }
+
+    Item {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        width: Math.min(480, parent.width * 0.36)
+        height: parent.height
+        visible: !root.isLaptopScreen && root.activePlayer && root.activePlayer.trackTitle
+
+        Text {
+            anchors.centerIn: parent
+            width: parent.width
+            horizontalAlignment: Text.AlignHCenter
+            elide: Text.ElideRight
+            text: !root.activePlayer ? "" : (root.activePlayer.trackArtist
+                ? root.activePlayer.trackTitle + "  ·  " + root.activePlayer.trackArtist
+                : root.activePlayer.trackTitle)
+            color: theme.dim
+            font.pixelSize: theme.barFontSize - 1
+            font.family: theme.fontFamily
+            font.weight: Font.Normal
+        }
+    }
+
+    MouseArea {
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: 180
+        height: 5
+        hoverEnabled: true
+        onEntered: root.panelRequested()
     }
 }

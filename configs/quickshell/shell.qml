@@ -4,6 +4,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import Quickshell.Services.Notifications
+import Quickshell.Services.Pipewire
 import "./surface"
 import "./wallpaper"
 import "./osd"
@@ -22,6 +23,10 @@ ShellRoot {
 
     property bool panelOpen: false
     property bool wallpaperOpen: false
+    property bool osdOpen: false
+    property string osdKind: "volume"
+    property int osdPct: 0
+    property bool osdMuted: false
     property bool dndEnabled: false
     property bool caffeinateEnabled: false
     property bool kbdBacklightEnabled: true
@@ -51,6 +56,31 @@ ShellRoot {
 
     function aimDrawers(): void {
         root.drawerScreen = Hyprland.focusedMonitor?.name ?? Quickshell.screens[0]?.name ?? "";
+    }
+
+    function clearNotifications(): void {
+        for (const notification of notifServer.trackedNotifications.values.slice())
+            notification.dismiss();
+    }
+
+    readonly property var audioSink: Pipewire.defaultAudioSink
+    readonly property bool audioSinkReady: audioSink && audioSink.audio
+
+    PwObjectTracker {
+        objects: root.audioSink ? [root.audioSink] : []
+    }
+
+    function revealOsd(): void {
+        root.aimDrawers();
+        root.osdOpen = true;
+        osdHideTimer.restart();
+    }
+
+    function showVolumeOsd(): void {
+        root.osdKind = "volume";
+        root.osdPct = root.audioSinkReady ? Math.round(root.audioSink.audio.volume * 100) : 0;
+        root.osdMuted = root.audioSinkReady && root.audioSink.audio.muted;
+        root.revealOsd();
     }
 
     // the drawers live inside Surface rather than in PopupWindows of their own,
@@ -137,18 +167,71 @@ ShellRoot {
         function hide(): void {
             root.panelOpen = false;
         }
+        function clearOrCenter(): void {
+            if (root.panelOpen)
+                root.clearNotifications();
+            else
+                Quickshell.execDetached(["hyprctl", "dispatch", "centerwindow"]);
+        }
     }
 
     IpcHandler {
         target: "wallpaper"
         function toggle(): void {
+            root.aimDrawers();
             root.wallpaperOpen = !root.wallpaperOpen;
         }
         function open(): void {
+            root.aimDrawers();
             root.wallpaperOpen = true;
         }
         function hide(): void {
             root.wallpaperOpen = false;
+        }
+    }
+
+    IpcHandler {
+        target: "osd"
+
+        function volume(action: string): void {
+            if (!root.audioSinkReady)
+                return;
+            if (action === "raise") {
+                if (root.audioSink.audio.muted)
+                    root.audioSink.audio.muted = false;
+                root.audioSink.audio.volume = Math.min(1, root.audioSink.audio.volume + 0.05);
+            } else if (action === "lower") {
+                root.audioSink.audio.volume = Math.max(0, root.audioSink.audio.volume - 0.05);
+            } else if (action === "mute-toggle") {
+                root.audioSink.audio.muted = !root.audioSink.audio.muted;
+            }
+            root.showVolumeOsd();
+        }
+
+        function brightness(action: string): void {
+            brightnessProc.command = ["brightnessctl", "-m", "set", action === "raise" ? "5%+" : "5%-"];
+            brightnessProc.running = true;
+        }
+    }
+
+    Timer {
+        id: osdHideTimer
+        interval: 1400
+        onTriggered: root.osdOpen = false
+    }
+
+    Process {
+        id: brightnessProc
+        stdout: SplitParser {
+            onRead: data => {
+                const pct = parseInt(data.trim().split(",")[3]);
+                if (isNaN(pct))
+                    return;
+                root.osdKind = "brightness";
+                root.osdPct = pct;
+                root.osdMuted = false;
+                root.revealOsd();
+            }
         }
     }
 
@@ -412,19 +495,9 @@ ShellRoot {
         typingSoundStatusProc.running = true;
     }
 
-    Wallpaper {
-        id: wallpanel
-        open: root.wallpaperOpen
-        onCloseRequested: root.wallpaperOpen = false
-    }
-
     Cava {
         id: cava
         open: root.cavaOpen
-    }
-
-    Osd {
-        id: osd
     }
 
     Launcher {
@@ -525,19 +598,25 @@ ShellRoot {
 
                 panelOpen: root.panelOpen && scope.modelData.name === root.drawerScreen
                 powerMenuOpen: root.powermenuOpen && scope.modelData.name === root.drawerScreen
+                wallpaperOpen: root.wallpaperOpen && scope.modelData.name === root.drawerScreen
+                osdOpen: root.osdOpen && scope.modelData.name === root.drawerScreen
+                osdKind: root.osdKind
+                osdPct: root.osdPct
+                osdMuted: root.osdMuted
                 dndEnabled: root.dndEnabled
                 caffeinateEnabled: root.caffeinateEnabled
                 kbdBacklightEnabled: root.kbdBacklightEnabled
                 typingSoundEnabled: root.typingSoundEnabled
                 cavaEnabled: root.cavaOpen
 
-                onClockClicked: {
+                onPanelRequested: {
                     root.aimDrawers();
-                    root.panelOpen = !root.panelOpen;
+                    root.panelOpen = true;
                 }
                 onToastDismissed: notification => root.dropToast(notification)
                 onPanelCloseRequested: root.panelOpen = false
                 onPowerMenuCloseRequested: root.powermenuOpen = false
+                onWallpaperCloseRequested: root.wallpaperOpen = false
                 onToggleDnd: root.dndEnabled = !root.dndEnabled
                 onToggleCaffeinate: root.caffeinateEnabled = !root.caffeinateEnabled
                 onToggleKbdBacklight: {
@@ -550,10 +629,7 @@ ShellRoot {
                 }
                 onToggleCava: root.cavaOpen = !root.cavaOpen
                 onDismissNotification: notification => notification.dismiss()
-                onClearAll: {
-                    for (const notification of notifServer.trackedNotifications.values.slice())
-                        notification.dismiss();
-                }
+                onClearAll: root.clearNotifications()
             }
         }
     }

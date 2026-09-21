@@ -16,6 +16,7 @@ Item {
     readonly property bool hovered: hoverArea.containsMouse
     readonly property bool high: fillPct >= 80
     property alias popoutItem: popout
+    property real popoutProgress: hovered ? 1 : 0
 
     // the row that holds these is anchored to the bar's top edge, so the bar's
     // bottom edge in local coords is just the bar height less our own offset
@@ -60,15 +61,24 @@ Item {
         hoverEnabled: true
     }
 
+    Behavior on popoutProgress {
+        NumberAnimation {
+            duration: theme.effectsDuration
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: theme.easingEffects
+        }
+    }
+
     BlobRect {
         id: popout
 
-        visible: root.hovered
+        visible: root.popoutProgress > 0.001
         x: -60
         y: root.barBottom - root.theme.blobOverlap
-        width: 200
-        height: popoutContent.implicitHeight + 20 + root.theme.blobOverlap
+        width: 200 * root.popoutProgress
+        height: (popoutContent.implicitHeight + 20 + root.theme.blobOverlap) * root.popoutProgress
         radius: root.theme.radiusSmall
+        clip: true
 
         Column {
             id: popoutContent
@@ -79,6 +89,7 @@ Item {
             anchors.margins: 10
             anchors.topMargin: root.theme.blobOverlap + 10
             spacing: 8
+            opacity: root.popoutProgress
 
             Text {
                 text: root.title

@@ -4,12 +4,8 @@ import "../"
 Item {
     id: root
 
-    signal clicked()
-
     readonly property Theme theme: Theme {}
     property date now: new Date()
-    readonly property bool hovered: hoverArea.containsMouse
-
     implicitWidth: label.implicitWidth
     implicitHeight: label.implicitHeight
 
@@ -24,19 +20,10 @@ Item {
         id: label
         anchors.centerIn: parent
         text: Qt.formatDateTime(root.now, "hh:mm")
-        color: root.hovered ? theme.bright : theme.text
+        color: theme.text
         font.pixelSize: theme.barFontSize
         font.family: theme.fontFamily
         font.weight: Font.Normal
 
-        Behavior on color { ColorAnimation { duration: theme.transitionDuration } }
-    }
-
-    MouseArea {
-        id: hoverArea
-        anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
-        onClicked: root.clicked()
     }
 }

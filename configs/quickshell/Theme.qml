@@ -62,7 +62,8 @@ QtObject {
     // this curve settles about 1.5% past flush instead, and the deform is halved
     // so the spring has less to ring out once the slide has finished
     readonly property int drawerDuration: 220
-    readonly property var easingDrawer: [0.3, 1.25, 0.4, 1.0, 1.0, 1.0]
+    // drawers should feel fluid without visibly stretching past their final size
+    readonly property var easingDrawer: [0.25, 1.08, 0.45, 1.0, 1.0, 1.0]
     readonly property real drawerDeformScale: blobDeformScale * 0.5
 
     // toasts share one panel rather than getting a blob each, so the left edge
