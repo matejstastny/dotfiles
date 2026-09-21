@@ -101,10 +101,13 @@ def main():
             symlink(src, DEFAULT_TARGET / name)
 
     for src_rel, targets in sorted(file_links.items()):
-        src = _ROOT / src_rel
+        src = CONFIGS_DIR / src_rel
         target_paths = [Path(t) for t in targets]
         label = ", ".join(str(t) for t in target_paths)
         log(get_pad(item_len, src_rel, f" file link     -> {label}"))
+        if not src.exists():
+            error(f"skip (source does not exist): {src}")
+            continue
         for target in target_paths:
             symlink(src, target)
 

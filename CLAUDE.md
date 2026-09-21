@@ -19,7 +19,6 @@
 
 - No file-level comments or docstrings. A single shebang line is enough.
 - Notifications follow: `notify-send -t <ms> "✦ <topic>" "<message>"`
-- Rofi pickers use: `rofi -dmenu -p "✦ <name> ✦"`
 
 ## Path conventions
 
@@ -31,7 +30,6 @@ Do not suggest or add these - they have been deliberately rejected:
 
 - **atuin** - vanilla shell history is preferred
 - **color-switcher** - singular perfected theme
-- **hyprland shadows** - perf heavy
 
 ## Notes
 
