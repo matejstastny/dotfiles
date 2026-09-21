@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+#@ compile the quickshell glsl shaders to .qsb
+
+dir="$(dirname "$(readlink -f "$0")")/../configs/quickshell/shaders"
+
+for src in "$dir"/*.vert "$dir"/*.frag; do
+    qsb-qt6 --glsl 120,150,300es --msl 12 -o "$src.qsb" "$src" || exit 1
+    printf '✦ %s\n' "$(basename "$src")"
+done

@@ -15,14 +15,12 @@ Item {
     implicitWidth: 96
     implicitHeight: 56
 
-    Rectangle {
+    SquircleRect {
         anchors.fill: parent
-        radius: theme.radiusSmall
+        radius: mouseArea.pressed ? theme.radiusPressed : (root.active ? theme.radiusActive : theme.radiusRest)
         color: root.active ? Qt.rgba(theme.purple.r, theme.purple.g, theme.purple.b, 0.18) : theme.surface
-        border.width: theme.borderWidth
-        border.color: mouseArea.containsMouse ? theme.purple : theme.muted
-        Behavior on border.color { ColorAnimation { duration: 120 } }
-        Behavior on color { ColorAnimation { duration: 120 } }
+        borderWidth: theme.borderWidth
+        borderColor: mouseArea.containsMouse ? theme.purple : theme.muted
 
         Column {
             anchors.centerIn: parent
@@ -55,6 +53,12 @@ Item {
         onClicked: root.clicked()
     }
 
-    scale: mouseArea.containsMouse ? 1.04 : 1
-    Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
+    scale: mouseArea.pressed ? 0.96 : (mouseArea.containsMouse ? 1.04 : 1)
+    Behavior on scale {
+        NumberAnimation {
+            duration: theme.spatialDuration
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: theme.easingSpatial
+        }
+    }
 }

@@ -22,9 +22,17 @@ PanelWindow {
     readonly property int shadowPad: 84
     readonly property int shadowSpread: 68
 
+    // anchored (non-centered) popups grow out of the top-right corner
+    // they're triggered from, instead of fading in centered like a dialog -
+    // the seed size roughly matches the bar icon that opens them
+    readonly property bool growFromAnchor: !root.centered
+    readonly property int seedSize: 40
+    readonly property int curWidth: root.growFromAnchor ? (root.open ? popupWidth : seedSize) : popupWidth
+    readonly property int curHeight: root.growFromAnchor ? (root.open ? popupHeight : seedSize) : popupHeight
+
     default property alias content: contentArea.data
 
-    visible: root.open
+    visible: card.opacity > 0.001
     color: "transparent"
     implicitWidth: popupWidth + shadowPad * 2
     implicitHeight: popupHeight + shadowPad * 2
@@ -78,12 +86,15 @@ PanelWindow {
         anchors.top: root.centered ? undefined : parent.top
         anchors.right: root.centered ? undefined : parent.right
         anchors.margins: root.centered ? 0 : shadowPad - shadowSpread
-        width: root.popupWidth + shadowSpread * 2
-        height: root.popupHeight + shadowSpread * 2
+        width: root.curWidth + shadowSpread * 2
+        height: root.curHeight + shadowSpread * 2
         z: -1
 
         opacity: card.opacity
         scale: card.scale
+
+        Behavior on width { NumberAnimation { duration: root.theme.spatialDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.theme.easingSpatial } }
+        Behavior on height { NumberAnimation { duration: root.theme.spatialDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.theme.easingSpatial } }
 
         layer.enabled: true
         layer.effect: MultiEffect {
@@ -98,29 +109,33 @@ PanelWindow {
 
         Rectangle {
             anchors.centerIn: parent
-            width: root.popupWidth
-            height: root.popupHeight
+            width: root.curWidth
+            height: root.curHeight
             radius: theme.radius
             color: "black"
         }
     }
 
-    Rectangle {
+    SquircleRect {
         id: card
         anchors.centerIn: root.centered ? parent : undefined
         anchors.top: root.centered ? undefined : parent.top
         anchors.right: root.centered ? undefined : parent.right
         anchors.margins: root.centered ? 0 : shadowPad
-        width: root.popupWidth
-        height: root.popupHeight
-        radius: theme.radius
+        width: root.curWidth
+        height: root.curHeight
+        radius: root.growFromAnchor && !root.open ? theme.radiusRest : theme.radius
         color: theme.base
-        border.width: theme.borderWidth
-        border.color: theme.muted
+        borderWidth: theme.borderWidth
+        borderColor: theme.muted
+        clip: true
 
         opacity: root.open ? 1 : 0
-        scale: root.open ? 1 : 0.96
-        Behavior on opacity { NumberAnimation { duration: theme.transitionDuration; easing.type: Easing.OutCubic } }
+        scale: root.growFromAnchor ? 1 : (root.open ? 1 : 0.96)
+
+        Behavior on width { NumberAnimation { duration: theme.spatialDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: theme.easingSpatial } }
+        Behavior on height { NumberAnimation { duration: theme.spatialDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: theme.easingSpatial } }
+        Behavior on opacity { NumberAnimation { duration: theme.effectsDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: theme.easingEffects } }
         Behavior on scale { NumberAnimation { duration: theme.popDuration; easing.type: Easing.OutBack; easing.overshoot: theme.popOvershoot } }
 
         Item {
@@ -131,6 +146,8 @@ PanelWindow {
             anchors.right: parent.right
             anchors.margins: 16
             height: visible ? 18 : 0
+            opacity: root.open ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: theme.effectsDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: theme.easingEffects } }
 
             Text {
                 id: titleText
@@ -155,6 +172,8 @@ PanelWindow {
             anchors.rightMargin: 16
             anchors.bottomMargin: 16
             anchors.topMargin: header.visible ? 14 : 16
+            opacity: root.open ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: theme.effectsDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: theme.easingEffects } }
         }
     }
 }

@@ -2,8 +2,9 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.Notifications
 import "../"
+import "../common"
 
-Rectangle {
+SquircleRect {
     id: root
 
     property var notification
@@ -11,23 +12,79 @@ Rectangle {
     property bool dismissOnClick: false
     signal dismissed()
 
-    readonly property Theme theme: Theme {}
     readonly property bool critical: notification && notification.urgency === NotificationUrgency.Critical
 
     implicitHeight: content.implicitHeight + 24
-    radius: theme.radius
     color: theme.surface
-    border.width: theme.borderWidth
-    border.color: critical ? theme.rose : theme.muted
+    borderWidth: theme.borderWidth
+    borderColor: critical ? theme.rose : theme.muted
+
+    readonly property real dismissThreshold: 0.4
+    property real dragX: 0
+    opacity: 1 - Math.min(1, Math.abs(dragX) / (width * dismissThreshold)) * 0.7
+
+    // appears/retreats as a shrinking blob anchored at the top-right corner -
+    // the corner closest to the bar it "came from" - instead of a flat fade,
+    // so it visually pinches down to a point rather than just vanishing
+    property bool revealed: false
+    transformOrigin: Item.TopRight
+    scale: revealed ? 1 : 0.1
+    radius: revealed ? theme.radius : Math.max(width, height)
+
+    Behavior on scale {
+        NumberAnimation { duration: theme.spatialDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: theme.easingSpatial }
+    }
+
+    function requestDismiss() {
+        root.revealed = false
+        dismissTimer.start()
+    }
+
+    Component.onCompleted: revealed = true
+
+    transform: Translate { x: root.dragX }
+
+    Behavior on dragX {
+        enabled: !dragArea.pressed
+        NumberAnimation { duration: theme.spatialDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: theme.easingSpatial }
+    }
+
+    Timer {
+        id: dismissTimer
+        interval: theme.spatialDuration
+        onTriggered: root.dismissed()
+    }
+
+    Timer {
+        id: flyOffTimer
+        interval: theme.spatialDuration
+        onTriggered: root.dismissed()
+    }
 
     // declared first so it sits behind the close button / action buttons,
     // which still take priority for their own smaller hit areas
     MouseArea {
+        id: dragArea
         anchors.fill: parent
-        visible: root.dismissOnClick
-        enabled: root.dismissOnClick
         cursorShape: Qt.PointingHandCursor
-        onClicked: root.dismissed()
+
+        property real pressX: 0
+
+        onPressed: mouse => pressX = mouse.x
+        onPositionChanged: mouse => {
+            if (pressed) root.dragX = mouse.x - pressX
+        }
+        onReleased: {
+            if (Math.abs(root.dragX) > root.width * root.dismissThreshold) {
+                root.dragX = root.width * (root.dragX > 0 ? 1.2 : -1.2)
+                flyOffTimer.start()
+            } else {
+                root.dragX = 0
+            }
+        }
+        onClicked: {
+            if (root.dismissOnClick && Math.abs(root.dragX) < 4) root.requestDismiss()
+        }
     }
 
     Column {

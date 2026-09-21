@@ -20,6 +20,8 @@ import "./cava"
 ShellRoot {
     id: root
 
+    readonly property Theme theme: Theme {}
+
     property bool panelOpen: false
     property bool wallpaperOpen: false
     property bool dndEnabled: false
@@ -44,6 +46,33 @@ ShellRoot {
     property bool keyboardOpen: false
     property bool cavaOpen: false
 
+    // rendered inside each screen's Bar so the notification shape can blend
+    // into the bar's own surface - a separate window could never visually
+    // connect to it. newest first, so a new one buds off the bar and shoves
+    // the rest down.
+    //
+    // a ListModel rather than a plain array: the repeater rebuilds every
+    // delegate when an array is reassigned, which would replay the grow-in and
+    // restart the timeout on the toasts that are merely shifting up
+    ListModel {
+        id: toastQueue
+    }
+
+    function pushToast(notification: var): void {
+        toastQueue.insert(0, {notification})
+        while (toastQueue.count > root.theme.maxToasts)
+            toastQueue.remove(toastQueue.count - 1)
+    }
+
+    function dropToast(notification: var): void {
+        for (let i = 0; i < toastQueue.count; i++) {
+            if (toastQueue.get(i).notification === notification) {
+                toastQueue.remove(i)
+                return
+            }
+        }
+    }
+
     NotificationServer {
         id: notifServer
         keepOnReload: true
@@ -55,9 +84,8 @@ ShellRoot {
 
         onNotification: notification => {
             notification.tracked = true
-            if (!root.dndEnabled) {
-                toastLayer.push(notification)
-            }
+            if (!root.dndEnabled)
+                root.pushToast(notification)
         }
     }
 
@@ -288,11 +316,6 @@ ShellRoot {
         open: root.cavaOpen
     }
 
-    ToastLayer {
-        id: toastLayer
-        panelOpen: root.panelOpen
-    }
-
     Osd {
         id: osd
     }
@@ -388,7 +411,9 @@ ShellRoot {
             required property var modelData
             screen: modelData
             panelOpen: root.panelOpen
+            notifications: toastQueue
             onClockClicked: root.panelOpen = !root.panelOpen
+            onToastDismissed: notification => root.dropToast(notification)
         }
     }
 }

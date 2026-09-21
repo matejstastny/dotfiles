@@ -1,5 +1,6 @@
 import QtQuick
 import "../"
+import "../common"
 
 Item {
     id: root
@@ -16,64 +17,75 @@ Item {
     readonly property bool high: fillPct >= 80
     property alias popoutItem: popout
 
+    // the row that holds these is anchored to the bar's top edge, so the bar's
+    // bottom edge in local coords is just the bar height less our own offset
+    readonly property real barBottom: theme.barHeight - root.y
+
     implicitWidth: rowContent.implicitWidth + 8
     implicitHeight: theme.barModuleHeight
 
     Row {
         id: rowContent
+
         anchors.centerIn: parent
         spacing: 4
 
         Text {
             text: root.icon
-            color: root.high ? theme.rose : (root.hovered ? theme.bright : theme.purple)
-            font.pixelSize: theme.barFontSize
-            font.family: theme.fontFamily
+            color: root.high ? root.theme.rose : (root.hovered ? root.theme.bright : root.theme.purple)
+            font.pixelSize: root.theme.barFontSize
+            font.family: root.theme.fontFamily
             font.weight: Font.Bold
 
-            Behavior on color { ColorAnimation { duration: theme.transitionDuration } }
+            Behavior on color {
+                ColorAnimation {
+                    duration: root.theme.transitionDuration
+                }
+            }
         }
+
         Text {
             text: root.valueText
-            color: theme.dim
-            font.pixelSize: theme.barFontSize - 1
-            font.family: theme.fontFamily
+            color: root.theme.dim
+            font.pixelSize: root.theme.barFontSize - 1
+            font.family: root.theme.fontFamily
             font.weight: Font.Normal
         }
     }
 
     MouseArea {
         id: hoverArea
+
         anchors.fill: parent
         hoverEnabled: true
     }
 
-    Rectangle {
+    BlobRect {
         id: popout
+
         visible: root.hovered
-        y: 38
         x: -60
+        y: root.barBottom - root.theme.blobOverlap
         width: 200
-        height: popoutContent.implicitHeight + 20
-        radius: theme.radiusSmall
-        color: theme.surface
-        border.width: theme.borderWidth
-        border.color: theme.muted
+        height: popoutContent.implicitHeight + 20 + root.theme.blobOverlap
+        radius: root.theme.radiusSmall
 
         Column {
             id: popoutContent
+
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
             anchors.margins: 10
+            anchors.topMargin: root.theme.blobOverlap + 10
             spacing: 8
 
             Text {
                 text: root.title
-                color: theme.purple
+                color: root.theme.purple
                 font.bold: true
-                font.pixelSize: theme.barFontSize - 4
-                font.family: theme.fontFamily
+                font.pixelSize: root.theme.barFontSize - 4
+                font.family: root.theme.fontFamily
                 font.weight: Font.Normal
             }
 
@@ -84,26 +96,30 @@ Item {
 
                 Repeater {
                     model: root.history
+
                     delegate: Rectangle {
                         required property var modelData
+
                         anchors.bottom: parent.bottom
                         width: 4
                         height: Math.max(2, (modelData / 100) * 32)
                         radius: 1
-                        color: theme.purple
+                        color: root.theme.purple
                     }
                 }
             }
 
             Repeater {
                 model: root.lines
+
                 delegate: Text {
                     required property var modelData
+
                     width: popoutContent.width
                     text: modelData
-                    color: theme.text
-                    font.pixelSize: theme.barFontSize - 3
-                    font.family: theme.fontFamily
+                    color: root.theme.text
+                    font.pixelSize: root.theme.barFontSize - 3
+                    font.family: root.theme.fontFamily
                     font.weight: Font.Normal
                     wrapMode: Text.WordWrap
                 }

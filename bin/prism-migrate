@@ -1,0 +1,201 @@
+#!/usr/bin/env python3
+#@ move files/dirs from one prism launcher instance's minecraft folder to another
+
+import configparser
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+R = "\033[0m"
+BOLD = "\033[1m"
+DIM = "\033[2m"
+MAGENTA = "\033[95m"
+CYAN = "\033[96m"
+GREEN = "\033[92m"
+YELLOW = "\033[93m"
+RED = "\033[91m"
+
+INSTANCES_DIR = Path.home() / ".local/share/PrismLauncher/instances"
+
+
+def heading(text: str):
+    print(f"\n{BOLD}{MAGENTA}✦ {text}{R}")
+
+
+def instance_name(path: Path) -> str:
+    cfg = path / "instance.cfg"
+    if cfg.is_file():
+        parser = configparser.ConfigParser()
+        try:
+            parser.read(cfg)
+            name = parser.get("General", "name", fallback=None)
+            if name:
+                return name
+        except configparser.Error:
+            pass
+    return path.name
+
+
+def list_instances() -> list[Path]:
+    if not INSTANCES_DIR.is_dir():
+        sys.exit(f"{RED}error: {INSTANCES_DIR} not found{R}")
+    instances = sorted(
+        (p for p in INSTANCES_DIR.iterdir() if p.is_dir() and (p / "instance.cfg").is_file()),
+        key=lambda p: instance_name(p).lower(),
+    )
+    if not instances:
+        sys.exit(f"{RED}error: no instances found in {INSTANCES_DIR}{R}")
+    return instances
+
+
+def print_numbered(items: list[str]):
+    width = len(str(len(items)))
+    for i, item in enumerate(items, 1):
+        print(f"  {CYAN}{str(i).rjust(width)}{R}  {item}")
+
+
+def ask_index(prompt: str, count: int) -> int:
+    while True:
+        raw = input(f"{BOLD}{CYAN}▸{R} {prompt} {DIM}(1-{count}){R} ").strip()
+        if raw.isdigit() and 1 <= int(raw) <= count:
+            return int(raw) - 1
+        print(f"{RED}enter a number between 1 and {count}{R}")
+
+
+def ask_indices(prompt: str, count: int) -> list[int]:
+    while True:
+        raw = input(f"{BOLD}{CYAN}▸{R} {prompt} {DIM}(1-{count}){R} ").strip()
+        parts = raw.split()
+        if not parts:
+            print(f"{RED}enter at least one number{R}")
+            continue
+        try:
+            nums = [int(p) for p in parts]
+        except ValueError:
+            print(f"{RED}only numbers, space separated{R}")
+            continue
+        if any(n < 1 or n > count for n in nums):
+            print(f"{RED}numbers must be between 1 and {count}{R}")
+            continue
+        seen: list[int] = []
+        for n in nums:
+            if n not in seen:
+                seen.append(n)
+        return [n - 1 for n in seen]
+
+
+def ask_yes_no(prompt: str) -> bool:
+    while True:
+        raw = input(f"{YELLOW}{prompt} [y/n]{R} ").strip().lower()
+        if raw in ("y", "yes"):
+            return True
+        if raw in ("n", "no"):
+            return False
+        print(f"{RED}answer y or n{R}")
+
+
+def notify(msg: str):
+    try:
+        subprocess.run(["notify-send", "-t", "4000", "✦ prism-migrate", msg], check=False)
+    except FileNotFoundError:
+        pass
+
+
+def main():
+    instances = list_instances()
+    names = [instance_name(p) for p in instances]
+
+    heading("prism launcher instances")
+    print_numbered(names)
+
+    print()
+    src_idx = ask_index("source instance #", len(instances))
+    while True:
+        dst_idx = ask_index("target instance #", len(instances))
+        if dst_idx != src_idx:
+            break
+        print(f"{RED}source and target must be different{R}")
+
+    src, dst = instances[src_idx], instances[dst_idx]
+    src_mc, dst_mc = src / "minecraft", dst / "minecraft"
+
+    if not src_mc.is_dir():
+        sys.exit(f"{RED}error: {src_mc} not found{R}")
+    dst_mc.mkdir(parents=True, exist_ok=True)
+
+    heading(f"{names[src_idx]} {DIM}→{R} {names[dst_idx]}")
+
+    entries = sorted(src_mc.iterdir(), key=lambda p: p.name.lower())
+    if not entries:
+        sys.exit(f"{RED}error: {src_mc} is empty{R}")
+
+    labels = [f"{e.name}{'/' if e.is_dir() else ''}" for e in entries]
+    print_numbered(labels)
+
+    print()
+    picks = ask_indices("files/dirs to move", len(entries))
+    selected = [entries[i] for i in picks]
+
+    heading("checking conflicts")
+    plan: list[tuple[Path, Path, bool]] = []
+    skipped: list[Path] = []
+    clean = True
+    for item in selected:
+        target = dst_mc / item.name
+        if target.exists() or target.is_symlink():
+            clean = False
+            print(f"  {YELLOW}⚠{R} {BOLD}{item.name}{R} already exists in {names[dst_idx]}")
+            if ask_yes_no(f"    override {item.name}?"):
+                plan.append((item, target, True))
+            else:
+                print(f"  {DIM}skipping {item.name}{R}")
+                skipped.append(item)
+        else:
+            plan.append((item, target, False))
+    if clean:
+        print(f"  {GREEN}✓{R} no conflicts")
+
+    if not plan:
+        sys.exit(f"\n{YELLOW}nothing to move, exiting{R}")
+
+    heading("plan")
+    if plan:
+        print(f"  {BOLD}will move:{R}")
+        for item, _target, override in plan:
+            tag = f"{RED}override{R}" if override else f"{GREEN}move{R}  "
+            print(f"    [{tag}] {item.name}")
+    if skipped:
+        print(f"  {BOLD}will not move:{R}")
+        for item in skipped:
+            print(f"    {DIM}[skip]     {item.name}{R}")
+
+    print()
+    if not ask_yes_no(f"move {len(plan)} item(s) from {names[src_idx]} to {names[dst_idx]}?"):
+        sys.exit(f"{YELLOW}aborted, nothing changed{R}")
+
+    heading("migrating")
+    moved = 0
+    for item, target, override in plan:
+        try:
+            if override and (target.exists() or target.is_symlink()):
+                if target.is_dir() and not target.is_symlink():
+                    shutil.rmtree(target)
+                else:
+                    target.unlink()
+            shutil.move(str(item), str(target))
+            print(f"  {GREEN}✓{R} {item.name}")
+            moved += 1
+        except OSError as e:
+            print(f"  {RED}✗{R} {item.name}: {e}")
+
+    print(f"\n{BOLD}{GREEN}done{R} — moved {moved}/{len(plan)} item(s)\n")
+    notify(f"moved {moved} item(s) from {names[src_idx]} to {names[dst_idx]}")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (KeyboardInterrupt, EOFError):
+        print(f"\n{RED}cancelled{R}")
+        sys.exit(1)
