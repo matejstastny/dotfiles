@@ -13,7 +13,7 @@
 | **Launcher**      | [Rofi](https://github.com/davatorium/rofi)                                                    |
 | **Notifications** | [SwayNC](https://github.com/ErikReider/SwayNotificationCenter)                                |
 | **OSD**           | [SwayOSD](https://github.com/ErikReider/SwayOSD)                                              |
-| **Wallpaper**     | [awww](https://codeberg.org/LGFae/awww)                                                          |
+| **Wallpaper**     | [awww](https://codeberg.org/LGFae/awww) · [mpvpaper](https://github.com/GhostNaN/mpvpaper) (live) |
 | **Terminal**      | [Kitty](https://sw.kovidgoyal.net/kitty/)                                                     |
 | **Multiplexer**   | [Tmux](https://github.com/tmux/tmux)                                                          |
 | **Shell**         | [Zsh](https://www.zsh.org) + [starship](https://starship.rs/)                                 |

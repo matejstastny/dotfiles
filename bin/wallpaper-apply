@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+#@ apply a wallpaper, routing videos through mpvpaper and stills through awww
+
+set -e
+
+bin_dir="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+
+path="$1"
+output="$2"
+[ -z "$path" ] && exit 1
+
+cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/wallpaper-thumbs"
+mkdir -p "$cache_dir"
+
+awww_args=(
+	--transition-type simple
+	--transition-step 2
+	--transition-fps 60
+)
+[ -n "$output" ] && awww_args+=(-o "$output")
+
+# bounded so a dead awww-daemon fails loudly instead of hanging forever -
+# live wallpapers in particular must not block on it
+await_awww() {
+	local tries=0
+	until awww query &>/dev/null; do
+		tries=$((tries + 1))
+		[ "$tries" -ge 100 ] && return 1
+		sleep 0.1
+	done
+	[ -z "$output" ] && return 0
+	tries=0
+	until awww query | grep -q "^: ${output}:"; do
+		tries=$((tries + 1))
+		[ "$tries" -ge 50 ] && break
+		sleep 0.2
+	done
+}
+
+if [ "$("$bin_dir/wallpaper-kind" "$path")" != live ]; then
+	pkill -x mpvpaper 2>/dev/null || true
+	pkill -x mpvpaper-holder 2>/dev/null || true
+	await_awww || :
+	exec awww img "$path" "${awww_args[@]}"
+fi
+
+# stills first: gives an instant frame while mpv spins up, and leaves a
+# matching fallback on the background layer if mpvpaper ever dies
+poster="$cache_dir/$(basename "$path").poster.jpg"
+if [ ! -f "$poster" ] || [ "$path" -nt "$poster" ]; then
+	ffmpeg -y -v error -i "$path" -frames:v 1 -vf "scale='min(2560,iw)':-2" "$poster"
+fi
+await_awww || :
+awww img "$poster" "${awww_args[@]}" || true
+
+pkill -x mpvpaper 2>/dev/null || true
+pkill -x mpvpaper-holder 2>/dev/null || true
+exec mpvpaper -f -p -a MAX \
+	-o "no-audio loop-file=inf panscan=1.0 hwdec=auto-safe" \
+	ALL "$path"

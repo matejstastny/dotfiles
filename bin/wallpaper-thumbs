@@ -3,6 +3,8 @@
 
 set -e
 
+bin_dir="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+
 src_dir="${1:-$HOME/wallpapers}"
 cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/wallpaper-thumbs"
 favorites="$HOME/.local/share/wallpaper-favorites"
@@ -10,14 +12,22 @@ mkdir -p "$cache_dir" "$(dirname "$favorites")"
 touch "$favorites"
 
 find -L "$src_dir" -maxdepth 1 -type f \
-	\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' \) |
+	\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' \
+	-o -iname '*.mp4' -o -iname '*.webm' -o -iname '*.mkv' -o -iname '*.mov' -o -iname '*.m4v' -o -iname '*.avi' \) |
 	sort |
 	while IFS= read -r src; do
+		kind=$("$bin_dir/wallpaper-kind" "$src")
 		thumb="$cache_dir/$(basename "$src").thumb.jpg"
 		if [ ! -f "$thumb" ] || [ "$src" -nt "$thumb" ]; then
-			magick "${src}[0]" -auto-orient -thumbnail '320x200^' -gravity center -extent 320x200 "$thumb" 2>/dev/null || cp "$src" "$thumb"
+			if [ "$kind" = live ]; then
+				ffmpeg -y -v error -ss 1 -i "$src" -frames:v 1 \
+					-vf 'scale=320:200:force_original_aspect_ratio=increase,crop=320:200' \
+					"$thumb" 2>/dev/null || :
+			else
+				magick "${src}[0]" -auto-orient -thumbnail '320x200^' -gravity center -extent 320x200 "$thumb" 2>/dev/null || cp "$src" "$thumb"
+			fi
 		fi
 		fav=0
 		grep -qxF "$src" "$favorites" && fav=1
-		printf '%s\t%s\t%s\n' "$fav" "$src" "$thumb"
+		printf '%s\t%s\t%s\t%s\n' "$fav" "$src" "$thumb" "$kind"
 	done | sort -t $'\t' -k1,1r -s

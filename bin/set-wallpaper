@@ -3,19 +3,22 @@
 
 set -e
 
+bin_dir="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+
 path="$1"
 if [ -z "$path" ]; then
 	notify-send -t 3000 "✦ wallpaper" "no wallpaper given"
 	exit 1
 fi
 
-awww img "$path" \
-	--transition-type simple \
-	--transition-step 2 \
-	--transition-fps 60
-
 state="${XDG_STATE_HOME:-$HOME/.local/state}/wallpaper"
 mkdir -p "$(dirname "$state")"
 echo "$path" >"$state"
 
-notify-send -t 2000 "✦ wallpaper" "$(basename "$path")"
+if [ "$("$bin_dir/wallpaper-kind" "$path")" = live ]; then
+	notify-send -t 2000 "✦ wallpaper" "$(basename "$path") (live)"
+else
+	notify-send -t 2000 "✦ wallpaper" "$(basename "$path")"
+fi
+
+exec "$bin_dir/wallpaper-apply" "$path"

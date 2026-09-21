@@ -12,7 +12,17 @@ Item {
 
     readonly property Theme theme: Theme {}
     readonly property string wallpaperStateFile: Quickshell.env("HOME") + "/.local/state/wallpaper"
+    readonly property string thumbCacheDir: (Quickshell.env("XDG_CACHE_HOME") || Quickshell.env("HOME") + "/.cache") + "/wallpaper-thumbs"
     property string wallpaperPath: ""
+
+    // live wallpapers can't be loaded by Image, and the blur here would flatten
+    // the motion anyway, so point at the still poster wallpaper-apply cached
+    readonly property string wallpaperSource: {
+        if (!root.wallpaperPath) return ""
+        if (/\.(mp4|webm|mkv|mov|m4v|avi)$/i.test(root.wallpaperPath))
+            return "file://" + root.thumbCacheDir + "/" + root.wallpaperPath.split("/").pop() + ".poster.jpg"
+        return "file://" + root.wallpaperPath
+    }
 
     opacity: context.unlocking ? 0 : 1
     Behavior on opacity { NumberAnimation { duration: context.unlockFadeDuration; easing.type: Easing.InCubic } }
@@ -61,7 +71,7 @@ Item {
     Image {
         id: bgImage
         anchors.fill: parent
-        source: root.wallpaperPath ? "file://" + root.wallpaperPath : ""
+        source: root.wallpaperSource
         fillMode: Image.PreserveAspectCrop
         asynchronous: true
         cache: true

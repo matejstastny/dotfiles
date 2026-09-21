@@ -1,27 +1,9 @@
 #!/usr/bin/env bash
 #@ restore wallpaper
 
+bin_dir="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+
 state="${XDG_STATE_HOME:-$HOME/.local/state}/wallpaper"
 wallpaper=$(<"$state")
 
-output="$1"
-
-until awww query &>/dev/null; do sleep 0.1; done
-
-if [ -n "$output" ]; then
-	tries=0
-	until awww query | grep -q "^: ${output}:"; do
-		tries=$((tries + 1))
-		[ "$tries" -ge 50 ] && break
-		sleep 0.2
-	done
-fi
-
-outputs_flag=()
-[ -n "$output" ] && outputs_flag=(-o "$output")
-
-exec awww img "$wallpaper" \
-	"${outputs_flag[@]}" \
-	--transition-type simple \
-	--transition-step 2 \
-	--transition-fps 60
+exec "$bin_dir/wallpaper-apply" "$wallpaper" "$1"

@@ -34,6 +34,13 @@ QtObject {
     readonly property int spatialDuration: 320
     readonly property int effectsDuration: 160
 
+    // motion that re-fires while a surface is already open (a launcher
+    // resizing on every keystroke) gets this instead: short, and paired with
+    // easingEffects so it decelerates flat rather than springing past itself.
+    // the overshoot is a nice greeting, it is not something to sit through
+    // three times a second
+    readonly property int snapDuration: 120
+
     // squircle (superellipse) corner smoothing, used by SquircleRect -
     // 0 = plain circular corner, 1 = continuous "iOS-style" corner
     readonly property real smoothing: 0.6

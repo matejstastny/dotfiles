@@ -39,7 +39,7 @@ Item {
             return a.path < b.path ? -1 : (a.path > b.path ? 1 : 0)
         })
         wallpaperModel.clear()
-        for (const e of entries) wallpaperModel.append({ path: e.path, thumb: e.thumb, favorite: e.favorite })
+        for (const e of entries) wallpaperModel.append({ path: e.path, thumb: e.thumb, favorite: e.favorite, live: e.live })
     }
 
     function deleteWallpaper(index) {
@@ -74,8 +74,8 @@ Item {
             onRead: data => {
                 if (data.length === 0) return
                 const parts = data.split("\t")
-                if (parts.length < 3) return
-                wallpaperModel.append({ favorite: parts[0] === "1", path: parts[1], thumb: parts[2] })
+                if (parts.length < 4) return
+                wallpaperModel.append({ favorite: parts[0] === "1", path: parts[1], thumb: parts[2], live: parts[3] === "live" })
                 if (wallpaperModel.count === 1) grid.currentIndex = 0
             }
         }
@@ -139,6 +139,7 @@ Item {
                 required property string path
                 required property string thumb
                 required property bool favorite
+                required property bool live
                 required property int index
                 width: grid.cardWidth
                 height: grid.cardHeight
@@ -261,6 +262,30 @@ Item {
                         anchors.margins: -6
                         cursorShape: Qt.PointingHandCursor
                         onClicked: root.deleteWallpaper(cell.index)
+                    }
+                }
+
+                Rectangle {
+                    id: liveBadge
+                    visible: cell.live
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.margins: 5
+                    z: 10
+                    radius: theme.radiusSmall
+                    color: Qt.rgba(theme.base.r, theme.base.g, theme.base.b, 0.72)
+                    border.width: 1
+                    border.color: theme.purple
+                    implicitWidth: liveLabel.implicitWidth + 12
+                    implicitHeight: liveLabel.implicitHeight + 4
+
+                    Text {
+                        id: liveLabel
+                        anchors.centerIn: parent
+                        text: "▶ live"
+                        color: theme.bright
+                        font.pixelSize: 10
+                        font.family: theme.fontFamily
                     }
                 }
             }
