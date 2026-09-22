@@ -78,4 +78,4 @@ hl.animation({ leaf = "windowsMove", enabled = true, speed = 3.6, bezier = "snap
 hl.animation({ leaf = "fade", enabled = true, speed = 3.3, bezier = "snap" })
 hl.animation({ leaf = "border", enabled = true, speed = 5.3, bezier = "snap" })
 hl.animation({ leaf = "borderangle", enabled = true, speed = 25, bezier = "linear", style = "loop" })
-hl.animation({ leaf = "workspaces", enabled = true, speed = 3.7, bezier = "swoosh", style = "slide" })
+hl.animation({ leaf = "workspaces", enabled = false, speed = 3.7, bezier = "swoosh", style = "slide" })
