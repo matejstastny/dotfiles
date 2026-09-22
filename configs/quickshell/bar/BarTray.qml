@@ -7,11 +7,9 @@ import "../"
 Item {
     id: root
 
-    readonly property Theme theme: Theme {}
-
     visible: SystemTray.items.values.length > 0
     implicitWidth: visible ? row.implicitWidth : 0
-    implicitHeight: theme.barModuleHeight
+    implicitHeight: Theme.barModuleHeight
 
     Row {
         id: row
@@ -28,7 +26,7 @@ Item {
                 height: 16
                 anchors.verticalCenter: parent.verticalCenter
                 scale: hoverArea.containsMouse ? 1.12 : 1
-                Behavior on scale { NumberAnimation { duration: theme.transitionDuration; easing.type: Easing.OutCubic } }
+                Behavior on scale { NumberAnimation { duration: Theme.transitionDuration; easing.type: Easing.OutCubic } }
 
                 IconImage {
                     anchors.fill: parent

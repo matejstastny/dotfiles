@@ -20,10 +20,10 @@ BlobRect {
     property real progress: open ? 1 : 0
 
     readonly property bool horizontal: edge === "left" || edge === "right"
-    readonly property real travel: (horizontal ? width : height) + theme.drawerPark
+    readonly property real travel: (horizontal ? width : height) + Theme.drawerPark
 
-    radius: theme.frameRadius
-    deformScale: theme.drawerDeformScale
+    radius: Theme.frameRadius
+    deformScale: Theme.drawerDeformScale
 
     // the edge it comes out of is squared off. a radius there leaves a notch at
     // each end of the join for the blend to fill, and the drawer reads as glued
@@ -54,9 +54,9 @@ BlobRect {
 
     Behavior on progress {
         NumberAnimation {
-            duration: root.theme.drawerDuration
+            duration: Theme.drawerDuration
             easing.type: Easing.BezierSpline
-            easing.bezierCurve: root.theme.easingDrawer
+            easing.bezierCurve: Theme.easingDrawer
         }
     }
 }

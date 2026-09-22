@@ -24,6 +24,8 @@ layout(std140, binding = 0) uniform buf {
     vec4 box5;
     vec4 box6;
     vec4 box7;
+    vec4 box8;
+    vec4 box9;
     vec4 rad0;
     vec4 rad1;
     vec4 rad2;
@@ -32,6 +34,8 @@ layout(std140, binding = 0) uniform buf {
     vec4 rad5;
     vec4 rad6;
     vec4 rad7;
+    vec4 rad8;
+    vec4 rad9;
     vec4 def0;
     vec4 def1;
     vec4 def2;
@@ -40,9 +44,11 @@ layout(std140, binding = 0) uniform buf {
     vec4 def5;
     vec4 def6;
     vec4 def7;
+    vec4 def8;
+    vec4 def9;
 };
 
-const int SLOTS = 8;
+const int SLOTS = 10;
 const float FAR = 1e9;
 
 // how deep a circular smin closes a gap at a == b, as a fraction of k
@@ -89,9 +95,9 @@ void main() {
     // position from its own uv rather than assuming it spans the whole surface
     vec2 p = quad.xy + qt_TexCoord0 * quad.zw;
 
-    vec4 boxes[SLOTS] = vec4[SLOTS](box0, box1, box2, box3, box4, box5, box6, box7);
-    vec4 radii[SLOTS] = vec4[SLOTS](rad0, rad1, rad2, rad3, rad4, rad5, rad6, rad7);
-    vec4 defs[SLOTS] = vec4[SLOTS](def0, def1, def2, def3, def4, def5, def6, def7);
+    vec4 boxes[SLOTS] = vec4[SLOTS](box0, box1, box2, box3, box4, box5, box6, box7, box8, box9);
+    vec4 radii[SLOTS] = vec4[SLOTS](rad0, rad1, rad2, rad3, rad4, rad5, rad6, rad7, rad8, rad9);
+    vec4 defs[SLOTS] = vec4[SLOTS](def0, def1, def2, def3, def4, def5, def6, def7, def8, def9);
 
     float innerTop = frameInner.y - frameInner.w;
     float innerBottom = frameInner.y + frameInner.w;

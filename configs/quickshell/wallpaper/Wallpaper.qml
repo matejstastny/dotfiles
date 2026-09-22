@@ -10,7 +10,6 @@ Item {
     property bool open: false
     signal closeRequested()
 
-    readonly property Theme theme: Theme {}
     readonly property string homeDir: Quickshell.env("HOME")
     readonly property string wallpaperDir: homeDir + "/wallpapers"
     readonly property string setWallpaperScript: homeDir + "/dotfiles/bin/set-wallpaper"
@@ -149,25 +148,25 @@ Item {
 
                 Behavior on scale {
                     NumberAnimation {
-                        duration: theme.drawerDuration
+                        duration: Theme.drawerDuration
                         easing.type: Easing.BezierSpline
-                        easing.bezierCurve: theme.easingDrawer
+                        easing.bezierCurve: Theme.easingDrawer
                     }
                 }
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: theme.effectsDuration
+                        duration: Theme.effectsDuration
                         easing.type: Easing.BezierSpline
-                        easing.bezierCurve: theme.easingEffects
+                        easing.bezierCurve: Theme.easingEffects
                     }
                 }
 
                 Rectangle {
                     anchors.fill: parent
-                    radius: theme.radius
-                    color: theme.surface
-                    border.width: PathView.isCurrentItem ? 2 : theme.borderWidth
-                    border.color: PathView.isCurrentItem ? theme.purple : theme.muted
+                    radius: Theme.radius
+                    color: Theme.surface
+                    border.width: PathView.isCurrentItem ? 2 : Theme.borderWidth
+                    border.color: PathView.isCurrentItem ? Theme.purple : Theme.muted
                     clip: true
 
                     Image {
@@ -195,7 +194,7 @@ Item {
 
                         Rectangle {
                             anchors.fill: parent
-                            radius: theme.radius - 1
+                            radius: Theme.radius - 1
                         }
                     }
                 }
@@ -203,13 +202,13 @@ Item {
                 Rectangle {
                     anchors.fill: parent
                     anchors.margins: -5
-                    radius: theme.radius + 5
+                    radius: Theme.radius + 5
                     color: "transparent"
                     border.width: 1
-                    border.color: theme.purple
+                    border.color: Theme.purple
                     opacity: PathView.isCurrentItem ? 0.45 : 0
 
-                    Behavior on opacity { NumberAnimation { duration: theme.effectsDuration } }
+                    Behavior on opacity { NumberAnimation { duration: Theme.effectsDuration } }
                 }
 
                 MouseArea {
@@ -230,9 +229,9 @@ Item {
                     anchors.margins: 5
                     z: 10
                     text: cell.favorite ? "✦" : "✧"
-                    color: cell.favorite ? theme.purple : theme.bright
+                    color: cell.favorite ? Theme.purple : Theme.bright
                     font.pixelSize: 14
-                    font.family: theme.fontFamily
+                    font.family: Theme.fontMono
                     opacity: cell.favorite || applyArea.containsMouse ? 1 : 0
                     Behavior on opacity { NumberAnimation { duration: 120 } }
 
@@ -251,9 +250,9 @@ Item {
                     anchors.margins: 5
                     z: 10
                     text: "✕"
-                    color: theme.rose
+                    color: Theme.rose
                     font.pixelSize: 12
-                    font.family: theme.fontFamily
+                    font.family: Theme.fontMono
                     opacity: applyArea.containsMouse ? 1 : 0
                     Behavior on opacity { NumberAnimation { duration: 120 } }
 
@@ -272,10 +271,10 @@ Item {
                     anchors.left: parent.left
                     anchors.margins: 5
                     z: 10
-                    radius: theme.radiusSmall
-                    color: Qt.rgba(theme.base.r, theme.base.g, theme.base.b, 0.72)
+                    radius: Theme.radiusSmall
+                    color: Qt.rgba(Theme.base.r, Theme.base.g, Theme.base.b, 0.72)
                     border.width: 1
-                    border.color: theme.purple
+                    border.color: Theme.purple
                     implicitWidth: liveLabel.implicitWidth + 12
                     implicitHeight: liveLabel.implicitHeight + 4
 
@@ -283,9 +282,9 @@ Item {
                         id: liveLabel
                         anchors.centerIn: parent
                         text: "▶ live"
-                        color: theme.bright
+                        color: Theme.bright
                         font.pixelSize: 10
-                        font.family: theme.fontFamily
+                        font.family: Theme.fontMono
                     }
                 }
             }
@@ -294,9 +293,9 @@ Item {
                 anchors.centerIn: parent
                 visible: wallpaperModel.count === 0
                 text: "no wallpapers found ✧"
-                color: theme.dim
+                color: Theme.dim
                 font.pixelSize: 12
-                font.family: theme.fontFamily
+                font.family: Theme.fontMono
                 font.weight: Font.Normal
             }
         }

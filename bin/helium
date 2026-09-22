@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#@ wrapper for helium browser launch with my extensions
+#@ wrapper for helium browser launch
 
-DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-exec /usr/bin/helium --enable-features=AllowSystemNotifications --load-extension="$DOTFILES_DIR/configs/newtab,$DOTFILES_DIR/configs/helium-theme" "$@"
+exec /usr/bin/helium --enable-features=SystemNotifications "$@"

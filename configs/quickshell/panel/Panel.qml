@@ -9,8 +9,6 @@ import "../common"
 Item {
     id: root
 
-    readonly property Theme theme: Theme {}
-
     property bool open: false
     signal closeRequested()
 
@@ -29,12 +27,37 @@ Item {
     signal dismissNotification(var notification)
 
     property int notifCount: notifications ? notifications.values.length : 0
+    property var notificationGroups: []
+
+    function rebuildNotificationGroups(): void {
+        const groups = [];
+        const byApp = {};
+        const items = root.notifications ? root.notifications.values : [];
+        for (const notification of items) {
+            const key = notification.desktopEntry || notification.appName || "system";
+            if (!byApp[key]) {
+                byApp[key] = {
+                    key,
+                    appName: notification.appName || "system",
+                    appIcon: notification.appIcon || "",
+                    items: []
+                };
+                groups.push(byApp[key]);
+            }
+            byApp[key].items.push(notification);
+        }
+        root.notificationGroups = groups;
+    }
+
     Connections {
         target: root.notifications
         function onValuesChanged() {
             root.notifCount = root.notifications.values.length
+            root.rebuildNotificationGroups()
         }
     }
+
+    onNotificationsChanged: root.rebuildNotificationGroups()
 
     readonly property int columnGap: 24
 
@@ -43,7 +66,7 @@ Item {
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         width: 1
-        color: theme.muted
+        color: Theme.muted
         opacity: 0.5
     }
 
@@ -84,20 +107,19 @@ Item {
                         const greeting = h < 5 ? "still up" : h < 12 ? "good morning" : h < 18 ? "good afternoon" : h < 23 ? "good evening" : "good night"
                         return greeting + " ✦"
                     }
-                    color: theme.purple
+                    color: Theme.purple
                     font.pixelSize: 15
-                    font.bold: true
-                    font.family: theme.fontFamily
-                    font.weight: Font.Normal
+                    font.family: Theme.fontMono
+                    font.weight: Theme.weightHeading
                     elide: Text.ElideRight
                     width: parent.width
                 }
 
                 Text {
                     text: Quickshell.env("USER")
-                    color: theme.dim
+                    color: Theme.dim
                     font.pixelSize: 11
-                    font.family: theme.fontFamily
+                    font.family: Theme.fontMono
                     font.weight: Font.Normal
                     elide: Text.ElideRight
                     width: parent.width
@@ -198,11 +220,10 @@ Item {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 text: "notifications" + (root.notifCount > 0 ? " · " + root.notifCount : "")
-                color: theme.purple
+                color: Theme.purple
                 font.pixelSize: 13
-                font.bold: true
-                font.family: theme.fontFamily
-                font.weight: Font.Normal
+                font.family: Theme.fontMono
+                font.weight: Theme.weightHeading
             }
 
             Text {
@@ -210,9 +231,9 @@ Item {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 text: "clear ✧"
-                color: clearArea.pressed ? theme.purple : theme.dim
+                color: clearArea.pressed ? Theme.purple : Theme.dim
                 font.pixelSize: 11
-                font.family: theme.fontFamily
+                font.family: Theme.fontMono
                 font.weight: Font.Normal
                 scale: clearArea.pressed ? 0.92 : 1
 
@@ -238,27 +259,83 @@ Item {
             anchors.bottom: parent.bottom
             clip: true
             spacing: 10
-            model: root.notifications
+            model: root.notificationGroups
             boundsBehavior: Flickable.StopAtBounds
 
-            delegate: NotificationCard {
-                id: notifDelegate
+            delegate: Column {
+                id: groupDelegate
                 required property var modelData
                 width: list.width
-                compact: false
-                notification: modelData
-                onDismissed: root.dismissNotification(modelData)
+                spacing: 6
+                property bool expanded: modelData.items.length === 1
 
-                ListView.onRemove: removeAnimation.start()
+                Rectangle {
+                    width: parent.width
+                    height: 30
+                    radius: Theme.radiusSmall
+                    color: groupHeaderArea.containsMouse ? Theme.overlay : Theme.surface
+                    border.width: Theme.borderWidth
+                    border.color: Theme.muted
 
-                SequentialAnimation {
-                    id: removeAnimation
-                    PropertyAction { target: notifDelegate; property: "ListView.delayRemove"; value: true }
-                    ParallelAnimation {
-                        NumberAnimation { target: notifDelegate; property: "opacity"; to: 0; duration: 160; easing.type: Easing.OutCubic }
-                        NumberAnimation { target: notifDelegate; property: "scale"; to: 0.9; duration: 160; easing.type: Easing.OutCubic }
+                    Image {
+                        id: groupIcon
+                        anchors.left: parent.left
+                        anchors.leftMargin: 9
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 16
+                        height: 16
+                        visible: source !== ""
+                        source: groupDelegate.modelData.appIcon ? Quickshell.iconPath(groupDelegate.modelData.appIcon, true) : ""
+                        fillMode: Image.PreserveAspectFit
                     }
-                    PropertyAction { target: notifDelegate; property: "ListView.delayRemove"; value: false }
+
+                    Text {
+                        anchors.left: groupIcon.visible ? groupIcon.right : parent.left
+                        anchors.leftMargin: groupIcon.visible ? 7 : 10
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: groupCount.left
+                        anchors.rightMargin: 8
+                        text: groupDelegate.modelData.appName
+                        color: Theme.bright
+                        font.pixelSize: Theme.sizeLabel
+                        font.family: Theme.fontSans
+                        font.weight: Theme.weightHeading
+                        elide: Text.ElideRight
+                    }
+
+                    Text {
+                        id: groupCount
+                        anchors.right: parent.right
+                        anchors.rightMargin: 10
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: groupDelegate.modelData.items.length > 1 ? groupDelegate.modelData.items.length + "  " + (groupDelegate.expanded ? "⌃" : "⌄") : ""
+                        color: Theme.dim
+                        font.pixelSize: Theme.sizeMicro
+                        font.family: Theme.fontMono
+                    }
+
+                    MouseArea {
+                        id: groupHeaderArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: groupDelegate.modelData.items.length > 1 ? Qt.PointingHandCursor : Qt.ArrowCursor
+                        onClicked: {
+                            if (groupDelegate.modelData.items.length > 1)
+                                groupDelegate.expanded = !groupDelegate.expanded;
+                        }
+                    }
+                }
+
+                Repeater {
+                    model: groupDelegate.expanded ? groupDelegate.modelData.items : []
+
+                    delegate: NotificationCard {
+                        required property var modelData
+                        width: groupDelegate.width
+                        compact: false
+                        notification: modelData
+                        onDismissed: root.dismissNotification(modelData)
+                    }
                 }
             }
 
@@ -270,9 +347,9 @@ Item {
                 anchors.centerIn: parent
                 visible: root.notifCount === 0
                 text: "nothing here ✧"
-                color: theme.dim
+                color: Theme.dim
                 font.pixelSize: 12
-                font.family: theme.fontFamily
+                font.family: Theme.fontMono
                 font.weight: Font.Normal
             }
         }

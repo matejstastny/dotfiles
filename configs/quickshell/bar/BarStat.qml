@@ -12,7 +12,6 @@ Item {
     property var history: []
     property real fillPct: 0
 
-    readonly property Theme theme: Theme {}
     readonly property bool hovered: hoverArea.containsMouse
     readonly property bool high: fillPct >= 80
     property alias popoutItem: popout
@@ -20,10 +19,10 @@ Item {
 
     // the row that holds these is anchored to the bar's top edge, so the bar's
     // bottom edge in local coords is just the bar height less our own offset
-    readonly property real barBottom: theme.barHeight - root.y
+    readonly property real barBottom: Theme.barHeight - root.y
 
     implicitWidth: rowContent.implicitWidth + 8
-    implicitHeight: theme.barModuleHeight
+    implicitHeight: Theme.barModuleHeight
 
     Row {
         id: rowContent
@@ -33,23 +32,23 @@ Item {
 
         Text {
             text: root.icon
-            color: root.high ? root.theme.rose : (root.hovered ? root.theme.bright : root.theme.purple)
-            font.pixelSize: root.theme.barFontSize
-            font.family: root.theme.fontFamily
+            color: root.high ? Theme.rose : (root.hovered ? Theme.bright : Theme.purple)
+            font.pixelSize: Theme.barFontSize
+            font.family: Theme.fontMono
             font.weight: Font.Bold
 
             Behavior on color {
                 ColorAnimation {
-                    duration: root.theme.transitionDuration
+                    duration: Theme.transitionDuration
                 }
             }
         }
 
         Text {
             text: root.valueText
-            color: root.theme.dim
-            font.pixelSize: root.theme.barFontSize - 1
-            font.family: root.theme.fontFamily
+            color: Theme.dim
+            font.pixelSize: Theme.barFontSize - 1
+            font.family: Theme.fontMono
             font.weight: Font.Normal
         }
     }
@@ -63,9 +62,9 @@ Item {
 
     Behavior on popoutProgress {
         NumberAnimation {
-            duration: theme.effectsDuration
+            duration: Theme.effectsDuration
             easing.type: Easing.BezierSpline
-            easing.bezierCurve: theme.easingEffects
+            easing.bezierCurve: Theme.easingEffects
         }
     }
 
@@ -74,10 +73,10 @@ Item {
 
         visible: root.popoutProgress > 0.001
         x: -60
-        y: root.barBottom - root.theme.blobOverlap
+        y: root.barBottom - Theme.blobOverlap
         width: 200 * root.popoutProgress
-        height: (popoutContent.implicitHeight + 20 + root.theme.blobOverlap) * root.popoutProgress
-        radius: root.theme.radiusSmall
+        height: (popoutContent.implicitHeight + 20 + Theme.blobOverlap) * root.popoutProgress
+        radius: Theme.radiusSmall
         clip: true
 
         Column {
@@ -87,17 +86,16 @@ Item {
             anchors.right: parent.right
             anchors.top: parent.top
             anchors.margins: 10
-            anchors.topMargin: root.theme.blobOverlap + 10
+            anchors.topMargin: Theme.blobOverlap + 10
             spacing: 8
             opacity: root.popoutProgress
 
             Text {
                 text: root.title
-                color: root.theme.purple
-                font.bold: true
-                font.pixelSize: root.theme.barFontSize - 4
-                font.family: root.theme.fontFamily
-                font.weight: Font.Normal
+                color: Theme.purple
+                font.pixelSize: Theme.barFontSize - 4
+                font.family: Theme.fontMono
+                font.weight: Theme.weightHeading
             }
 
             Row {
@@ -115,7 +113,7 @@ Item {
                         width: 4
                         height: Math.max(2, (modelData / 100) * 32)
                         radius: 1
-                        color: root.theme.purple
+                        color: Theme.purple
                     }
                 }
             }
@@ -128,9 +126,9 @@ Item {
 
                     width: popoutContent.width
                     text: modelData
-                    color: root.theme.text
-                    font.pixelSize: root.theme.barFontSize - 3
-                    font.family: root.theme.fontFamily
+                    color: Theme.text
+                    font.pixelSize: Theme.barFontSize - 3
+                    font.family: Theme.fontMono
                     font.weight: Font.Normal
                     wrapMode: Text.WordWrap
                 }

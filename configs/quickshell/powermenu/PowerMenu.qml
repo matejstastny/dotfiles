@@ -9,8 +9,6 @@ import "../common"
 Item {
     id: root
 
-    readonly property Theme theme: Theme {}
-
     property bool open: false
     signal closeRequested()
 
@@ -33,7 +31,7 @@ Item {
     // the drawer rests against the outline's inner wall, and the band reads as
     // part of the same surface, so it already supplies that much of the gap on
     // the right - matching it here would leave the icons sitting off-centre
-    implicitWidth: root.padding + root.buttonSize + Math.max(root.padding - theme.frameThickness, 0)
+    implicitWidth: root.padding + root.buttonSize + Math.max(root.padding - Theme.frameThickness, 0)
     implicitHeight: column.implicitHeight + root.padding * 2
 
     function fire(index: int): void {

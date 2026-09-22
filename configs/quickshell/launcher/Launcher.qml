@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "../"
 import "../common"
 import "fuzzy.js" as Fuzzy
 
@@ -11,8 +12,8 @@ PopupWindow {
     pinTop: true
     // the card re-sizes on nearly every keystroke, so it decelerates flat
     // instead of springing. the pop on open is untouched
-    resizeDuration: theme.snapDuration
-    resizeEasing: theme.easingEffects
+    resizeDuration: 0
+    resizeEasing: Theme.easingEffects
 
     readonly property string mruScript: Quickshell.env("HOME") + "/dotfiles/bin/launcher-touch"
     readonly property string mruFile: Quickshell.env("HOME") + "/.local/share/quickshell-launcher-mru"
@@ -30,14 +31,37 @@ PopupWindow {
 
     // the window keeps its full size so a shrinking card animates inside it
     // rather than getting clipped by a surface that already resized
-    implicitHeight: 32 + queryHeight + 10 + maxRows * rowHeight + shadowPad * 2
+    windowHeight: 32 + queryHeight + 10 + maxRows * rowHeight
 
     property var mruIds: []
     property var entries: []
     property var filteredRows: []
+    property string calcResult: ""
+    property bool calcError: false
+    property string calcExpression: ""
+
+    readonly property string calcScript: `
+import sys, math
+expr = sys.argv[1]
+ns = {k: getattr(math, k) for k in dir(math) if not k.startswith('_')}
+ns['__builtins__'] = {}
+try:
+    result = eval(expr, ns)
+    if isinstance(result, float) and result == int(result) and abs(result) < 1e15:
+        print(int(result))
+    else:
+        print(result)
+except Exception:
+    print('?')
+`
 
     readonly property var selected: list.currentIndex >= 0 && list.currentIndex < filteredRows.length
         ? filteredRows[list.currentIndex] : null
+
+    function isCalculation(query: string): bool {
+        return /^(?:[0-9.(]|(?:sin|cos|tan|sqrt|log|pi|e)\b)/i.test(query)
+            && /^[0-9+\-*/%^().,\s_a-z]+$/i.test(query);
+    }
 
     function rebuildEntries() {
         const rows = []
@@ -98,12 +122,22 @@ PopupWindow {
                 if (rank !== Infinity) best += Math.max(0, 30 - rank * 2)
 
                 e.markup = nameHit
-                    ? Fuzzy.highlight(e.label, nameHit.positions, root.theme.rose)
+                    ? Fuzzy.highlight(e.label, nameHit.positions, Theme.rose)
                     : Fuzzy.escape(e.label)
                 e.score = best
                 rows.push(e)
             }
             rows.sort((a, b) => b.score - a.score || a.label.localeCompare(b.label))
+        }
+
+        if (root.isCalculation(query) && root.calcResult.length > 0 && !root.calcError) {
+            rows.unshift({
+                type: "calculation",
+                label: root.calcResult,
+                markup: Fuzzy.escape(root.calcResult),
+                subtitle: "copy result",
+                key: "calculation"
+            });
         }
 
         root.filteredRows = rows
@@ -137,6 +171,11 @@ PopupWindow {
     function launchCurrent() {
         const item = root.selected
         if (!item) return
+        if (item.type === "calculation") {
+            Quickshell.execDetached(["bash", "-c", "printf '%s' \"$1\" | wl-copy --type text/plain", "_", item.label])
+            root.closeRequested()
+            return
+        }
         root.mruIds = [item.key].concat(root.mruIds.filter(id => id !== item.key))
         Quickshell.execDetached([root.mruScript, item.key])
         item.ref.execute()
@@ -166,11 +205,40 @@ PopupWindow {
         }
     }
 
+    Timer {
+        id: calcDebounce
+        interval: 120
+        onTriggered: {
+            root.calcExpression = input.text.trim()
+            calcProcess.running = true
+        }
+    }
+
+    Process {
+        id: calcProcess
+        command: ["python3", "-c", root.calcScript, root.calcExpression]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (root.calcExpression !== input.text.trim()) {
+                    if (root.isCalculation(input.text.trim()))
+                        calcDebounce.restart();
+                    return;
+                }
+                const result = text.trim()
+                root.calcError = result === "?"
+                root.calcResult = root.calcError ? "" : result
+                root.refilter()
+            }
+        }
+    }
+
     Component.onCompleted: mruLoader.running = true
 
     onOpenChanged: {
         if (open) {
             input.text = ""
+            root.calcResult = ""
+            root.calcError = false
             refilter()
             input.forceActiveFocus()
         }
@@ -190,10 +258,10 @@ PopupWindow {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             text: "✦"
-            color: root.filteredRows.length > 0 ? theme.purple : theme.muted
+            color: root.filteredRows.length > 0 ? Theme.purple : Theme.muted
             font.pixelSize: 14
-            font.family: theme.fontFamily
-            Behavior on color { ColorAnimation { duration: theme.snapDuration } }
+            font.family: Theme.fontMono
+            Behavior on color { ColorAnimation { duration: Theme.snapDuration } }
         }
 
         TextInput {
@@ -204,14 +272,23 @@ PopupWindow {
             anchors.verticalCenter: parent.verticalCenter
             height: parent.height
             verticalAlignment: TextInput.AlignVCenter
-            color: theme.bright
+            color: Theme.bright
             font.pixelSize: 16
-            font.family: theme.fontFamily
+            font.family: Theme.fontMono
             selectByMouse: true
-            selectionColor: Qt.rgba(theme.purple.r, theme.purple.g, theme.purple.b, 0.45)
+            selectionColor: Qt.rgba(Theme.purple.r, Theme.purple.g, Theme.purple.b, 0.45)
             clip: true
 
-            onTextChanged: root.refilter()
+            onTextChanged: {
+                const query = text.trim()
+                root.calcResult = ""
+                root.calcError = false
+                root.refilter()
+                if (root.isCalculation(query))
+                    calcDebounce.restart()
+                else
+                    calcDebounce.stop()
+            }
             onAccepted: root.launchCurrent()
 
             Keys.onEscapePressed: root.closeRequested()
@@ -249,9 +326,9 @@ PopupWindow {
             id: scrollAnim
             target: list
             property: "contentY"
-            duration: theme.snapDuration
+            duration: Theme.snapDuration
             easing.type: Easing.BezierSpline
-            easing.bezierCurve: theme.easingEffects
+            easing.bezierCurve: Theme.easingEffects
         }
 
         highlight: Item {
@@ -261,10 +338,10 @@ PopupWindow {
             opacity: list.currentIndex >= 0 ? 1 : 0
 
             Behavior on y {
-                NumberAnimation { duration: theme.snapDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: theme.easingEffects }
+                NumberAnimation { duration: Theme.snapDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Theme.easingEffects }
             }
             Behavior on opacity {
-                NumberAnimation { duration: theme.snapDuration }
+                NumberAnimation { duration: Theme.snapDuration }
             }
 
             // the marker lives in the same left gutter as the prompt mark,
@@ -275,7 +352,7 @@ PopupWindow {
                 width: 2
                 height: 15
                 radius: 1
-                color: theme.purple
+                color: Theme.purple
             }
         }
 
@@ -295,9 +372,10 @@ PopupWindow {
                 anchors.verticalCenter: parent.verticalCenter
                 textFormat: Text.StyledText
                 text: row.modelData.markup
-                color: row.current ? theme.bright : theme.dim
+                color: row.modelData.type === "calculation" ? Theme.purple : (row.current ? Theme.bright : Theme.dim)
                 font.pixelSize: 13
-                font.family: theme.fontFamily
+                font.family: Theme.fontMono
+                font.weight: row.modelData.type === "calculation" ? Theme.weightHeading : Theme.weightBody
             }
 
             // only the row you are on explains itself, the rest stay quiet
@@ -308,12 +386,12 @@ PopupWindow {
                 anchors.verticalCenter: parent.verticalCenter
                 horizontalAlignment: Text.AlignRight
                 text: row.modelData.subtitle
-                color: theme.muted
+                color: Theme.muted
                 font.pixelSize: 10
-                font.family: theme.fontFamily
+                font.family: Theme.fontMono
                 elide: Text.ElideRight
                 opacity: row.current ? 1 : 0
-                Behavior on opacity { NumberAnimation { duration: theme.snapDuration } }
+                Behavior on opacity { NumberAnimation { duration: Theme.snapDuration } }
             }
 
             MouseArea {

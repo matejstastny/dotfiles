@@ -10,30 +10,24 @@ SquircleRect {
     property var notification
     property bool compact: false
     property bool dismissOnClick: false
+    property bool expanded: false
     signal dismissed()
 
     readonly property bool critical: notification && notification.urgency === NotificationUrgency.Critical
-
-    implicitHeight: content.implicitHeight + 24
-    color: theme.surface
-    borderWidth: theme.borderWidth
-    borderColor: critical ? theme.rose : theme.muted
-
+    readonly property bool expandable: notification && ((notification.body && notification.body.length > 0) || (notification.actions && notification.actions.length > 0))
     readonly property real dismissThreshold: 0.4
     property real dragX: 0
-    opacity: 1 - Math.min(1, Math.abs(dragX) / (width * dismissThreshold)) * 0.7
-
-    // appears/retreats as a shrinking blob anchored at the top-right corner -
-    // the corner closest to the bar it "came from" - instead of a flat fade,
-    // so it visually pinches down to a point rather than just vanishing
     property bool revealed: false
+
+    implicitHeight: content.implicitHeight + 24
+    color: Theme.surface
+    borderWidth: Theme.borderWidth
+    borderColor: critical ? Theme.rose : Theme.muted
+    opacity: 1 - Math.min(1, Math.abs(dragX) / (width * dismissThreshold)) * 0.7
     transformOrigin: Item.TopRight
     scale: revealed ? 1 : 0.1
-    radius: revealed ? theme.radius : Math.max(width, height)
-
-    Behavior on scale {
-        NumberAnimation { duration: theme.spatialDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: theme.easingSpatial }
-    }
+    radius: revealed ? Theme.radius : Math.max(width, height)
+    transform: Translate { x: root.dragX }
 
     function requestDismiss() {
         root.revealed = false
@@ -42,37 +36,36 @@ SquircleRect {
 
     Component.onCompleted: revealed = true
 
-    transform: Translate { x: root.dragX }
-
+    Behavior on scale {
+        NumberAnimation { duration: Theme.spatialDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Theme.easingSpatial }
+    }
     Behavior on dragX {
         enabled: !dragArea.pressed
-        NumberAnimation { duration: theme.spatialDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: theme.easingSpatial }
+        NumberAnimation { duration: Theme.spatialDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Theme.easingSpatial }
     }
 
     Timer {
         id: dismissTimer
-        interval: theme.spatialDuration
+        interval: Theme.spatialDuration
         onTriggered: root.dismissed()
     }
 
     Timer {
         id: flyOffTimer
-        interval: theme.spatialDuration
+        interval: Theme.spatialDuration
         onTriggered: root.dismissed()
     }
 
-    // declared first so it sits behind the close button / action buttons,
-    // which still take priority for their own smaller hit areas
     MouseArea {
         id: dragArea
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-
         property real pressX: 0
 
         onPressed: mouse => pressX = mouse.x
         onPositionChanged: mouse => {
-            if (pressed) root.dragX = mouse.x - pressX
+            if (pressed)
+                root.dragX = mouse.x - pressX
         }
         onReleased: {
             if (Math.abs(root.dragX) > root.width * root.dismissThreshold) {
@@ -83,7 +76,12 @@ SquircleRect {
             }
         }
         onClicked: {
-            if (root.dismissOnClick && Math.abs(root.dragX) < 4) root.requestDismiss()
+            if (Math.abs(root.dragX) >= 4)
+                return
+            if (root.expandable && !root.expanded)
+                root.expanded = true
+            else if (root.dismissOnClick || root.expanded || !root.expandable)
+                root.requestDismiss()
         }
     }
 
@@ -93,87 +91,104 @@ SquircleRect {
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.margins: 12
-        spacing: 6
+        spacing: 7
 
         Row {
             width: parent.width
-            spacing: 8
+            spacing: 10
 
-            Image {
+            Item {
                 id: icon
-                width: 22
-                height: 22
-                visible: source != ""
-                source: {
-                    if (!notification) return ""
-                    if (notification.image) return notification.image
-                    if (notification.appIcon) return Quickshell.iconPath(notification.appIcon, true)
-                    return ""
-                }
-                fillMode: Image.PreserveAspectFit
-            }
+                width: 42
+                height: 42
 
-            Text {
-                width: parent.width - (icon.visible ? icon.width + 8 : 0) - closeBtn.width - 8
-                text: notification ? notification.appName || notification.summary : ""
-                color: theme.dim
-                font.pixelSize: 11
-                font.family: theme.fontFamily
-                font.weight: Font.Normal
-                elide: Text.ElideRight
-            }
-
-            Text {
-                id: closeBtn
-                text: ""
-                color: theme.dim
-                font.pixelSize: 12
-                font.family: theme.fontFamily
-                font.weight: Font.Normal
-
-                MouseArea {
+                Image {
+                    id: imageIcon
                     anchors.fill: parent
-                    anchors.margins: -6
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: root.dismissed()
+                    source: {
+                        if (!notification) return ""
+                        if (notification.image) return notification.image
+                        if (notification.appIcon) return Quickshell.iconPath(notification.appIcon, true)
+                        return ""
+                    }
+                    visible: status === Image.Ready
+                    fillMode: Image.PreserveAspectFit
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    visible: !imageIcon.visible
+                    radius: width / 2
+                    color: root.critical ? Qt.rgba(Theme.rose.r, Theme.rose.g, Theme.rose.b, 0.22) : Theme.overlay
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "✦"
+                        color: root.critical ? Theme.rose : Theme.purple
+                        font.pixelSize: 22
+                        font.family: Theme.fontMono
+                    }
                 }
             }
-        }
 
-        Text {
-            width: parent.width
-            text: notification ? notification.summary : ""
-            visible: text !== ""
-            color: theme.bright
-            font.pixelSize: 13
-            font.bold: true
-            font.family: theme.fontFamily
-            font.weight: Font.Normal
-            wrapMode: Text.WordWrap
-            maximumLineCount: 2
-            elide: Text.ElideRight
-        }
+            Column {
+                width: parent.width - icon.width - parent.spacing
+                spacing: 2
 
-        Text {
-            width: parent.width
-            text: notification ? notification.body : ""
-            visible: text !== ""
-            color: theme.text
-            font.pixelSize: 12
-            font.family: theme.fontFamily
-            font.weight: Font.Normal
-            wrapMode: Text.WordWrap
-            maximumLineCount: compact ? 4 : 2
-            elide: Text.ElideRight
+                Row {
+                    width: parent.width
+
+                    Text {
+                        width: parent.width - expandGlyph.width - 8
+                        text: notification ? (notification.appName || notification.summary) + "  •  now" : ""
+                        color: Theme.dim
+                        font.pixelSize: Theme.sizeLabel
+                        font.family: Theme.fontMono
+                        elide: Text.ElideRight
+                    }
+
+                    Text {
+                        id: expandGlyph
+                        visible: root.expandable
+                        text: root.expanded ? "⌃" : "⌄"
+                        color: Theme.dim
+                        font.pixelSize: Theme.sizeLabel
+                        font.family: Theme.fontMono
+                    }
+                }
+
+                Text {
+                    width: parent.width
+                    text: notification ? notification.summary : ""
+                    visible: text !== ""
+                    color: Theme.bright
+                    font.pixelSize: Theme.sizeBody
+                    font.family: Theme.fontMono
+                    font.weight: Theme.weightHeading
+                    wrapMode: Text.WordWrap
+                    maximumLineCount: root.expanded ? 2 : 1
+                    elide: Text.ElideRight
+                }
+
+                Text {
+                    width: parent.width
+                    text: notification ? notification.body : ""
+                    visible: text !== ""
+                    color: Theme.text
+                    font.pixelSize: Theme.sizeLabel
+                    font.family: Theme.fontMono
+                    font.weight: Theme.weightBody
+                    wrapMode: Text.WordWrap
+                    maximumLineCount: root.expanded ? (root.compact ? 4 : 6) : 1
+                    elide: Text.ElideRight
+                }
+            }
         }
 
         Row {
             width: parent.width
             spacing: 6
-            // action buttons (e.g. "View") mostly just try to focus the
-            // originating app, which does nothing useful without
-            // Hyprland's autofocus - not worth the clutter on toasts
-            visible: !compact && notification && notification.actions && notification.actions.length > 0
+            visible: root.expanded && !compact && notification && notification.actions && notification.actions.length > 0
 
             Repeater {
                 model: notification ? notification.actions : []
@@ -181,17 +196,18 @@ SquircleRect {
                     required property var modelData
                     height: 26
                     width: actionLabel.implicitWidth + 16
-                    radius: theme.radiusSmall
-                    color: theme.overlay
+                    radius: Theme.radiusSmall
+                    color: Theme.overlay
+
                     Text {
                         id: actionLabel
                         anchors.centerIn: parent
                         text: modelData.text
-                        color: theme.text
-                        font.pixelSize: 11
-                        font.family: theme.fontFamily
-                        font.weight: Font.Normal
+                        color: Theme.text
+                        font.pixelSize: Theme.sizeLabel
+                        font.family: Theme.fontMono
                     }
+
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor

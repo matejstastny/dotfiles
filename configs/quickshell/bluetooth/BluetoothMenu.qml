@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Bluetooth
+import "../"
 import "../common"
 
 PopupWindow {
@@ -76,9 +77,9 @@ PopupWindow {
         anchors.left: parent.left
         text: !root.adapter ? "no adapter found ✧"
             : (!root.adapter.enabled ? "bluetooth is off" : "paired & nearby devices")
-        color: theme.dim
+        color: Theme.dim
         font.pixelSize: 10
-        font.family: theme.fontFamily
+        font.family: Theme.fontMono
     }
 
     Text {
@@ -87,9 +88,9 @@ PopupWindow {
         anchors.right: parent.right
         visible: root.adapter && root.adapter.enabled
         text: root.adapter && root.adapter.discovering ? "󰑐 scanning…" : "alt+s scan"
-        color: root.adapter && root.adapter.discovering ? theme.purple : theme.dim
+        color: root.adapter && root.adapter.discovering ? Theme.purple : Theme.dim
         font.pixelSize: 10
-        font.family: theme.fontFamily
+        font.family: Theme.fontMono
     }
 
     ListView {
@@ -119,12 +120,12 @@ PopupWindow {
 
             Rectangle {
                 anchors.fill: parent
-                radius: theme.radiusSmall
+                radius: Theme.radiusSmall
                 color: cell.modelData.connected
-                    ? Qt.rgba(theme.purple.r, theme.purple.g, theme.purple.b, cell.current ? 0.28 : 0.16)
-                    : (cell.current ? Qt.rgba(theme.purple.r, theme.purple.g, theme.purple.b, 0.18) : "transparent")
-                border.width: cell.modelData.connected ? theme.borderWidth : 0
-                border.color: theme.purple
+                    ? Qt.rgba(Theme.purple.r, Theme.purple.g, Theme.purple.b, cell.current ? 0.28 : 0.16)
+                    : (cell.current ? Qt.rgba(Theme.purple.r, Theme.purple.g, Theme.purple.b, 0.18) : "transparent")
+                border.width: cell.modelData.connected ? Theme.borderWidth : 0
+                border.color: Theme.purple
             }
 
             Text {
@@ -133,9 +134,9 @@ PopupWindow {
                 anchors.leftMargin: 10
                 anchors.verticalCenter: parent.verticalCenter
                 text: cell.modelData.connected ? "󰂱" : "󰂯"
-                color: cell.modelData.connected ? theme.purple : theme.dim
+                color: cell.modelData.connected ? Theme.purple : Theme.dim
                 font.pixelSize: cell.modelData.connected ? 16 : 14
-                font.family: theme.fontFamily
+                font.family: Theme.fontMono
             }
 
             Text {
@@ -144,18 +145,18 @@ PopupWindow {
                 anchors.rightMargin: 8
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.statusText(cell.modelData)
-                color: (cell.modelData.connected || cell.modelData.pairing) ? theme.purple : theme.dim
+                color: (cell.modelData.connected || cell.modelData.pairing) ? Theme.purple : Theme.dim
                 font.pixelSize: 10
-                font.bold: cell.modelData.connected
-                font.family: theme.fontFamily
+                font.family: Theme.fontMono
+                font.weight: cell.modelData.connected ? Theme.weightHeading : Theme.weightBody
             }
 
             Text {
                 text: cell.modelData.name
-                color: cell.modelData.connected ? theme.bright : (cell.current ? theme.bright : theme.text)
+                color: cell.modelData.connected ? Theme.bright : (cell.current ? Theme.bright : Theme.text)
                 font.pixelSize: 13
-                font.bold: cell.modelData.connected
-                font.family: theme.fontFamily
+                font.family: Theme.fontMono
+                font.weight: cell.modelData.connected ? Theme.weightHeading : Theme.weightBody
                 elide: Text.ElideRight
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: icon.right
@@ -189,9 +190,9 @@ PopupWindow {
                 Text {
                     anchors.centerIn: parent
                     text: "forget"
-                    color: theme.rose
+                    color: Theme.rose
                     font.pixelSize: 9
-                    font.family: theme.fontFamily
+                    font.family: Theme.fontMono
                 }
 
                 MouseArea {
@@ -217,8 +218,8 @@ PopupWindow {
         anchors.centerIn: list
         visible: root.deviceRows.length === 0
         text: root.adapter && root.adapter.discovering ? "scanning…" : "no devices ✧"
-        color: theme.dim
+        color: Theme.dim
         font.pixelSize: 12
-        font.family: theme.fontFamily
+        font.family: Theme.fontMono
     }
 }

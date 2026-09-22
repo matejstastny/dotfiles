@@ -11,8 +11,6 @@ Scope {
 
     required property var screen
 
-    readonly property Theme theme: Theme {}
-
     component Edge: PanelWindow {
         screen: root.screen
         color: "transparent"
@@ -28,18 +26,18 @@ Scope {
 
     Edge {
         anchors.top: true
-        exclusiveZone: root.theme.barHeight
+        exclusiveZone: Theme.barHeight
     }
     Edge {
         anchors.bottom: true
-        exclusiveZone: root.theme.frameThickness
+        exclusiveZone: Theme.frameThickness
     }
     Edge {
         anchors.left: true
-        exclusiveZone: root.theme.frameThickness
+        exclusiveZone: Theme.frameThickness
     }
     Edge {
         anchors.right: true
-        exclusiveZone: root.theme.frameThickness
+        exclusiveZone: Theme.frameThickness
     }
 }

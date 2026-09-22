@@ -10,7 +10,6 @@ Item {
     required property int interval
     property string onClickCommand: ""
 
-    readonly property Theme theme: Theme {}
     property string text: ""
     property string tooltip: ""
     property string statusClass: ""
@@ -19,7 +18,7 @@ Item {
 
     visible: text !== ""
     implicitWidth: visible ? label.implicitWidth + 8 : 0
-    implicitHeight: theme.barModuleHeight
+    implicitHeight: Theme.barModuleHeight
 
     Timer {
         interval: root.interval
@@ -50,13 +49,13 @@ Item {
         id: label
         anchors.centerIn: parent
         text: root.text
-        color: root.statusClass === "recording" ? theme.rose
-             : (root.active ? theme.purple : theme.dim)
-        font.pixelSize: theme.barFontSize
-        font.family: theme.fontFamily
+        color: root.statusClass === "recording" ? Theme.rose
+             : (root.active ? Theme.purple : Theme.dim)
+        font.pixelSize: Theme.barFontSize
+        font.family: Theme.fontMono
         font.weight: Font.Normal
 
-        Behavior on color { ColorAnimation { duration: theme.transitionDuration } }
+        Behavior on color { ColorAnimation { duration: Theme.transitionDuration } }
     }
 
     MouseArea {

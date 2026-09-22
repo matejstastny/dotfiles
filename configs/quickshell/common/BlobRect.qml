@@ -4,8 +4,6 @@ import "../"
 Item {
     id: root
 
-    readonly property Theme theme: Theme {}
-
     default property alias content: holder.data
 
     property real radius: 0
@@ -17,9 +15,9 @@ Item {
     // static shapes skip the spring entirely and never keep the group's frame
     // loop alive - the bar slab itself is the only one that wants this
     property bool blobStatic: false
-    property real stiffness: theme.blobStiffness
-    property real damping: theme.blobDamping
-    property real deformScale: theme.blobDeformScale
+    property real stiffness: Theme.blobStiffness
+    property real damping: Theme.blobDamping
+    property real deformScale: Theme.blobDeformScale
 
     // symmetric 2x2 deformation, identity at rest
     property real m00: 1

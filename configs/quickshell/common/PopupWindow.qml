@@ -21,12 +21,14 @@ PanelWindow {
     property string title: ""
     property int popupWidth: 400
     property int popupHeight: 400
+    // the layer surface itself can stay stable while a card inside it resizes.
+    // otherwise hyprland may clear its focus grab during a size reconfigure.
+    property int windowHeight: popupHeight
     // how the card follows a popupWidth/popupHeight change. springy by
     // default, since most popups only size once as they open
-    property int resizeDuration: theme.spatialDuration
-    property var resizeEasing: theme.easingSpatial
+    property int resizeDuration: Theme.spatialDuration
+    property var resizeEasing: Theme.easingSpatial
 
-    readonly property Theme theme: Theme {}
     readonly property int shadowPad: 84
     readonly property int shadowSpread: 68
 
@@ -44,7 +46,7 @@ PanelWindow {
     visible: card.opacity > 0.001
     color: "transparent"
     implicitWidth: popupWidth + shadowPad * 2
-    implicitHeight: popupHeight + shadowPad * 2
+    implicitHeight: windowHeight + shadowPad * 2
     exclusiveZone: 0
 
     mask: Region { item: card }
@@ -56,13 +58,33 @@ PanelWindow {
         : WlrKeyboardFocus.None
     focusable: false
 
+    // the grab is what closes this on a click outside, and hyprland drops it
+    // the moment a key event lands that is not for the grabbing surface. the
+    // keybind that opened the popup is still physically held at that point, so
+    // its release would slam the popup shut a frame after it appeared - arming
+    // the grab late lets the whole chord finish first. keyboard focus comes
+    // from the layershell, not the grab, so typing works during the gap
+    property bool grabArmed: false
+
+    Timer {
+        id: grabArmTimer
+        interval: 150
+        onTriggered: root.grabArmed = true
+    }
+
     HyprlandFocusGrab {
-        active: root.open
+        active: root.open && root.grabArmed
         windows: [QsWindow.window]
         onCleared: root.closeRequested()
     }
 
     onOpenChanged: {
+        if (root.open)
+            grabArmTimer.restart();
+        else {
+            grabArmTimer.stop();
+            root.grabArmed = false;
+        }
         if (root.open) PopoutState.current = root.popoutName
         else if (PopoutState.current === root.popoutName) PopoutState.current = ""
     }
@@ -122,7 +144,7 @@ PanelWindow {
             anchors.centerIn: parent
             width: root.curWidth
             height: root.curHeight
-            radius: theme.radius
+            radius: Theme.radius
             color: "black"
         }
     }
@@ -137,10 +159,10 @@ PanelWindow {
         anchors.rightMargin: root.centered ? 0 : shadowPad
         width: root.curWidth
         height: root.curHeight
-        radius: root.growFromAnchor && !root.open ? theme.radiusRest : theme.radius
-        color: theme.base
-        borderWidth: theme.borderWidth
-        borderColor: theme.muted
+        radius: root.growFromAnchor && !root.open ? Theme.radiusRest : Theme.radius
+        color: Theme.base
+        borderWidth: Theme.borderWidth
+        borderColor: Theme.muted
         clip: true
 
         opacity: root.open ? 1 : 0
@@ -148,8 +170,8 @@ PanelWindow {
 
         Behavior on width { NumberAnimation { duration: root.resizeDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.resizeEasing } }
         Behavior on height { NumberAnimation { duration: root.resizeDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.resizeEasing } }
-        Behavior on opacity { NumberAnimation { duration: theme.effectsDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: theme.easingEffects } }
-        Behavior on scale { NumberAnimation { duration: theme.popDuration; easing.type: Easing.OutBack; easing.overshoot: theme.popOvershoot } }
+        Behavior on opacity { NumberAnimation { duration: Theme.effectsDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Theme.easingEffects } }
+        Behavior on scale { NumberAnimation { duration: Theme.popDuration; easing.type: Easing.OutBack; easing.overshoot: Theme.popOvershoot } }
 
         Item {
             id: header
@@ -160,18 +182,17 @@ PanelWindow {
             anchors.margins: 16
             height: visible ? 18 : 0
             opacity: root.open ? 1 : 0
-            Behavior on opacity { NumberAnimation { duration: theme.effectsDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: theme.easingEffects } }
+            Behavior on opacity { NumberAnimation { duration: Theme.effectsDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Theme.easingEffects } }
 
             Text {
                 id: titleText
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 text: "✦ " + root.title
-                color: theme.purple
+                color: Theme.purple
                 font.pixelSize: 15
-                font.bold: true
-                font.family: theme.fontFamily
-                font.weight: Font.Normal
+                font.family: Theme.fontMono
+                font.weight: Theme.weightHeading
             }
         }
 
@@ -186,7 +207,7 @@ PanelWindow {
             anchors.bottomMargin: 16
             anchors.topMargin: header.visible ? 14 : 16
             opacity: root.open ? 1 : 0
-            Behavior on opacity { NumberAnimation { duration: theme.effectsDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: theme.easingEffects } }
+            Behavior on opacity { NumberAnimation { duration: Theme.effectsDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Theme.easingEffects } }
         }
     }
 }

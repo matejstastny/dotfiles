@@ -8,11 +8,9 @@ import "../"
 Item {
     id: root
 
-    readonly property Theme theme: Theme {}
-
-    property real borderLeft: theme.frameThickness
-    property real borderRight: theme.frameThickness
-    property real borderTop: theme.frameThickness
-    property real borderBottom: theme.frameThickness
-    property real radius: theme.frameRadius
+    property real borderLeft: Theme.frameThickness
+    property real borderRight: Theme.frameThickness
+    property real borderTop: Theme.frameThickness
+    property real borderBottom: Theme.frameThickness
+    property real radius: Theme.frameRadius
 }

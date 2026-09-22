@@ -16,8 +16,6 @@ Item {
     signal altBackspace()
     signal altD()
 
-    readonly property Theme theme: Theme {}
-
     implicitHeight: 40
 
     function focusInput() { input.forceActiveFocus() }
@@ -25,10 +23,10 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        radius: theme.radiusSmall
-        color: theme.surface
-        border.width: theme.borderWidth
-        border.color: input.activeFocus ? theme.purple : theme.muted
+        radius: Theme.radiusSmall
+        color: Theme.surface
+        border.width: Theme.borderWidth
+        border.color: input.activeFocus ? Theme.purple : Theme.muted
         Behavior on border.color { ColorAnimation { duration: 120 } }
     }
 
@@ -38,9 +36,9 @@ Item {
         anchors.leftMargin: 12
         anchors.verticalCenter: parent.verticalCenter
         text: root.placeholder
-        color: theme.dim
+        color: Theme.dim
         font.pixelSize: root.fontSize
-        font.family: theme.fontFamily
+        font.family: Theme.fontMono
     }
 
     TextInput {
@@ -49,9 +47,9 @@ Item {
         anchors.leftMargin: 12
         anchors.rightMargin: 12
         verticalAlignment: TextInput.AlignVCenter
-        color: theme.text
+        color: Theme.text
         font.pixelSize: root.fontSize
-        font.family: theme.fontFamily
+        font.family: Theme.fontMono
         selectByMouse: true
         clip: true
         echoMode: root.password ? TextInput.Password : TextInput.Normal

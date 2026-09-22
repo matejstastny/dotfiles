@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "../"
 import "../common"
 
 PopupWindow {
@@ -81,10 +82,10 @@ PopupWindow {
         highlight: Rectangle {
             width: grid.cellWidth - 8
             height: grid.cellHeight - 8
-            radius: theme.radiusSmall
+            radius: Theme.radiusSmall
             color: "transparent"
             border.width: 2
-            border.color: theme.purple
+            border.color: Theme.purple
             z: 10
         }
         Keys.onEscapePressed: root.closeRequested()
@@ -109,10 +110,10 @@ PopupWindow {
 
             Rectangle {
                 anchors.fill: parent
-                radius: theme.radiusSmall
-                color: theme.surface
-                border.width: theme.borderWidth
-                border.color: cell.current ? theme.purple : theme.muted
+                radius: Theme.radiusSmall
+                color: Theme.surface
+                border.width: Theme.borderWidth
+                border.color: cell.current ? Theme.purple : Theme.muted
                 clip: true
 
                 Image {
@@ -139,9 +140,9 @@ PopupWindow {
                     anchors.margins: 4
                     horizontalAlignment: Text.AlignHCenter
                     text: cell.name
-                    color: cell.current ? theme.purple : theme.bright
+                    color: cell.current ? Theme.purple : Theme.bright
                     font.pixelSize: 9
-                    font.family: theme.fontFamily
+                    font.family: Theme.fontMono
                     font.weight: Font.Normal
                     wrapMode: Text.WrapAnywhere
                     maximumLineCount: 2
@@ -154,9 +155,9 @@ PopupWindow {
                     anchors.margins: 5
                     z: 10
                     text: "✦"
-                    color: theme.purple
+                    color: Theme.purple
                     font.pixelSize: 12
-                    font.family: theme.fontFamily
+                    font.family: Theme.fontMono
                     visible: cell.current
                 }
             }
@@ -176,9 +177,9 @@ PopupWindow {
             anchors.centerIn: parent
             visible: cursorModel.count === 0
             text: "no cursor themes found ✧"
-            color: theme.dim
+            color: Theme.dim
             font.pixelSize: 12
-            font.family: theme.fontFamily
+            font.family: Theme.fontMono
             font.weight: Font.Normal
         }
     }
@@ -237,9 +238,9 @@ PopupWindow {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             text: "size"
-            color: theme.dim
+            color: Theme.dim
             font.pixelSize: 11
-            font.family: theme.fontFamily
+            font.family: Theme.fontMono
             font.weight: Font.Normal
         }
 
@@ -261,7 +262,7 @@ PopupWindow {
                 anchors.verticalCenter: parent.verticalCenter
                 height: 6
                 radius: 3
-                color: theme.overlay
+                color: Theme.overlay
 
                 Rectangle {
                     anchors.left: parent.left
@@ -269,7 +270,7 @@ PopupWindow {
                     height: parent.height
                     radius: parent.radius
                     width: Math.max(radius * 2, parent.width * Math.max(0, Math.min(1, sizeRow.fraction)))
-                    color: theme.purple
+                    color: Theme.purple
                     Behavior on width { NumberAnimation { duration: 80; easing.type: Easing.OutCubic } }
                 }
             }
@@ -293,9 +294,9 @@ PopupWindow {
             width: 34
             horizontalAlignment: Text.AlignRight
             text: root.currentSize + "px"
-            color: theme.bright
+            color: Theme.bright
             font.pixelSize: 11
-            font.family: theme.fontFamily
+            font.family: Theme.fontMono
             font.weight: Font.Normal
         }
     }

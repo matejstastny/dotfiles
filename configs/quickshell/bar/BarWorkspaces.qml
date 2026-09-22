@@ -7,7 +7,6 @@ Item {
 
     required property var screen
 
-    readonly property Theme theme: Theme {}
     implicitWidth: row.implicitWidth
     implicitHeight: row.implicitHeight
 
@@ -32,19 +31,19 @@ Item {
                 visible: onThisScreen
                 width: 26
                 height: 26
-                radius: theme.radiusSmall
-                color: modelData.focused ? theme.purple : "transparent"
+                radius: Theme.radiusSmall
+                color: modelData.focused ? Theme.purple : "transparent"
                 border.width: modelData.focused ? 0 : 1
-                border.color: theme.muted
+                border.color: Theme.muted
 
                 Behavior on color { ColorAnimation { duration: 120 } }
 
                 Text {
                     anchors.centerIn: parent
                     text: modelData.id
-                    color: modelData.focused ? theme.bright : theme.dim
-                    font.pixelSize: theme.barFontSize - 3
-                    font.family: theme.fontFamily
+                    color: modelData.focused ? Theme.bright : Theme.dim
+                    font.pixelSize: Theme.barFontSize - 3
+                    font.family: Theme.fontMono
                     font.weight: Font.Normal
                 }
 

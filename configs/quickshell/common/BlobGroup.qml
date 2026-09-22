@@ -4,16 +4,14 @@ import "../"
 Item {
     id: root
 
-    readonly property Theme theme: Theme {}
-
     // Qt 6 cannot bind a uniform array from QML, so the field is a fixed set of
     // slots rather than caelestia's dynamic rect list
-    readonly property int slotCount: 8
+    readonly property int slotCount: 10
 
-    property color color: theme.base
+    property color color: Theme.base
     property color borderColor: "transparent"
     property real borderWidth: 0
-    property real smoothing: theme.blobSmoothing
+    property real smoothing: Theme.blobSmoothing
     property list<Item> shapes
 
     // at most one BlobFrame, and it has to be a direct child: its geometry is
@@ -62,6 +60,8 @@ Item {
     property vector4d box5: Qt.vector4d(0, 0, 0, 0)
     property vector4d box6: Qt.vector4d(0, 0, 0, 0)
     property vector4d box7: Qt.vector4d(0, 0, 0, 0)
+    property vector4d box8: Qt.vector4d(0, 0, 0, 0)
+    property vector4d box9: Qt.vector4d(0, 0, 0, 0)
 
     property vector4d rad0: Qt.vector4d(0, 0, 0, 0)
     property vector4d rad1: Qt.vector4d(0, 0, 0, 0)
@@ -71,6 +71,8 @@ Item {
     property vector4d rad5: Qt.vector4d(0, 0, 0, 0)
     property vector4d rad6: Qt.vector4d(0, 0, 0, 0)
     property vector4d rad7: Qt.vector4d(0, 0, 0, 0)
+    property vector4d rad8: Qt.vector4d(0, 0, 0, 0)
+    property vector4d rad9: Qt.vector4d(0, 0, 0, 0)
 
     property vector4d def0: Qt.vector4d(1, 0, 1, 1)
     property vector4d def1: Qt.vector4d(1, 0, 1, 1)
@@ -80,6 +82,8 @@ Item {
     property vector4d def5: Qt.vector4d(1, 0, 1, 1)
     property vector4d def6: Qt.vector4d(1, 0, 1, 1)
     property vector4d def7: Qt.vector4d(1, 0, 1, 1)
+    property vector4d def8: Qt.vector4d(1, 0, 1, 1)
+    property vector4d def9: Qt.vector4d(1, 0, 1, 1)
 
     readonly property bool animating: {
         for (let i = 0; i < shapes.length; i++) {
@@ -269,6 +273,8 @@ Item {
         property vector4d box5: root.box5
         property vector4d box6: root.box6
         property vector4d box7: root.box7
+        property vector4d box8: root.box8
+        property vector4d box9: root.box9
 
         property vector4d rad0: root.rad0
         property vector4d rad1: root.rad1
@@ -278,6 +284,8 @@ Item {
         property vector4d rad5: root.rad5
         property vector4d rad6: root.rad6
         property vector4d rad7: root.rad7
+        property vector4d rad8: root.rad8
+        property vector4d rad9: root.rad9
 
         property vector4d def0: root.def0
         property vector4d def1: root.def1
@@ -287,6 +295,8 @@ Item {
         property vector4d def5: root.def5
         property vector4d def6: root.def6
         property vector4d def7: root.def7
+        property vector4d def8: root.def8
+        property vector4d def9: root.def9
 
         vertexShader: Qt.resolvedUrl("../shaders/blob.vert.qsb")
         fragmentShader: Qt.resolvedUrl("../shaders/blob.frag.qsb")

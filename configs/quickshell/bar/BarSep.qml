@@ -2,11 +2,10 @@ import QtQuick
 import "../"
 
 Text {
-    readonly property Theme theme: Theme {}
     text: "✧"
-    color: theme.muted
-    font.pixelSize: theme.barFontSize - 1
-    font.family: theme.fontFamily
+    color: Theme.muted
+    font.pixelSize: Theme.barFontSize - 1
+    font.family: Theme.fontMono
     font.weight: Font.Normal
     verticalAlignment: Text.AlignVCenter
 }

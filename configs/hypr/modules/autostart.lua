@@ -13,7 +13,6 @@ hl.on("hyprland.start", function()
     -- SHELL
     ---------------------------------
 
-    -- hl.exec_cmd("noctalia --daemon")                         -- noctalia
     hl.exec_cmd("QT_QPA_PLATFORMTHEME=gtk3 qs")                 -- dekstop shell
     hl.exec_cmd("hypridle")                                     -- sleep
     hl.exec_cmd(DOTS .. "/bin/lock")                            -- lock screen

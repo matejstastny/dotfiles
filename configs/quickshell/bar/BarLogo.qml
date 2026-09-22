@@ -5,22 +5,21 @@ import "../"
 Item {
     id: root
 
-    readonly property Theme theme: Theme {}
     readonly property bool hovered: hoverArea.containsMouse
 
     implicitWidth: label.implicitWidth + 8
-    implicitHeight: theme.barModuleHeight
+    implicitHeight: Theme.barModuleHeight
 
     Text {
         id: label
         anchors.centerIn: parent
         text: ""
-        color: root.hovered ? theme.bright : theme.purple
-        font.pixelSize: theme.barFontSize + 2
-        font.family: theme.fontFamily
+        color: root.hovered ? Theme.bright : Theme.purple
+        font.pixelSize: Theme.barFontSize + 2
+        font.family: Theme.fontMono
         font.weight: Font.Normal
 
-        Behavior on color { ColorAnimation { duration: theme.transitionDuration } }
+        Behavior on color { ColorAnimation { duration: Theme.transitionDuration } }
     }
 
     MouseArea {

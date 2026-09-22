@@ -1,3 +1,5 @@
+pragma Singleton
+
 import QtQuick
 
 QtObject {
@@ -13,7 +15,29 @@ QtObject {
 
     readonly property int radius: 14
     readonly property int radiusSmall: 8
-    readonly property string fontFamily: "Maple Mono NF"
+
+    // two families, not one. mono carries anything that is a readout or a
+    // thing you type into - it wants fixed columns so a percentage does not
+    // jitter as its digits change. sans carries prose: notification bodies,
+    // media titles, headings. one font doing both jobs is what made every
+    // heading read as another row of terminal output
+    readonly property string fontMono: "Maple Mono NF"
+    readonly property string fontSans: "Maple Mono NF"
+
+    // font.bold and font.weight write the same underlying value, so setting
+    // both leaves whichever came last standing. only weight is used anywhere
+    // in the shell now
+    readonly property int weightBody: Font.Normal
+    readonly property int weightMedium: Font.Medium
+    readonly property int weightHeading: Font.DemiBold
+
+    // one scale rather than a literal at every call site. the steps are the
+    // sizes already in use, named by the job they were doing
+    readonly property int sizeTitle: 15
+    readonly property int sizeBody: 13
+    readonly property int sizeLabel: 11
+    readonly property int sizeMicro: 10
+
     readonly property int barFontSize: 14
     readonly property int barModuleHeight: 38
     readonly property int borderWidth: 1
@@ -89,4 +113,12 @@ QtObject {
     readonly property int radiusPressed: 10
     readonly property int radiusRest: 16
     readonly property int radiusActive: 24
+
+    // press ripple: how long the circle takes to cover the element, and how
+    // far past its far corner it keeps going so the edges never show the
+    // circle's curve
+    readonly property int rippleDuration: 420
+    readonly property real rippleOvershoot: 1.25
+    readonly property real rippleOpacity: 0.13
+    readonly property real hoverOpacity: 0.07
 }

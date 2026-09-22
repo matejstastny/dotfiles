@@ -47,9 +47,8 @@ PanelWindow {
 
     readonly property bool anyDrawerOpen: panelOpen || powerMenuOpen || wallpaperOpen
 
-    readonly property Theme theme: Theme {}
-    readonly property int barHeight: theme.barHeight
-    readonly property int frameThickness: theme.frameThickness
+    readonly property int barHeight: Theme.barHeight
+    readonly property int frameThickness: Theme.frameThickness
 
     // the usable area inside the outline, in window coordinates. drawers park
     // just outside it and slide in to sit flush against its edges
@@ -109,6 +108,12 @@ PanelWindow {
             item: bar.diskStat.hovered ? bar.diskStat.popoutItem : null
         }
         Region {
+            item: bar.batteryStat.hovered ? bar.batteryStat.popoutItem : null
+        }
+        Region {
+            item: bar.volumeStat.hovered ? bar.volumeStat.popoutItem : null
+        }
+        Region {
             item: toastPanel
         }
         Region {
@@ -127,8 +132,27 @@ PanelWindow {
 
     // only the screen the drawer actually opened on may grab: a second grab
     // cancels the first, and the first's clear would slam the drawer shut again
+    // same late arming as PopupWindow: the keybind that opened the drawer is
+    // still held when the grab would be taken, and its release would clear it
+    property bool grabArmed: false
+
+    Timer {
+        id: grabArmTimer
+        interval: 150
+        onTriggered: root.grabArmed = true
+    }
+
+    onAnyDrawerOpenChanged: {
+        if (root.anyDrawerOpen)
+            grabArmTimer.restart();
+        else {
+            grabArmTimer.stop();
+            root.grabArmed = false;
+        }
+    }
+
     HyprlandFocusGrab {
-        active: root.anyDrawerOpen
+        active: root.anyDrawerOpen && root.grabArmed
         windows: [root]
         onCleared: {
             root.panelCloseRequested();
@@ -140,12 +164,12 @@ PanelWindow {
         id: surface
 
         anchors.fill: parent
-        color: theme.base
-        borderColor: theme.muted
-        borderWidth: theme.borderWidth
+        color: Theme.base
+        borderColor: Theme.muted
+        borderWidth: Theme.borderWidth
 
         frame: frame
-        shapes: [bar.cpuStat.popoutItem, bar.memStat.popoutItem, bar.diskStat.popoutItem, toastPanel, panelDrawer, powerDrawer, wallpaperDrawer, osdDrawer]
+        shapes: [bar.cpuStat.popoutItem, bar.memStat.popoutItem, bar.diskStat.popoutItem, bar.batteryStat.popoutItem, bar.volumeStat.popoutItem, toastPanel, panelDrawer, powerDrawer, wallpaperDrawer, osdDrawer]
 
         // overhangs the screen on every side, so the outer edge, its blend and
         // the bulge of a parked drawer all land off-screen and the only thing
@@ -186,21 +210,21 @@ PanelWindow {
         visible: toastColumn.height > 0
         x: root.contentArea.x + root.contentArea.width - width
         y: root.contentArea.y
-        width: theme.toastWidth
+        width: Theme.toastWidth
         height: toastColumn.height
-        radius: theme.radius
+        radius: Theme.radius
 
         Column {
             id: toastColumn
 
-            width: theme.toastWidth
+            width: Theme.toastWidth
 
             move: Transition {
                 NumberAnimation {
                     properties: "y"
-                    duration: root.theme.spatialDuration
+                    duration: Theme.spatialDuration
                     easing.type: Easing.BezierSpline
-                    easing.bezierCurve: root.theme.easingSpatial
+                    easing.bezierCurve: Theme.easingSpatial
                 }
             }
 

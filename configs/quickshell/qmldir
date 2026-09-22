@@ -1,0 +1,3 @@
+singleton Theme 1.0 Theme.qml
+singleton PopoutState 1.0 PopoutState.qml
+singleton Monitors 1.0 Monitors.qml

@@ -14,15 +14,16 @@ Item {
     required property var screen
     property bool panelOpen: false
 
-    readonly property Theme theme: Theme {}
-
     readonly property alias cpuStat: cpuStat
     readonly property alias memStat: memStat
     readonly property alias diskStat: diskStat
+    readonly property alias batteryStat: batteryStat
+    readonly property alias volumeStat: volumeStat
 
-    implicitHeight: theme.barHeight
+    implicitHeight: Theme.barHeight
 
-    readonly property bool isLaptopScreen: screen && screen.name === "eDP-1"
+    readonly property bool isLaptopScreen: Monitors.isLaptop(screen)
+    readonly property string dotfilesBin: Quickshell.env("HOME") + "/dotfiles/bin"
     readonly property var activePlayer: {
         const players = Mpris.players.values;
         for (let i = 0; i < players.length; i++)
@@ -79,21 +80,21 @@ Item {
 
         BarScriptModule {
             anchors.verticalCenter: parent.verticalCenter
-            script: "/home/elara/dotfiles/bin/bar-recording"
+            script: root.dotfilesBin + "/bar-recording"
             interval: 1000
-            onClickCommand: "/home/elara/dotfiles/bin/record"
+            onClickCommand: root.dotfilesBin + "/record"
         }
 
         BarScriptModule {
             anchors.verticalCenter: parent.verticalCenter
-            script: "/home/elara/dotfiles/bin/bar-tailscale"
+            script: root.dotfilesBin + "/bar-tailscale"
             interval: 10000
             onClickCommand: "tailscale up"
         }
 
         BarScriptModule {
             anchors.verticalCenter: parent.verticalCenter
-            script: "/home/elara/dotfiles/bin/bar-docker"
+            script: root.dotfilesBin + "/bar-docker"
             interval: 5000
             onClickCommand: "kitty -e sh -c 'docker ps; read'"
         }
@@ -120,9 +121,11 @@ Item {
         }
 
         BarVolume {
+            id: volumeStat
             anchors.verticalCenter: parent.verticalCenter
         }
         BarBattery {
+            id: batteryStat
             anchors.verticalCenter: parent.verticalCenter
         }
 
@@ -150,9 +153,9 @@ Item {
             text: !root.activePlayer ? "" : (root.activePlayer.trackArtist
                 ? root.activePlayer.trackTitle + "  ·  " + root.activePlayer.trackArtist
                 : root.activePlayer.trackTitle)
-            color: theme.dim
-            font.pixelSize: theme.barFontSize - 1
-            font.family: theme.fontFamily
+            color: Theme.dim
+            font.pixelSize: Theme.barFontSize - 1
+            font.family: Theme.fontMono
             font.weight: Font.Normal
         }
     }

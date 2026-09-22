@@ -1,17 +1,100 @@
 #!/usr/bin/env bash
-#@ app autostart
+#@ launch or close the standard app set
+
+here="$(dirname "$0")"
+
+# name | pgrep -x | window class | start | close | command
+apps=(
+	"kitty|kitty|^kitty$|once|quit|kitty"
+	"code|code|^code$|once|quit|code $HOME/dotfiles"
+	"helium|helium|^helium$|once|quit|$here/helium --profile-directory=Default"
+	"obsidian|obsidian|^obsidian$|once|quit|$HOME/.local/share/obsidian/obsidian.AppImage --appimage-extract-and-run"
+	"t3code|t3code|^t3code$|once|quit|$HOME/.local/share/t3code/t3code --no-sandbox"
+	"vesktop|vesktop|^vesktop$|always|tray|vesktop"
+	"whatsie|whatsie|^com\.ktechpit\.whatsie$|once|tray|whatsie"
+)
 
 running() {
 	pgrep -x "$1" >/dev/null
 }
 
-running kitty || kitty &
-running code || code ~/dotfiles &
-running helium || "$(dirname "$0")/helium" --profile-directory=Default &
-running vesktop || vesktop &
-pgrep -f obsidian.AppImage >/dev/null || /home/elara/.local/share/obsidian/obsidian.AppImage --appimage-extract-and-run %u &
-running t3code || /home/elara/.local/share/t3code/t3code --no-sandbox
+# tray apps probe for the watcher once at startup and never retry, so quickshell
+# has to own the name before they launch or they come up with no tray icon
+wait_for_tray() {
+	local attempt
 
-# workspace-assignment rules relocate windows after they open, which races
-# our ws2 group rule; re-evaluate rules once things have settled
-(sleep 5 && hyprctl reload) &
+	for ((attempt = 0; attempt < 100; attempt++)); do
+		if [[ "$(busctl --user get-property org.kde.StatusNotifierWatcher /StatusNotifierWatcher org.kde.StatusNotifierWatcher IsStatusNotifierHostRegistered 2>/dev/null)" == "b true" ]]; then
+			return
+		fi
+
+		sleep 0.1
+	done
+}
+
+# a scope, not a service: launchers like /usr/bin/code fork off the real process
+# and exit, and a service would sigkill the survivors along with the wrapper
+spawn() {
+	local name="$1"
+	shift
+
+	systemd-run --user --scope --quiet --unit="app-$name-$$" -- "$@" >/dev/null 2>&1 &
+}
+
+start_apps() {
+	local name proc class start mode cmd waited=0
+
+	for app in "${apps[@]}"; do
+		IFS='|' read -r name proc class start mode cmd <<<"$app"
+
+		if running "$proc"; then
+			# a second invocation of a single-instance app just raises its window
+			[[ $start == always ]] && { $cmd >/dev/null 2>&1 & }
+			continue
+		fi
+
+		if [[ $mode == tray && $waited == 0 ]]; then
+			wait_for_tray
+			waited=1
+		fi
+
+		spawn "$name" $cmd
+	done
+
+	# workspace-assignment rules relocate windows after they open, which races
+	# our ws2 group rule; re-evaluate rules once things have settled
+	(sleep 5 && hyprctl reload) &
+}
+
+close_apps() {
+	local name proc class start mode cmd clients
+
+	clients=$(hyprctl clients -j)
+
+	for app in "${apps[@]}"; do
+		IFS='|' read -r name proc class start mode cmd <<<"$app"
+
+		if [[ $mode == tray ]]; then
+			# closing the window drops these to their tray icon, killing the pid
+			# would take the tray icon down with it
+			while IFS= read -r addr; do
+				[[ -z $addr ]] && continue
+				hyprctl dispatch "hl.dsp.window.close({ window = \"address:$addr\" })" >/dev/null
+			done < <(jq -r --arg c "$class" '.[] | select(.class | test($c)) | .address' <<<"$clients")
+		else
+			while IFS= read -r pid; do
+				[[ -z $pid ]] && continue
+				kill -15 "$pid" 2>/dev/null
+			done < <(jq -r --arg c "$class" '.[] | select(.class | test($c)) | .pid' <<<"$clients" | sort -u)
+		fi
+	done
+}
+
+case "${1:-start}" in
+start) start_apps ;;
+close) close_apps ;;
+*)
+	echo "usage: ${0##*/} [start|close]" >&2
+	exit 1
+	;;
+esac

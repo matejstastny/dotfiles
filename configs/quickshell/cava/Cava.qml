@@ -7,7 +7,6 @@ import "../"
 PanelWindow {
     id: root
 
-    readonly property Theme theme: Theme {}
     readonly property int barCount: 80
     readonly property int barGap: 4
     readonly property int barMaxHeight: 200
@@ -21,9 +20,9 @@ PanelWindow {
     function barColor(idx) {
         const t = root.barCount > 1 ? idx / (root.barCount - 1) : 0
         return Qt.rgba(
-            theme.purple.r + (theme.rose.r - theme.purple.r) * t,
-            theme.purple.g + (theme.rose.g - theme.purple.g) * t,
-            theme.purple.b + (theme.rose.b - theme.purple.b) * t,
+            Theme.purple.r + (Theme.rose.r - Theme.purple.r) * t,
+            Theme.purple.g + (Theme.rose.g - Theme.purple.g) * t,
+            Theme.purple.b + (Theme.rose.b - Theme.purple.b) * t,
             root.barOpacity
         )
     }
@@ -65,7 +64,7 @@ PanelWindow {
         id: content
         anchors.fill: parent
         opacity: root.open ? 1 : 0
-        Behavior on opacity { NumberAnimation { duration: theme.transitionDuration; easing.type: Easing.OutCubic } }
+        Behavior on opacity { NumberAnimation { duration: Theme.transitionDuration; easing.type: Easing.OutCubic } }
 
         Repeater {
             model: root.barCount

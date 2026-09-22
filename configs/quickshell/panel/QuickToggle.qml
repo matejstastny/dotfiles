@@ -8,14 +8,12 @@ Rectangle {
     property bool checked: false
     signal toggled()
 
-    readonly property Theme theme: Theme {}
-
     implicitWidth: 64
     implicitHeight: 64
-    radius: theme.radiusSmall
-    color: checked ? Qt.rgba(theme.purple.r, theme.purple.g, theme.purple.b, 0.18) : theme.surface
-    border.width: theme.borderWidth
-    border.color: !root.enabled ? theme.muted : (mouseArea.containsMouse ? theme.purple : (checked ? theme.purple : theme.muted))
+    radius: Theme.radiusSmall
+    color: checked ? Qt.rgba(Theme.purple.r, Theme.purple.g, Theme.purple.b, 0.18) : Theme.surface
+    border.width: Theme.borderWidth
+    border.color: !root.enabled ? Theme.muted : (mouseArea.containsMouse ? Theme.purple : (checked ? Theme.purple : Theme.muted))
     opacity: root.enabled ? 1 : 0.4
 
     Behavior on color { ColorAnimation { duration: 150 } }
@@ -24,9 +22,9 @@ Rectangle {
     Text {
         anchors.centerIn: parent
         text: root.icon
-        color: root.checked ? theme.bright : theme.dim
+        color: root.checked ? Theme.bright : Theme.dim
         font.pixelSize: 20
-        font.family: theme.fontFamily
+        font.family: Theme.fontMono
         Behavior on color { ColorAnimation { duration: 140; easing.type: Easing.OutCubic } }
     }
 

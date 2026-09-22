@@ -4,7 +4,6 @@ import "../"
 Item {
     id: root
 
-    readonly property Theme theme: Theme {}
     property date now: new Date()
     implicitWidth: label.implicitWidth
     implicitHeight: label.implicitHeight
@@ -20,9 +19,9 @@ Item {
         id: label
         anchors.centerIn: parent
         text: Qt.formatDateTime(root.now, "hh:mm")
-        color: theme.text
-        font.pixelSize: theme.barFontSize
-        font.family: theme.fontFamily
+        color: Theme.text
+        font.pixelSize: Theme.barFontSize
+        font.family: Theme.fontMono
         font.weight: Font.Normal
 
     }

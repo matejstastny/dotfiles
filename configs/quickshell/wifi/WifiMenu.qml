@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Networking
+import "../"
 import "../common"
 
 PopupWindow {
@@ -121,9 +122,9 @@ PopupWindow {
             anchors.top: parent.top
             anchors.left: parent.left
             text: "networks"
-            color: theme.dim
+            color: Theme.dim
             font.pixelSize: 10
-            font.family: theme.fontFamily
+            font.family: Theme.fontMono
         }
 
         Text {
@@ -132,9 +133,9 @@ PopupWindow {
             anchors.right: parent.right
             visible: root.scanning
             text: "󰑐 refreshing…"
-            color: theme.purple
+            color: Theme.purple
             font.pixelSize: 10
-            font.family: theme.fontFamily
+            font.family: Theme.fontMono
         }
 
         ListView {
@@ -163,8 +164,8 @@ PopupWindow {
 
                 Rectangle {
                     anchors.fill: parent
-                    radius: theme.radiusSmall
-                    color: cell.current ? Qt.rgba(theme.purple.r, theme.purple.g, theme.purple.b, 0.18) : "transparent"
+                    radius: Theme.radiusSmall
+                    color: cell.current ? Qt.rgba(Theme.purple.r, Theme.purple.g, Theme.purple.b, 0.18) : "transparent"
                 }
 
                 Text {
@@ -173,9 +174,9 @@ PopupWindow {
                     anchors.leftMargin: 10
                     anchors.verticalCenter: parent.verticalCenter
                     text: root.signalGlyph(cell.modelData.signalStrength)
-                    color: cell.current ? theme.purple : theme.dim
+                    color: cell.current ? Theme.purple : Theme.dim
                     font.pixelSize: 14
-                    font.family: theme.fontFamily
+                    font.family: Theme.fontMono
                 }
 
                 Text {
@@ -185,16 +186,16 @@ PopupWindow {
                     anchors.verticalCenter: parent.verticalCenter
                     text: (cell.modelData.connected ? "connected" : (cell.modelData.known ? "saved" : ""))
                         + (cell.modelData.security !== WifiSecurityType.Open ? " 󰌾" : "")
-                    color: cell.modelData.connected ? theme.purple : theme.dim
+                    color: cell.modelData.connected ? Theme.purple : Theme.dim
                     font.pixelSize: 10
-                    font.family: theme.fontFamily
+                    font.family: Theme.fontMono
                 }
 
                 Text {
                     text: cell.modelData.name
-                    color: cell.current ? theme.bright : theme.text
+                    color: cell.current ? Theme.bright : Theme.text
                     font.pixelSize: 13
-                    font.family: theme.fontFamily
+                    font.family: Theme.fontMono
                     elide: Text.ElideRight
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: sig.right
@@ -220,9 +221,9 @@ PopupWindow {
             anchors.centerIn: list
             visible: root.networkRows.length === 0
             text: "no networks found ✧"
-            color: theme.dim
+            color: Theme.dim
             font.pixelSize: 12
-            font.family: theme.fontFamily
+            font.family: Theme.fontMono
         }
     }
 
@@ -237,10 +238,10 @@ PopupWindow {
             anchors.left: parent.left
             anchors.right: parent.right
             text: "🔒 password for " + root.pendingSsid
-            color: theme.purple
+            color: Theme.purple
             font.pixelSize: 13
-            font.bold: true
-            font.family: theme.fontFamily
+            font.family: Theme.fontMono
+            font.weight: Theme.weightHeading
             elide: Text.ElideRight
         }
 
@@ -272,9 +273,9 @@ PopupWindow {
             anchors.right: parent.right
             visible: root.passwordError.length > 0
             text: root.passwordError
-            color: theme.rose
+            color: Theme.rose
             font.pixelSize: 11
-            font.family: theme.fontFamily
+            font.family: Theme.fontMono
         }
     }
 }

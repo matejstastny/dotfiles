@@ -17,10 +17,10 @@ Rectangle {
     readonly property int weekCount: Math.ceil((firstWeekday(viewDate.getFullYear(), viewDate.getMonth()) + daysInMonth(viewDate.getFullYear(), viewDate.getMonth())) / 7)
 
     implicitHeight: 264
-    radius: theme.radius
-    color: theme.surface
-    border.width: theme.borderWidth
-    border.color: theme.muted
+    radius: Theme.radius
+    color: Theme.surface
+    border.width: Theme.borderWidth
+    border.color: Theme.muted
 
     Item {
         id: navRow
@@ -35,9 +35,9 @@ Rectangle {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             text: "󰅁"
-            color: prevArea.containsMouse ? theme.purple : theme.dim
+            color: prevArea.containsMouse ? Theme.purple : Theme.dim
             font.pixelSize: 14
-            font.family: theme.fontFamily
+            font.family: Theme.fontMono
             Behavior on color { ColorAnimation { duration: 100 } }
             MouseArea {
                 id: prevArea
@@ -52,11 +52,10 @@ Rectangle {
         Text {
             anchors.centerIn: parent
             text: root.monthNames[root.viewDate.getMonth()] + " " + root.viewDate.getFullYear()
-            color: theme.bright
+            color: Theme.bright
             font.pixelSize: 13
-            font.bold: true
-            font.family: theme.fontFamily
-            font.weight: Font.Normal
+            font.family: Theme.fontMono
+            font.weight: Theme.weightHeading
         }
 
         Text {
@@ -64,9 +63,9 @@ Rectangle {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             text: "󰅂"
-            color: nextArea.containsMouse ? theme.purple : theme.dim
+            color: nextArea.containsMouse ? Theme.purple : Theme.dim
             font.pixelSize: 14
-            font.family: theme.fontFamily
+            font.family: Theme.fontMono
             Behavior on color { ColorAnimation { duration: 100 } }
             MouseArea {
                 id: nextArea
@@ -95,9 +94,9 @@ Rectangle {
                 width: weekdayRow.width / 7
                 horizontalAlignment: Text.AlignHCenter
                 text: modelData
-                color: theme.dim
+                color: Theme.dim
                 font.pixelSize: 10
-                font.family: theme.fontFamily
+                font.family: Theme.fontMono
             }
         }
     }
@@ -132,16 +131,16 @@ Rectangle {
                     height: 24
                     radius: 12
                     visible: cell.isToday
-                    color: theme.purple
+                    color: Theme.purple
                 }
 
                 Text {
                     anchors.centerIn: parent
                     text: cell.cellDate.getDate()
-                    color: cell.isToday ? theme.bright : (cell.inMonth ? theme.text : theme.dim)
+                    color: cell.isToday ? Theme.bright : (cell.inMonth ? Theme.text : Theme.dim)
                     opacity: cell.inMonth ? 1 : 0.55
                     font.pixelSize: 11
-                    font.family: theme.fontFamily
+                    font.family: Theme.fontMono
                     font.weight: Font.Normal
                 }
             }

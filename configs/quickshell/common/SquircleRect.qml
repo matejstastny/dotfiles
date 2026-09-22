@@ -4,13 +4,11 @@ import "../"
 ShaderEffect {
     id: root
 
-    readonly property Theme theme: Theme {}
-
     property color color: "transparent"
     property color borderColor: "transparent"
     property real radius: 0
     property real borderWidth: 0
-    property real smoothing: root.theme.smoothing
+    property real smoothing: Theme.smoothing
     property bool animateColor: true
 
     property size size: Qt.size(width, height)
@@ -18,24 +16,24 @@ ShaderEffect {
 
     Behavior on radius {
         NumberAnimation {
-            duration: root.theme.spatialDuration
+            duration: Theme.spatialDuration
             easing.type: Easing.BezierSpline
-            easing.bezierCurve: root.theme.easingSpatial
+            easing.bezierCurve: Theme.easingSpatial
         }
     }
     Behavior on color {
         enabled: root.animateColor
         ColorAnimation {
-            duration: root.theme.effectsDuration
+            duration: Theme.effectsDuration
             easing.type: Easing.BezierSpline
-            easing.bezierCurve: root.theme.easingEffects
+            easing.bezierCurve: Theme.easingEffects
         }
     }
     Behavior on borderColor {
         ColorAnimation {
-            duration: root.theme.effectsDuration
+            duration: Theme.effectsDuration
             easing.type: Easing.BezierSpline
-            easing.bezierCurve: root.theme.easingEffects
+            easing.bezierCurve: Theme.easingEffects
         }
     }
 

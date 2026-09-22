@@ -1,0 +1,4 @@
+#!/bin/bash
+#@ chrome spotify wrapper command
+
+/opt/helium/helium-wrapper --profile-directory=Default --app-id=pjibgclleladliembfgfagdaldikeohf

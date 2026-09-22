@@ -4,15 +4,13 @@ import "../"
 Item {
     id: root
 
-    readonly property Theme theme: Theme {}
-
     property bool open: false
     property string kind: "volume"
     property int pct: 0
     property bool muted: false
 
     readonly property real level: Math.max(0, Math.min(1, root.pct / 100))
-    readonly property color accent: root.muted ? theme.muted : theme.purple
+    readonly property color accent: root.muted ? Theme.muted : Theme.purple
 
     // the glyph carries the level too, so the readout can stay a bare number
     readonly property string glyph: {
@@ -37,13 +35,13 @@ Item {
         horizontalAlignment: Text.AlignHCenter
 
         text: root.glyph
-        color: root.muted ? theme.rose : theme.purple
+        color: root.muted ? Theme.rose : Theme.purple
         font.pixelSize: 15
-        font.family: theme.fontFamily
+        font.family: Theme.fontMono
 
         Behavior on color {
             ColorAnimation {
-                duration: root.theme.effectsDuration
+                duration: Theme.effectsDuration
             }
         }
     }
@@ -57,14 +55,14 @@ Item {
         horizontalAlignment: Text.AlignRight
 
         text: root.pct
-        color: root.muted ? theme.dim : theme.bright
+        color: root.muted ? Theme.dim : Theme.bright
         font.pixelSize: 11
-        font.family: theme.fontFamily
+        font.family: Theme.fontMono
         font.weight: Font.DemiBold
 
         Behavior on color {
             ColorAnimation {
-                duration: root.theme.effectsDuration
+                duration: Theme.effectsDuration
             }
         }
     }
@@ -80,7 +78,7 @@ Item {
 
         height: 4
         radius: height / 2
-        color: theme.overlay
+        color: Theme.overlay
 
         Rectangle {
             id: fill
@@ -94,15 +92,15 @@ Item {
 
             Behavior on width {
                 NumberAnimation {
-                    duration: root.theme.spatialDuration
+                    duration: Theme.spatialDuration
                     easing.type: Easing.BezierSpline
-                    easing.bezierCurve: root.theme.easingDrawer
+                    easing.bezierCurve: Theme.easingDrawer
                 }
             }
 
             Behavior on color {
                 ColorAnimation {
-                    duration: root.theme.effectsDuration
+                    duration: Theme.effectsDuration
                 }
             }
         }
@@ -115,11 +113,11 @@ Item {
             radius: width / 2
             anchors.verticalCenter: parent.verticalCenter
             x: Math.max(0, Math.min(track.width - width, fill.width - width / 2))
-            color: root.muted ? theme.rose : theme.bright
+            color: root.muted ? Theme.rose : Theme.bright
 
             Behavior on color {
                 ColorAnimation {
-                    duration: root.theme.effectsDuration
+                    duration: Theme.effectsDuration
                 }
             }
         }

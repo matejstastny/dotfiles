@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "../"
 import "../common"
 
 PopupWindow {
@@ -79,10 +80,10 @@ PopupWindow {
 
             Rectangle {
                 anchors.fill: parent
-                radius: theme.radiusSmall
-                color: row.current ? Qt.rgba(theme.purple.r, theme.purple.g, theme.purple.b, 0.18) : "transparent"
+                radius: Theme.radiusSmall
+                color: row.current ? Qt.rgba(Theme.purple.r, Theme.purple.g, Theme.purple.b, 0.18) : "transparent"
                 border.width: row.current ? 1 : 0
-                border.color: theme.purple
+                border.color: Theme.purple
                 Behavior on color { ColorAnimation { duration: 100 } }
             }
 
@@ -93,17 +94,17 @@ PopupWindow {
                 anchors.verticalCenter: parent.verticalCenter
                 width: 28
                 height: 28
-                radius: theme.radiusSmall
+                radius: Theme.radiusSmall
                 color: row.imageClip
-                    ? Qt.rgba(theme.rose.r, theme.rose.g, theme.rose.b, 0.16)
-                    : Qt.rgba(theme.purple.r, theme.purple.g, theme.purple.b, 0.12)
+                    ? Qt.rgba(Theme.rose.r, Theme.rose.g, Theme.rose.b, 0.16)
+                    : Qt.rgba(Theme.purple.r, Theme.purple.g, Theme.purple.b, 0.12)
 
                 Text {
                     anchors.centerIn: parent
                     text: row.imageClip ? "▧" : "›"
-                    color: row.imageClip ? theme.rose : (row.current ? theme.purple : theme.dim)
+                    color: row.imageClip ? Theme.rose : (row.current ? Theme.purple : Theme.dim)
                     font.pixelSize: row.imageClip ? 16 : 22
-                    font.family: theme.fontFamily
+                    font.family: Theme.fontMono
                 }
             }
 
@@ -114,9 +115,9 @@ PopupWindow {
                 anchors.rightMargin: row.imageClip ? 68 : 12
                 anchors.verticalCenter: parent.verticalCenter
                 text: row.modelData.label
-                color: row.current ? theme.bright : theme.text
+                color: row.current ? Theme.bright : Theme.text
                 font.pixelSize: 13
-                font.family: theme.fontFamily
+                font.family: Theme.fontMono
                 elide: Text.ElideRight
             }
 
@@ -126,9 +127,9 @@ PopupWindow {
                 anchors.rightMargin: 12
                 anchors.verticalCenter: parent.verticalCenter
                 text: row.modelData.subtitle
-                color: row.current ? theme.rose : theme.dim
+                color: row.current ? Theme.rose : Theme.dim
                 font.pixelSize: 10
-                font.family: theme.fontFamily
+                font.family: Theme.fontMono
             }
 
             MouseArea {

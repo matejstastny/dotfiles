@@ -5,24 +5,19 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 import Quickshell.Services.Notifications
 import Quickshell.Services.Pipewire
+import Quickshell.Services.Mpris
+import "./common"
 import "./surface"
-import "./wallpaper"
-import "./osd"
 import "./launcher"
 import "./wifi"
 import "./bluetooth"
 import "./cursor"
-import "./calc"
 import "./pickers"
 import "./cava"
 
 ShellRoot {
     id: root
 
-    readonly property Theme theme: Theme {}
-
-    property bool panelOpen: false
-    property bool wallpaperOpen: false
     property bool osdOpen: false
     property string osdKind: "volume"
     property int osdPct: 0
@@ -31,23 +26,6 @@ ShellRoot {
     property bool caffeinateEnabled: false
     property bool kbdBacklightEnabled: true
     property bool typingSoundEnabled: false
-
-    property bool launcherOpen: false
-    property bool powermenuOpen: false
-    property bool wifimenuOpen: false
-    property bool bluetoothmenuOpen: false
-    property bool cursorMenuOpen: false
-    property bool calcOpen: false
-    property bool clipOpen: false
-    property bool todoOpen: false
-    property string todoProfile: "personal"
-    property bool notesOpen: false
-    property bool captureOpen: false
-    property bool screenrecordOpen: false
-    property bool codeOpen: false
-    property bool emojiOpen: false
-    property bool keyboardOpen: false
-    property bool cavaOpen: false
 
     // drawers live in every screen's Surface, but only one may open at a time:
     // two of them would each take a hyprland focus grab, and the second grab
@@ -61,6 +39,105 @@ ShellRoot {
     function clearNotifications(): void {
         for (const notification of notifServer.trackedNotifications.values.slice())
             notification.dismiss();
+    }
+
+    // every surface the outside world can open. the ipc target, the global
+    // shortcut name and the id here are all the same word
+    Popout {
+        id: panelPopout
+        name: "panel"
+        about: "Toggle the control panel"
+        aims: true
+        onAimRequested: root.aimDrawers()
+    }
+    Popout {
+        id: powermenuPopout
+        name: "powermenu"
+        about: "Toggle the power menu"
+        aims: true
+        onAimRequested: root.aimDrawers()
+    }
+    Popout {
+        id: wallpaperPopout
+        name: "wallpaper"
+        about: "Toggle the wallpaper picker"
+        aims: true
+        onAimRequested: root.aimDrawers()
+    }
+    Popout {
+        id: launcherPopout
+        name: "launcher"
+        about: "Toggle the app launcher"
+    }
+    Popout {
+        id: wifiPopout
+        name: "wifimenu"
+        about: "Toggle the wifi menu"
+    }
+    Popout {
+        id: bluetoothPopout
+        name: "bluetoothmenu"
+        about: "Toggle the bluetooth menu"
+    }
+    Popout {
+        id: cursorPopout
+        name: "cursormenu"
+        about: "Toggle the cursor theme picker"
+    }
+    Popout {
+        id: clipPopout
+        name: "clip"
+        about: "Toggle clipboard history"
+    }
+    Popout {
+        id: todoPopout
+        name: "todo"
+        about: "Toggle the todo list"
+        variants: [
+            {
+                suffix: "personal",
+                value: "personal"
+            },
+            {
+                suffix: "stars",
+                value: "stars"
+            }
+        ]
+    }
+    Popout {
+        id: notesPopout
+        name: "notes"
+        about: "Toggle the notes picker"
+    }
+    Popout {
+        id: capturePopout
+        name: "capture"
+        about: "Toggle quick capture"
+    }
+    Popout {
+        id: screenrecordPopout
+        name: "screenrecord"
+        about: "Toggle the screen recorder"
+    }
+    Popout {
+        id: codePopout
+        name: "code"
+        about: "Toggle the project picker"
+    }
+    Popout {
+        id: emojiPopout
+        name: "emoji"
+        about: "Toggle the emoji picker"
+    }
+    Popout {
+        id: keyboardPopout
+        name: "keyboard"
+        about: "Toggle the keyboard layout picker"
+    }
+    Popout {
+        id: cavaPopout
+        name: "cava"
+        about: "Toggle the desktop visualiser"
     }
 
     readonly property var audioSink: Pipewire.defaultAudioSink
@@ -85,27 +162,33 @@ ShellRoot {
 
     // the drawers live inside Surface rather than in PopupWindows of their own,
     // so they opt into the one-popout-at-a-time rule here instead of inheriting it
-    onPanelOpenChanged: {
-        if (root.panelOpen)
-            PopoutState.current = "panel";
-        else if (PopoutState.current === "panel")
-            PopoutState.current = "";
+    Connections {
+        target: panelPopout
+        function onShownChanged() {
+            if (panelPopout.shown)
+                PopoutState.current = "panel";
+            else if (PopoutState.current === "panel")
+                PopoutState.current = "";
+        }
     }
 
-    onPowermenuOpenChanged: {
-        if (root.powermenuOpen)
-            PopoutState.current = "powermenu";
-        else if (PopoutState.current === "powermenu")
-            PopoutState.current = "";
+    Connections {
+        target: powermenuPopout
+        function onShownChanged() {
+            if (powermenuPopout.shown)
+                PopoutState.current = "powermenu";
+            else if (PopoutState.current === "powermenu")
+                PopoutState.current = "";
+        }
     }
 
     Connections {
         target: PopoutState
         function onCurrentChanged() {
             if (PopoutState.current !== "panel")
-                root.panelOpen = false;
+                panelPopout.shown = false;
             if (PopoutState.current !== "powermenu")
-                root.powermenuOpen = false;
+                powermenuPopout.shown = false;
         }
     }
 
@@ -125,7 +208,7 @@ ShellRoot {
         toastQueue.insert(0, {
             notification
         });
-        while (toastQueue.count > root.theme.maxToasts)
+        while (toastQueue.count > Theme.maxToasts)
             toastQueue.remove(toastQueue.count - 1);
     }
 
@@ -154,64 +237,127 @@ ShellRoot {
         }
     }
 
+    // panel is the only surface with a verb of its own: the bind does double
+    // duty, clearing notifications when the panel is up and centering the
+    // focused window when it is not
     IpcHandler {
-        target: "panel"
-        function toggle(): void {
-            root.aimDrawers();
-            root.panelOpen = !root.panelOpen;
-        }
-        function open(): void {
-            root.aimDrawers();
-            root.panelOpen = true;
-        }
-        function hide(): void {
-            root.panelOpen = false;
-        }
+        target: "panelextra"
         function clearOrCenter(): void {
-            if (root.panelOpen)
+            if (panelPopout.shown)
                 root.clearNotifications();
             else
                 Quickshell.execDetached(["hyprctl", "dispatch", "centerwindow"]);
         }
     }
 
-    IpcHandler {
-        target: "wallpaper"
-        function toggle(): void {
-            root.aimDrawers();
-            root.wallpaperOpen = !root.wallpaperOpen;
+    GlobalShortcut {
+        appid: "quickshell"
+        name: "clear-or-center"
+        description: "Clear notifications, or centre the focused window"
+        onPressed: {
+            if (panelPopout.shown)
+                root.clearNotifications();
+            else
+                Quickshell.execDetached(["hyprctl", "dispatch", "centerwindow"]);
         }
-        function open(): void {
-            root.aimDrawers();
-            root.wallpaperOpen = true;
+    }
+
+    function stepVolume(action: string): void {
+        if (!root.audioSinkReady)
+            return;
+        if (action === "raise") {
+            if (root.audioSink.audio.muted)
+                root.audioSink.audio.muted = false;
+            root.audioSink.audio.volume = Math.min(1, root.audioSink.audio.volume + 0.05);
+        } else if (action === "lower") {
+            root.audioSink.audio.volume = Math.max(0, root.audioSink.audio.volume - 0.05);
+        } else if (action === "mute-toggle") {
+            root.audioSink.audio.muted = !root.audioSink.audio.muted;
         }
-        function hide(): void {
-            root.wallpaperOpen = false;
-        }
+        root.showVolumeOsd();
+    }
+
+    function stepBrightness(action: string): void {
+        brightnessProc.command = ["brightnessctl", "-m", "set", action === "raise" ? "5%+" : "5%-"];
+        brightnessProc.running = true;
     }
 
     IpcHandler {
         target: "osd"
 
         function volume(action: string): void {
-            if (!root.audioSinkReady)
-                return;
-            if (action === "raise") {
-                if (root.audioSink.audio.muted)
-                    root.audioSink.audio.muted = false;
-                root.audioSink.audio.volume = Math.min(1, root.audioSink.audio.volume + 0.05);
-            } else if (action === "lower") {
-                root.audioSink.audio.volume = Math.max(0, root.audioSink.audio.volume - 0.05);
-            } else if (action === "mute-toggle") {
-                root.audioSink.audio.muted = !root.audioSink.audio.muted;
-            }
-            root.showVolumeOsd();
+            root.stepVolume(action);
         }
 
         function brightness(action: string): void {
-            brightnessProc.command = ["brightnessctl", "-m", "set", action === "raise" ? "5%+" : "5%-"];
-            brightnessProc.running = true;
+            root.stepBrightness(action);
         }
+    }
+
+    // the media keys are held down and repeat, so they were the worst offenders
+    // of the lot: a fork, a socket connect and a process teardown per 5% step.
+    // driving pipewire and mpris straight from here costs none of that
+    Instantiator {
+        model: [
+            {
+                key: "volume-up",
+                about: "Raise volume",
+                run: () => root.stepVolume("raise")
+            },
+            {
+                key: "volume-down",
+                about: "Lower volume",
+                run: () => root.stepVolume("lower")
+            },
+            {
+                key: "volume-mute",
+                about: "Toggle mute",
+                run: () => root.stepVolume("mute-toggle")
+            },
+            {
+                key: "brightness-up",
+                about: "Raise brightness",
+                run: () => root.stepBrightness("raise")
+            },
+            {
+                key: "brightness-down",
+                about: "Lower brightness",
+                run: () => root.stepBrightness("lower")
+            },
+            {
+                key: "media-play-pause",
+                about: "Play/pause media",
+                run: () => root.mediaPlayer?.togglePlaying()
+            },
+            {
+                key: "media-next",
+                about: "Next track",
+                run: () => root.mediaPlayer?.next()
+            },
+            {
+                key: "media-prev",
+                about: "Previous track",
+                run: () => root.mediaPlayer?.previous()
+            }
+        ]
+
+        delegate: GlobalShortcut {
+            required property var modelData
+
+            appid: "quickshell"
+            name: modelData.key
+            description: modelData.about
+            onPressed: modelData.run()
+        }
+    }
+
+    // whoever is playing, else whoever is there. matches what the bar shows
+    readonly property var mediaPlayer: {
+        const players = Mpris.players.values;
+        for (let i = 0; i < players.length; i++)
+            if (players[i].isPlaying)
+                return players[i];
+        return players.length > 0 ? players[0] : null;
     }
 
     Timer {
@@ -236,209 +382,10 @@ ShellRoot {
     }
 
     IpcHandler {
-        target: "cava"
-        function toggle(): void {
-            root.cavaOpen = !root.cavaOpen;
-        }
-        function open(): void {
-            root.cavaOpen = true;
-        }
-        function hide(): void {
-            root.cavaOpen = false;
-        }
-    }
-
-    IpcHandler {
         target: "hypr"
         function refresh(): void {
             Hyprland.refreshWorkspaces();
             Hyprland.refreshMonitors();
-        }
-    }
-
-    IpcHandler {
-        target: "launcher"
-        function toggle(): void {
-            root.launcherOpen = !root.launcherOpen;
-        }
-        function open(): void {
-            root.launcherOpen = true;
-        }
-        function hide(): void {
-            root.launcherOpen = false;
-        }
-    }
-
-    IpcHandler {
-        target: "powermenu"
-        function toggle(): void {
-            root.aimDrawers();
-            root.powermenuOpen = !root.powermenuOpen;
-        }
-        function open(): void {
-            root.aimDrawers();
-            root.powermenuOpen = true;
-        }
-        function hide(): void {
-            root.powermenuOpen = false;
-        }
-    }
-
-    IpcHandler {
-        target: "wifimenu"
-        function toggle(): void {
-            root.wifimenuOpen = !root.wifimenuOpen;
-        }
-        function open(): void {
-            root.wifimenuOpen = true;
-        }
-        function hide(): void {
-            root.wifimenuOpen = false;
-        }
-    }
-
-    IpcHandler {
-        target: "bluetoothmenu"
-        function toggle(): void {
-            root.bluetoothmenuOpen = !root.bluetoothmenuOpen;
-        }
-        function open(): void {
-            root.bluetoothmenuOpen = true;
-        }
-        function hide(): void {
-            root.bluetoothmenuOpen = false;
-        }
-    }
-
-    IpcHandler {
-        target: "cursormenu"
-        function toggle(): void {
-            root.cursorMenuOpen = !root.cursorMenuOpen;
-        }
-        function open(): void {
-            root.cursorMenuOpen = true;
-        }
-        function hide(): void {
-            root.cursorMenuOpen = false;
-        }
-    }
-
-    IpcHandler {
-        target: "calc"
-        function toggle(): void {
-            root.calcOpen = !root.calcOpen;
-        }
-        function open(): void {
-            root.calcOpen = true;
-        }
-        function hide(): void {
-            root.calcOpen = false;
-        }
-    }
-
-    IpcHandler {
-        target: "clip"
-        function toggle(): void {
-            root.clipOpen = !root.clipOpen;
-        }
-        function open(): void {
-            root.clipOpen = true;
-        }
-        function hide(): void {
-            root.clipOpen = false;
-        }
-    }
-
-    IpcHandler {
-        target: "todo"
-        function toggle(profile: string): void {
-            root.todoProfile = profile;
-            root.todoOpen = !root.todoOpen;
-        }
-        function open(profile: string): void {
-            root.todoProfile = profile;
-            root.todoOpen = true;
-        }
-        function hide(): void {
-            root.todoOpen = false;
-        }
-    }
-
-    IpcHandler {
-        target: "notes"
-        function toggle(): void {
-            root.notesOpen = !root.notesOpen;
-        }
-        function open(): void {
-            root.notesOpen = true;
-        }
-        function hide(): void {
-            root.notesOpen = false;
-        }
-    }
-
-    IpcHandler {
-        target: "capture"
-        function toggle(): void {
-            root.captureOpen = !root.captureOpen;
-        }
-        function open(): void {
-            root.captureOpen = true;
-        }
-        function hide(): void {
-            root.captureOpen = false;
-        }
-    }
-
-    IpcHandler {
-        target: "screenrecord"
-        function toggle(): void {
-            root.screenrecordOpen = !root.screenrecordOpen;
-        }
-        function open(): void {
-            root.screenrecordOpen = true;
-        }
-        function hide(): void {
-            root.screenrecordOpen = false;
-        }
-    }
-
-    IpcHandler {
-        target: "code"
-        function toggle(): void {
-            root.codeOpen = !root.codeOpen;
-        }
-        function open(): void {
-            root.codeOpen = true;
-        }
-        function hide(): void {
-            root.codeOpen = false;
-        }
-    }
-
-    IpcHandler {
-        target: "emoji"
-        function toggle(): void {
-            root.emojiOpen = !root.emojiOpen;
-        }
-        function open(): void {
-            root.emojiOpen = true;
-        }
-        function hide(): void {
-            root.emojiOpen = false;
-        }
-    }
-
-    IpcHandler {
-        target: "keyboard"
-        function toggle(): void {
-            root.keyboardOpen = !root.keyboardOpen;
-        }
-        function open(): void {
-            root.keyboardOpen = true;
-        }
-        function hide(): void {
-            root.keyboardOpen = false;
         }
     }
 
@@ -497,86 +444,68 @@ ShellRoot {
 
     Cava {
         id: cava
-        open: root.cavaOpen
+        open: cavaPopout.shown
     }
 
     Launcher {
-        id: launcher
-        open: root.launcherOpen
-        onCloseRequested: root.launcherOpen = false
+        open: launcherPopout.shown
+        onCloseRequested: launcherPopout.shown = false
     }
 
     WifiMenu {
-        id: wifimenu
-        open: root.wifimenuOpen
-        onCloseRequested: root.wifimenuOpen = false
+        open: wifiPopout.shown
+        onCloseRequested: wifiPopout.shown = false
     }
 
     BluetoothMenu {
-        id: bluetoothmenu
-        open: root.bluetoothmenuOpen
-        onCloseRequested: root.bluetoothmenuOpen = false
+        open: bluetoothPopout.shown
+        onCloseRequested: bluetoothPopout.shown = false
     }
 
     CursorMenu {
-        id: cursormenu
-        open: root.cursorMenuOpen
-        onCloseRequested: root.cursorMenuOpen = false
-    }
-
-    Calc {
-        id: calc
-        open: root.calcOpen
-        onCloseRequested: root.calcOpen = false
+        open: cursorPopout.shown
+        onCloseRequested: cursorPopout.shown = false
     }
 
     ClipPicker {
-        id: clipPicker
-        open: root.clipOpen
-        onCloseRequested: root.clipOpen = false
+        open: clipPopout.shown
+        onCloseRequested: clipPopout.shown = false
     }
 
     TodoPicker {
-        id: todoPicker
-        open: root.todoOpen
-        profile: root.todoProfile
-        onCloseRequested: root.todoOpen = false
+        open: todoPopout.shown
+        profile: todoPopout.variant || "personal"
+        onCloseRequested: todoPopout.shown = false
     }
 
     NotesPicker {
-        id: notesPicker
-        open: root.notesOpen
-        onCloseRequested: root.notesOpen = false
+        open: notesPopout.shown
+        onCloseRequested: notesPopout.shown = false
     }
 
     CapturePicker {
-        id: capturePicker
-        open: root.captureOpen
-        onCloseRequested: root.captureOpen = false
+        open: capturePopout.shown
+        onCloseRequested: capturePopout.shown = false
     }
 
     ScreenrecordPicker {
-        id: screenrecordPicker
-        open: root.screenrecordOpen
-        onCloseRequested: root.screenrecordOpen = false
+        open: screenrecordPopout.shown
+        onCloseRequested: screenrecordPopout.shown = false
     }
 
     CodePicker {
-        id: codePicker
-        open: root.codeOpen
-        onCloseRequested: root.codeOpen = false
+        open: codePopout.shown
+        onCloseRequested: codePopout.shown = false
     }
 
     EmojiPicker {
-        id: emojiPicker
-        open: root.emojiOpen
-        onCloseRequested: root.emojiOpen = false
+        open: emojiPopout.shown
+        onCloseRequested: emojiPopout.shown = false
     }
 
     KeyboardPicker {
-        id: keyboardPicker
-        open: root.keyboardOpen
-        onCloseRequested: root.keyboardOpen = false
+        open: keyboardPopout.shown
+        onCloseRequested: keyboardPopout.shown = false
     }
 
     Variants {
@@ -596,9 +525,9 @@ ShellRoot {
                 toasts: toastQueue
                 notifications: notifServer.trackedNotifications
 
-                panelOpen: root.panelOpen && scope.modelData.name === root.drawerScreen
-                powerMenuOpen: root.powermenuOpen && scope.modelData.name === root.drawerScreen
-                wallpaperOpen: root.wallpaperOpen && scope.modelData.name === root.drawerScreen
+                panelOpen: panelPopout.shown && scope.modelData.name === root.drawerScreen
+                powerMenuOpen: powermenuPopout.shown && scope.modelData.name === root.drawerScreen
+                wallpaperOpen: wallpaperPopout.shown && scope.modelData.name === root.drawerScreen
                 osdOpen: root.osdOpen && scope.modelData.name === root.drawerScreen
                 osdKind: root.osdKind
                 osdPct: root.osdPct
@@ -607,27 +536,24 @@ ShellRoot {
                 caffeinateEnabled: root.caffeinateEnabled
                 kbdBacklightEnabled: root.kbdBacklightEnabled
                 typingSoundEnabled: root.typingSoundEnabled
-                cavaEnabled: root.cavaOpen
+                cavaEnabled: cavaPopout.shown
 
-                onPanelRequested: {
-                    root.aimDrawers();
-                    root.panelOpen = true;
-                }
+                onPanelRequested: panelPopout.set(true)
                 onToastDismissed: notification => root.dropToast(notification)
-                onPanelCloseRequested: root.panelOpen = false
-                onPowerMenuCloseRequested: root.powermenuOpen = false
-                onWallpaperCloseRequested: root.wallpaperOpen = false
+                onPanelCloseRequested: panelPopout.shown = false
+                onPowerMenuCloseRequested: powermenuPopout.shown = false
+                onWallpaperCloseRequested: wallpaperPopout.shown = false
                 onToggleDnd: root.dndEnabled = !root.dndEnabled
                 onToggleCaffeinate: root.caffeinateEnabled = !root.caffeinateEnabled
                 onToggleKbdBacklight: {
                     root.kbdBacklightEnabled = !root.kbdBacklightEnabled;
-                    root.setKbdBacklight(root.kbdBacklightEnabled);
+        root.setKbdBacklight(root.kbdBacklightEnabled);
                 }
                 onToggleTypingSound: {
                     root.typingSoundEnabled = !root.typingSoundEnabled;
                     root.setTypingSound(root.typingSoundEnabled);
                 }
-                onToggleCava: root.cavaOpen = !root.cavaOpen
+                onToggleCava: cavaPopout.set(!cavaPopout.shown)
                 onDismissNotification: notification => notification.dismiss()
                 onClearAll: root.clearNotifications()
             }

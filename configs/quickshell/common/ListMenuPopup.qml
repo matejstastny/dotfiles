@@ -21,7 +21,6 @@ Item {
     signal freeTextSubmitted(string text, string action)
     signal closeRequested()
 
-    readonly property Theme theme: Theme {}
     property var filteredRows: []
 
     function refilter() {
@@ -90,9 +89,9 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         text: [root.secondaryActionHint, root.tertiaryActionHint].filter(h => h.length > 0).join("   ·   ")
-        color: theme.dim
+        color: Theme.dim
         font.pixelSize: 10
-        font.family: theme.fontFamily
+        font.family: Theme.fontMono
     }
 
     ListView {
@@ -117,9 +116,9 @@ Item {
         anchors.centerIn: list
         visible: root.mode !== "freeText" && root.filteredRows.length === 0
         text: root.emptyText
-        color: theme.dim
+        color: Theme.dim
         font.pixelSize: 12
-        font.family: theme.fontFamily
+        font.family: Theme.fontMono
     }
 
     Component {
