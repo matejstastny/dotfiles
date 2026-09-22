@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 #@ wrapper for helium browser launch
 
-exec /usr/bin/helium --enable-features=SystemNotifications "$@"
+exec /usr/bin/helium "$@"
