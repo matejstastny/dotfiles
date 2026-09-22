@@ -1,0 +1,22 @@
+# sourced by uwsm into the systemd user environment, so it reaches hyprland,
+# everything hyprland spawns, uwsm app scopes and dbus-activated services
+
+# greetd's pam environment is minimal, so the session would otherwise miss both
+# of these and anything launched by bare name (uwsm app, .desktop files) fails
+export PATH="$HOME/.local/bin:$HOME/dotfiles/bin:$PATH"
+
+export XCURSOR_SIZE=24
+export XCURSOR_THEME=BreezeX-RosePine-Linux
+export HYPRCURSOR_SIZE=24
+export HYPRCURSOR_THEME=rose-pine-hyprcursor
+
+export GTK_THEME='catppuccin-mocha-mauve-standard+default'
+export GDK_SCALE=1
+export GDK_DPI_SCALE=1
+
+export QT_QPA_PLATFORM=wayland
+export QT_QPA_PLATFORMTHEME=gtk3
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+
+export SAL_USE_VCLPLUGIN=gtk4
+export MOZ_ENABLE_WAYLAND=1

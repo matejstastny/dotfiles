@@ -13,7 +13,6 @@ local function load(m) dofile(dir .. m .. ".lua") end
 -- cause of hyprmp slop loading
 hl.config({ debug = { suppress_errors = true } })
 
-load("env")
 load("monitors")
 load("look")
 load("input")

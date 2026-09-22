@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Fairydust Display Setup
+Comment=Configure external display via USB-C DP Alt Mode
+Exec=/home/elara/display-setup.sh
+Hidden=false
+X-GNOME-Autostart-enabled=true

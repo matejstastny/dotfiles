@@ -1,7 +1,10 @@
 hl.monitor({ output = "eDP-1", mode = "preferred", position = "0x400", scale = 1.60 })
 
--- main (samsung via hdmi-in adapter, shows as LGI RB65-HDMI-IN)
-hl.monitor({ output = "desc:LGI RB65-HDMI-IN", mode = "preferred", position = "1600x0", scale = 1.5 })
+-- main samsung. fairydust sometimes hands over the hdmi-in adapter's edid instead
+-- of the panel's, so the same monitor shows up under either name across boots
+for _, desc in ipairs({ "LGI RB65-HDMI-IN", "Samsung Electric Company LS27A800U" }) do
+    hl.monitor({ output = "desc:" .. desc, mode = "preferred", position = "1600x0", scale = 1.5 })
+end
 
 -- the portable sim one
 hl.monitor({ output = "desc:XYM M156F1", mode = "preferred", position = "1600x0", scale = 1.0 })

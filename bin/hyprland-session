@@ -6,42 +6,9 @@ mkdir -p "$HOME/.cache"
 exec >>"$LOG" 2>&1
 echo "=== hyprland-session start $(date) ==="
 
-export XDG_CURRENT_DESKTOP=Hyprland
-export XDG_SESSION_TYPE=wayland
-export XDG_SESSION_DESKTOP=Hyprland
-export MOZ_ENABLE_WAYLAND=1
-export QT_QPA_PLATFORM=wayland
-export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+command -v uwsm >/dev/null || exec start-hyprland
 
-"$(command -v start-hyprland)" &
-
-HYPR_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hypr"
-
-for ((i = 0; i < 150; i++)); do
-	[[ -n "$(ls "$HYPR_DIR" 2>/dev/null)" ]] && break
-	sleep 0.2
-done
-
-if [[ -z "$(ls "$HYPR_DIR" 2>/dev/null)" ]]; then
-	echo "[hyprland-session] timed out waiting for hyprland socket"
-	sleep 10
-	exit 1
-fi
-
-export HYPRLAND_INSTANCE_SIGNATURE="$(ls "$HYPR_DIR" | head -1)"
-
-for ((i = 0; i < 150; i++)); do
-	ls "/run/user/$(id -u)/wayland-"* &>/dev/null 2>&1 && break
-	sleep 0.2
-done
-
-export WAYLAND_DISPLAY="$(ls "/run/user/$(id -u)/wayland-"* 2>/dev/null |
-	grep -v '\.lock$' | head -1 | xargs basename)"
-
-dbus-update-activation-environment --systemd \
-	WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE \
-	HYPRLAND_INSTANCE_SIGNATURE 2>/dev/null
-
-while pgrep -x Hyprland &>/dev/null; do
-	sleep 2
-done
+# uwsm owns the session: it sources ~/.config/uwsm/env
+# -g -1 disables uwsm's wait for graphical.target
+# cause greetd is WantedBy that same target
+exec uwsm start -g -1 -e -D Hyprland -N Hyprland start-hyprland

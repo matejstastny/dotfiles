@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=NetworkManager Applet
+Exec=true
+Hidden=true

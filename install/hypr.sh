@@ -21,7 +21,8 @@ sudo dnf install -y \
 	hyprpicker \
 	hyprwayland-scanner \
 	xdg-desktop-portal-hyprland \
-	xdg-desktop-portal-gtk
+	xdg-desktop-portal-gtk \
+	uwsm
 
 log "Installing PAM service for the quickshell lockscreen..."
 if [ ! -f /etc/pam.d/quickshell-lock ]; then

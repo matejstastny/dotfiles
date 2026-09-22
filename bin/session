@@ -11,7 +11,7 @@ apps=(
 	"obsidian|obsidian|^obsidian$|once|quit|$HOME/.local/share/obsidian/obsidian.AppImage --appimage-extract-and-run"
 	"t3code|t3code|^t3code$|once|quit|$HOME/.local/share/t3code/t3code --no-sandbox"
 	"vesktop|vesktop|^vesktop$|always|tray|vesktop"
-	"whatsie|whatsie|^com\.ktechpit\.whatsie$|once|tray|whatsie"
+	"whatsie|whatsie|^com\.ktechpit\.whatsie$|once|tray|$HOME/.local/bin/whatsie"
 )
 
 running() {
@@ -32,13 +32,16 @@ wait_for_tray() {
 	done
 }
 
-# a scope, not a service: launchers like /usr/bin/code fork off the real process
-# and exit, and a service would sigkill the survivors along with the wrapper
+# uwsm app puts each one in its own scope under app-graphical.slice, so they die
+# with the session. a scope and not a service because launchers like /usr/bin/code
+# fork off the real process and exit, which would sigkill the survivors with it
 spawn() {
 	local name="$1"
 	shift
 
-	systemd-run --user --scope --quiet --unit="app-$name-$$" -- "$@" >/dev/null 2>&1 &
+	# without a cap, shutdown blocks on slow electron apps with the screen
+	# already frozen; 5s is enough for a clean exit, stragglers get killed
+	uwsm app -a "$name" -p TimeoutStopSec=5s -- "$@" >/dev/null 2>&1 &
 }
 
 start_apps() {

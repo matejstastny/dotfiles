@@ -60,11 +60,11 @@ Scope {
         appid: "quickshell"
         name: root.name
         description: root.about
-        // on release, not press: these surfaces take a hyprland focus grab as
-        // they open, and hyprland clears a grab on the next key event that is
-        // not meant for the grabbing surface - the release of the very key that
-        // opened it counts. opening on release puts that event in the past
-        onReleased: {
+        // press, not release. hyprland drops a bind entirely once the modmask
+        // stops matching, so releasing ALT before the key means no release event
+        // ever arrives - it only pairs press with release for its own `global`
+        // handler, and `hl.dsp.global` reaches it as an opaque `__lua` bind
+        onPressed: {
             if (root.variants.length > 0)
                 root.variant = root.variants[0].value;
             root.set(!root.shown);
@@ -80,7 +80,7 @@ Scope {
             appid: "quickshell"
             name: `${root.name}-${modelData.suffix}`
             description: `${root.about} (${modelData.suffix})`
-            onReleased: {
+            onPressed: {
                 root.variant = modelData.value;
                 root.set(!root.shown);
             }
