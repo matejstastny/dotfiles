@@ -99,21 +99,6 @@ PanelWindow {
             height: root.height - root.barHeight - root.frameThickness
         }
         Region {
-            item: bar.cpuStat.hovered ? bar.cpuStat.popoutItem : null
-        }
-        Region {
-            item: bar.memStat.hovered ? bar.memStat.popoutItem : null
-        }
-        Region {
-            item: bar.diskStat.hovered ? bar.diskStat.popoutItem : null
-        }
-        Region {
-            item: bar.batteryStat.hovered ? bar.batteryStat.popoutItem : null
-        }
-        Region {
-            item: bar.volumeStat.hovered ? bar.volumeStat.popoutItem : null
-        }
-        Region {
             item: toastPanel
         }
         Region {

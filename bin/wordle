@@ -20,18 +20,15 @@ RED = "\033[31m"
 MAGENTA = "\033[35m"
 
 UW_PURPLE = "#4b2e83"
-UW_GOLD = "#ffc700"
-UW_LAVENDER = "#c5b4e3"
-UW_PINK = "#e93cac"
+UW_METALLIC_GOLD = "#b7a57a"
 
-FONT_REGULAR = Path.home() / ".local/share/fonts/MapleMono/MapleMono-NF-Regular.ttf"
-FONT_BOLD = Path.home() / ".local/share/fonts/MapleMono/MapleMono-NF-SemiBold.ttf"
+UW_LOGO = Path.home() / "dotfiles/assets/uw-w-logo.png"
 
 
 def load():
     if CURRENT_FILE.exists():
         return json.loads(CURRENT_FILE.read_text())
-    return {"people": {}}
+    return {"people": {}, "last": None}
 
 
 def save(data):
@@ -48,14 +45,7 @@ def print_header():
 
 
 def print_people(people):
-    ordered = sorted(
-        people.items(),
-        key=lambda kv: (
-            kv[1]["games"] == 0,
-            kv[1]["total"] / kv[1]["games"] if kv[1]["games"] else 0,
-            kv[0].lower(),
-        ),
-    )
+    ordered = list(people.items())
     if not ordered:
         print(f"{DIM}no one saved yet{RESET}\n")
         return ordered
@@ -63,7 +53,7 @@ def print_people(people):
     print(f"{DIM}{'#':<4}{'name':<{name_w}}{'games':>7}{'avg':>7}{RESET}")
     for i, (name, stats) in enumerate(ordered, start=1):
         games = stats["games"]
-        avg = f"{stats['total'] / games:.2f}" if games else "-"
+        avg = f"{stats['total'] / games:.3f}" if games else "-"
         print(f"{CYAN}{i:<4}{RESET}{name:<{name_w}}{games:>7}{GREEN}{avg:>7}{RESET}")
     print()
     return ordered
@@ -94,9 +84,55 @@ def record_round(data, name):
     stats = data["people"][name]
     stats["games"] += 1
     stats["total"] += score
+    data["last"] = {"name": name, "score": score}
     save(data)
     avg = stats["total"] / stats["games"]
-    print(f"{GREEN}saved{RESET} {name}: {fmt_score(score)} (avg {avg:.2f})\n")
+    print(f"{GREEN}saved{RESET} {name}: {fmt_score(score)} (avg {avg:.3f})\n")
+
+
+def rollback(data):
+    last = data.get("last")
+    if not last:
+        print(f"{RED}nothing to rollback{RESET}\n")
+        return
+    name, score = last["name"], last["score"]
+    stats = data["people"].get(name)
+    if stats is None:
+        print(f"{RED}cannot rollback, {name} no longer exists{RESET}\n")
+        data["last"] = None
+        save(data)
+        return
+    stats["games"] -= 1
+    stats["total"] -= score
+    data["last"] = None
+    save(data)
+    print(f"{GREEN}rolled back{RESET} {name}: removed {fmt_score(score)}\n")
+
+
+def rename_person(data, ordered):
+    if not ordered:
+        print(f"{RED}no one saved yet{RESET}\n")
+        return
+    choice = input(f"person to rename {DIM}[number / blank=cancel]{RESET}: ").strip()
+    if not choice.isdigit() or not (1 <= int(choice) <= len(ordered)):
+        print(f"{RED}cancelled{RESET}\n")
+        return
+    old_name = ordered[int(choice) - 1][0]
+    new_name = input(f"new name for {BOLD}{old_name}{RESET}: ").strip()
+    if not new_name or new_name == old_name:
+        print(f"{RED}cancelled{RESET}\n")
+        return
+    if new_name in data["people"]:
+        print(f"{RED}{new_name} already exists{RESET}\n")
+        return
+    data["people"] = {
+        (new_name if name == old_name else name): stats
+        for name, stats in data["people"].items()
+    }
+    if data.get("last") and data["last"]["name"] == old_name:
+        data["last"]["name"] = new_name
+    save(data)
+    print(f"{GREEN}renamed{RESET} {old_name} -> {new_name}\n")
 
 
 def save_session(data):
@@ -114,56 +150,83 @@ def save_session(data):
     print(f"{DIM}current standings reset{RESET}\n")
 
 
+def import_session(data):
+    sessions = sorted(SESSIONS_DIR.glob("*.json")) if SESSIONS_DIR.exists() else []
+    if not sessions:
+        print(f"{RED}no saved sessions{RESET}\n")
+        return
+    for i, path in enumerate(sessions, start=1):
+        print(f"{CYAN}{i:<4}{RESET}{path.stem}")
+    choice = input(f"\nsession to import {DIM}[number / blank=cancel]{RESET}: ").strip()
+    if not choice.isdigit() or not (1 <= int(choice) <= len(sessions)):
+        print(f"{RED}cancelled{RESET}\n")
+        return
+    path = sessions[int(choice) - 1]
+    imported = json.loads(path.read_text())
+    data["people"] = imported.get("people", {})
+    data["last"] = None
+    save(data)
+    print(f"{GREEN}imported{RESET} <- {path}\n")
+
+
 def export_leaderboard(data):
     ranked = sorted(
-        ((n, s) for n, s in data["people"].items() if s["games"] > 0),
+        ((n, s) for n, s in data["people"].items() if s["games"] >= 5),
         key=lambda kv: kv[1]["total"] / kv[1]["games"],
     )
     if not ranked:
         print(f"{RED}no scored rounds to export yet{RESET}\n")
         return
 
-    width, row_h, header_h, spacer_h = 380, 34, 36, 10
-    has_gap = len(ranked) > 1
-    height = header_h + row_h * len(ranked) + (spacer_h if has_gap else 0)
+    period = input(
+        f"month/year for this export {DIM}[blank={datetime.now().strftime('%B %Y')}]{RESET}: "
+    ).strip() or datetime.now().strftime("%B %Y")
 
-    body_rows = ranked[:-1] if has_gap else ranked
+    width, row_h, header_h, banner_h = 380, 34, 36, 46
+    height = banner_h + header_h + row_h * len(ranked)
+
     rows_html = "".join(
-        f"""<tr style="background:{'#ffffff' if i % 2 else UW_LAVENDER + '33'}">
+        f"""<tr style="background:{'#ffffff' if i % 2 else UW_PURPLE + '0d'}">
               <td class="rank">{i}</td><td class="name">{name}</td>
               <td class="avg">{stats['total'] / stats['games']:.3f}</td></tr>"""
-        for i, (name, stats) in enumerate(body_rows, start=1)
+        for i, (name, stats) in enumerate(ranked, start=1)
     )
-    if has_gap:
-        last_name, last_stats = ranked[-1]
-        rows_html += (
-            f'<tr><td colspan="3" style="height:{spacer_h}px;'
-            f'line-height:{spacer_h}px;padding:0;border:none"></td></tr>'
-        )
-        rows_html += f"""<tr style="background:{UW_PINK};color:#ffffff">
-              <td class="rank">{len(ranked)}</td><td class="name">{last_name}</td>
-              <td class="avg">{last_stats['total'] / last_stats['games']:.3f}</td></tr>"""
 
     html = f"""<!doctype html>
 <html><head><meta charset="UTF-8"><style>
-@font-face {{
-  font-family: "Maple Mono NF";
-  font-weight: 400;
-  src: url("file://{FONT_REGULAR}") format("truetype");
-}}
-@font-face {{
-  font-family: "Maple Mono NF";
-  font-weight: 700;
-  src: url("file://{FONT_BOLD}") format("truetype");
-}}
 * {{ box-sizing: border-box; margin: 0; padding: 0; }}
 ::-webkit-scrollbar {{ display: none; }}
 html, body {{ overflow: hidden; }}
-body {{ width: {width}px; font-family: "Maple Mono NF", monospace; }}
+body {{ width: {width}px; font-family: "Open Sans", sans-serif; }}
+.banner {{
+  background: {UW_PURPLE};
+  height: {banner_h}px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+}}
+.banner .left {{ display: flex; align-items: center; gap: 8px; }}
+.banner img {{ height: 16px; width: auto; display: block; }}
+.banner .title {{
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}}
+.banner .period {{
+  color: #ffffff;
+  opacity: 0.75;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}}
 table {{ width: 100%; border-collapse: collapse; }}
 th {{
-  background: {UW_PURPLE};
-  color: {UW_GOLD};
+  background: {UW_METALLIC_GOLD};
+  color: {UW_PURPLE};
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -188,6 +251,10 @@ td.rank {{ text-align: center; opacity: 0.55; }}
 td.avg {{ text-align: right; }}
 </style></head>
 <body>
+<div class="banner">
+  <div class="left"><img src="file://{UW_LOGO}"><span class="title">Wordle Leaderboard</span></div>
+  <span class="period">{period}</span>
+</div>
 <table>
 <thead><tr><th class="rank">#</th><th>name</th><th class="avg">avg guesses</th></tr></thead>
 <tbody>{rows_html}</tbody>
@@ -233,7 +300,8 @@ def main():
     while True:
         ordered = print_people(data["people"])
         choice = input(
-            f"person {DIM}[number / a=add / s=save session / e=export / q=quit]{RESET}: "
+            f"person {DIM}[number / a=add / s=save session / i=import session / "
+            f"r=rollback / n=rename / e=export / q=quit]{RESET}: "
         ).strip().lower()
         if choice in ("q", "quit", "exit"):
             print(f"\n{MAGENTA}see you next round ✦{RESET}\n")
@@ -245,6 +313,15 @@ def main():
             continue
         if choice == "s":
             save_session(data)
+            continue
+        if choice == "i":
+            import_session(data)
+            continue
+        if choice == "r":
+            rollback(data)
+            continue
+        if choice == "n":
+            rename_person(data, ordered)
             continue
         if choice == "e":
             export_leaderboard(data)
