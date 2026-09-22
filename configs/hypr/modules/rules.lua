@@ -12,9 +12,27 @@ hl.window_rule({ name = "session-ws-t3code", match = { class = "^t3code$" }, wor
 hl.window_rule({ name = "session-ws-steam", match = { class = "^steam$" }, workspace = "7 silent" })
 
 -- file dialogs
-hl.window_rule({ name = "save-file-float", match = { title = "^Save File$" }, float = true, center = true })
-hl.window_rule({ name = "open-files-float", match = { title = "^Open Files$" }, float = true, center = true })
-hl.window_rule({ name = "select-folder-float", match = { title = "^Select Folder$" }, float = true, center = true })
+hl.window_rule({
+    name = "save-file-float",
+    match = { title = "^Save File$" },
+    float = true,
+    center = true,
+    size = "70% 75%",
+})
+hl.window_rule({
+    name = "open-files-float",
+    match = { title = "^Open Files$" },
+    float = true,
+    center = true,
+    size = "70% 75%",
+})
+hl.window_rule({
+    name = "select-folder-float",
+    match = { title = "^Select Folder$" },
+    float = true,
+    center = true,
+    size = "70% 75%",
+})
 
 -- merge a window into the ws2 hy3 tab group, preserving the active workspace
 local function ws2_tab(window)

@@ -10,6 +10,35 @@ MUTED=$'\033[38;2;61;61;92m'
 BOLD=$'\033[1m'
 RESET=$'\033[0m'
 
+usage() {
+	cat <<'EOF'
+Usage: kernels [OPTIONS]
+       kernels set [VERSION]
+       kernels remove [VERSION]
+
+Show installed kernels and their running/default status.
+
+Commands:
+  set [VERSION]        Set VERSION as the default kernel. Without VERSION,
+                       choose one interactively.
+  remove [VERSION]     Remove VERSION. RPM kernels use dnf; custom kernels
+                       have their boot artifacts and modules removed.
+                       Without VERSION, choose from installed kernels.
+                       Running and default kernels are shown but unavailable.
+
+Options:
+  -s, --sudo           Use sudo when reading the default kernel.
+  -h, --help           Show this help.
+EOF
+}
+
+case "${1:-}" in
+	-h | --help)
+		usage
+		exit 0
+		;;
+esac
+
 set_default() {
 	mapfile -t files < <(ls -t /boot/vmlinuz-* 2>/dev/null)
 	if [[ ${#files[@]} -eq 0 ]]; then
@@ -42,11 +71,132 @@ set_default() {
 	echo "default kernel set to $version"
 }
 
-if [[ "${1:-}" == "set" ]]; then
-	shift
-	set_default "${1:-}"
-	exit 0
-fi
+remove_kernel() {
+	if ! command -v grubby >/dev/null 2>&1; then
+		echo "kernels: grubby is required to identify the default kernel" >&2
+		exit 1
+	fi
+
+	mapfile -t files < <(ls -t /boot/vmlinuz-* 2>/dev/null)
+	if [[ ${#files[@]} -eq 0 ]]; then
+		echo "kernels: no /boot/vmlinuz-* found" >&2
+		exit 1
+	fi
+
+	running="$(uname -r)"
+	raw=$(sudo grubby --default-kernel)
+	if [[ "$raw" != /boot/vmlinuz-* || ! -f "$raw" ]]; then
+		echo "kernels: unable to determine the default kernel" >&2
+		exit 1
+	fi
+	default_kernel="${raw#/boot/vmlinuz-}"
+
+	version="${1:-}"
+	if [[ -z "$version" ]]; then
+		removable_count=0
+		echo "Installed kernels:"
+		for i in "${!files[@]}"; do
+			file="${files[$i]}"
+			candidate="${file#/boot/vmlinuz-}"
+			if [[ "$candidate" == "$running" && "$candidate" == "$default_kernel" ]]; then
+				status=" (running and default, unavailable)"
+			elif [[ "$candidate" == "$running" ]]; then
+				status=" (running, unavailable)"
+			elif [[ "$candidate" == "$default_kernel" ]]; then
+				status=" (default, unavailable)"
+			else
+				status=""
+				((removable_count += 1))
+			fi
+			printf "  %d) %s%s\n" "$((i + 1))" "$candidate" "$status"
+		done
+		if ((removable_count == 0)); then
+			echo "kernels: no removable kernels found" >&2
+			exit 1
+		fi
+		read -rp "Select kernel to remove: " selection
+		if [[ "$selection" =~ ^[0-9]+$ ]] && ((selection >= 1 && selection <= ${#files[@]})); then
+			version="${files[$((selection - 1))]#/boot/vmlinuz-}"
+		else
+			echo "kernels: invalid selection" >&2
+			exit 1
+		fi
+	fi
+
+	if [[ "$version" == "$running" ]]; then
+		echo "kernels: refusing to remove the running kernel ($version)" >&2
+		exit 1
+	fi
+	if [[ "$version" == "$default_kernel" ]]; then
+		echo "kernels: refusing to remove the default kernel ($version)" >&2
+		exit 1
+	fi
+
+	target="/boot/vmlinuz-$version"
+	if [[ ! -f "$target" ]]; then
+		echo "kernels: $target not found" >&2
+		exit 1
+	fi
+	if package=$(rpm -qf --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' "$target" 2>/dev/null); then
+		if ! command -v dnf >/dev/null 2>&1; then
+			echo "kernels: dnf is required to remove an RPM-managed kernel" >&2
+			exit 1
+		fi
+		sudo dnf remove "$package"
+		return
+	fi
+
+	custom_paths=(
+		"$target"
+		"/boot/initramfs-$version.img"
+		"/boot/config-$version"
+		"/boot/System.map-$version"
+		"/boot/symvers-$version.gz"
+		"/boot/dtbs/$version"
+		"/usr/lib/modules/$version"
+	)
+
+	sudo -v
+	bls_entries=()
+	mapfile -t bls_entries < <(sudo find /boot/loader/entries -maxdepth 1 -type f -name '*.conf' -exec grep -l -F -- "/vmlinuz-$version" {} + 2>/dev/null || true)
+
+	echo "Custom kernel artifacts to remove:"
+	for path in "${custom_paths[@]}"; do
+		[[ -e "$path" ]] && printf "  %s\n" "$path"
+	done
+	for path in "${bls_entries[@]}"; do
+		printf "  %s\n" "$path"
+	done
+	read -rp "Remove this custom kernel? [y/N] " confirm
+	if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+		echo "kernels: removal cancelled"
+		exit 0
+	fi
+
+	sudo rm -rf -- "${custom_paths[@]}" "${bls_entries[@]}"
+	echo "custom kernel removed: $version"
+}
+
+case "${1:-}" in
+	set)
+		shift
+		if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+			usage
+		else
+			set_default "${1:-}"
+		fi
+		exit 0
+		;;
+	remove)
+		shift
+		if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+			usage
+		else
+			remove_kernel "${1:-}"
+		fi
+		exit 0
+		;;
+esac
 
 use_sudo=false
 [[ "${1:-}" == "-s" || "${1:-}" == "--sudo" ]] && use_sudo=true

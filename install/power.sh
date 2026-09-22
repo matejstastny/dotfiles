@@ -8,7 +8,7 @@ echo "✦ Installing power management config..."
 # logind: explicit lid-close → suspend
 sudo mkdir -p /etc/systemd/logind.conf.d
 sudo cp "$DOTFILES/configs/system/logind-power.conf" /etc/systemd/logind.conf.d/power.conf
-sudo systemctl restart systemd-logind
+sudo systemctl reload systemd-logind
 
 # sleep hook: lock screen before suspend
 sudo cp "$DOTFILES/configs/system/lock-sleep-hook" /usr/lib/systemd/system-sleep/lock
