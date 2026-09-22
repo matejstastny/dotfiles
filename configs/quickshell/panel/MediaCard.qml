@@ -8,7 +8,7 @@ Rectangle {
 
     required property MprisPlayer player
 
-    implicitHeight: 74
+    implicitHeight: 78
     radius: Theme.radius
     color: Theme.surface
     border.width: Theme.borderWidth
@@ -59,149 +59,99 @@ Rectangle {
         }
     }
 
-    Row {
+    Item {
         id: controls
 
         anchors.right: parent.right
-        anchors.rightMargin: 14
+        anchors.rightMargin: 16
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 6
+        width: 48
+        height: 48
+        visible: root.player.canTogglePlaying
 
-        Text {
-            text: String.fromCodePoint(0xf04ae)
-            visible: root.player.canGoPrevious
-            color: prevArea.containsMouse ? Theme.bright : Theme.text
-            font.pixelSize: 15
-            font.family: Theme.fontMono
+        Repeater {
+            model: 8
 
-            Behavior on color {
-                ColorAnimation {
-                    duration: Theme.transitionDuration
-                }
-            }
+            delegate: Rectangle {
+                required property int index
+                readonly property real angle: index * 45
+                readonly property real radians: angle * Math.PI / 180
 
-            MouseArea {
-                id: prevArea
-                anchors.fill: parent
-                anchors.margins: -6
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: root.player.previous()
+                width: 14
+                height: 14
+                radius: width / 2
+                x: controls.width / 2 - width / 2 + Math.cos(radians) * 14
+                y: controls.height / 2 - height / 2 + Math.sin(radians) * 14
+                color: Theme.purple
             }
         }
 
         Rectangle {
-            width: 30
-            height: 30
+            id: playButton
+            anchors.centerIn: parent
+            width: 36
+            height: 36
             radius: width / 2
-            visible: root.player.canTogglePlaying
-            color: playArea.pressed ? Theme.bright : Theme.purple
-            scale: playArea.pressed ? 0.88 : 1
+            color: Theme.purple
+            scale: playArea.pressed ? 0.88 : (playArea.containsMouse ? 1.06 : 1)
 
-            Text {
+            Canvas {
                 anchors.centerIn: parent
-                text: root.player.isPlaying ? String.fromCodePoint(0xf03e4) : String.fromCodePoint(0xf040a)
-                color: playArea.pressed ? Theme.base : Theme.bright
-                font.pixelSize: 16
-                font.family: Theme.fontMono
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
+                anchors.horizontalCenterOffset: -2
+                anchors.verticalCenterOffset: -1
+                width: 22
+                height: 22
+                visible: !root.player.isPlaying
+                onPaint: {
+                    const ctx = getContext("2d");
+                    ctx.clearRect(0, 0, width, height);
+                    ctx.fillStyle = Theme.bright;
+                    ctx.beginPath();
+                    ctx.moveTo(9.8, 4.7);
+                    ctx.bezierCurveTo(8.1, 3.8, 6.5, 4.9, 6.5, 6.9);
+                    ctx.lineTo(6.5, 17.1);
+                    ctx.bezierCurveTo(6.5, 19.1, 8.2, 20.2, 9.9, 19.2);
+                    ctx.lineTo(19.1, 13.8);
+                    ctx.bezierCurveTo(20.9, 12.8, 20.9, 11.2, 19.1, 10.2);
+                    ctx.lineTo(9.8, 4.7);
+                    ctx.fill();
+                }
+                Component.onCompleted: requestPaint()
+            }
+
+            Row {
+                anchors.centerIn: parent
+                visible: root.player.isPlaying
+                spacing: 4
+
+                Repeater {
+                    model: 2
+
+                    delegate: Rectangle {
+                        required property int index
+                        width: 5
+                        height: 14
+                        radius: width / 2
+                        color: Theme.bright
+                    }
+                }
             }
 
             Behavior on scale {
                 NumberAnimation {
-                    duration: Theme.transitionDuration
-                    easing.type: Easing.OutCubic
+                    duration: Theme.spatialDuration
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Theme.easingSpatial
                 }
-            }
-
-            MouseArea {
-                id: playArea
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                onClicked: root.player.togglePlaying()
             }
         }
 
-        Text {
-            text: String.fromCodePoint(0xf04ad)
-            visible: root.player.canGoNext
-            color: nextArea.containsMouse ? Theme.bright : Theme.text
-            font.pixelSize: 15
-            font.family: Theme.fontMono
-
-            Behavior on color {
-                ColorAnimation {
-                    duration: Theme.transitionDuration
-                }
-            }
-
-            MouseArea {
-                id: nextArea
-                anchors.fill: parent
-                anchors.margins: -6
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: root.player.next()
-            }
-        }
-    }
-
-    Row {
-        id: modes
-
-        anchors.right: parent.right
-        anchors.rightMargin: 14
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 5
-        spacing: 12
-        visible: root.player.shuffleSupported || root.player.loopSupported
-
-        Text {
-            text: String.fromCodePoint(0xf0496)
-            visible: root.player.shuffleSupported
-            color: root.player.shuffle ? Theme.purple : (shuffleArea.containsMouse ? Theme.bright : Theme.dim)
-            font.pixelSize: 13
-            font.family: Theme.fontMono
-
-            Behavior on color { ColorAnimation { duration: Theme.transitionDuration } }
-
-            MouseArea {
-                id: shuffleArea
-                anchors.fill: parent
-                anchors.margins: -5
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: root.player.shuffle = !root.player.shuffle
-            }
-        }
-
-        Text {
-            text: root.player.loopState === MprisLoopState.Track
-                ? String.fromCodePoint(0xf0458)
-                : String.fromCodePoint(0xf0456)
-            visible: root.player.loopSupported
-            color: root.player.loopState !== MprisLoopState.None ? Theme.purple : (loopArea.containsMouse ? Theme.bright : Theme.dim)
-            font.pixelSize: 13
-            font.family: Theme.fontMono
-
-            Behavior on color { ColorAnimation { duration: Theme.transitionDuration } }
-
-            MouseArea {
-                id: loopArea
-                anchors.fill: parent
-                anchors.margins: -5
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    if (root.player.loopState === MprisLoopState.None)
-                        root.player.loopState = MprisLoopState.Playlist;
-                    else if (root.player.loopState === MprisLoopState.Playlist)
-                        root.player.loopState = MprisLoopState.Track;
-                    else
-                        root.player.loopState = MprisLoopState.None;
-                }
-            }
+        MouseArea {
+            id: playArea
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: root.player.togglePlaying()
         }
     }
 

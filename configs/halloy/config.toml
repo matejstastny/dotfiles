@@ -1,0 +1,17 @@
+# Halloy config.
+#
+# For a complete list of available options,
+# please visit https://halloy.chat/configuration.html
+
+theme = "elara"
+
+[servers.liberachat]
+nickname = "halloy7795"
+server = "irc.libera.chat"
+channels = ["#halloy"]
+
+[servers.asahi]
+server = "irc.oftc.net"
+use_tls = true
+nickname = "asahi"
+channels = ["#asahi", "#asahi-dev", "#asahi-gpu", "#asahi-alt"]

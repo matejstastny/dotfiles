@@ -232,6 +232,9 @@ PanelWindow {
         area: root.contentArea
         width: 820
         height: 560
+        animationDuration: 140
+        animationEasing: Easing.OutCubic
+        deformScale: 0
 
         Panel {
             anchors.fill: parent

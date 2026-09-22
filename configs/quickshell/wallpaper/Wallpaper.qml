@@ -16,6 +16,8 @@ Item {
     readonly property string thumbsScript: homeDir + "/dotfiles/bin/wallpaper-thumbs"
     readonly property string favoriteScript: homeDir + "/dotfiles/bin/wallpaper-favorite"
     readonly property string deleteScript: homeDir + "/dotfiles/bin/wallpaper-delete"
+    readonly property string wallpaperStateFile: (Quickshell.env("XDG_STATE_HOME") || homeDir + "/.local/state") + "/wallpaper"
+    property string currentWallpaperPath: ""
 
     implicitWidth: 1080
     implicitHeight: 230
@@ -48,9 +50,21 @@ Item {
         if (grid.currentIndex >= wallpaperModel.count) grid.currentIndex = wallpaperModel.count - 1
     }
 
+    function selectCurrentWallpaper() {
+        currentWallpaperPath = wallpaperStateFileView.text().trim()
+        for (let i = 0; i < wallpaperModel.count; i++) {
+            if (wallpaperModel.get(i).path === currentWallpaperPath) {
+                grid.currentIndex = i
+                return
+            }
+        }
+    }
+
     onOpenChanged: {
         if (open) {
             wallpaperModel.clear()
+            grid.currentIndex = -1
+            selectCurrentWallpaper()
             lister.running = true
             PopoutState.current = "wallpaper"
         } else if (PopoutState.current === "wallpaper") {
@@ -66,6 +80,13 @@ Item {
 
     ListModel { id: wallpaperModel }
 
+    FileView {
+        id: wallpaperStateFileView
+        path: root.wallpaperStateFile
+        blockLoading: true
+        onLoaded: if (root.open) root.selectCurrentWallpaper()
+    }
+
     Process {
         id: lister
         command: [root.thumbsScript, root.wallpaperDir]
@@ -75,7 +96,8 @@ Item {
                 const parts = data.split("\t")
                 if (parts.length < 4) return
                 wallpaperModel.append({ favorite: parts[0] === "1", path: parts[1], thumb: parts[2], live: parts[3] === "live" })
-                if (wallpaperModel.count === 1) grid.currentIndex = 0
+                if (parts[1] === root.currentWallpaperPath) grid.currentIndex = wallpaperModel.count - 1
+                else if (wallpaperModel.count === 1) grid.currentIndex = 0
             }
         }
     }

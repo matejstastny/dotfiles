@@ -10,6 +10,9 @@ BlobRect {
 
     property string edge: "top"
     property bool open: false
+    property int animationDuration: Theme.drawerDuration
+    property int animationEasing: Easing.BezierSpline
+    property var animationBezierCurve: Theme.easingDrawer
 
     // the region inside the frame, in group coordinates - the drawer centres
     // itself on the side it comes from and rests flush against it
@@ -54,9 +57,9 @@ BlobRect {
 
     Behavior on progress {
         NumberAnimation {
-            duration: Theme.drawerDuration
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: Theme.easingDrawer
+            duration: root.animationDuration
+            easing.type: root.animationEasing
+            easing.bezierCurve: root.animationBezierCurve
         }
     }
 }
