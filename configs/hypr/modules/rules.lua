@@ -1,5 +1,6 @@
--- workspace 2 uses hy3
+-- tile code and chatapps
 hl.workspace_rule({ workspace = "2", layout = "hy3" })
+hl.workspace_rule({ workspace = "4", layout = "hy3" })
 
 -- workspace assignments
 hl.window_rule({ name = "session-ws-kitty", match = { class = "^kitty$" }, workspace = "1 silent" })
@@ -7,6 +8,8 @@ hl.window_rule({ name = "session-ws-codium", match = { class = "^codium$" }, wor
 hl.window_rule({ name = "session-ws-code", match = { class = "^code$" }, workspace = "2 silent" })
 hl.window_rule({ name = "session-ws-helium", match = { class = "^helium$" }, workspace = "3 silent" })
 hl.window_rule({ name = "session-ws-vesktop", match = { class = "^vesktop$" }, workspace = "4 silent" })
+hl.window_rule({ name = "session-ws-halloy", match = { class = "^org.squidowl.halloy$" }, workspace = "4 silent" })
+hl.window_rule({ name = "session-ws-whatsie", match = { class = "^com.ktechpit.whatsie$" }, workspace = "4 silent" })
 hl.window_rule({ name = "session-ws-obsidian", match = { class = "^obsidian$" }, workspace = "5 silent" })
 hl.window_rule({ name = "session-ws-t3code", match = { class = "^t3code$" }, workspace = "6 silent" })
 hl.window_rule({ name = "session-ws-steam", match = { class = "^steam$" }, workspace = "7 silent" })
