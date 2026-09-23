@@ -5,13 +5,12 @@
 
 theme = "elara"
 
-[servers.liberachat]
-nickname = "halloy7795"
-server = "irc.libera.chat"
-channels = ["#halloy"]
+[servers.soju]
+nickname = "elara"
+server = "100.111.24.96"
+port = 6667
+use_tls = false
 
-[servers.asahi]
-server = "irc.oftc.net"
-use_tls = true
-nickname = "asahi"
-channels = ["#asahi", "#asahi-dev", "#asahi-gpu", "#asahi-alt"]
+[servers.soju.sasl.plain]
+username = "elara"
+password_file = "/home/elara/.config/halloy/soju-password"

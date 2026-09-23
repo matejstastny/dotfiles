@@ -1,5 +1,6 @@
 alias c='clear'
 alias n='clear && fastfetch'
+alias s='clear && services'
 alias sr='source ~/.zshrc && echo "shell reloaded"'
 alias path='echo $PATH | tr ":" "\n"'
 alias ports='netstat -tulpn 2>/dev/null'

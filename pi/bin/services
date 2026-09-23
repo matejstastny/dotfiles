@@ -1,0 +1,116 @@
+#!/bin/sh
+
+# Add services as: display name|OpenRC service|process name
+# The process name is optional, and is only used to show a PID when the service is running.
+leda_services='
+Soju chat|soju|soju
+Tailscale VPN|tailscale|tailscaled
+'
+
+thebe_services='
+Tailscale VPN|tailscale|tailscaled
+'
+
+host=${1:-$(hostname)}
+
+case "$host" in
+	leda)
+		glyph='◐'
+		accent='\033[38;2;95;179;163m'
+		bright='\033[38;2;143;214;198m'
+		dim='\033[38;2;125;154;148m'
+		service_list=$leda_services
+		;;
+	thebe)
+		glyph='◑'
+		accent='\033[38;2;217;153;94m'
+		bright='\033[38;2;242;193;143m'
+		dim='\033[38;2;160;137;114m'
+		service_list=$thebe_services
+		;;
+	*)
+		printf 'no services configured for %s\n' "$host" >&2
+		exit 2
+		;;
+esac
+
+if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
+	reset='\033[0m'
+	green='\033[38;2;166;227;161m'
+	red='\033[38;2;243;139;168m'
+else
+	reset='' accent='' bright='' dim='' green='' red=''
+fi
+
+uptime_seconds=$(cut -d. -f1 /proc/uptime)
+uptime_days=$((uptime_seconds / 86400))
+uptime_hours=$(((uptime_seconds / 3600) % 24))
+uptime_minutes=$(((uptime_seconds / 60) % 60))
+
+if [ "$uptime_days" -gt 0 ]; then
+	uptime_text="${uptime_days}d ${uptime_hours}h"
+else
+	uptime_text="${uptime_hours}h ${uptime_minutes}m"
+fi
+
+load=$(cut -d' ' -f1 /proc/loadavg)
+root_used=$(df -h / 2>/dev/null | awk 'NR == 2 { print $5 }')
+temperature=''
+if command -v vcgencmd >/dev/null 2>&1; then
+	temperature=$(vcgencmd measure_temp 2>/dev/null | sed "s/^temp=//; s/'C$//")
+fi
+
+if [ -n "$temperature" ]; then
+	system_info="up ${uptime_text}   load ${load}   root ${root_used}   ${temperature}°C"
+else
+	system_info="up ${uptime_text}   load ${load}   root ${root_used}"
+fi
+
+printf '\n'
+printf '%b%s  %b%s%b · service pulse%b\n' "$accent" "$glyph" "$bright" "$host" "$accent" "$reset"
+printf '%b╭────────────────────────────────────────────────────────╮%b\n' "$accent" "$reset"
+printf '%b│%b  %-55s%b│%b\n' "$accent" "$reset" "$system_info" "$accent" "$reset"
+printf '%b╰────────────────────────────────────────────────────────╯%b\n\n' "$accent" "$reset"
+printf '%b%-24s %-12s %-12s %s%b\n' "$dim" 'SERVICE' 'STATUS' 'ON BOOT' 'PROCESS' "$reset"
+
+failed=0
+while IFS='|' read -r label service process; do
+	[ -n "$service" ] || continue
+
+	if rc-service "$service" status >/dev/null 2>&1; then
+		state_color=$green
+		state_text='running'
+	else
+		state_color=$red
+		state_text='stopped'
+		failed=1
+	fi
+
+	if rc-update show default 2>/dev/null | awk -F '|' -v wanted="$service" '
+		{ gsub(/^[[:space:]]+|[[:space:]]+$/, "", $1) }
+		$1 == wanted { found = 1 }
+		END { exit !found }
+	'; then
+		boot_color=$accent
+		boot_text='enabled'
+	else
+		boot_color=$dim
+		boot_text='manual'
+	fi
+
+	pid='—'
+	if [ -n "$process" ]; then
+		found_pid=$(pidof "$process" 2>/dev/null | awk '{ print $1 }')
+		[ -n "$found_pid" ] && pid="pid ${found_pid}"
+	fi
+
+	printf '%b%-24s%b %b● %-10s%b %b%-12s%b %s\n' \
+		"$bright" "$label" "$reset" \
+		"$state_color" "$state_text" "$reset" \
+		"$boot_color" "$boot_text" "$reset" "$pid"
+done <<EOF
+$service_list
+EOF
+
+printf '\n'
+exit "$failed"

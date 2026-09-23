@@ -1,5 +1,6 @@
 configs/tmux/plugins/
 configs/remote/hosts.toml
+configs/halloy/soju-password
 fairydust/
 configs/ai/skills/synced
 configs/ai/skills/.system
