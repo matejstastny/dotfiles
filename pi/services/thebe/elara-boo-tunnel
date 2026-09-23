@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec /usr/local/bin/cloudflared tunnel --no-autoupdate run --token "$(cat /etc/cloudflared/elara-boo-tunnel.token)"
