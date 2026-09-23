@@ -3,6 +3,7 @@
 
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -14,6 +15,12 @@ _ROOT = Path(__file__).resolve().parent.parent
 PI_DIR = _ROOT / "pi"
 HOSTS_FILE = Path(os.environ.get("REMOTE_HOSTS_CONFIG", Path.home() / ".config/remote/hosts.toml"))
 CONNECT_TIMEOUT = 10
+
+PULLABLE = {
+    "thebe": {
+        "/var/lib/adguardhome/AdGuardHome.yaml": "AdGuardHome.yaml",
+    },
+}
 
 SSH_OPTS = [
     "-o", f"ConnectTimeout={CONNECT_TIMEOUT}",
@@ -103,6 +110,38 @@ def run_ssh(host: dict[str, str], name: str, remote_cmd: str, stdin: bytes | Non
     return subprocess.run(cmd, input=stdin, env=env, capture_output=True)
 
 
+def pull_host(name: str, host: dict[str, str], dry_run: bool) -> bool:
+    log(f"\n── {name} (pull) ──")
+    files = PULLABLE.get(name, {})
+    if not files:
+        warn(f"{name}: nothing registered in PULLABLE to pull")
+        return True
+
+    ok = True
+    for remote_path, local_name in files.items():
+        dest = PI_DIR / "services" / name / local_name
+        print(f"  {remote_path} -> pi/services/{name}/{local_name}")
+        if dry_run:
+            continue
+
+        password = host.get("password", "")
+        remote_cmd = (
+            'IFS= read -r SUDO_PASS; '
+            f'printf "%s\\n" "$SUDO_PASS" | sudo -S -p "" cat {shlex.quote(remote_path)}'
+        )
+        res = run_ssh(host, name, remote_cmd, stdin=password.encode() + b"\n")
+        if res.returncode != 0 or not res.stdout:
+            error(f"{name}: pull failed for {remote_path}: {res.stderr.decode().strip()}")
+            ok = False
+            continue
+
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_bytes(res.stdout)
+        log(f"  pulled {local_name}")
+
+    return ok
+
+
 def sync_host(name: str, host: dict[str, str], bootstrap: bool, services: bool, dry_run: bool) -> bool:
     log(f"\n── {name} ──")
     has_services = (PI_DIR / "services" / name / "install").is_file()
@@ -178,6 +217,7 @@ def main():
     dry_run = "--dry-run" in args
     bootstrap = "--bootstrap" in args
     services = "--services" in args
+    pull = "--pull" in args
     only = None
     if "--host" in args:
         i = args.index("--host") + 1
@@ -209,7 +249,7 @@ def main():
             failed.append(name)
             continue
         try:
-            ok = sync_host(name, host, bootstrap, services, dry_run)
+            ok = pull_host(name, host, dry_run) if pull else sync_host(name, host, bootstrap, services, dry_run)
         except Exception as exc:  # one bad host must never take the others down
             error(f"{name}: {exc}")
             failed.append(name)
