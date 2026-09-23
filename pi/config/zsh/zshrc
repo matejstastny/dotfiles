@@ -19,7 +19,7 @@ path=(
 	$path
 )
 
-for _part in host options history aliases completion plugins; do
+for _part in host palette options history aliases completion plugins; do
 	[[ -r "$ZSH_CONFIG/$_part.zsh" ]] && source "$ZSH_CONFIG/$_part.zsh"
 done
 unset _part

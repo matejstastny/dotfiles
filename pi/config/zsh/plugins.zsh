@@ -29,24 +29,62 @@ if _load /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.
          /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh; then
 	ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
 	typeset -gA ZSH_HIGHLIGHT_STYLES
-	ZSH_HIGHLIGHT_STYLES[default]="none"
-	ZSH_HIGHLIGHT_STYLES[unknown-token]="fg=${MOON_ALT}"
-	ZSH_HIGHLIGHT_STYLES[command]="fg=${MOON_ACCENT}"
-	ZSH_HIGHLIGHT_STYLES[builtin]="fg=${MOON_ACCENT}"
-	ZSH_HIGHLIGHT_STYLES[function]="fg=${MOON_ACCENT}"
-	ZSH_HIGHLIGHT_STYLES[alias]="fg=${MOON_ACCENT}"
-	ZSH_HIGHLIGHT_STYLES[precommand]="fg=${MOON_ACCENT},italic"
-	ZSH_HIGHLIGHT_STYLES[reserved-word]="fg=${MOON_ALT}"
-	ZSH_HIGHLIGHT_STYLES[path]="fg=#dce0f4"
-	ZSH_HIGHLIGHT_STYLES[globbing]="fg=${MOON_ALT}"
-	ZSH_HIGHLIGHT_STYLES[single-quoted-argument]="fg=${MOON_DIM}"
-	ZSH_HIGHLIGHT_STYLES[double-quoted-argument]="fg=${MOON_DIM}"
-	ZSH_HIGHLIGHT_STYLES[dollar-double-quoted-argument]="fg=${MOON_ALT}"
-	ZSH_HIGHLIGHT_STYLES[comment]="fg=${MOON_DIM},italic"
-	ZSH_HIGHLIGHT_STYLES[redirection]="fg=${MOON_ALT}"
+
+	# plain words, and the base every unset region falls back to
+	ZSH_HIGHLIGHT_STYLES[default]="fg=${MOON_TEXT}"
+	ZSH_HIGHLIGHT_STYLES[arg0]="fg=${MOON_TEXT}"
+	ZSH_HIGHLIGHT_STYLES[unknown-token]="fg=${MOON_DANGER},bold,underline"
+	ZSH_HIGHLIGHT_STYLES[reserved-word]="fg=${MOON_TEXT},bold"
+
+	# what runs: the host hue, with lookalikes split off onto the lighter tint
+	ZSH_HIGHLIGHT_STYLES[command]="fg=${MOON_ACCENT},bold"
+	ZSH_HIGHLIGHT_STYLES[hashed-command]="fg=${MOON_ACCENT},bold"
+	ZSH_HIGHLIGHT_STYLES[builtin]="fg=${MOON_BRIGHT},bold"
+	ZSH_HIGHLIGHT_STYLES[function]="fg=${MOON_BRIGHT},bold"
+	ZSH_HIGHLIGHT_STYLES[alias]="fg=${MOON_BRIGHT},bold"
+	ZSH_HIGHLIGHT_STYLES[suffix-alias]="fg=${MOON_BRIGHT},underline"
+	ZSH_HIGHLIGHT_STYLES[precommand]="fg=${MOON_ACCENT},bold,underline"
+
+	# paths
+	ZSH_HIGHLIGHT_STYLES[path]="fg=${MOON_ALT},underline"
+	ZSH_HIGHLIGHT_STYLES[path_prefix]="fg=${MOON_ALT},underline"
+	ZSH_HIGHLIGHT_STYLES[path_pathseparator]="fg=${MOON_ALT}"
+	ZSH_HIGHLIGHT_STYLES[path_prefix_pathseparator]="fg=${MOON_ALT}"
+	ZSH_HIGHLIGHT_STYLES[autodirectory]="fg=${MOON_ALT},underline"
+
+	# flags
+	ZSH_HIGHLIGHT_STYLES[single-hyphen-option]="fg=${MOON_DIM}"
+	ZSH_HIGHLIGHT_STYLES[double-hyphen-option]="fg=${MOON_DIM}"
+
+	# quoting and expansion
+	ZSH_HIGHLIGHT_STYLES[single-quoted-argument]="fg=${MOON_STRING}"
+	ZSH_HIGHLIGHT_STYLES[double-quoted-argument]="fg=${MOON_STRING}"
+	ZSH_HIGHLIGHT_STYLES[dollar-quoted-argument]="fg=${MOON_STRING}"
+	ZSH_HIGHLIGHT_STYLES[rc-quote]="fg=${MOON_STRING},bold"
+	ZSH_HIGHLIGHT_STYLES[globbing]="fg=${MOON_STRING}"
+	ZSH_HIGHLIGHT_STYLES[history-expansion]="fg=${MOON_STRING},bold"
+	ZSH_HIGHLIGHT_STYLES[dollar-double-quoted-argument]="fg=${MOON_BRIGHT}"
+	ZSH_HIGHLIGHT_STYLES[back-double-quoted-argument]="fg=${MOON_BRIGHT}"
+	ZSH_HIGHLIGHT_STYLES[back-dollar-quoted-argument]="fg=${MOON_BRIGHT}"
+	ZSH_HIGHLIGHT_STYLES[back-quoted-argument]="fg=${MOON_DIM}"
+	ZSH_HIGHLIGHT_STYLES[command-substitution]="fg=${MOON_TEXT}"
+	ZSH_HIGHLIGHT_STYLES[command-substitution-delimiter]="fg=${MOON_ALT}"
+	ZSH_HIGHLIGHT_STYLES[process-substitution]="fg=${MOON_TEXT}"
+	ZSH_HIGHLIGHT_STYLES[process-substitution-delimiter]="fg=${MOON_ALT}"
+	ZSH_HIGHLIGHT_STYLES[assign]="fg=${MOON_BRIGHT}"
+
+	# plumbing. commandseparator covers && || | ; & and defaults to none
+	ZSH_HIGHLIGHT_STYLES[commandseparator]="fg=${MOON_DIM},bold"
+	ZSH_HIGHLIGHT_STYLES[redirection]="fg=${MOON_ALT},bold"
+	ZSH_HIGHLIGHT_STYLES[named-fd]="fg=${MOON_DIM}"
+	ZSH_HIGHLIGHT_STYLES[numeric-fd]="fg=${MOON_DIM}"
+	ZSH_HIGHLIGHT_STYLES[comment]="fg=${MOON_MUTED},italic"
+
 	ZSH_HIGHLIGHT_STYLES[bracket-level-1]="fg=${MOON_ACCENT}"
 	ZSH_HIGHLIGHT_STYLES[bracket-level-2]="fg=${MOON_ALT}"
-	ZSH_HIGHLIGHT_STYLES[bracket-level-3]="fg=${MOON_DIM}"
+	ZSH_HIGHLIGHT_STYLES[bracket-level-3]="fg=${MOON_STRING}"
+	ZSH_HIGHLIGHT_STYLES[bracket-error]="fg=${MOON_DANGER},bold"
+	ZSH_HIGHLIGHT_STYLES[cursor-matchingbracket]="standout"
 else
 	echo "error: zsh-syntax-highlighting failed to source"
 fi
