@@ -1,0 +1,18 @@
+#!/sbin/openrc-run
+
+supervisor=supervise-daemon
+
+name="elara.boo Cloudflare Tunnel"
+description="Cloudflare Tunnel for elara.boo"
+
+: "${TUNNEL_TOKEN:?set TUNNEL_TOKEN in /etc/conf.d/elara-boo-tunnel}"
+
+command=/usr/local/bin/cloudflared
+command_args="tunnel --no-autoupdate run --token $TUNNEL_TOKEN"
+pidfile=/run/elara-boo-tunnel.pid
+supervise_daemon_args="--pidfile $pidfile"
+
+depend() {
+	need net
+	after firewall
+}
