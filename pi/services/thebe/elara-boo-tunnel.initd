@@ -5,7 +5,8 @@ supervisor=supervise-daemon
 name="elara.boo Cloudflare Tunnel"
 description="Cloudflare Tunnel for elara.boo"
 
-command=/usr/local/libexec/elara-boo-tunnel
+command=/usr/local/bin/cloudflared
+command_args="tunnel --no-autoupdate --config /etc/cloudflared/elara-boo.yml run thebe-elara-boo"
 pidfile=/run/elara-boo-tunnel.pid
 supervise_daemon_args="--pidfile $pidfile"
 
