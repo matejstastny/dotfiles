@@ -25,7 +25,7 @@ echo "▸ caddy: installing config"
 as_root install -d -o root -g caddy -m 755 /etc/caddy
 as_root install -o root -g caddy -m 640 "$self/Caddyfile" /etc/caddy/Caddyfile
 as_root install -o root -g root -m 755 "$self/caddy.initd" /etc/init.d/caddy
-as_root install -o root -g root -m 600 "$self/caddy.confd" /etc/conf.d/caddy
+as_root install -o root -g root -m 644 "$self/caddy.confd" /etc/conf.d/caddy
 
 if as_root test ! -f /etc/caddy/caddy.env; then
 	echo "  ! /etc/caddy/caddy.env is missing (Cloudflare API token)"

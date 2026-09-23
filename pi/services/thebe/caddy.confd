@@ -1,4 +1,4 @@
-if [ -f /etc/caddy/caddy.env ]; then
+if [ -r /etc/caddy/caddy.env ]; then
 	set -o allexport
 	. /etc/caddy/caddy.env
 	set +o allexport

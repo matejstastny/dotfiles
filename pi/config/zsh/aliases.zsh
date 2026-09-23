@@ -34,6 +34,23 @@ alias v='nvim'
 alias q='tmux detach'
 alias qa='tmux kill-server'
 
+# copy stdin to the clipboard of the terminal connected over SSH
+copy() {
+	local encoded osc one_tmux two_tmux
+	encoded="$(base64 | tr -d '\n')" || return
+	osc=$'\e]52;c;'"$encoded"$'\a'
+	one_tmux=${osc//$'\e'/$'\e\e'}
+	one_tmux=$'\ePtmux;'"$one_tmux"$'\e\\'
+	two_tmux=${one_tmux//$'\e'/$'\e\e'}
+	two_tmux=$'\ePtmux;'"$two_tmux"$'\e\\'
+
+	if [[ -n "${TMUX:-}" ]]; then
+		tmux set -g allow-passthrough on 2>/dev/null
+	fi
+
+	printf '%s%s%s' "$osc" "$one_tmux" "$two_tmux" > /dev/tty
+}
+
 # pi
 alias temp='moon temp'
 alias throttle='moon throttle'
