@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#@ push a notification to your phone via self-hosted ntfy, mirrors notify-send
+
+token_file="$HOME/.config/ntfy-token"
+
+if [ "$#" -ge 2 ]; then
+	topic="$1"
+	message="$2"
+else
+	topic="general"
+	message="${1:?usage: notify-global [topic] <message>}"
+fi
+
+curl -sf \
+	-H "Authorization: Bearer $(cat "$token_file")" \
+	-H "Title: ✦ $topic" \
+	-d "$message" \
+	"https://ntfy.elara.boo/$topic" >/dev/null

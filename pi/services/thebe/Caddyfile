@@ -4,3 +4,10 @@ dns.elara.boo {
 	}
 	reverse_proxy localhost:3000
 }
+
+ntfy.elara.boo {
+	tls {
+		dns cloudflare {env.CF_API_TOKEN}
+	}
+	reverse_proxy localhost:8080
+}

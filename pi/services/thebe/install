@@ -46,10 +46,26 @@ else
 	echo "▸ adguardhome: config already present, leaving live state alone"
 fi
 
+echo "▸ ntfy: installing package"
+as_root apk add ntfy ntfy-openrc
+
+echo "▸ ntfy: installing config"
+as_root install -o root -g root -m 644 "$self/ntfy-server.yml" /etc/ntfy/server.yml
+
+if as_root test ! -f /var/lib/ntfy/user.db; then
+	echo "  ! no ntfy users yet, auth-default-access is deny-all so nothing works until you add one:"
+	echo "      ssh $(hostname) 'sudo ntfy user add --role=admin <you>'"
+	echo "      ssh $(hostname) 'sudo ntfy token add <you>'"
+	echo "    then drop the token in ~/.config/ntfy-token on any machine running notify-global"
+	echo "    this is deliberately not tracked in git, it's a live secret"
+fi
+
 echo "▸ enabling and starting services"
 as_root rc-update add caddy default
 as_root rc-update add adguardhome default
+as_root rc-update add ntfy default
 as_root rc-service adguardhome start || as_root rc-service adguardhome restart
+as_root rc-service ntfy start || as_root rc-service ntfy restart
 if as_root test -f /etc/caddy/caddy.env; then
 	as_root rc-service caddy start || as_root rc-service caddy restart
 else

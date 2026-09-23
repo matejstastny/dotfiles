@@ -6,7 +6,7 @@
 | `unbound`          | recursive resolver behind AGH, so no upstream sees your query log                                      |
 | DONE `tailscale`   | subnet router advertising `192.168.250.0/24`, full LAN from anywhere                                   |
 | DONE `caddy`       | reverse proxy for everything on both pis, real names instead of `:3000`                                |
-| `ntfy`             | push target for your scripts; same shape as your `notify-send "✦ topic"` convention, but on your phone |
+| DONE `ntfy`        | push target for your scripts; same shape as your `notify-send "✦ topic"` convention, but on your phone |
 
 **leda = service plane** Reboot it freely, it holds the data.
 

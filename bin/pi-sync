@@ -19,6 +19,7 @@ CONNECT_TIMEOUT = 10
 PULLABLE = {
     "thebe": {
         "/var/lib/adguardhome/AdGuardHome.yaml": "AdGuardHome.yaml",
+        "/etc/ntfy/server.yml": "ntfy-server.yml",
     },
 }
 

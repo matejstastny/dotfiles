@@ -160,6 +160,9 @@ filtering:
     - domain: dns.elara.boo
       answer: 100.67.68.68
       enabled: true
+    - domain: ntfy.elara.boo
+      answer: 100.67.68.68
+      enabled: true
   safe_fs_patterns:
     - /var/lib/adguardhome/userfilters/*
   safebrowsing_cache_size: 1048576

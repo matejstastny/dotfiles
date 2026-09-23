@@ -1,7 +1,6 @@
 #!/bin/sh
 
-# Add services as: display name|OpenRC service|process name
-# The process name is optional, and is only used to show a PID when the service is running.
+# display name|openrc service|process name
 leda_services='
 Soju chat|soju|soju
 Tailscale exit node|tailscale|tailscaled
@@ -11,29 +10,30 @@ thebe_services='
 Tailscale subnet router|tailscale|tailscaled
 AdGuard Home|adguardhome|adguardhome
 Caddy proxy|caddy|caddy
+Ntfy|ntfy|ntfy
 '
 
 host=${1:-$(hostname)}
 
 case "$host" in
-	leda)
-		glyph='◐'
-		accent='\033[38;2;95;179;163m'
-		bright='\033[38;2;143;214;198m'
-		dim='\033[38;2;125;154;148m'
-		service_list=$leda_services
-		;;
-	thebe)
-		glyph='◑'
-		accent='\033[38;2;217;153;94m'
-		bright='\033[38;2;242;193;143m'
-		dim='\033[38;2;160;137;114m'
-		service_list=$thebe_services
-		;;
-	*)
-		printf 'no services configured for %s\n' "$host" >&2
-		exit 2
-		;;
+leda)
+	glyph='◐'
+	accent='\033[38;2;95;179;163m'
+	bright='\033[38;2;143;214;198m'
+	dim='\033[38;2;125;154;148m'
+	service_list=$leda_services
+	;;
+thebe)
+	glyph='◑'
+	accent='\033[38;2;217;153;94m'
+	bright='\033[38;2;242;193;143m'
+	dim='\033[38;2;160;137;114m'
+	service_list=$thebe_services
+	;;
+*)
+	printf 'no services configured for %s\n' "$host" >&2
+	exit 2
+	;;
 esac
 
 if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
