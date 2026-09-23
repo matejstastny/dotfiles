@@ -1,0 +1,59 @@
+#!/bin/sh
+
+set -eu
+
+as_root() {
+	printf '%s\n' "${SUDO_PASS:-}" | sudo -S -p '' "$@"
+}
+
+self="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+
+echo "▸ enabling community repo"
+as_root sh -c 'grep -q "^[^#]*/community" /etc/apk/repositories || sed -i "s|^#\(.*/community\)\$|\1|" /etc/apk/repositories'
+as_root apk update >/dev/null
+
+echo "▸ caddy: creating system user"
+as_root sh -c 'getent group caddy >/dev/null || addgroup -S caddy'
+as_root sh -c 'getent passwd caddy >/dev/null || adduser -S -D -H -h /var/lib/caddy -s /sbin/nologin -G caddy caddy'
+as_root install -d -o caddy -g caddy -m 700 /var/lib/caddy
+as_root install -d -o caddy -g caddy -m 755 /var/log/caddy
+
+echo "▸ caddy: fetching custom build (cloudflare DNS plugin, linux/arm64)"
+as_root sh -c 'curl -sL -o /usr/local/bin/caddy.new "https://caddyserver.com/api/download?os=linux&arch=arm64&p=github.com/caddy-dns/cloudflare" && chmod 755 /usr/local/bin/caddy.new && mv /usr/local/bin/caddy.new /usr/local/bin/caddy'
+
+echo "▸ caddy: installing config"
+as_root install -d -o root -g caddy -m 755 /etc/caddy
+as_root install -o root -g caddy -m 640 "$self/Caddyfile" /etc/caddy/Caddyfile
+as_root install -o root -g root -m 755 "$self/caddy.initd" /etc/init.d/caddy
+as_root install -o root -g root -m 600 "$self/caddy.confd" /etc/conf.d/caddy
+
+if as_root test ! -f /etc/caddy/caddy.env; then
+	echo "  ! /etc/caddy/caddy.env is missing (Cloudflare API token)"
+	echo "    caddy will fail to start until you create it by hand:"
+	echo "      ssh $(hostname) 'sudo sh -c \"umask 077; cat > /etc/caddy/caddy.env\"'"
+	echo "      # paste CF_API_TOKEN=<token>, Enter, Ctrl-D"
+	echo "    this is deliberately not tracked in git, it's a live secret"
+fi
+
+echo "▸ adguardhome: installing package"
+as_root apk add adguardhome adguardhome-openrc
+
+if as_root test ! -f /var/lib/adguardhome/AdGuardHome.yaml; then
+	echo "▸ adguardhome: seeding config (first install only)"
+	as_root install -d -o adguardhome -g adguardhome -m 755 /var/lib/adguardhome
+	as_root install -o adguardhome -g adguardhome -m 640 "$self/AdGuardHome.yaml" /var/lib/adguardhome/AdGuardHome.yaml
+else
+	echo "▸ adguardhome: config already present, leaving live state alone"
+fi
+
+echo "▸ enabling and starting services"
+as_root rc-update add caddy default
+as_root rc-update add adguardhome default
+as_root rc-service adguardhome start || as_root rc-service adguardhome restart
+if as_root test -f /etc/caddy/caddy.env; then
+	as_root rc-service caddy start || as_root rc-service caddy restart
+else
+	echo "  skipping caddy start, no caddy.env yet"
+fi
+
+echo "▸ services install done on $(hostname)"

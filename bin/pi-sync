@@ -80,6 +80,18 @@ def stage(name: str, staging: Path):
             shutil.copy2(f, bin_dst / f.name)
             (bin_dst / f.name).chmod(0o755)
 
+    # service configs are root-owned system files, so they land in $HOME inert
+    # and only get installed when --services explicitly runs the install script
+    services_src = PI_DIR / "services" / name
+    if services_src.is_dir():
+        services_dst = staging / ".local" / "share" / "pi-services" / name
+        services_dst.mkdir(parents=True, exist_ok=True)
+        for f in sorted(services_src.iterdir()):
+            if f.is_file():
+                shutil.copy2(f, services_dst / f.name)
+                if f.name == "install":
+                    (services_dst / f.name).chmod(0o755)
+
 
 def run_ssh(host: dict[str, str], name: str, remote_cmd: str, stdin: bytes | None = None) -> subprocess.CompletedProcess:
     target = f"{host['user']}@{name}"
@@ -91,8 +103,9 @@ def run_ssh(host: dict[str, str], name: str, remote_cmd: str, stdin: bytes | Non
     return subprocess.run(cmd, input=stdin, env=env, capture_output=True)
 
 
-def sync_host(name: str, host: dict[str, str], bootstrap: bool, dry_run: bool) -> bool:
+def sync_host(name: str, host: dict[str, str], bootstrap: bool, services: bool, dry_run: bool) -> bool:
     log(f"\n── {name} ──")
+    has_services = (PI_DIR / "services" / name / "install").is_file()
 
     with tempfile.TemporaryDirectory() as tmp:
         staging = Path(tmp) / "payload"
@@ -108,6 +121,8 @@ def sync_host(name: str, host: dict[str, str], bootstrap: bool, dry_run: bool) -
         if dry_run:
             if bootstrap:
                 print("  + bootstrap (apk install, login shell)")
+            if services and has_services:
+                print("  + services install (caddy, adguardhome)")
             return True
 
         probe = run_ssh(host, name, "true")
@@ -140,6 +155,21 @@ def sync_host(name: str, host: dict[str, str], bootstrap: bool, dry_run: bool) -
             return False
         log(f"  bootstrap ok")
 
+    if services and has_services:
+        password = host.get("password", "")
+        remote_cmd = (
+            'IFS= read -r SUDO_PASS; export SUDO_PASS; '
+            'exec sh ~/.local/share/pi-services/%s/install' % name
+        )
+        res = run_ssh(host, name, remote_cmd, stdin=password.encode() + b"\n")
+        out = res.stdout.decode().strip()
+        if out:
+            print("\n".join(f"  {ln}" for ln in out.splitlines()))
+        if res.returncode != 0:
+            error(f"{name}: services install failed: {res.stderr.decode().strip()}")
+            return False
+        log(f"  services install ok")
+
     return True
 
 
@@ -147,6 +177,7 @@ def main():
     args = sys.argv[1:]
     dry_run = "--dry-run" in args
     bootstrap = "--bootstrap" in args
+    services = "--services" in args
     only = None
     if "--host" in args:
         i = args.index("--host") + 1
@@ -178,7 +209,7 @@ def main():
             failed.append(name)
             continue
         try:
-            ok = sync_host(name, host, bootstrap, dry_run)
+            ok = sync_host(name, host, bootstrap, services, dry_run)
         except Exception as exc:  # one bad host must never take the others down
             error(f"{name}: {exc}")
             failed.append(name)

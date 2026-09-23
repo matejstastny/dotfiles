@@ -4,11 +4,13 @@
 # The process name is optional, and is only used to show a PID when the service is running.
 leda_services='
 Soju chat|soju|soju
-Tailscale VPN|tailscale|tailscaled
+Tailscale exit node|tailscale|tailscaled
 '
 
 thebe_services='
-Tailscale VPN|tailscale|tailscaled
+Tailscale subnet router|tailscale|tailscaled
+AdGuard Home|adguardhome|adguardhome
+Caddy proxy|caddy|caddy
 '
 
 host=${1:-$(hostname)}
