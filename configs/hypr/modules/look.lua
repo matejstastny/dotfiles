@@ -24,7 +24,8 @@ hl.config({
     },
     plugin = {
         hy3 = {
-            tab_first_window = true,
+            tab_first_window = false,
+            autotab_rules = "2:^(code|codium)$;4:^(vesktop|org\\.squidowl\\.halloy|com\\.ktechpit\\.whatsie)$",
             tabs = {
                 height       = 20,
                 padding      = 2,

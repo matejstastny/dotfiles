@@ -1,0 +1,25 @@
+export ZSH_CONFIG="$HOME/.config/zsh"
+
+# defaults
+export EDITOR="nvim"
+export PAGER="less"
+
+# musl only ships C.UTF-8 unless musl-locales is installed
+export LANG="C.UTF-8"
+export LC_ALL="C.UTF-8"
+
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_DATA_HOME="$HOME/.local/share"
+
+typeset -U path
+path=(
+	"$HOME/.local/bin"
+	"$HOME/.cargo/bin"
+	$path
+)
+
+for _part in host options history aliases completion plugins; do
+	[[ -r "$ZSH_CONFIG/$_part.zsh" ]] && source "$ZSH_CONFIG/$_part.zsh"
+done
+unset _part

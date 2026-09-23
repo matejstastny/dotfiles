@@ -1,0 +1,11 @@
+# thebe - inner moon, rides just outside io's volcanism. amber/ember.
+
+[palettes.moon]
+accent = "#d9995e"
+alt    = "#c9705e"
+dim    = "#a08972"
+
+[character]
+success_symbol = "[◑ ❯](accent)"
+error_symbol   = "[◑ ❯](alt)"
+vicmd_symbol   = "[◑ ❮](dim)"

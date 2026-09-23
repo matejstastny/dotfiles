@@ -1,0 +1,201 @@
+#!/usr/bin/env python3
+#@ push pi/ to every raspberry pi over tailscale
+
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tarfile
+import tempfile
+from pathlib import Path
+
+_ROOT = Path(__file__).resolve().parent.parent
+PI_DIR = _ROOT / "pi"
+HOSTS_FILE = Path(os.environ.get("REMOTE_HOSTS_CONFIG", Path.home() / ".config/remote/hosts.toml"))
+CONNECT_TIMEOUT = 10
+
+SSH_OPTS = [
+    "-o", f"ConnectTimeout={CONNECT_TIMEOUT}",
+    "-o", "StrictHostKeyChecking=accept-new",
+    "-o", "BatchMode=no",
+    "-o", "LogLevel=ERROR",
+]
+
+
+def log(msg: str):
+    print(f"\033[32m{msg}\033[0m", flush=True)
+
+
+def warn(msg: str):
+    sys.stdout.flush()
+    print(f"\033[33mwarn: {msg}\033[0m", file=sys.stderr, flush=True)
+
+
+def error(msg: str):
+    sys.stdout.flush()
+    print(f"\033[31merror: {msg}\033[0m", file=sys.stderr, flush=True)
+
+
+def parse_hosts(path: Path) -> dict[str, dict[str, str]]:
+    hosts: dict[str, dict[str, str]] = {}
+    current: dict[str, str] = {}
+    if not path.exists():
+        return hosts
+    for line in path.read_text().splitlines():
+        line = line.strip()
+        if line == "[[hosts]]":
+            current = {}
+            continue
+        m = re.match(r'^(\w+)\s*=\s*"(.*)"$', line)
+        if m and current is not None:
+            current[m.group(1)] = m.group(2)
+            if m.group(1) == "name":
+                hosts[m.group(2)] = current
+    return hosts
+
+
+def stage(name: str, staging: Path):
+    """lay out the payload exactly as it should land in the pi's home dir"""
+    zsh_src = PI_DIR / "config" / "zsh"
+    zsh_dst = staging / ".config" / "zsh"
+    zsh_dst.mkdir(parents=True, exist_ok=True)
+
+    shutil.copy2(zsh_src / "zshrc", staging / ".zshrc")
+    for f in sorted(zsh_src.glob("*.zsh")):
+        shutil.copy2(f, zsh_dst / f.name)
+
+    host_zsh = PI_DIR / "hosts" / f"{name}.zsh"
+    shutil.copy2(host_zsh, zsh_dst / "host.zsh")
+
+    # starship has no include directive, so the host palette is concatenated in
+    prompt = (PI_DIR / "config" / "starship" / "prompt.toml").read_text()
+    palette = (PI_DIR / "hosts" / f"{name}.toml").read_text()
+    (staging / ".config" / "starship.toml").write_text(f"{prompt}\n{palette}")
+
+    bin_dst = staging / ".local" / "bin"
+    bin_dst.mkdir(parents=True, exist_ok=True)
+    for f in sorted((PI_DIR / "bin").iterdir()):
+        if f.is_file():
+            shutil.copy2(f, bin_dst / f.name)
+            (bin_dst / f.name).chmod(0o755)
+
+
+def run_ssh(host: dict[str, str], name: str, remote_cmd: str, stdin: bytes | None = None) -> subprocess.CompletedProcess:
+    target = f"{host['user']}@{name}"
+    env = dict(os.environ)
+    cmd = ["ssh", *SSH_OPTS, target, remote_cmd]
+    if "password" in host:
+        env["SSHPASS"] = host["password"]
+        cmd = ["sshpass", "-e", *cmd]
+    return subprocess.run(cmd, input=stdin, env=env, capture_output=True)
+
+
+def sync_host(name: str, host: dict[str, str], bootstrap: bool, dry_run: bool) -> bool:
+    log(f"\n── {name} ──")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        staging = Path(tmp) / "payload"
+        staging.mkdir()
+        stage(name, staging)
+
+        files = sorted(
+            str(p.relative_to(staging)) for p in staging.rglob("*") if p.is_file()
+        )
+        for f in files:
+            print(f"  ~/{f}")
+
+        if dry_run:
+            if bootstrap:
+                print("  + bootstrap (apk install, login shell)")
+            return True
+
+        probe = run_ssh(host, name, "true")
+        if probe.returncode != 0:
+            warn(f"{name} unreachable, skipping")
+            return False
+
+        archive = Path(tmp) / "payload.tar"
+        with tarfile.open(archive, "w") as tar:
+            for p in sorted(staging.rglob("*")):
+                tar.add(p, arcname=str(p.relative_to(staging)))
+
+        res = run_ssh(host, name, "tar -C \"$HOME\" -xf -", stdin=archive.read_bytes())
+        if res.returncode != 0:
+            error(f"{name}: unpack failed: {res.stderr.decode().strip()}")
+            return False
+        log(f"  config pushed")
+
+    if bootstrap:
+        script = (PI_DIR / "bootstrap").read_bytes()
+        password = host.get("password", "")
+        # first stdin line is the sudo password so it never reaches the remote process list
+        payload = password.encode() + b"\n" + script
+        res = run_ssh(host, name, 'IFS= read -r SUDO_PASS; export SUDO_PASS; exec sh -s', stdin=payload)
+        out = res.stdout.decode().strip()
+        if out:
+            print("\n".join(f"  {ln}" for ln in out.splitlines()))
+        if res.returncode != 0:
+            error(f"{name}: bootstrap failed: {res.stderr.decode().strip()}")
+            return False
+        log(f"  bootstrap ok")
+
+    return True
+
+
+def main():
+    args = sys.argv[1:]
+    dry_run = "--dry-run" in args
+    bootstrap = "--bootstrap" in args
+    only = None
+    if "--host" in args:
+        i = args.index("--host") + 1
+        if i >= len(args):
+            sys.exit("--host needs a name")
+        only = args[i]
+
+    if not PI_DIR.is_dir():
+        sys.exit(f"pi/ directory not found at {PI_DIR}")
+
+    names = sorted(p.stem for p in (PI_DIR / "hosts").glob("*.toml"))
+    if only:
+        if only not in names:
+            sys.exit(f"unknown host: {only} (have: {', '.join(names)})")
+        names = [only]
+
+    hosts = parse_hosts(HOSTS_FILE)
+    if shutil.which("sshpass") is None:
+        warn("sshpass not found, only key-auth hosts will work")
+
+    if dry_run:
+        print("[dry run]")
+
+    synced, skipped, failed = [], [], []
+    for name in names:
+        host = hosts.get(name)
+        if host is None:
+            error(f"no remote-hosts entry for {name}, skipping")
+            failed.append(name)
+            continue
+        try:
+            ok = sync_host(name, host, bootstrap, dry_run)
+        except Exception as exc:  # one bad host must never take the others down
+            error(f"{name}: {exc}")
+            failed.append(name)
+            continue
+        (synced if ok else skipped).append(name)
+
+    print()
+    if synced:
+        log(f"synced: {', '.join(synced)}")
+    if skipped:
+        warn(f"skipped: {', '.join(skipped)}")
+    if failed:
+        error(f"failed: {', '.join(failed)}")
+
+    # offline boxes are expected, a real error is not
+    sys.exit(1 if failed or not synced else 0)
+
+
+if __name__ == "__main__":
+    main()

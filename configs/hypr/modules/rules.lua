@@ -37,16 +37,6 @@ hl.window_rule({
     size = "70% 75%",
 })
 
--- merge a window into the ws2 hy3 tab group, preserving the active workspace
-local function ws2_tab(window)
-    local prev_ws = hl.get_active_workspace()
-    hl.dispatch(hl.dsp.focus({ window = "address:" .. window.address }))
-    hl.dispatch(hl.plugin.hy3.change_group('tab'))
-    if prev_ws and prev_ws.id ~= 2 then
-        hl.dispatch(hl.dsp.focus({ workspace = prev_ws.id }))
-    end
-end
-
 hl.on("window.open", function(window)
     -- bluetooth window
     if window.class:find("^blueman") then
@@ -72,16 +62,6 @@ hl.on("window.open", function(window)
         return
     end
 
-    if window.workspace and window.workspace.id == 2 then
-        ws2_tab(window)
-    end
-end)
-
--- also handle windows moved to ws2 after creation (alt+shift+2 etc.)
-hl.on("window.move_to_workspace", function(window)
-    if window.workspace and window.workspace.id == 2 then
-        ws2_tab(window)
-    end
 end)
 
 -- restore wallpaper on monitor hotplug

@@ -1,0 +1,43 @@
+#!/bin/sh
+
+set -eu
+
+thermal=/sys/class/thermal/thermal_zone0/temp
+
+temp() {
+	[ -r "$thermal" ] || { echo "no thermal zone" >&2; return 1; }
+	awk '{printf "%.1f°C\n", $1/1000}' "$thermal"
+}
+
+throttle() {
+	command -v vcgencmd >/dev/null || { echo "vcgencmd not installed" >&2; return 1; }
+	bits=$(vcgencmd get_throttled | cut -d= -f2)
+	value=$((bits))
+	[ "$value" -eq 0 ] && { echo "clear"; return 0; }
+	[ $((value & 0x1)) -ne 0 ] && echo "under-voltage now"
+	[ $((value & 0x2)) -ne 0 ] && echo "arm frequency capped now"
+	[ $((value & 0x4)) -ne 0 ] && echo "throttled now"
+	[ $((value & 0x8)) -ne 0 ] && echo "soft temperature limit now"
+	[ $((value & 0x10000)) -ne 0 ] && echo "under-voltage since boot"
+	[ $((value & 0x20000)) -ne 0 ] && echo "arm frequency capped since boot"
+	[ $((value & 0x40000)) -ne 0 ] && echo "throttled since boot"
+	[ $((value & 0x80000)) -ne 0 ] && echo "soft temperature limit since boot"
+	return 0
+}
+
+status() {
+	printf 'host      %s\n' "$(hostname)"
+	printf 'uptime    %s\n' "$(uptime | sed 's/^ *//')"
+	printf 'load      %s\n' "$(cut -d' ' -f1-3 /proc/loadavg)"
+	printf 'memory    %s\n' "$(free -m | awk '/^Mem:/ {printf "%d/%d MiB", $3, $2}')"
+	printf 'disk      %s\n' "$(df -h / | awk 'NR==2 {printf "%s/%s (%s)", $3, $2, $5}')"
+	printf 'temp      %s\n' "$(temp 2>/dev/null || echo n/a)"
+	printf 'throttle  %s\n' "$(throttle 2>/dev/null | paste -sd, - || echo n/a)"
+}
+
+case "${1:-status}" in
+	temp) temp ;;
+	throttle) throttle ;;
+	status) status ;;
+	*) echo "usage: ${0##*/} [status|temp|throttle]" >&2; exit 2 ;;
+esac

@@ -1,0 +1,5 @@
+MOON_NAME="leda"
+MOON_GLYPH="◐"
+MOON_ACCENT="#5fb3a3"
+MOON_ALT="#6f9fc9"
+MOON_DIM="#7d9a94"

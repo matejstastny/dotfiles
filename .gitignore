@@ -1,3 +1,5 @@
 configs/tmux/plugins/
 configs/remote/hosts.toml
 fairydust/
+configs/ai/skills/synced
+configs/ai/skills/.system

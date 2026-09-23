@@ -1,0 +1,40 @@
+#!/bin/sh
+
+set -eu
+
+packages="zsh zsh-autosuggestions zsh-syntax-highlighting starship eza zoxide fzf bat fd ripgrep git tmux btop fastfetch neovim curl less ncurses raspberrypi-utils-vcgencmd"
+
+as_root() {
+	printf '%s\n' "${SUDO_PASS:-}" | sudo -S -p '' "$@"
+}
+
+echo "▸ enabling community repo"
+if ! grep -q '^[^#]*/community' /etc/apk/repositories; then
+	as_root sed -i 's|^#\(.*/community\)$|\1|' /etc/apk/repositories
+fi
+
+echo "▸ installing packages"
+as_root apk update >/dev/null
+# shellcheck disable=SC2086
+as_root apk add $packages
+
+user=$(id -un)
+zsh_path=$(command -v zsh)
+current_shell=$(getent passwd "$user" | cut -d: -f7)
+
+if [ "$current_shell" != "$zsh_path" ]; then
+	echo "▸ setting login shell to $zsh_path"
+	if ! grep -qx "$zsh_path" /etc/shells 2>/dev/null; then
+		printf '%s\n' "$zsh_path" | as_root tee -a /etc/shells >/dev/null
+	fi
+	as_root sed -i "s|^\($user:[^:]*:[^:]*:[^:]*:[^:]*:[^:]*\):.*$|\1:$zsh_path|" /etc/passwd
+	new_shell=$(getent passwd "$user" | cut -d: -f7)
+	if [ "$new_shell" != "$zsh_path" ]; then
+		echo "could not set login shell (still $new_shell)" >&2
+		exit 1
+	fi
+else
+	echo "▸ login shell already $zsh_path"
+fi
+
+echo "▸ bootstrap done on $(hostname)"

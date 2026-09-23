@@ -1,15 +1,5 @@
 hl.on("hyprland.start", function()
-    ---------------------------------
-    -- SESSION
-    ---------------------------------
-
-    -- hands wayland_display and the instance signature to systemd and marks the
-    -- compositor unit started; without it uwsm times out and kills the session.
-    -- portals are dbus-activated off graphical-session.target once this lands
     hl.exec_cmd("uwsm finalize")
-
-    -- plugins
-    hl.exec_cmd("hyprpm reload")
 
     ---------------------------------
     -- SHELL

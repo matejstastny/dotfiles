@@ -1,0 +1,117 @@
+#!/bin/sh
+
+set -eu
+
+mode=${1:-benchmark}
+
+case "$mode" in
+  benchmark)
+    duration=${2:-2}
+    ;;
+  burn)
+    duration=${2:-60}
+    ;;
+  *)
+    echo "usage: ${0##*/} [benchmark [seconds-per-test] | burn [seconds]]" >&2
+    exit 2
+    ;;
+esac
+
+case "$duration" in
+  ''|*[!0-9]*)
+    echo "duration must be a positive number of seconds" >&2
+    exit 2
+    ;;
+esac
+
+if [ "$duration" -eq 0 ]; then
+  echo "duration must be at least 1 second" >&2
+  exit 2
+fi
+
+command -v vcgencmd >/dev/null || {
+  echo "vcgencmd is required" >&2
+  exit 1
+}
+
+if [ "$mode" = benchmark ]; then
+  command -v openssl >/dev/null || {
+    echo "openssl is required" >&2
+    exit 1
+  }
+fi
+
+sudo -v
+
+result=''
+workload_pid=''
+load_pids=''
+active_seen=0
+
+cleanup() {
+  if [ -n "$workload_pid" ]; then
+    kill "$workload_pid" 2>/dev/null || true
+    wait "$workload_pid" 2>/dev/null || true
+  fi
+  if [ -n "$load_pids" ]; then
+    kill $load_pids 2>/dev/null || true
+    wait $load_pids 2>/dev/null || true
+  fi
+  if [ -n "$result" ]; then
+    rm -f "$result"
+  fi
+}
+
+trap cleanup EXIT INT TERM
+
+if [ "$mode" = benchmark ]; then
+  result=$(mktemp)
+  echo "Running SHA-256 benchmark on $(nproc) CPU cores..."
+  openssl speed -seconds "$duration" -multi "$(nproc)" sha256 >"$result" 2>&1 &
+  workload_pid=$!
+else
+  echo "Running full CPU load on $(nproc) cores for ${duration}s..."
+  for core in $(seq 1 "$(nproc)"); do
+    (while :; do :; done) &
+    load_pids="$load_pids $!"
+  done
+  sleep "$duration" &
+  workload_pid=$!
+fi
+
+while kill -0 "$workload_pid" 2>/dev/null; do
+  status=$(sudo vcgencmd get_throttled)
+  temperature=$(sudo vcgencmd measure_temp)
+  flags=${status#*=}
+  temp_throttle_code=$((flags & 0x8))
+
+  if [ $((flags & 0x5)) -ne 0 ]; then
+    active_seen=1
+  fi
+
+  printf '%s, %s, temp_throttle_code=0x%x\n' "$status" "$temperature" "$temp_throttle_code"
+  sleep 2
+done
+
+wait "$workload_pid"
+workload_pid=''
+
+if [ "$mode" = burn ]; then
+  kill $load_pids 2>/dev/null || true
+  wait $load_pids 2>/dev/null || true
+  load_pids=''
+else
+  echo
+  echo "Benchmark throughput:"
+  grep '^sha256' "$result"
+fi
+
+echo
+if [ "$active_seen" -eq 1 ]; then
+  echo "WARNING: active undervoltage or throttling was detected during the test."
+else
+  echo "No active undervoltage or throttling was detected during the test."
+fi
+
+echo "temp_throttle_code=0x8 means the soft temperature limit is active."
+echo "Note: bits 16 and 18 in get_throttled stay set until reboot after any prior event."
