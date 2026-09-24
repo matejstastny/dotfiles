@@ -13,6 +13,13 @@ hl.window_rule({ name = "session-ws-whatsie", match = { class = "^com.ktechpit.w
 hl.window_rule({ name = "session-ws-obsidian", match = { class = "^obsidian$" }, workspace = "5 silent" })
 hl.window_rule({ name = "session-ws-t3code", match = { class = "^t3code$" }, workspace = "6 silent" })
 hl.window_rule({ name = "session-ws-steam", match = { class = "^steam$" }, workspace = "7 silent" })
+hl.window_rule({ name = "session-ws-stars", match = { class = "^helium-stars$" }, workspace = "9 silent" })
+hl.window_rule({
+    name = "session-ws-spotify",
+    match = { class = "^chrome-pjibgclleladliembfgfagdaldikeohf-Default$" },
+    workspace =
+    "7 silent"
+})
 
 -- file dialogs
 hl.window_rule({
@@ -61,7 +68,6 @@ hl.on("window.open", function(window)
         hl.dispatch(hl.dsp.window.center())
         return
     end
-
 end)
 
 -- restore wallpaper on monitor hotplug

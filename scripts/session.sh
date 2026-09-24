@@ -11,6 +11,7 @@ apps=(
 	"obsidian|obsidian|^obsidian$|once|quit|$HOME/.local/share/obsidian/obsidian.AppImage --appimage-extract-and-run"
 	"t3code|t3code|^t3code$|once|quit|$HOME/.local/share/t3code/t3code --no-sandbox"
 	"vesktop|vesktop|^vesktop$|always|tray|vesktop"
+	"halloy|halloy|^org.squidowl.halloy$|once|quit|halloy"
 	"whatsie|whatsie|^com\.ktechpit\.whatsie$|once|tray|$HOME/.local/bin/whatsie"
 )
 
