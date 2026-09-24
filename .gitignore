@@ -4,3 +4,4 @@ configs/halloy/soju-password
 fairydust/
 configs/ai/skills/synced
 configs/ai/skills/.system
+**/__pycache__

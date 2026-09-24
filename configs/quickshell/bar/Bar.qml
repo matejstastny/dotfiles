@@ -19,11 +19,15 @@ Item {
     readonly property alias diskStat: diskStat
     readonly property alias batteryStat: batteryStat
     readonly property alias volumeStat: volumeStat
+    readonly property alias recordingStat: recordingStat
+    readonly property alias tailscaleStat: tailscaleStat
+    readonly property alias dockerStat: dockerStat
+    readonly property alias quickshareStat: quickshareStat
 
     implicitHeight: Theme.barHeight
 
     readonly property bool isLaptopScreen: Monitors.isLaptop(screen)
-    readonly property string dotfilesBin: Quickshell.env("HOME") + "/dotfiles/bin"
+    readonly property string dotfilesScripts: Quickshell.env("HOME") + "/dotfiles/scripts"
     readonly property var activePlayer: {
         const players = Mpris.players.values;
         for (let i = 0; i < players.length; i++)
@@ -79,24 +83,35 @@ Item {
         }
 
         BarScriptModule {
+            id: recordingStat
             anchors.verticalCenter: parent.verticalCenter
-            script: root.dotfilesBin + "/bar-recording"
+            script: root.dotfilesScripts + "/bar-recording.sh"
             interval: 1000
-            onClickCommand: root.dotfilesBin + "/record"
+            onClickCommand: root.dotfilesScripts + "/record.sh"
         }
 
         BarScriptModule {
+            id: tailscaleStat
             anchors.verticalCenter: parent.verticalCenter
-            script: root.dotfilesBin + "/bar-tailscale"
+            script: root.dotfilesScripts + "/bar-tailscale.sh"
             interval: 10000
             onClickCommand: "tailscale up"
         }
 
         BarScriptModule {
+            id: dockerStat
             anchors.verticalCenter: parent.verticalCenter
-            script: root.dotfilesBin + "/bar-docker"
+            script: root.dotfilesScripts + "/bar-docker.sh"
             interval: 5000
             onClickCommand: "kitty -e sh -c 'docker ps; read'"
+        }
+
+        BarScriptModule {
+            id: quickshareStat
+            anchors.verticalCenter: parent.verticalCenter
+            script: root.dotfilesScripts + "/bar-quickshare.sh"
+            interval: 5000
+            onClickCommand: root.dotfilesScripts + "/quickshare-recopy.sh"
         }
 
         BarSep {

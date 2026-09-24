@@ -38,7 +38,7 @@ PopupWindow {
         placeholder: "search notes..."
 
         onSelected: (item, action) => {
-            Quickshell.execDetached([Quickshell.env("HOME") + "/dotfiles/bin/open-note", item.key])
+            Quickshell.execDetached([Quickshell.env("HOME") + "/dotfiles/scripts/open-note.sh", item.key])
             root.closeRequested()
         }
         onCloseRequested: root.closeRequested()

@@ -1,0 +1,12 @@
+[Unit]
+Description=copy Quick Share images to the clipboard
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=%h/dotfiles/scripts/quickshare-clipboard.sh
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target

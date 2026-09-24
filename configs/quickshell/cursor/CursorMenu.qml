@@ -12,8 +12,8 @@ PopupWindow {
     popupHeight: 430
 
     readonly property string homeDir: Quickshell.env("HOME")
-    readonly property string setCursorScript: homeDir + "/dotfiles/bin/set-cursor"
-    readonly property string thumbsScript: homeDir + "/dotfiles/bin/cursor-thumbs"
+    readonly property string setCursorScript: homeDir + "/dotfiles/scripts/set-cursor.sh"
+    readonly property string thumbsScript: homeDir + "/dotfiles/scripts/cursor-thumbs.sh"
 
     property string currentTheme: ""
     property int currentSize: 24

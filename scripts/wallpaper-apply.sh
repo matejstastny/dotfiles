@@ -37,7 +37,7 @@ await_awww() {
 	done
 }
 
-if [ "$("$bin_dir/wallpaper-kind" "$path")" != live ]; then
+if [ "$("$bin_dir/wallpaper-kind.sh" "$path")" != live ]; then
 	pkill -x mpvpaper 2>/dev/null || true
 	pkill -x mpvpaper-holder 2>/dev/null || true
 	await_awww || :

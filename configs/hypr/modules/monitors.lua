@@ -12,5 +12,5 @@ hl.monitor({ output = "desc:XYM M156F1", mode = "preferred", position = "1600x0"
 -- auto fix apple dcp valid_mode:0 race on any external monitor hotplug
 hl.on("monitor.added", function(monitor)
     if monitor.name == "eDP-1" then return end
-    hl.exec_cmd("sh -c 'sleep 2 && ~/dotfiles/bin/fix-monitor-mode " .. monitor.name .. "'")
+    hl.exec_cmd("sh -c 'sleep 2 && ~/dotfiles/scripts/fix-monitor-mode.sh " .. monitor.name .. "'")
 end)

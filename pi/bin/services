@@ -11,6 +11,7 @@ Tailscale subnet router|tailscale|tailscaled
 AdGuard Home|adguardhome|adguardhome
 Caddy proxy|caddy|caddy
 Ntfy|ntfy|ntfy
+elara.boo tunnel|elara-boo-tunnel|cloudflared
 '
 
 host=${1:-$(hostname)}

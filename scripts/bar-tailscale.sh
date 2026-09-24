@@ -5,7 +5,7 @@ if ! command -v tailscale &>/dev/null; then
 fi
 
 status=$(tailscale status --json 2>/dev/null) || {
-    printf '{"text":"󰒎","tooltip":"Tailscale: offline","class":"offline"}\n'
+    printf '{"text":"󰒎","title":"tailscale","headline":"offline","lines":["unable to reach tailscaled"],"class":"offline"}\n'
     exit
 }
 
@@ -14,8 +14,8 @@ if [ "$state" = "Running" ]; then
     ip=$(printf '%s' "$status" | jq -r '.TailscaleIPs[0] // "?"')
     host=$(printf '%s' "$status" | jq -r '.Self.HostName // "?"')
     jq -cn --arg ip "$ip" --arg host "$host" \
-        '{"text":"󰒍","tooltip":("󰒍 " + $host + "\n" + $ip),"class":"connected"}'
+        '{text: "󰒍", title: "tailscale", headline: $host, lines: [$ip], class: "connected"}'
 else
     jq -cn --arg s "$state" \
-        '{"text":"󰒎","tooltip":("Tailscale: " + $s),"class":"offline"}'
+        '{text: "󰒎", title: "tailscale", headline: $s, lines: ["not connected"], class: "offline"}'
 fi

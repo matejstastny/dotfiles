@@ -22,4 +22,4 @@ wlr-randr --output "$output" --preferred
 
 hyprctl reload
 
-~/dotfiles/bin/wallpaper-restore "$output"
+~/dotfiles/scripts/wallpaper-restore.sh "$output"

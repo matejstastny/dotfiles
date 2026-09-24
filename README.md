@@ -30,9 +30,5 @@
 | Script              | Description                                                                                              |
 | ------------------- | -------------------------------------------------------------------------------------------------------- |
 | `link`              | Symlink configs                                                                                          |
-| `session`           | Launch full desktop session                                                                              |
-| `screenshot`        | screenshot using [grim](https://github.com/emersion/grim) and [slurp](https://github.com/emersion/slurp) |
-| `record`            | screenrecord using [wf-recorder](https://github.com/ammen99/wf-recorder)                                 |
-| `wallpaper-restore` | re-apply last-set wallpaper                                                                              |
 | `cloud`             | onedrive syncer, wrapper of [rclone](https://rclone.org/)                                                |
 | `remote`            | better ssh command with a hosts config file                                                              |

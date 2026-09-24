@@ -154,7 +154,7 @@ PanelWindow {
         borderWidth: Theme.borderWidth
 
         frame: frame
-        shapes: [bar.cpuStat.popoutItem, bar.memStat.popoutItem, bar.diskStat.popoutItem, bar.batteryStat.popoutItem, bar.volumeStat.popoutItem, toastPanel, panelDrawer, powerDrawer, wallpaperDrawer, osdDrawer]
+        shapes: [bar.cpuStat.popoutItem, bar.memStat.popoutItem, bar.diskStat.popoutItem, bar.batteryStat.popoutItem, bar.volumeStat.popoutItem, bar.recordingStat.popoutItem, bar.tailscaleStat.popoutItem, bar.dockerStat.popoutItem, bar.quickshareStat.popoutItem, toastPanel, panelDrawer, powerDrawer, wallpaperDrawer, osdDrawer]
 
         // overhangs the screen on every side, so the outer edge, its blend and
         // the bulge of a parked drawer all land off-screen and the only thing

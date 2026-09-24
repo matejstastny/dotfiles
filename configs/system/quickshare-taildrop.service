@@ -1,0 +1,13 @@
+[Unit]
+Description=receive Taildrop files in Quick Share
+After=tailscaled.service
+Wants=tailscaled.service
+
+[Service]
+ExecStartPre=/usr/bin/install -d -o elara -g elara -m 0755 /home/elara/quickshare
+ExecStart=/usr/bin/tailscale file get --loop --conflict=rename /home/elara/quickshare
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

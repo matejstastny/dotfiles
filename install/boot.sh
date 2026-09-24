@@ -41,7 +41,7 @@ command = "agreety --cmd /bin/sh"
 user = "greetd"
 
 [initial_session]
-command = "$HOME/dotfiles/bin/hyprland-session"
+command = "$HOME/dotfiles/scripts/hyprland-session.sh"
 user = "$USER"
 EOF
 

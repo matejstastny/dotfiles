@@ -7,7 +7,7 @@ here="$(dirname "$0")"
 apps=(
 	"kitty|kitty|^kitty$|once|quit|kitty"
 	"code|code|^code$|once|quit|code $HOME/dotfiles"
-	"helium|f:^([^ ]*/)?helium --profile-directory=Default|^helium$|once|quit|$here/helium --profile-directory=Default"
+	"helium|f:^([^ ]*/)?helium --profile-directory=Default|^helium$|once|quit|$here/../bin/helium --profile-directory=Default"
 	"obsidian|obsidian|^obsidian$|once|quit|$HOME/.local/share/obsidian/obsidian.AppImage --appimage-extract-and-run"
 	"t3code|t3code|^t3code$|once|quit|$HOME/.local/share/t3code/t3code --no-sandbox"
 	"vesktop|vesktop|^vesktop$|always|tray|vesktop"

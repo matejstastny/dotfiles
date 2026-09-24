@@ -19,21 +19,21 @@ hl.bind(mod .. " + SHIFT + T", hl.dsp.global("quickshell:todo-stars"))
 hl.bind(mod .. " + K", hl.dsp.global("quickshell:keyboard"))
 
 -- utils
-hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd(DOTS .. "/bin/reload-shell"))
+hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd(DOTS .. "/scripts/reload-shell.sh"))
 hl.bind(mod .. " + SHIFT + B", hl.dsp.global("quickshell:wallpaper"))
 hl.bind(mod .. " + SHIFT + M", hl.dsp.global("quickshell:cursormenu"))
-hl.bind(mod .. " + SHIFT + L", hl.dsp.exec_cmd(DOTS .. "/bin/lock"))
+hl.bind(mod .. " + SHIFT + L", hl.dsp.exec_cmd(DOTS .. "/scripts/lock.sh"))
 hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"))
 
 -- screenshot / record
-hl.bind("CTRL + SHIFT + 4", hl.dsp.exec_cmd(DOTS .. "/bin/screenshot"))
-hl.bind("CTRL + SHIFT + 3", hl.dsp.exec_cmd(DOTS .. "/bin/screenshot-full"))
-hl.bind("CTRL + SHIFT + L", hl.dsp.exec_cmd(DOTS .. "/bin/record"))
+hl.bind("CTRL + SHIFT + 4", hl.dsp.exec_cmd(DOTS .. "/scripts/screenshot.sh"))
+hl.bind("CTRL + SHIFT + 3", hl.dsp.exec_cmd(DOTS .. "/scripts/screenshot-full.sh"))
+hl.bind("CTRL + SHIFT + L", hl.dsp.exec_cmd(DOTS .. "/scripts/record.sh"))
 hl.bind("CTRL + SHIFT + P", hl.dsp.global("quickshell:screenrecord"))
 
 -- session
-hl.bind(mod .. " + SHIFT + O", hl.dsp.exec_cmd(DOTS .. "/bin/session"))
-hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd(DOTS .. "/bin/close-session"))
+hl.bind(mod .. " + SHIFT + O", hl.dsp.exec_cmd(DOTS .. "/scripts/session.sh"))
+hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd(DOTS .. "/scripts/close-session.sh"))
 
 -- window managment
 hl.bind(mod .. " + W", hl.dsp.window.close())

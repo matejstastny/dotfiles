@@ -66,7 +66,7 @@ end)
 
 -- restore wallpaper on monitor hotplug
 hl.on("monitor.added", function(monitor)
-    hl.exec_cmd("/home/elara/dotfiles/bin/wallpaper-restore " .. monitor.name)
+    hl.exec_cmd("/home/elara/dotfiles/scripts/wallpaper-restore.sh " .. monitor.name)
 end)
 
 -- ros sim tools

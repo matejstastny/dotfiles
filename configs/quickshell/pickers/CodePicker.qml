@@ -10,8 +10,8 @@ PopupWindow {
     popupWidth: 520
     popupHeight: 520
 
-    readonly property string codeOpenScript: Quickshell.env("HOME") + "/dotfiles/bin/code-open"
-    readonly property string codeForgetScript: Quickshell.env("HOME") + "/dotfiles/bin/code-forget"
+    readonly property string codeOpenScript: Quickshell.env("HOME") + "/dotfiles/scripts/code-open.sh"
+    readonly property string codeForgetScript: Quickshell.env("HOME") + "/dotfiles/scripts/code-forget.sh"
 
     function resolvePath(p) {
         p = p.trim()
@@ -29,7 +29,7 @@ PopupWindow {
 
     Process {
         id: lister
-        command: [Quickshell.env("HOME") + "/dotfiles/bin/code-projects"]
+        command: [Quickshell.env("HOME") + "/dotfiles/scripts/code-projects.py"]
         stdout: StdioCollector {
             onStreamFinished: {
                 if (text.length === 0) return

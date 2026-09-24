@@ -6,4 +6,4 @@ bin_dir="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
 state="${XDG_STATE_HOME:-$HOME/.local/state}/wallpaper"
 wallpaper=$(<"$state")
 
-exec "$bin_dir/wallpaper-apply" "$wallpaper" "$1"
+exec "$bin_dir/wallpaper-apply.sh" "$wallpaper" "$1"

@@ -12,10 +12,10 @@ Item {
 
     readonly property string homeDir: Quickshell.env("HOME")
     readonly property string wallpaperDir: homeDir + "/wallpapers"
-    readonly property string setWallpaperScript: homeDir + "/dotfiles/bin/set-wallpaper"
-    readonly property string thumbsScript: homeDir + "/dotfiles/bin/wallpaper-thumbs"
-    readonly property string favoriteScript: homeDir + "/dotfiles/bin/wallpaper-favorite"
-    readonly property string deleteScript: homeDir + "/dotfiles/bin/wallpaper-delete"
+    readonly property string setWallpaperScript: homeDir + "/dotfiles/scripts/set-wallpaper.sh"
+    readonly property string thumbsScript: homeDir + "/dotfiles/scripts/wallpaper-thumbs.sh"
+    readonly property string favoriteScript: homeDir + "/dotfiles/scripts/wallpaper-favorite.sh"
+    readonly property string deleteScript: homeDir + "/dotfiles/scripts/wallpaper-delete.sh"
     readonly property string wallpaperStateFile: (Quickshell.env("XDG_STATE_HOME") || homeDir + "/.local/state") + "/wallpaper"
     property string currentWallpaperPath: ""
 

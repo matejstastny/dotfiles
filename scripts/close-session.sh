@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 #@ close the standard app set, leaving tray apps in the tray
 
-exec "$(dirname "$0")/session" close
+exec "$(dirname "$0")/session.sh" close

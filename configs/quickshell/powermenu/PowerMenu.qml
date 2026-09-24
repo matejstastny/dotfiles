@@ -18,7 +18,7 @@ Item {
     readonly property int padding: 20
 
     readonly property var actions: [
-        { icon: "󰌾", danger: false, cmd: [Quickshell.env("HOME") + "/dotfiles/bin/lock"] },
+        { icon: "󰌾", danger: false, cmd: [Quickshell.env("HOME") + "/dotfiles/scripts/lock.sh"] },
         { icon: "󰒲", danger: false, cmd: ["systemctl", "suspend"] },
         { icon: "󰜉", danger: true, cmd: ["systemctl", "reboot"] },
         { icon: "󰐥", danger: true, cmd: ["systemctl", "poweroff"] }

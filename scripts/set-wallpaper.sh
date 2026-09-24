@@ -15,10 +15,10 @@ state="${XDG_STATE_HOME:-$HOME/.local/state}/wallpaper"
 mkdir -p "$(dirname "$state")"
 echo "$path" >"$state"
 
-if [ "$("$bin_dir/wallpaper-kind" "$path")" = live ]; then
+if [ "$("$bin_dir/wallpaper-kind.sh" "$path")" = live ]; then
 	notify-send -t 2000 "✦ wallpaper" "$(basename "$path") (live)"
 else
 	notify-send -t 2000 "✦ wallpaper" "$(basename "$path")"
 fi
 
-exec "$bin_dir/wallpaper-apply" "$path"
+exec "$bin_dir/wallpaper-apply.sh" "$path"

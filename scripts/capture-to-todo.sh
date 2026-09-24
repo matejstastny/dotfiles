@@ -7,5 +7,5 @@ last=$(tail -n 1 "$INBOX")
 text=$(printf '%s' "$last" | sed -E 's/^- [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2} //')
 [ -z "$text" ] && exit 0
 
-"$HOME/dotfiles/bin/todo-add" "$HOME/notes/todo/personal.md" "$text"
+"$HOME/dotfiles/scripts/todo-add.sh" "$HOME/notes/todo/personal.md" "$text"
 sed -i '$d' "$INBOX"

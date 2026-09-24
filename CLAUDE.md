@@ -1,12 +1,13 @@
-## Repo layout
+## repo layout
 
 - `configs/` - one subdir per app; `bin/link` symlinks each to `~/.config/<name>` by default
-- `bin/` - scripts; this directory is in `$PATH` via `.zshrc`, so anything dropped here is immediately available as a command
+- `bin/` - terminal commands; this directory is in `$PATH` via `.zshrc`
+- `scripts/` - internal executables for Quickshell, Hyprland, and services; use file extensions here
 - `rofi/` - rofi launcher scripts
 - `install/` - random install scripts I might need for things not installed only through dnf, make a new one for each thing (do not append to existing ones unless specifically asked)
 - `assets/` - fonts, screenshots, misc static files for repo and system
 
-## Link system
+## link system
 
 `bin/link` (run after adding any new config):
 
@@ -15,28 +16,16 @@
 - `link.conf [file_overrides]`: symlinks individual files inside the dir to a custom target dir
 - `bin/link --dry-run` to preview without touching anything
 
-## Script style
+## script style
 
 - No file-level comments or docstrings. A single shebang line is enough.
 - Notifications follow: `notify-send -t <ms> "✦ <topic>" "<message>"`
 
-## Path conventions
+## path conventions
 
 - All directory paths in scripts must be **lowercase** - e.g. `~/videos/recordings`, not `~/Videos/Recordings`
 
-## Blacklisted features
-
-Do not suggest or add these - they have been deliberately rejected:
-
-- **atuin** - vanilla shell history is preferred
-- **color-switcher** - singular perfected theme
-
-## Notes
+## notes
 
 When asking for suggestions on what to add, do not be afraid of changing worfkflows, changing programs or refactoring things.
-
-## Already implemented
-
-Do not suggest these as new ideas - they're already in place:
-
-- **Pretty boot pipeline** - `install/boot.sh` sets up Plymouth (motion theme), greetd autologin straight into Hyprland, and a purple-accented vimix GRUB theme, so boot goes GRUB → Plymouth splash → lockscreen seamlessly.
+Do not commit in this repo. I will do that always

@@ -16,7 +16,7 @@ find -L "$src_dir" -maxdepth 1 -type f \
 	-o -iname '*.mp4' -o -iname '*.webm' -o -iname '*.mkv' -o -iname '*.mov' -o -iname '*.m4v' -o -iname '*.avi' \) |
 	sort |
 	while IFS= read -r src; do
-		kind=$("$bin_dir/wallpaper-kind" "$src")
+		kind=$("$bin_dir/wallpaper-kind.sh" "$src")
 		thumb="$cache_dir/$(basename "$src").thumb.jpg"
 		if [ ! -f "$thumb" ] || [ "$src" -nt "$thumb" ]; then
 			if [ "$kind" = live ]; then

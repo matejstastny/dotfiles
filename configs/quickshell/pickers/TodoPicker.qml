@@ -47,11 +47,11 @@ PopupWindow {
         placeholder: "select or type a new todo..."
 
         onSelected: (item, action) => {
-            Quickshell.execDetached([Quickshell.env("HOME") + "/dotfiles/bin/todo-mark-done", root.file, item.key])
+            Quickshell.execDetached([Quickshell.env("HOME") + "/dotfiles/scripts/todo-mark-done.sh", root.file, item.key])
             root.closeRequested()
         }
         onFreeTextSubmitted: text => {
-            Quickshell.execDetached([Quickshell.env("HOME") + "/dotfiles/bin/todo-add", root.file, text])
+            Quickshell.execDetached([Quickshell.env("HOME") + "/dotfiles/scripts/todo-add.sh", root.file, text])
             root.closeRequested()
         }
         onCloseRequested: root.closeRequested()

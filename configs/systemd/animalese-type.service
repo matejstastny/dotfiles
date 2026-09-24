@@ -2,7 +2,7 @@
 Description=animal crossing style typing blips
 
 [Service]
-ExecStart=%h/dotfiles/bin/animalese-type
+ExecStart=%h/dotfiles/scripts/animalese-type.py
 Restart=on-failure
 
 [Install]

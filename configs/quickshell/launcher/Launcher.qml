@@ -15,9 +15,9 @@ PopupWindow {
     resizeDuration: 0
     resizeEasing: Theme.easingEffects
 
-    readonly property string mruScript: Quickshell.env("HOME") + "/dotfiles/bin/launcher-touch"
+    readonly property string mruScript: Quickshell.env("HOME") + "/dotfiles/scripts/launcher-touch.sh"
     readonly property string mruFile: Quickshell.env("HOME") + "/.local/share/quickshell-launcher-mru"
-    readonly property string editScript: Quickshell.env("HOME") + "/dotfiles/bin/launcher-edit"
+    readonly property string editScript: Quickshell.env("HOME") + "/dotfiles/scripts/launcher-edit.sh"
 
     readonly property int rowHeight: 30
     readonly property int maxRows: 6

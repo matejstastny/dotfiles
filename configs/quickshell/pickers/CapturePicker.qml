@@ -19,9 +19,9 @@ PopupWindow {
 
         onFreeTextSubmitted: (text, action) => {
             if (action === "todo") {
-                Quickshell.execDetached([Quickshell.env("HOME") + "/dotfiles/bin/capture-to-todo"])
+                Quickshell.execDetached([Quickshell.env("HOME") + "/dotfiles/scripts/capture-to-todo.sh"])
             } else if (text.length > 0) {
-                Quickshell.execDetached([Quickshell.env("HOME") + "/dotfiles/bin/capture-note", text])
+                Quickshell.execDetached([Quickshell.env("HOME") + "/dotfiles/scripts/capture-note.sh", text])
             }
             root.closeRequested()
         }

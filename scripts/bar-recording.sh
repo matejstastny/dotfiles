@@ -11,4 +11,6 @@ now=$(date +%s)
 elapsed=$((now - start))
 mins=$((elapsed / 60))
 secs=$((elapsed % 60))
-printf '{"text": "%d:%02d", "class": "recording"}\n' "$mins" "$secs"
+printf -v elapsed '%d:%02d' "$mins" "$secs"
+jq -cn --arg elapsed "$elapsed" \
+	'{text: $elapsed, title: "recording", headline: $elapsed, lines: ["screen capture active"], class: "recording"}'

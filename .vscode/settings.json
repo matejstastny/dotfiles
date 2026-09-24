@@ -19,7 +19,8 @@
     },
 
     "files.exclude": {
-        "**/.mypy_cache": true
+        "**/.mypy_cache": true,
+        "**/__pycache__": true
     },
 
     "qt-qml.qmlls.additionalImportPaths": ["/usr/lib64/qt6/qml"]
