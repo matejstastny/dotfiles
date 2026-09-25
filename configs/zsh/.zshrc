@@ -56,7 +56,7 @@ alias nocolor='gsed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2};?)?)?[mGK]//g"'
 alias d='trash'
 alias c='clear'
 alias info='scc'
-alias aria='aria2c'
+alias aria='aria2c --conf-path=$HOME/.config/aria2/aria2.conf'
 
 alias cd='z'
 alias ls='echo && eza --color=always --long --git --no-filesize --icons=always --no-time --no-user --no-permissions'
