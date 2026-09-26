@@ -39,8 +39,15 @@ PopupWindow {
         emptyText: "no recordings found ✧"
         placeholder: "search recordings..."
 
+        tertiaryActionKey: "copy"
+        tertiaryActionHint: "Alt+D copy"
+
         onSelected: (item, action) => {
-            Quickshell.execDetached(["mpv", root.recDir + "/" + item.key])
+            if (action === "copy") {
+                Quickshell.execDetached(["bash", "-c", "printf 'file://%s' \"$1\" | wl-copy --type text/uri-list", "_", root.recDir + "/" + item.key])
+            } else {
+                Quickshell.execDetached(["mpv", root.recDir + "/" + item.key])
+            }
             root.closeRequested()
         }
         onCloseRequested: root.closeRequested()

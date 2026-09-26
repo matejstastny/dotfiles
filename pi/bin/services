@@ -2,16 +2,21 @@
 
 # display name|openrc service|process name
 leda_services='
-Soju chat|soju|soju
-Tailscale exit node|tailscale|tailscaled
+soju chat|soju|soju
+tailscale exit node|tailscale|tailscaled
+spotifyd|spotifyd|spotifyd
 '
 
 thebe_services='
-Tailscale subnet router|tailscale|tailscaled
-AdGuard Home|adguardhome|adguardhome
-Caddy proxy|caddy|caddy
-Ntfy|ntfy|ntfy
+tailscale subnet router|tailscale|tailscaled
+adguard home|adguardhome|adguardhome
+caddy proxy|caddy|caddy
+ntfy|ntfy|ntfy
 elara.boo tunnel|elara-boo-tunnel|cloudflared
+'
+
+io_services='
+tailscale|tailscale|tailscaled
 '
 
 host=${1:-$(hostname)}
@@ -30,6 +35,13 @@ thebe)
 	bright='\033[38;2;242;193;143m'
 	dim='\033[38;2;160;137;114m'
 	service_list=$thebe_services
+	;;
+io)
+	glyph='◒'
+	accent='\033[38;2;155;107;201m'
+	bright='\033[38;2;201;168;232m'
+	dim='\033[38;2;138;122;158m'
+	service_list=$io_services
 	;;
 *)
 	printf 'no services configured for %s\n' "$host" >&2

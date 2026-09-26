@@ -1,11 +1,9 @@
-# leda - distant irregular outer moon, a long cold orbit. teal/ice.
-
 [palettes.moon]
 accent = "#5fb3a3"
-alt    = "#6f9fc9"
-dim    = "#7d9a94"
+alt = "#6f9fc9"
+dim = "#7d9a94"
 
 [character]
 success_symbol = "[◐ ❯](accent)"
-error_symbol   = "[◐ ❯](alt)"
-vicmd_symbol   = "[◐ ❮](dim)"
+error_symbol = "[◐ ❯](alt)"
+vicmd_symbol = "[◐ ❮](dim)"

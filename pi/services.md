@@ -14,9 +14,17 @@
 | ----------------------------------------------------------- | -------------------------------------------------------------------- |
 | `adguardhome`                                               | secondary resolver                                                   |
 | `syncthing`                                                 | the thing you'll actually use daily                                  |
-| `forgejo`                                                   | self-hosted git, so dotfiles aren't only on github                   |
 | DONE `soju`                                                 | persistent IRC bouncer (saw the irc commit, this is the obvious fit) |
 | `vaultwarden`                                               | bitwarden server, sqlite, tiny                                       |
 | `victoria-metrics` + `grafana` + `prometheus-node-exporter` | metrics for both pis and the laptop                                  |
 | `restic` + `rclone`                                         | nightly backup of service state offsite                              |
 | DONE `tailscale`                                            | exit node, kept off thebe so bulk traffic doesn't compete with DNS   |
+| `spotifyd` + ``                                             | spotify device that does airplay to the homepod mini                 |
+
+**io = not determined** To be configured and added when use for it is found. Might have an SSD if needed
+
+|            |                                                    |
+| ---------- | -------------------------------------------------- |
+| `jellyfin` | NEEDS SSD media server                             |
+| `torrent`  | A torrent client, connected with jellyfin maybe?   |
+| `forgejo`  | self-hosted git, so dotfiles aren't only on github |

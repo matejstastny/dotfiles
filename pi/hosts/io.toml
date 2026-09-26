@@ -1,0 +1,9 @@
+[palettes.moon]
+accent = "#9b6bc9"
+alt = "#a855c9"
+dim = "#8a7a9e"
+
+[character]
+success_symbol = "[◒ ❯](accent)"
+error_symbol = "[◒ ❯](alt)"
+vicmd_symbol = "[◒ ❮](dim)"

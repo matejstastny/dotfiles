@@ -88,6 +88,12 @@ def stage(name: str, staging: Path):
             shutil.copy2(f, bin_dst / f.name)
             (bin_dst / f.name).chmod(0o755)
 
+    scripts_dst = staging / "scripts"
+    scripts_dst.mkdir(parents=True, exist_ok=True)
+    for f in sorted((PI_DIR / "scripts").iterdir()):
+        if f.is_file():
+            shutil.copy2(f, scripts_dst / f.name)
+
     # service configs are root-owned system files, so they land in $HOME inert
     # and only get installed when --services explicitly runs the install script
     services_src = PI_DIR / "services" / name
@@ -175,11 +181,13 @@ def sync_host(name: str, host: dict[str, str], bootstrap: bool, services: bool, 
             for p in sorted(staging.rglob("*")):
                 tar.add(p, arcname=str(p.relative_to(staging)))
 
-        res = run_ssh(host, name, "tar -C \"$HOME\" -xf -", stdin=archive.read_bytes())
+        # scripts/ is replaced wholesale so files removed locally don't linger remotely
+        unpack_cmd = 'rm -rf "$HOME/scripts" && tar -C "$HOME" -xf -'
+        res = run_ssh(host, name, unpack_cmd, stdin=archive.read_bytes())
         if res.returncode != 0:
             error(f"{name}: unpack failed: {res.stderr.decode().strip()}")
             return False
-        log(f"  config pushed")
+        log("  config pushed")
 
     if bootstrap:
         script = (PI_DIR / "bootstrap").read_bytes()
@@ -193,7 +201,7 @@ def sync_host(name: str, host: dict[str, str], bootstrap: bool, services: bool, 
         if res.returncode != 0:
             error(f"{name}: bootstrap failed: {res.stderr.decode().strip()}")
             return False
-        log(f"  bootstrap ok")
+        log("  bootstrap ok")
 
     if services and has_services:
         password = host.get("password", "")
@@ -208,7 +216,7 @@ def sync_host(name: str, host: dict[str, str], bootstrap: bool, services: bool, 
         if res.returncode != 0:
             error(f"{name}: services install failed: {res.stderr.decode().strip()}")
             return False
-        log(f"  services install ok")
+        log("  services install ok")
 
     return True
 

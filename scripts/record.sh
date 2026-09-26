@@ -12,7 +12,9 @@ else
 	mkdir -p "$OUT_DIR"
 	FILE="$OUT_DIR/$(date +%Y-%m-%d_%H-%M-%S).mkv"
 	MONITOR=$(hyprctl monitors -j | jq -r '.[] | select(.focused) | .name')
-	wf-recorder -o "$MONITOR" -a -f "$FILE" &
+	AUDIO_ARGS=(-a)
+	[ "$1" = "--mute" ] && AUDIO_ARGS=()
+	wf-recorder -o "$MONITOR" "${AUDIO_ARGS[@]}" -f "$FILE" &
 	echo $! >"$PID_FILE"
 	notify-send -t 2000 "✦ recording" "Started · $FILE"
 fi
