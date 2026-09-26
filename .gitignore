@@ -5,3 +5,8 @@ fairydust/
 configs/ai/skills/synced
 configs/ai/skills/.system
 **/__pycache__
+pi/services/io/build/
+pi/services/io/web/node_modules/
+pi/services/io/web/.astro/
+pi/services/io/server/dist/*
+!pi/services/io/server/dist/.gitkeep

@@ -63,7 +63,23 @@ def parse_hosts(path: Path) -> dict[str, dict[str, str]]:
     return hosts
 
 
-def stage(name: str, staging: Path):
+def prepare_services(name: str) -> bool:
+    """run the host's local build step, if it has one, before staging"""
+    script = PI_DIR / "services" / name / "prepare"
+    if not script.is_file():
+        return True
+
+    res = subprocess.run(["sh", str(script)], capture_output=True)
+    out = res.stdout.decode().strip()
+    if out:
+        print("\n".join(f"  {ln}" for ln in out.splitlines()))
+    if res.returncode != 0:
+        error(f"{name}: prepare failed: {res.stderr.decode().strip()}")
+        return False
+    return True
+
+
+def stage(name: str, staging: Path, services: bool = False):
     """lay out the payload exactly as it should land in the pi's home dir"""
     zsh_src = PI_DIR / "config" / "zsh"
     zsh_dst = staging / ".config" / "zsh"
@@ -104,6 +120,15 @@ def stage(name: str, staging: Path):
             if f.is_file():
                 shutil.copy2(f, services_dst / f.name)
                 if f.name == "install":
+                    (services_dst / f.name).chmod(0o755)
+
+        # build/ holds artifacts prepare just compiled, too big to push on an
+        # ordinary config sync and useless without the install script anyway
+        build_src = services_src / "build"
+        if services and build_src.is_dir():
+            for f in sorted(build_src.iterdir()):
+                if f.is_file():
+                    shutil.copy2(f, services_dst / f.name)
                     (services_dst / f.name).chmod(0o755)
 
 
@@ -153,10 +178,14 @@ def sync_host(name: str, host: dict[str, str], bootstrap: bool, services: bool, 
     log(f"\n── {name} ──")
     has_services = (PI_DIR / "services" / name / "install").is_file()
 
+    if services and has_services and not dry_run:
+        if not prepare_services(name):
+            return False
+
     with tempfile.TemporaryDirectory() as tmp:
         staging = Path(tmp) / "payload"
         staging.mkdir()
-        stage(name, staging)
+        stage(name, staging, services)
 
         files = sorted(
             str(p.relative_to(staging)) for p in staging.rglob("*") if p.is_file()

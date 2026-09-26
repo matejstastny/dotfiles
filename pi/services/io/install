@@ -1,0 +1,95 @@
+#!/bin/sh
+
+set -eu
+
+as_root() {
+	printf '%s\n' "${SUDO_PASS:-}" | sudo -S -p '' "$@"
+}
+
+self="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+
+if [ ! -f "$self/ytdl" ]; then
+	echo "  ! no ytdl binary in this payload"
+	echo "    it is built on your laptop, so run: bin/pi-sync --host io --services"
+	exit 1
+fi
+
+echo "▸ enabling community repo"
+as_root sh -c 'grep -q "^[^#]*/community" /etc/apk/repositories || sed -i "s|^#\(.*/community\)\$|\1|" /etc/apk/repositories'
+# the mirror resolves to an ipv6 address io cannot reach often enough that a
+# wobble here must not abandon the whole install; apk add still has the index
+as_root apk update >/dev/null 2>&1 || echo "  ! apk update failed, carrying on with the cached index"
+
+echo "▸ ytdl: installing yt-dlp and ffmpeg"
+as_root apk add yt-dlp ffmpeg
+
+echo "▸ ytdl: creating system user"
+as_root sh -c 'getent group ytdl >/dev/null || addgroup -S ytdl'
+as_root sh -c 'getent passwd ytdl >/dev/null || adduser -S -D -H -h /var/lib/ytdl -s /sbin/nologin -G ytdl ytdl'
+
+# jellyfin and navidrome will want to read the same library later, so it is
+# group owned from the start rather than being chowned in a panic afterwards
+as_root sh -c 'getent group media >/dev/null || addgroup -S media'
+as_root addgroup ytdl media 2>/dev/null || true
+
+echo "▸ ytdl: creating directories"
+as_root install -d -o ytdl -g ytdl -m 755 /var/lib/ytdl /var/lib/ytdl/cache /var/log/ytdl
+as_root install -d -o ytdl -g media -m 2775 /srv/media /srv/media/video /srv/media/music
+
+echo "▸ ytdl: installing the service"
+# a running binary cannot be overwritten, so stop first on an upgrade
+as_root rc-service ytdl stop >/dev/null 2>&1 || true
+as_root install -o root -g root -m 755 "$self/ytdl" /usr/local/bin/ytdl
+as_root install -o root -g root -m 755 "$self/ytdl.initd" /etc/init.d/ytdl
+as_root install -o root -g root -m 644 "$self/ytdl.confd" /etc/conf.d/ytdl
+
+echo "▸ caddy: creating system user"
+as_root sh -c 'getent group caddy >/dev/null || addgroup -S caddy'
+as_root sh -c 'getent passwd caddy >/dev/null || adduser -S -D -H -h /var/lib/caddy -s /sbin/nologin -G caddy caddy'
+as_root install -d -o caddy -g caddy -m 700 /var/lib/caddy
+as_root install -d -o caddy -g caddy -m 755 /var/log/caddy
+
+if [ ! -x /usr/local/bin/caddy ]; then
+	echo "▸ caddy: fetching custom build (cloudflare DNS plugin, linux/arm64)"
+	as_root sh -c 'curl -sL -o /usr/local/bin/caddy.new "https://caddyserver.com/api/download?os=linux&arch=arm64&p=github.com/caddy-dns/cloudflare" && chmod 755 /usr/local/bin/caddy.new && mv /usr/local/bin/caddy.new /usr/local/bin/caddy'
+else
+	echo "▸ caddy: binary already present, leaving it alone"
+fi
+
+echo "▸ caddy: installing config"
+as_root install -d -o root -g caddy -m 755 /etc/caddy
+as_root install -o root -g caddy -m 640 "$self/Caddyfile" /etc/caddy/Caddyfile
+as_root install -o root -g root -m 755 "$self/caddy.initd" /etc/init.d/caddy
+as_root install -o root -g root -m 644 "$self/caddy.confd" /etc/conf.d/caddy
+
+echo "▸ enabling and starting services"
+as_root rc-update add ytdl default
+as_root rc-update add caddy default
+as_root rc-service ytdl start || as_root rc-service ytdl restart
+
+if as_root test -f /etc/caddy/caddy.env; then
+	as_root rc-service caddy start || as_root rc-service caddy restart
+else
+	echo "  ! /etc/caddy/caddy.env is missing (Cloudflare API token)"
+	echo "    caddy will not start until you create it by hand:"
+	echo "      ssh io 'sudo sh -c \"umask 077; cat > /etc/caddy/caddy.env\"'"
+	echo "      # paste CF_API_TOKEN=<token>, Enter, Ctrl-D"
+	echo "    this is deliberately not tracked in git, it's a live secret"
+	echo "    then: ssh io 'sudo rc-service caddy start'"
+fi
+
+echo "  ! yt.elara.boo needs a DNS rewrite in AdGuard Home pointing at io:"
+echo "      http://dns.elara.boo -> filters -> DNS rewrites -> add yt.elara.boo"
+echo "      answer: $(tailscale ip -4 2>/dev/null | head -1)"
+
+if as_root test ! -f /var/lib/ytdl/cookies.txt; then
+	echo "  ! no /var/lib/ytdl/cookies.txt yet"
+	echo "    age-restricted videos will fail with 'Sign in to confirm your age' until"
+	echo "    one is there. export cookies.txt from a logged-in browser (a 'Get"
+	echo "    cookies.txt' extension) and copy it over:"
+	echo "      scp cookies.txt io:/tmp/cookies.txt"
+	echo "      ssh io 'sudo install -o ytdl -g ytdl -m 600 /tmp/cookies.txt /var/lib/ytdl/cookies.txt && rm /tmp/cookies.txt'"
+	echo "    this is deliberately not tracked in git, it's a live session"
+fi
+
+echo "▸ services install done on $(hostname)"

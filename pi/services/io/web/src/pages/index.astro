@@ -1,0 +1,104 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="yt · io" page="download">
+    <form id="grab" autocomplete="off" novalidate>
+        <div class="row">
+            <label class="label" for="url">link</label>
+            <input
+                class="field"
+                id="url"
+                name="url"
+                type="url"
+                inputmode="url"
+                spellcheck="false"
+                placeholder="paste a video link"
+            />
+            <p class="hint">one video at a time · enter to go · esc to clear</p>
+        </div>
+
+        <section class="row" id="meta" hidden>
+            <span class="label">found</span>
+            <dl class="facts">
+                <div><dt>title</dt><dd id="meta-title"></dd></div>
+                <div><dt>channel</dt><dd id="meta-by"></dd></div>
+                <div><dt>length</dt><dd id="meta-length"></dd></div>
+            </dl>
+        </section>
+
+        <div class="row">
+            <span class="label">format</span>
+            <div class="seg">
+                <input type="radio" name="format" id="format-mp4" value="mp4" checked />
+                <label for="format-mp4">mp4</label>
+                <input type="radio" name="format" id="format-mp3" value="mp3" />
+                <label for="format-mp3">mp3</label>
+            </div>
+        </div>
+
+        <div class="row" id="row-height">
+            <label class="label" for="height">quality</label>
+            <select class="field" id="height">
+                <option value="2160">2160p</option>
+                <option value="1440">1440p</option>
+                <option value="1080" selected>1080p</option>
+                <option value="720">720p</option>
+                <option value="480">480p</option>
+                <option value="360">360p</option>
+                <option value="0">best available</option>
+            </select>
+        </div>
+
+        <div class="row" id="row-bitrate" hidden>
+            <label class="label" for="bitrate">bitrate</label>
+            <select class="field" id="bitrate">
+                <option value="320" selected>320 kbps</option>
+                <option value="256">256 kbps</option>
+                <option value="192">192 kbps</option>
+                <option value="128">128 kbps</option>
+            </select>
+        </div>
+
+        <div class="row">
+            <span class="label">extras</span>
+            <div class="checks">
+                <label><input type="checkbox" id="metadata" checked /> metadata & chapters</label>
+                <label><input type="checkbox" id="thumbnail" checked /> cover art</label>
+                <label>
+                    <input type="checkbox" id="sponsorblock" />
+                    <span id="sponsor-label">mark sponsor segments</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="row">
+            <label class="label" for="mode">keep</label>
+            <select class="field" id="mode">
+                <option value="cache" selected>cache, then save to this device</option>
+                <option value="both">cache and io's library</option>
+                <option value="library">io's library only</option>
+            </select>
+        </div>
+
+        <div class="row">
+            <span class="label"></span>
+            <div><button class="go" id="go" type="submit">download</button></div>
+        </div>
+    </form>
+
+    <section class="row" id="status" hidden>
+        <span class="label">status</span>
+        <div>
+            <p class="stage" id="stage"></p>
+            <div class="bar"><div class="bar-fill" id="fill"></div></div>
+            <p class="nums" id="nums"></p>
+            <p class="note" id="note"></p>
+            <div class="checks" id="result"></div>
+        </div>
+    </section>
+</Base>
+
+<script>
+    import "../scripts/downloader";
+</script>

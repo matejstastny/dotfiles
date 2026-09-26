@@ -1,0 +1,22 @@
+#!/bin/sh
+#@ build the ytdl binary for io. runs on this machine, not on the pi.
+
+set -eu
+
+self="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+
+command -v pnpm >/dev/null || { echo "prepare: pnpm is not installed" >&2; exit 1; }
+command -v go >/dev/null || { echo "prepare: go is not installed" >&2; exit 1; }
+
+echo "▸ ytdl: building the ui"
+cd "$self/web"
+pnpm install --frozen-lockfile --silent
+pnpm build >/dev/null
+
+# the ui is embedded into the binary, so io never needs node or a static root
+echo "▸ ytdl: building the binary for linux/arm64"
+cd "$self/server"
+mkdir -p "$self/build"
+CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -trimpath -ldflags="-s -w" -o "$self/build/ytdl" .
+
+echo "  $(du -h "$self/build/ytdl" | cut -f1) at build/ytdl"

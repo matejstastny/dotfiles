@@ -1,0 +1,28 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="recent · yt · io" page="recent">
+    <section class="row">
+        <span class="label">cache</span>
+        <div>
+            <div class="meter"><div class="meter-fill" id="meter-fill"></div></div>
+            <p class="nums" id="usage">reading…</p>
+            <p class="hint">
+                oldest files are evicted once the cap is reached · library copies are never evicted
+            </p>
+        </div>
+    </section>
+
+    <section class="row">
+        <span class="label">files</span>
+        <div>
+            <ul class="files" id="files"></ul>
+            <p class="empty" id="empty" hidden></p>
+        </div>
+    </section>
+</Base>
+
+<script>
+    import "../scripts/recent";
+</script>

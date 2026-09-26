@@ -1,0 +1,15 @@
+#!/sbin/openrc-run
+supervisor=supervise-daemon
+
+name="ytdl"
+description="yt-dlp download service with a web ui, tailnet only"
+
+command=/usr/local/bin/ytdl
+command_user=ytdl:ytdl
+respawn_delay=5
+respawn_max=0
+
+depend() {
+	need net localmount
+	after firewall tailscale
+}

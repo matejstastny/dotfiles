@@ -1,0 +1,21 @@
+# the service only ever listens on loopback; caddy is what the tailnet talks to
+export YTDL_LISTEN=127.0.0.1:8090
+
+# cache is what the recent page lists and evicts from, library is forever
+export YTDL_CACHE_DIR=/var/lib/ytdl/cache
+export YTDL_VIDEO_DIR=/srv/media/video
+export YTDL_AUDIO_DIR=/srv/media/music
+
+export YTDL_CACHE_LIMIT_GB=20
+export YTDL_MAX_FILESIZE=10G
+
+# a pi 4 has four cores and ffmpeg wants most of one per job
+export YTDL_WORKERS=2
+
+# optional: a Netscape-format cookies.txt exported from a logged-in browser,
+# used to get past YouTube's age/bot gate. not tracked in git, not created by
+# this file - see install for how to put one here. silently unused if absent.
+export YTDL_COOKIES=/var/lib/ytdl/cookies.txt
+
+output_log=/var/log/ytdl/ytdl.log
+error_log=/var/log/ytdl/ytdl.err

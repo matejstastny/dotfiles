@@ -17,6 +17,8 @@ elara.boo tunnel|elara-boo-tunnel|cloudflared
 
 io_services='
 tailscale|tailscale|tailscaled
+ytdl downloader|ytdl|ytdl
+caddy proxy|caddy|caddy
 '
 
 host=${1:-$(hostname)}

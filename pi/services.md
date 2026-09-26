@@ -1,4 +1,4 @@
-**thebe = network plane** Boring, always up, near-zero writes. You should be able to forget it exists.
+**thebe = network plane** Global services, network-wide services, public services
 
 |                    |                                                                                                        |
 | ------------------ | ------------------------------------------------------------------------------------------------------ |
@@ -8,23 +8,27 @@
 | DONE `caddy`       | reverse proxy for everything on both pis, real names instead of `:3000`                                |
 | DONE `ntfy`        | push target for your scripts; same shape as your `notify-send "✦ topic"` convention, but on your phone |
 
-**leda = service plane** Reboot it freely, it holds the data.
+**leda = service plane** Personal local services
 
-|                                                             |                                                                      |
-| ----------------------------------------------------------- | -------------------------------------------------------------------- |
-| `adguardhome`                                               | secondary resolver                                                   |
-| `syncthing`                                                 | the thing you'll actually use daily                                  |
-| DONE `soju`                                                 | persistent IRC bouncer (saw the irc commit, this is the obvious fit) |
-| `vaultwarden`                                               | bitwarden server, sqlite, tiny                                       |
-| `victoria-metrics` + `grafana` + `prometheus-node-exporter` | metrics for both pis and the laptop                                  |
-| `restic` + `rclone`                                         | nightly backup of service state offsite                              |
-| DONE `tailscale`                                            | exit node, kept off thebe so bulk traffic doesn't compete with DNS   |
-| `spotifyd` + ``                                             | spotify device that does airplay to the homepod mini                 |
+|                            |                                                                       |
+| -------------------------- | --------------------------------------------------------------------- |
+| `adguardhome`              | secondary resolver                                                    |
+| `syncthing`                | the thing you'll actually use daily                                   |
+| DONE `soju`                | persistent IRC bouncer (saw the irc commit, this is the obvious fit)  |
+| `vaultwarden`              | bitwarden server, sqlite, tiny                                        |
+| `prometheus-node-exporter` | metrics scrape target for this box, ships to `victoria-metrics` on io |
+| DONE `tailscale`           | exit node, kept off thebe so bulk traffic doesn't compete with DNS    |
+| `spotifyd` + ``            | spotify device that does airplay to the homepod mini                  |
 
-**io = not determined** To be configured and added when use for it is found. Might have an SSD if needed
+**io = storage plane** Storage heavy services
 
-|            |                                                    |
-| ---------- | -------------------------------------------------- |
-| `jellyfin` | NEEDS SSD media server                             |
-| `torrent`  | A torrent client, connected with jellyfin maybe?   |
-| `forgejo`  | self-hosted git, so dotfiles aren't only on github |
+|                                |                                                                                               |
+| ------------------------------ | --------------------------------------------------------------------------------------------- |
+| DONE `tailscale`               | joined the tailnet                                                                            |
+| DONE `yt-dlp` + custom ui      | `yt.elara.boo`, mp4/mp3 with a web ui, 20 GB cache + `/srv/media` library, tailnet-only       |
+| DONE `caddy`                   | reverse proxy + DNS-01 cert for `yt.elara.boo`, so bulk downloads never transit thebe        |
+| `forgejo`                      | self-hosted git, moved off leda's SD card, git packs are exactly the write churn a card hates |
+| `jellyfin`                     | media server, video side of the yt-dlp output                                                 |
+| `navidrome`                    | streams the mp3 side of the yt-dlp output, same idea as jellyfin but audio                    |
+| `torrent` client               | feeds jellyfin's library                                                                      |
+| `victoria-metrics` + `grafana` | TODO                                                                                          |

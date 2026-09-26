@@ -1,0 +1,7 @@
+if [ -r /etc/caddy/caddy.env ]; then
+	set -o allexport
+	. /etc/caddy/caddy.env
+	set +o allexport
+fi
+output_log=/var/log/caddy/caddy.log
+error_log=/var/log/caddy/caddy.err

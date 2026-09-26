@@ -1,0 +1,19 @@
+yt.elara.boo {
+	# real cert over DNS-01, so the name never has to be publicly reachable
+	tls {
+		dns cloudflare {env.CF_API_TOKEN}
+	}
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+	}
+
+	# the name only resolves through adguard, but belt and braces: the tailnet
+	# and the house lan are the only places allowed to ask
+	@outside not remote_ip 100.64.0.0/10 192.168.250.0/24 127.0.0.1/32 ::1
+	route {
+		abort @outside
+		reverse_proxy 127.0.0.1:8090
+	}
+}
