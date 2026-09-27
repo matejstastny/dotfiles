@@ -5,8 +5,17 @@ import "../"
 Item {
     id: root
 
+    readonly property var nameOverrides: ({
+            "chrome-pjibgclleladliembfgfagdaldikeohf-default": "spotify"
+        })
+
     readonly property var toplevel: ToplevelManager.activeToplevel
-    readonly property string appName: root.toplevel ? (root.toplevel.appId || root.toplevel.title || "") : ""
+    readonly property string rawAppName: root.toplevel ? (root.toplevel.appId || root.toplevel.title || "") : ""
+    readonly property string appName: {
+        const parts = root.rawAppName.split(".");
+        const name = parts[parts.length - 1].toLowerCase();
+        return root.nameOverrides[name] || name;
+    }
     readonly property int maxLabelWidth: 220
 
     visible: root.appName !== ""

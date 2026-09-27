@@ -4,7 +4,7 @@ hl.config({
         gaps_out         = 8,
         border_size      = 2,
         col              = {
-            active_border   = { colors = { "rgba(7878c8ff)", "rgba(c47ab8ff)" }, angle = 45 },
+            active_border   = "rgba(7878c8ff)",
             inactive_border = "rgba(25253aaa)",
         },
         layout           = "dwindle",
@@ -25,10 +25,11 @@ hl.config({
     plugin = {
         hy3 = {
             tab_first_window = false,
-            autotab_rules = "2:^(code|codium)$;4:^(vesktop|org\\.squidowl\\.halloy|com\\.ktechpit\\.whatsie)$",
-            tabs = {
-                height       = 20,
-                padding      = 2,
+            autotab_rules =
+            "2:^(com.microsoft.VSCode|codium)$;4:^(vesktop|org\\.squidowl\\.halloy|com\\.ktechpit\\.whatsie)$",
+            tabs = {  
+                height       = 22,
+                padding      = 4,
                 from_top     = true,
                 radius       = 10,
                 border_width = 1,

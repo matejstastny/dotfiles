@@ -5,7 +5,7 @@ hl.workspace_rule({ workspace = "4", layout = "hy3" })
 -- workspace assignments
 hl.window_rule({ name = "session-ws-kitty", match = { class = "^kitty$" }, workspace = "1 silent" })
 hl.window_rule({ name = "session-ws-codium", match = { class = "^codium$" }, workspace = "2 silent" })
-hl.window_rule({ name = "session-ws-code", match = { class = "^code$" }, workspace = "2 silent" })
+hl.window_rule({ name = "session-ws-code", match = { class = "^com.microsoft.VSCode$" }, workspace = "2 silent" })
 hl.window_rule({ name = "session-ws-helium", match = { class = "^helium$" }, workspace = "3 silent" })
 hl.window_rule({ name = "session-ws-vesktop", match = { class = "^vesktop$" }, workspace = "4 silent" })
 hl.window_rule({ name = "session-ws-halloy", match = { class = "^org.squidowl.halloy$" }, workspace = "4 silent" })
@@ -53,7 +53,7 @@ hl.on("window.open", function(window)
         return
     end
 
-    -- bluetooth window
+    -- audio window
     if window.class:find("^org.pulseaudio.pavucontrol") then
         hl.dispatch(hl.dsp.window.float({ action = "set" }))
         hl.dispatch(hl.dsp.window.resize({ exact = true, x = 600, y = 800 }))
@@ -91,11 +91,6 @@ hl.window_rule({ name = "joint-gui-topleft", match = { class = "^Tk$", title = "
 hl.window_rule({ name = "rviz-workspace", match = { class = "^rviz2$" }, workspace = "8 silent" })
 
 hl.window_rule({ name = "gazebo-scroll", match = { class = "^Gazebo GUI$" }, scroll_touchpad = 0.1 })
-
--- lazygit floating window
-hl.window_rule({ name = "lazygit-float", match = { class = "^lazygit$" }, float = true })
-hl.window_rule({ name = "lazygit-size", match = { class = "^lazygit$" }, size = "1300 800" })
-hl.window_rule({ name = "lazygit-center", match = { class = "^lazygit$" }, center = true })
 
 -- other rules
 hl.window_rule({

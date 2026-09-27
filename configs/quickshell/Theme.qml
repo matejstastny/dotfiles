@@ -13,7 +13,7 @@ QtObject {
     readonly property color dim: "#9898c0"
     readonly property color bright: "#f0f0ff"
 
-    readonly property int radius: 14
+    readonly property int radius: 15
     readonly property int radiusSmall: 8
 
     // two families, not one. mono carries anything that is a readout or a
