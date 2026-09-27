@@ -1,0 +1,16 @@
+{
+	"rpc-bind-address": "127.0.0.1",
+	"rpc-port": 9091,
+	"rpc-authentication-required": false,
+	"rpc-whitelist-enabled": false,
+	"rpc-host-whitelist-enabled": false,
+	"download-dir": "/home/elara/jellyfin",
+	"incomplete-dir-enabled": true,
+	"incomplete-dir": "/var/lib/transmission/incomplete",
+	"script-torrent-done-enabled": true,
+	"script-torrent-done-filename": "/usr/local/libexec/transmission-done",
+	"watch-dir-enabled": true,
+	"watch-dir": "/home/elara/torrents",
+	"trash-original-torrent-files": true,
+	"encryption": 2
+}

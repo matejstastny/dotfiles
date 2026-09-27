@@ -30,16 +30,13 @@ copy_image() {
 	local source=$2
 	local format=$3
 
-	owner_pid_file="$STATE_DIR/clipboard-owner.pid"
-	if [ -f "$owner_pid_file" ]; then
-		owner_pid=$(<"$owner_pid_file")
-		if kill -0 "$owner_pid" 2>/dev/null; then
-			kill "$owner_pid"
-		fi
-	fi
-	magick "$file" png:- | "$HOME/dotfiles/scripts/quickshare-clipboard-owner.py" "$file" "$owner_pid_file" &
 	write_state "$file" "$source" "$format" "$(date --iso-8601=seconds)"
-	notify-send -t 4000 "✦ quick share" "Copied $(basename "$file") to clipboard"
+	if "$HOME/dotfiles/scripts/quickshare-own.sh" "$file"; then
+		notify-send -t 4000 "✦ quick share" "Copied $(basename "$file") to clipboard"
+	else
+		notify-send -u critical -t 6000 "✦ quick share" \
+			"Received $(basename "$file") but the clipboard copy failed"
+	fi
 }
 
 handle_file() {

@@ -10,25 +10,26 @@
 
 **leda = service plane** Personal local services
 
-|                            |                                                                       |
-| -------------------------- | --------------------------------------------------------------------- |
-| `adguardhome`              | secondary resolver                                                    |
-| `syncthing`                | the thing you'll actually use daily                                   |
-| DONE `soju`                | persistent IRC bouncer (saw the irc commit, this is the obvious fit)  |
-| `vaultwarden`              | bitwarden server, sqlite, tiny                                        |
-| `prometheus-node-exporter` | metrics scrape target for this box, ships to `victoria-metrics` on io |
-| DONE `tailscale`           | exit node, kept off thebe so bulk traffic doesn't compete with DNS    |
-| `spotifyd` + ``            | spotify device that does airplay to the homepod mini                  |
+|                                  |                                                                          |
+| -------------------------------- | ------------------------------------------------------------------------ |
+| `adguardhome`                    | secondary resolver                                                       |
+| `syncthing`                      | the thing you'll actually use daily                                      |
+| DONE `soju`                      | persistent IRC bouncer (saw the irc commit, this is the obvious fit)     |
+| `vaultwarden`                    | bitwarden server, sqlite, tiny                                           |
+| `prometheus-node-exporter`       | metrics scrape target for this box, ships to `victoria-metrics` on io    |
+| DONE `tailscale`                 | exit node, kept off thebe so bulk traffic doesn't compete with DNS       |
+| DONE `spotifyd` + `pyatv-bridge` | spotify connect device that relays audio via airplay to the homepod mini |
 
 **io = storage plane** Storage heavy services
 
-|                                |                                                                                               |
-| ------------------------------ | --------------------------------------------------------------------------------------------- |
-| DONE `tailscale`               | joined the tailnet                                                                            |
-| DONE `yt-dlp` + custom ui      | `yt.elara.boo`, mp4/mp3 with a web ui, 20 GB cache + `/srv/media` library, tailnet-only       |
-| DONE `caddy`                   | reverse proxy + DNS-01 cert for `yt.elara.boo`, so bulk downloads never transit thebe        |
-| `forgejo`                      | self-hosted git, moved off leda's SD card, git packs are exactly the write churn a card hates |
-| `jellyfin`                     | media server, video side of the yt-dlp output                                                 |
-| `navidrome`                    | streams the mp3 side of the yt-dlp output, same idea as jellyfin but audio                    |
-| `torrent` client               | feeds jellyfin's library                                                                      |
-| `victoria-metrics` + `grafana` | TODO                                                                                          |
+|                                |                                                                                                                 |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| DONE `tailscale`               | joined the tailnet                                                                                              |
+| DONE `yt-dlp` + custom ui      | `yt.elara.boo`, mp4/mp3 with a web ui, 20 GB cache + `/srv/media` library, tailnet-only                         |
+| DONE `caddy`                   | reverse proxy + DNS-01 cert for `yt.elara.boo`, so bulk downloads never transit thebe                           |
+| `forgejo`                      | self-hosted git, moved off leda's SD card, git packs are exactly the write churn a card hates                   |
+| DONE `jellyfin`                | media server at `jellyfin.elara.boo`, video side of the yt-dlp output, no hw transcode                          |
+| `navidrome`                    | streams the mp3 side of the yt-dlp output, same idea as jellyfin but audio                                      |
+| DONE `transmission-daemon`     | torrent client at `torrent.elara.boo`, `script-torrent-done` hardlinks finished video into jellyfin's library   |
+| `victoria-metrics` + `grafana` | TODO                                                                                                            |
+| `anisette-v3` for `SideStore`  | private signing-data endpoint for a custom IPA; SideStore refreshes itself and the app on the iPhone over Wi-Fi |

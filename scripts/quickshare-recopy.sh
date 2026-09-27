@@ -4,7 +4,6 @@
 set -euo pipefail
 
 STATE_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/quickshare/status.json"
-STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/quickshare"
 
 if [ ! -f "$STATE_FILE" ]; then
 	notify-send -t 3000 "✦ quick share" "No received image yet"
@@ -18,12 +17,9 @@ if [ -z "$file" ] || [ -z "$format" ] || [ ! -f "$file" ]; then
 	exit 1
 fi
 
-owner_pid_file="$STATE_DIR/clipboard-owner.pid"
-if [ -f "$owner_pid_file" ]; then
-	owner_pid=$(<"$owner_pid_file")
-	if kill -0 "$owner_pid" 2>/dev/null; then
-		kill "$owner_pid"
-	fi
+if "$HOME/dotfiles/scripts/quickshare-own.sh" "$file"; then
+	notify-send -t 3000 "✦ quick share" "Copied $(basename "$file") to clipboard"
+else
+	notify-send -u critical -t 6000 "✦ quick share" "Clipboard copy failed"
+	exit 1
 fi
-magick "$file" png:- | "$HOME/dotfiles/scripts/quickshare-clipboard-owner.py" "$file" "$owner_pid_file" &
-notify-send -t 3000 "✦ quick share" "Copied $(basename "$file") to clipboard"

@@ -17,3 +17,67 @@ yt.elara.boo {
 		reverse_proxy 127.0.0.1:8090
 	}
 }
+
+jellyfin.elara.boo {
+	tls {
+		dns cloudflare {env.CF_API_TOKEN}
+	}
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+	}
+
+	# this hostname is for a stable name and cert off the tailnet; jellyfin
+	# still answers directly on :8096 on the lan too, on purpose, so the tv
+	# apps' auto-discovery and casting keep working
+	@outside not remote_ip 100.64.0.0/10 192.168.250.0/24 127.0.0.1/32 ::1
+	route {
+		abort @outside
+		reverse_proxy 127.0.0.1:8096
+	}
+}
+
+torrent.elara.boo {
+	tls {
+		dns cloudflare {env.CF_API_TOKEN}
+	}
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+	}
+
+	# transmission's rpc has no auth of its own; loopback bind + this gate is
+	# the only thing standing between it and the tailnet
+	@outside not remote_ip 100.64.0.0/10 192.168.250.0/24 127.0.0.1/32 ::1
+	route {
+		abort @outside
+		reverse_proxy 127.0.0.1:9091
+	}
+}
+
+anisette.elara.boo {
+	# sidestore only contacts this from the house lan or tailnet. Caddy gives
+	# the phone a trusted HTTPS endpoint while the container stays loopback-only.
+	tls {
+		dns cloudflare {env.CF_API_TOKEN}
+	}
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+	}
+
+	@outside not remote_ip 100.64.0.0/10 192.168.250.0/24 127.0.0.1/32 ::1
+	route {
+		abort @outside
+		handle /servers.json {
+			header Content-Type application/json
+			respond `{ "servers": [{ "name": "io (private)", "address": "https://anisette.elara.boo" }] }`
+		}
+		handle {
+			reverse_proxy 127.0.0.1:6969
+		}
+	}
+}

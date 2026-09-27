@@ -1,0 +1,12 @@
+[Unit]
+Description=io's transmission watch folder, mounted over sftp
+After=network-online.target
+
+[Mount]
+What=elara@io:/home/elara/torrents
+Where=%h/torrents
+Type=fuse.sshfs
+Options=IdentityFile=%h/.ssh/id_ed25519,reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,_netdev,x-systemd.automount
+
+[Install]
+WantedBy=default.target

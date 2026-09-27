@@ -1,0 +1,20 @@
+#!/bin/sh
+#@ runs as the transmission user when a torrent finishes, hardlinks the
+#@ finished video into jellyfin's library, same trick ytdl's "keep" uses so
+#@ seeding can keep reading the original in place
+
+set -eu
+
+src="${TR_TORRENT_DIR:?}/${TR_TORRENT_NAME:?}"
+dest_dir=/srv/media/video
+
+# a multi-file torrent's top level is a directory, skip it rather than
+# guessing which member is the actual video, move the one you want by hand
+[ -d "$src" ] && exit 0
+
+case "$TR_TORRENT_NAME" in
+*.mkv | *.mp4 | *.avi | *.m4v | *.webm) ;;
+*) exit 0 ;;
+esac
+
+ln -f "$src" "$dest_dir/$TR_TORRENT_NAME"

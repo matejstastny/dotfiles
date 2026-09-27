@@ -5,6 +5,7 @@ leda_services='
 soju chat|soju|soju
 tailscale exit node|tailscale|tailscaled
 spotifyd|spotifyd|spotifyd
+spotifyd airplay bridge|pyatv-bridge|relay.sh
 '
 
 thebe_services='
@@ -18,7 +19,10 @@ elara.boo tunnel|elara-boo-tunnel|cloudflared
 io_services='
 tailscale|tailscale|tailscaled
 ytdl downloader|ytdl|ytdl
+jellyfin|jellyfin|jellyfin
+transmission|transmission-daemon|transmission-daemon
 caddy proxy|caddy|caddy
+sidestore anisette|anisette-v3|docker
 '
 
 host=${1:-$(hostname)}
