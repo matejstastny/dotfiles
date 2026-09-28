@@ -1,0 +1,1120 @@
+/* Maple Mono, the same subset the terminal and elara.boo use. OFL 1.1. */
+@font-face {
+    font-family: "Maple";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/maple-400.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Maple";
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url("/fonts/maple-600.woff2") format("woff2");
+}
+
+:root {
+    /* dotfiles/bin/palette, same tokens as elara.boo and yt.elara.boo */
+    --base: #11111b;
+    --surface: #181825;
+    --raise: #1d1d2c;
+    --overlay: #25253a;
+    --muted: #3d3d5c;
+    --dim: #9898c0;
+    --text: #dce0f4;
+    --bright: #f0f0ff;
+    --rose: #c47ab8;
+
+    /* io's accent is the page default; each card overrides it locally */
+    --accent: #9b6bc9;
+    --accent-alt: #a855c9;
+
+    --green: #a6e3a1;
+    --amber: #f2cd8c;
+    --red: #f38ba8;
+
+    --gutter: clamp(14px, 1.6vw, 28px);
+    --gap: clamp(10px, 1.1vw, 18px);
+    --radius: 10px;
+    --rule: 1px solid var(--overlay);
+
+    color-scheme: dark;
+    font-family:
+        "Maple", ui-monospace, "Cascadia Code", "SFMono-Regular", Menlo, Consolas, monospace;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+
+* {
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+html {
+    background: var(--base);
+}
+
+body {
+    /* two very soft accent washes keep a full bleed dark page from reading as
+       a flat rectangle, without ever competing with the data */
+    background:
+        radial-gradient(1200px 520px at 12% -8%, #9b6bc914, transparent 70%),
+        radial-gradient(1000px 460px at 88% -4%, #5fb3a310, transparent 70%),
+        var(--base);
+    background-attachment: fixed;
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.55;
+    margin: 0;
+    min-height: 100vh;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+::selection {
+    background: var(--accent);
+    color: var(--base);
+}
+
+:focus-visible {
+    border-radius: 3px;
+    outline: 2px solid var(--rose);
+    outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--overlay);
+    border-radius: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* ---------- top bar ---------- */
+
+.topbar {
+    align-items: center;
+    backdrop-filter: blur(14px);
+    background: color-mix(in oklab, var(--base) 82%, transparent);
+    border-bottom: var(--rule);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap) clamp(16px, 2vw, 34px);
+    justify-content: space-between;
+    padding: 12px var(--gutter);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.brand {
+    align-items: baseline;
+    display: flex;
+    gap: 9px;
+    white-space: nowrap;
+}
+
+.brand .glyph {
+    color: var(--accent);
+    font-size: 1.05rem;
+}
+
+.brand-name {
+    color: var(--bright);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.brand-sub {
+    color: var(--muted);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+}
+
+.fleet {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    gap: 6px clamp(10px, 1.4vw, 22px);
+    justify-content: center;
+}
+
+.chip {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    line-height: 1.25;
+}
+
+.chip-label {
+    color: var(--muted);
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.chip-value {
+    color: var(--bright);
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.chip[data-warn] .chip-value {
+    color: var(--red);
+}
+
+.now {
+    align-items: flex-end;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.now-clock {
+    color: var(--bright);
+    font-size: 1.35rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+}
+
+.now-day {
+    color: var(--dim);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+}
+
+.pulse {
+    align-items: center;
+    color: var(--muted);
+    display: flex;
+    font-size: 0.62rem;
+    gap: 6px;
+    letter-spacing: 0.1em;
+    margin-top: 3px;
+}
+
+.pulse-dot {
+    background: var(--muted);
+    border-radius: 50%;
+    display: block;
+    height: 6px;
+    width: 6px;
+}
+
+.pulse[data-state="live"] .pulse-dot {
+    animation: breathe 2.6s ease-in-out infinite;
+    background: var(--green);
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--green) 60%, transparent);
+}
+
+.pulse[data-state="stale"] {
+    color: var(--red);
+}
+
+.pulse[data-state="stale"] .pulse-dot {
+    background: var(--red);
+}
+
+@keyframes breathe {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 color-mix(in oklab, var(--green) 55%, transparent);
+    }
+    50% {
+        box-shadow: 0 0 0 4px transparent;
+    }
+}
+
+/* ---------- warnings ---------- */
+
+.warnings:empty {
+    display: none;
+}
+
+.warnings > div {
+    align-items: center;
+    background: color-mix(in oklab, var(--red) 12%, transparent);
+    border-bottom: 1px solid color-mix(in oklab, var(--red) 28%, transparent);
+    color: var(--red);
+    display: flex;
+    font-size: 0.76rem;
+    gap: 10px;
+    padding: 8px var(--gutter);
+}
+
+.warnings-mark {
+    background: var(--red);
+    border-radius: 3px;
+    color: var(--base);
+    font-weight: 600;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    width: 16px;
+}
+
+/* ---------- grid ---------- */
+
+.grid {
+    display: grid;
+    gap: var(--gap);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    padding: var(--gap) var(--gutter) var(--gap);
+}
+
+.hosts-wrap {
+    grid-column: 1 / -1;
+}
+
+.span-services {
+    grid-column: span 4;
+}
+.span-adguard {
+    grid-column: span 5;
+}
+.span-transmission {
+    grid-column: span 3;
+}
+.span-media {
+    grid-column: span 4;
+}
+.span-tailnet {
+    grid-column: span 5;
+}
+.span-store {
+    grid-column: span 3;
+}
+
+@media (max-width: 1500px) {
+    .span-services,
+    .span-media,
+    .span-transmission,
+    .span-store {
+        grid-column: span 6;
+    }
+    .span-adguard,
+    .span-tailnet {
+        grid-column: span 6;
+    }
+}
+
+@media (max-width: 1000px) {
+    .grid > * {
+        grid-column: 1 / -1 !important;
+    }
+}
+
+/* ---------- host cards ---------- */
+
+.host-grid {
+    display: grid;
+    gap: var(--gap);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+}
+
+.host {
+    background:
+        linear-gradient(180deg, color-mix(in oklab, var(--accent) 7%, transparent), transparent 130px),
+        var(--surface);
+    border: 1px solid color-mix(in oklab, var(--accent) 22%, var(--overlay));
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow: hidden;
+    padding: 14px 16px 16px;
+    position: relative;
+}
+
+.host::before {
+    background: linear-gradient(90deg, var(--accent), var(--accent-alt));
+    content: "";
+    height: 2px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.host-offline {
+    opacity: 0.6;
+}
+
+.host-title {
+    align-items: baseline;
+    display: flex;
+    gap: 9px;
+}
+
+.host-glyph {
+    color: var(--accent);
+    font-size: 1.05rem;
+}
+
+.host-name {
+    color: var(--bright);
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin: 0;
+}
+
+.host-role {
+    color: var(--dim);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    margin-left: auto;
+    text-transform: uppercase;
+}
+
+.host-state {
+    background: var(--red);
+    border-radius: 50%;
+    height: 7px;
+    width: 7px;
+}
+
+.host-state[data-online="1"] {
+    background: var(--green);
+    box-shadow: 0 0 8px color-mix(in oklab, var(--green) 70%, transparent);
+}
+
+.host-blurb {
+    color: var(--dim);
+    font-size: 0.74rem;
+    margin: 2px 0 0;
+}
+
+.host-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin-top: 8px;
+}
+
+.fact {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+    min-width: 0;
+}
+
+.fact i {
+    color: var(--muted);
+    font-size: 0.58rem;
+    font-style: normal;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.fact b {
+    color: var(--text);
+    font-size: 0.72rem;
+    font-weight: 400;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---------- gauges ---------- */
+
+.gauges {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.gauge {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.gauge-dial {
+    display: grid;
+    height: clamp(56px, 5vw, 70px);
+    place-items: center;
+    position: relative;
+    width: clamp(56px, 5vw, 70px);
+}
+
+.gauge-ring {
+    height: 100%;
+    inset: 0;
+    position: absolute;
+    transform: rotate(-90deg);
+    width: 100%;
+}
+
+.gauge-track {
+    fill: none;
+    stroke: var(--overlay);
+    stroke-width: 3;
+}
+
+.gauge-fill {
+    fill: none;
+    stroke: var(--accent);
+    stroke-linecap: round;
+    stroke-width: 3;
+    transition: stroke-dasharray 0.6s ease;
+}
+
+.gauge-value {
+    color: var(--bright);
+    font-size: 0.88rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+}
+
+.gauge-label {
+    color: var(--dim);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.gauge-sub {
+    color: var(--muted);
+    font-size: 0.6rem;
+    white-space: nowrap;
+}
+
+.gauge[data-warn] .gauge-fill {
+    stroke: var(--red);
+}
+
+.gauge[data-warn] .gauge-value {
+    color: var(--red);
+}
+
+/* ---------- micro labels, columns, traces ---------- */
+
+.micro-label {
+    color: var(--muted);
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.micro-note {
+    color: var(--muted);
+    font-size: 0.64rem;
+    margin: 4px 0 0;
+}
+
+.cores {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+}
+
+.cores .columns {
+    flex: 1;
+    height: 18px;
+}
+
+.columns {
+    align-items: flex-end;
+    display: flex;
+    gap: 2px;
+    height: 26px;
+}
+
+/* the track is the full height slot, the fill is the value inside it, so an
+   idle core is still a visible empty column instead of a flat line */
+.column {
+    background: color-mix(in oklab, var(--overlay) 70%, transparent);
+    border-radius: 2px;
+    display: flex;
+    flex: 1;
+    align-items: flex-end;
+    height: 100%;
+    min-width: 2px;
+    overflow: hidden;
+}
+
+.column-fill {
+    background: linear-gradient(180deg, var(--accent), color-mix(in oklab, var(--accent) 45%, transparent));
+    border-radius: 2px;
+    display: block;
+    transition: height 0.5s ease;
+    width: 100%;
+}
+
+.column[data-warn] .column-fill {
+    background: linear-gradient(180deg, var(--red), color-mix(in oklab, var(--red) 45%, transparent));
+}
+
+.columns-blocked .column-fill {
+    background: linear-gradient(180deg, var(--rose), color-mix(in oklab, var(--rose) 40%, transparent));
+}
+
+.histogram .columns {
+    height: 34px;
+}
+
+.traces {
+    display: grid;
+    gap: 8px 14px;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.trace-head {
+    align-items: baseline;
+    display: flex;
+    justify-content: space-between;
+}
+
+.trace-now {
+    color: var(--text);
+    font-size: 0.7rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.spark {
+    display: block;
+    height: 30px;
+    margin-top: 2px;
+    overflow: visible;
+    width: 100%;
+}
+
+.spark-line {
+    fill: none;
+    stroke: var(--accent);
+    stroke-linejoin: round;
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+}
+
+.spark-area {
+    fill: color-mix(in oklab, var(--accent) 14%, transparent);
+    stroke: none;
+}
+
+.spark-head {
+    fill: var(--accent);
+    vector-effect: non-scaling-stroke;
+}
+
+/* ---------- bars ---------- */
+
+.bar + .bar {
+    margin-top: 6px;
+}
+
+.bar-head {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.bar-label {
+    color: var(--dim);
+    font-size: 0.68rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bar-right {
+    color: var(--text);
+    font-size: 0.68rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.bar-track {
+    background: var(--overlay);
+    border-radius: 3px;
+    height: 5px;
+    margin-top: 3px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    background: linear-gradient(90deg, var(--accent), var(--accent-alt));
+    border-radius: 3px;
+    height: 100%;
+    transition: width 0.6s ease;
+}
+
+.bar[data-warn] .bar-fill {
+    background: var(--red);
+}
+
+.bar[data-warn] .bar-right {
+    color: var(--red);
+}
+
+/* ---------- key/value grids ---------- */
+
+.kv-grid {
+    border-top: 1px dashed var(--overlay);
+    display: grid;
+    gap: 2px 14px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+    padding-top: 8px;
+}
+
+.kv {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+.kv-label {
+    color: var(--muted);
+    flex: 0 0 auto;
+    font-size: 0.66rem;
+    white-space: nowrap;
+}
+
+.kv-value {
+    color: var(--text);
+    font-size: 0.68rem;
+    font-variant-numeric: tabular-nums;
+    overflow: hidden;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kv[data-warn] .kv-value {
+    color: var(--red);
+}
+
+/* ---------- panels ---------- */
+
+.panel {
+    background: var(--surface);
+    border: var(--rule);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.panel-head {
+    align-items: baseline;
+    border-bottom: var(--rule);
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    padding: 9px 14px;
+}
+
+.panel-title {
+    color: var(--bright);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    margin: 0;
+    text-transform: lowercase;
+}
+
+.panel-title::before {
+    color: var(--accent);
+    content: "▌";
+    margin-right: 7px;
+}
+
+a.panel-title:hover {
+    color: var(--accent);
+}
+
+.panel-meta {
+    color: var(--muted);
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}
+
+.panel-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 14px 14px;
+}
+
+.empty {
+    color: var(--muted);
+    font-size: 0.72rem;
+    margin: 0;
+}
+
+/* ---------- services ---------- */
+
+.service-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.service-group-head {
+    align-items: center;
+    color: var(--dim);
+    display: flex;
+    font-size: 0.68rem;
+    gap: 7px;
+    letter-spacing: 0.16em;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.service-group-head .host-glyph {
+    font-size: 0.8rem;
+}
+
+.service-list {
+    display: grid;
+    gap: 2px 10px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+}
+
+.service {
+    align-items: center;
+    border-radius: 4px;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: 8px minmax(0, 1fr) auto;
+    padding: 2px 5px;
+}
+
+a.service:hover {
+    background: var(--raise);
+}
+
+a.service .service-name {
+    color: var(--bright);
+}
+
+a.service:hover .service-name {
+    color: var(--accent);
+}
+
+.service-name {
+    font-size: 0.72rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.service-detail {
+    color: var(--muted);
+    font-size: 0.64rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.dot {
+    background: var(--muted);
+    border-radius: 50%;
+    display: block;
+    height: 7px;
+    width: 7px;
+}
+
+.dot[data-state="up"] {
+    background: var(--green);
+    box-shadow: 0 0 6px color-mix(in oklab, var(--green) 55%, transparent);
+}
+
+.dot[data-state="down"] {
+    background: var(--red);
+    box-shadow: 0 0 6px color-mix(in oklab, var(--red) 55%, transparent);
+}
+
+.dot[data-state="unprobed"] {
+    background: transparent;
+    border: 1px solid var(--muted);
+}
+
+/* ---------- figures ---------- */
+
+.figures {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 84px), 1fr));
+}
+
+.figure {
+    background: var(--raise);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 7px 9px;
+}
+
+.figure-value {
+    color: var(--bright);
+    font-size: 1.02rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.figure-label {
+    color: var(--muted);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.figure[data-warn] .figure-value {
+    color: var(--red);
+}
+
+/* ---------- ranked lists ---------- */
+
+.histogram {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.tops {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+}
+
+.ranked {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    list-style: none;
+    margin: 5px 0 0;
+    padding: 0;
+}
+
+.ranked-row {
+    align-items: center;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    overflow: hidden;
+    padding: 2px 6px;
+    position: relative;
+}
+
+.ranked-track {
+    background: color-mix(in oklab, var(--accent) 13%, transparent);
+    border-radius: 3px;
+    inset: 0 auto 0 0;
+    position: absolute;
+}
+
+.ranked-name {
+    font-size: 0.68rem;
+    overflow: hidden;
+    position: relative;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ranked-count {
+    color: var(--dim);
+    font-size: 0.64rem;
+    font-variant-numeric: tabular-nums;
+    position: relative;
+}
+
+/* ---------- torrents ---------- */
+
+.torrents {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.torrent-meta {
+    color: var(--muted);
+    display: flex;
+    font-size: 0.62rem;
+    gap: 12px;
+    margin-top: 2px;
+}
+
+/* ---------- media blocks ---------- */
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.block + .block {
+    border-top: 1px dashed var(--overlay);
+    padding-top: 12px;
+}
+
+.block-head {
+    align-items: baseline;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.block-title {
+    color: var(--bright);
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+}
+
+.block-title:hover {
+    color: var(--accent);
+}
+
+.block-meta {
+    color: var(--muted);
+    font-size: 0.64rem;
+}
+
+.files {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    list-style: none;
+    margin: 7px 0 0;
+    padding: 0;
+}
+
+.file {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.file-name {
+    color: var(--text);
+    font-size: 0.68rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-meta {
+    color: var(--muted);
+    font-size: 0.62rem;
+    white-space: nowrap;
+}
+
+/* ---------- tailnet ---------- */
+
+.peers {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    overflow-x: auto;
+}
+
+.peer {
+    align-items: center;
+    border-radius: 4px;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 8px minmax(110px, 1.4fr) 62px 128px minmax(150px, 1.2fr) minmax(110px, auto);
+    padding: 3px 6px;
+}
+
+.peer:hover {
+    background: var(--raise);
+}
+
+.peer-head {
+    color: var(--muted);
+    font-size: 0.58rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.peer-head:hover {
+    background: none;
+}
+
+.peer[data-online="0"] {
+    opacity: 0.45;
+}
+
+.peer > span {
+    font-size: 0.68rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.peer .mono {
+    color: var(--dim);
+    font-variant-numeric: tabular-nums;
+}
+
+.peer-name {
+    align-items: baseline;
+    display: flex;
+    gap: 6px;
+}
+
+.peer-name b {
+    color: var(--bright);
+    font-weight: 600;
+}
+
+.tag {
+    background: color-mix(in oklab, var(--accent) 18%, transparent);
+    border-radius: 3px;
+    color: var(--accent);
+    font-size: 0.56rem;
+    font-style: normal;
+    letter-spacing: 0.08em;
+    padding: 0 4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* ---------- footer ---------- */
+
+.footer {
+    border-top: var(--rule);
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 0.62rem;
+    gap: 6px 28px;
+    justify-content: space-between;
+    letter-spacing: 0.12em;
+    margin-top: 4px;
+    padding: 12px var(--gutter) 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}

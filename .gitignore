@@ -14,3 +14,7 @@ pi/services/io/share-web/node_modules/
 pi/services/io/share-web/.astro/
 pi/services/io/share-server/dist/*
 !pi/services/io/share-server/dist/.gitkeep
+pi/services/io/dash-web/node_modules/
+pi/services/io/dash-web/.astro/
+pi/services/io/dash-server/dist/*
+!pi/services/io/dash-server/dist/.gitkeep

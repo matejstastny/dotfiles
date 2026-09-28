@@ -1,7 +1,8 @@
 # io services
 
-`ytdl`, `share`, `jellyfin` and `transmission-daemon` on io, all reachable only
-from the tailnet and the house lan.
+`ytdl`, `share`, `jellyfin`, `transmission-daemon`, `node-exporter`,
+`victoria-metrics` and `dash` on io, all reachable only from the tailnet
+and the house lan.
 
 ## shape
 
@@ -16,9 +17,22 @@ from the tailnet and the house lan.
   evicts the oldest once a new one lands.
 - `share-web/` — astro + vanilla ts, builds into `share-server/dist/`. same
   layout system as `web/`, just the one page.
-- `prepare` — builds the ytdl and share binaries and uis, on this machine,
-  into `build/ytdl` and `build/share` (linux/arm64). jellyfin and transmission
-  are apk packages, nothing to build.
+- `dash-server/` — go service backing the fleet dashboard, stdlib only.
+  queries VictoriaMetrics' HTTP API, probes every service in the catalog,
+  reads detail out of adguard, transmission, jellyfin, ytdl, share and
+  tailscale, caches all of it and serves it as JSON at `/api/stats`. same
+  `go:embed` shape as `server/` and `share-server/`.
+- `dash-server/catalog.json` — the one hand written description of the fleet:
+  hosts (role, accent, lan address, board) and services (blurb, public link,
+  what to probe). embedded into the binary as a fallback and also installed to
+  `/etc/dash/catalog.json`, so a new service is an edit plus a restart rather
+  than a rebuild.
+- `dash-web/` — astro + vanilla ts, builds into `dash-server/dist/`. one
+  full-bleed page, one module per panel under `src/scripts/panels/`, all
+  charts hand-rolled inline SVG and CSS, no charting library.
+- `prepare` — builds the ytdl, share and dash binaries and uis, on this
+  machine, into `build/` (linux/arm64). jellyfin and transmission are apk
+  packages, nothing to build.
 - `install` — runs on io: apk deps, users, dirs, openrc services, caddy.
 - `jellyfin.confd` — the one line jellyfin's default conf.d needs changed
   (turns the bundled web client back on).
@@ -26,6 +40,17 @@ from the tailnet and the house lan.
   first run only; transmission owns the file after that.
 - `transmission-done` — transmission's `script-torrent-done` hook, hardlinks
   finished videos into jellyfin's library.
+- `scrape.yml` — VictoriaMetrics' scrape targets: node-exporter on thebe,
+  leda and io itself, one `host` label each.
+- `victoria-metrics.confd` — points VictoriaMetrics at `scrape.yml`, sets a
+  90 day retention. node-exporter needs no config changes from its apk
+  default, so this is the only apk confd override in the metrics stack.
+- `dash.initd` / `dash.confd` — dash is a custom-built binary like ytdl and
+  share, not an apk package, so it needs its own openrc unit rather than an
+  override. `dash.confd` sets the loopback listen address, the catalog path,
+  the sparkline window (`DASH_LOOKBACK`, `DASH_STEP`), the three refresh
+  cadences and the urls of every service api it reads. it also sources
+  `/etc/dash/dash.env` for the one secret it needs (see "the manual bits").
 
 ## deploying
 
@@ -106,6 +131,52 @@ that laptop's key in io's `~/.ssh/authorized_keys` (not tracked, added by
 hand the same way the caddy env token is) so the mount doesn't sit there
 asking for a password.
 
+## metrics
+
+`node-exporter` runs on thebe, leda and io (see each host's own `install`),
+each exposing a `/metrics` endpoint on `:9100` with that box's CPU, memory,
+disk and temperature. `victoria-metrics` on io scrapes all three over the
+tailnet every 15s (`scrape.yml`) and keeps 90 days of history, bound to
+loopback since only `dash` on the same box needs to query it.
+
+`dash` was tried first as Grafana, which turned out to be a lot more than
+this needed — a login, a plugin system, dashboard JSON to hand-tune. What
+replaced it is one page at `dash.elara.boo` with no login, because there is
+nothing here to change, only to read.
+
+it pulls from four kinds of source, on three separate schedules, into three
+separate caches, so a slow one never holds up the others:
+
+- **victoria-metrics, every 15s.** around forty PromQL queries fired
+  concurrently, each one covering all three hosts at once rather than one
+  query per host: cpu (total and per core), load, memory, swap, every real
+  filesystem, disk io, network throughput and totals, temperature, process
+  and context-switch counters, file descriptors, conntrack, clock drift, oom
+  kills and scrape health. plus seven range queries for the sparklines.
+- **service probes, every 20s.** every entry in `catalog.json` with a
+  `probe` gets a tcp connect or an http GET and is timed. anything under a
+  500 counts as up, because transmission answers 409 and adguard answers 401
+  to an unauthenticated poke, and both mean the daemon is alive.
+- **service apis, every 20s.** adguard's query and block counts, hourly
+  histogram and top domains/clients; transmission's session stats and
+  torrent list; jellyfin's version; ytdl's cache and recent files; share's
+  slots; victoria-metrics' own series and disk figures.
+- **tailscale, every 15s.** `tailscale status --json` for the peer table:
+  who is online, tailnet address, whether the path is direct or through a
+  derp relay, per-peer traffic, exit node and subnet routes. this is also
+  where each host's tailnet address on its card comes from, and it is what
+  lets the adguard panel relabel `100.88.10.68` as the node it belongs to.
+
+the browser polls `/api/stats` every 5s and only redraws when the payload's
+`generatedAt` actually moved, so the page stays current without rebuilding
+the dom three times for the same numbers.
+
+warn thresholds match the ones already in the pi prompt
+(`pi/config/starship/prompt.toml`): cpu temp over 70°C, memory over 85%, so
+the same numbers mean the same thing whether you're looking at a terminal
+or the dashboard. the temp gauge is drawn against 80°C rather than 100,
+because that is where a pi 4 starts throttling.
+
 ## the manual bits
 
 all live secrets or live state, so none of it is tracked here:
@@ -113,7 +184,8 @@ all live secrets or live state, so none of it is tracked here:
 1. `/etc/caddy/caddy.env` on io with `CF_API_TOKEN=<cloudflare token>`, for the
    DNS-01 cert. same token thebe uses.
 2. DNS rewrites in AdGuard Home: `yt.elara.boo`, `share.elara.boo`,
-   `jellyfin.elara.boo` and `torrent.elara.boo` → io's Tailscale address.
+   `jellyfin.elara.boo`, `torrent.elara.boo` and `dash.elara.boo` → io's
+   Tailscale address.
 3. jellyfin's first-run setup wizard (admin account, add the two libraries) —
    inherently a one-time manual step, visit `jellyfin.elara.boo` after install.
 4. any laptop's public key in io's `~/.ssh/authorized_keys`, for a passwordless
@@ -121,7 +193,16 @@ all live secrets or live state, so none of it is tracked here:
    ```sh
    ssh-copy-id elara@io   # or: cat ~/.ssh/id_ed25519.pub | ssh io 'cat >> ~/.ssh/authorized_keys'
    ```
-5. `/var/lib/ytdl/cookies.txt`, optional but needed for anything YouTube age
+5. `/etc/dash/dash.env` with `DASH_ADGUARD_PASS=<the adguard web password>`.
+   AdGuard Home has no API tokens, only the web login, so this is the one
+   secret dash needs. without it the dns panel stays empty and everything
+   else on the page still works:
+   ```sh
+   ssh io 'sudo sh -c "umask 077; cat > /etc/dash/dash.env"'
+   # paste DASH_ADGUARD_PASS=<password>, Enter, Ctrl-D
+   ssh io 'sudo rc-service dash restart'
+   ```
+6. `/var/lib/ytdl/cookies.txt`, optional but needed for anything YouTube age
    or bot gates (error says "Sign in to confirm your age" or similar). export
    a Netscape-format cookies.txt from a logged-in browser (a "Get cookies.txt"
    extension) and put it there:
@@ -142,4 +223,7 @@ cd web && pnpm dev               # ui on :4321, proxies /api to :8090
 
 cd share-server && go run .      # api on :8091, serves whatever is in dist/
 cd share-web && pnpm dev         # ui on :4322, proxies /api and /dl to :8091
+
+cd dash-server && go run .       # api on :8092, serves whatever is in dist/
+cd dash-web && pnpm dev          # ui on :4323, proxies /api to :8092
 ```

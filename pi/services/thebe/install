@@ -60,12 +60,17 @@ if as_root test ! -f /var/lib/ntfy/user.db; then
 	echo "    this is deliberately not tracked in git, it's a live secret"
 fi
 
+echo "▸ node-exporter: installing"
+as_root apk add prometheus-node-exporter prometheus-node-exporter-openrc
+
 echo "▸ enabling and starting services"
 as_root rc-update add caddy default
 as_root rc-update add adguardhome default
 as_root rc-update add ntfy default
+as_root rc-update add node-exporter default
 as_root rc-service adguardhome start || as_root rc-service adguardhome restart
 as_root rc-service ntfy start || as_root rc-service ntfy restart
+as_root rc-service node-exporter start || as_root rc-service node-exporter restart
 if as_root test -f /etc/caddy/caddy.env; then
 	as_root rc-service caddy start || as_root rc-service caddy restart
 else

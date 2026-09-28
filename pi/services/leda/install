@@ -1,0 +1,20 @@
+#!/bin/sh
+
+set -eu
+
+as_root() {
+	printf '%s\n' "${SUDO_PASS:-}" | sudo -S -p '' "$@"
+}
+
+echo "▸ enabling community repo"
+as_root sh -c 'grep -q "^[^#]*/community" /etc/apk/repositories || sed -i "s|^#\(.*/community\)\$|\1|" /etc/apk/repositories'
+as_root apk update >/dev/null
+
+echo "▸ node-exporter: installing"
+as_root apk add prometheus-node-exporter prometheus-node-exporter-openrc
+
+echo "▸ enabling and starting services"
+as_root rc-update add node-exporter default
+as_root rc-service node-exporter start || as_root rc-service node-exporter restart
+
+echo "▸ services install done on $(hostname)"

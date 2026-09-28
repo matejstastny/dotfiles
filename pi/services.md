@@ -7,16 +7,15 @@
 | DONE `tailscale`   | subnet router advertising `192.168.250.0/24`, full LAN from anywhere                                   |
 | DONE `caddy`       | reverse proxy for everything on both pis, real names instead of `:3000`                                |
 | DONE `ntfy`        | push target for your scripts; same shape as your `notify-send "✦ topic"` convention, but on your phone |
+| DONE `prometheus-node-exporter` | metrics scrape target for this box, ships to `victoria-metrics` on io                     |
 
 **leda = service plane** Personal local services
 
 |                                  |                                                                          |
 | -------------------------------- | ------------------------------------------------------------------------ |
 | `adguardhome`                    | secondary resolver                                                       |
-| `syncthing`                      | the thing you'll actually use daily                                      |
 | DONE `soju`                      | persistent IRC bouncer (saw the irc commit, this is the obvious fit)     |
-| `vaultwarden`                    | bitwarden server, sqlite, tiny                                           |
-| `prometheus-node-exporter`       | metrics scrape target for this box, ships to `victoria-metrics` on io    |
+| DONE `prometheus-node-exporter`  | metrics scrape target for this box, ships to `victoria-metrics` on io    |
 | DONE `tailscale`                 | exit node, kept off thebe so bulk traffic doesn't compete with DNS       |
 | DONE `spotifyd` + `pyatv-bridge` | spotify connect device that relays audio via airplay to the homepod mini |
 
@@ -26,10 +25,9 @@
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
 | DONE `tailscale`               | joined the tailnet                                                                                            |
 | DONE `yt-dlp` + custom ui      | `yt.elara.boo`, mp4/mp3 with a web ui, 20 GB cache + `/srv/media` library, tailnet-only                       |
-| DONE `share` custom quickshare | `share.elara.boo`, upload via web ui or the `share` script, keeps the last 10 files, tailnet-only              |
+| DONE `share` custom quickshare | `share.elara.boo`, upload via web ui or the `share` script, keeps the last 10 files, tailnet-only             |
 | DONE `caddy`                   | reverse proxy + DNS-01 cert for `yt.elara.boo`, so bulk downloads never transit thebe                         |
-| `forgejo`                      | self-hosted git, moved off leda's SD card, git packs are exactly the write churn a card hates                 |
 | DONE `jellyfin`                | media server at `jellyfin.elara.boo`, video side of the yt-dlp output, no hw transcode                        |
-| `navidrome`                    | streams the mp3 side of the yt-dlp output, same idea as jellyfin but audio                                    |
 | DONE `transmission-daemon`     | torrent client at `torrent.elara.boo`, `script-torrent-done` hardlinks finished video into jellyfin's library |
-| `victoria-metrics` + `grafana` | TODO                                                                                                          |
+| DONE `prometheus-node-exporter` | metrics scrape target for io itself, scraped over loopback                                                   |
+| DONE `victoria-metrics` + `dash` | custom go+astro fleet dashboard at `dash.elara.boo`: per host metrics, service probes, adguard/transmission/jellyfin/ytdl/share detail and the tailnet peer table, 90 day retention |

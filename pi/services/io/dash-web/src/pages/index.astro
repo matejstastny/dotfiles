@@ -1,0 +1,40 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="dash · fleet">
+    <header class="topbar">
+        <div class="brand">
+            <span class="glyph">◈</span>
+            <span class="brand-name">dash</span>
+            <span class="brand-sub">thebe · leda · io</span>
+        </div>
+
+        <div class="fleet" id="fleet"></div>
+
+        <div class="now">
+            <span class="now-clock" id="clock">--:--:--</span>
+            <span class="now-day" id="day"></span>
+            <span class="pulse" id="pulse" data-state="cold">
+                <i class="pulse-dot"></i>
+                <span id="pulse-note">connecting</span>
+            </span>
+        </div>
+    </header>
+
+    <div id="warnings"></div>
+
+    <main class="grid" id="grid">
+        <p class="empty">reading the fleet…</p>
+    </main>
+
+    <footer class="footer">
+        <span>node-exporter → victoria-metrics → dash</span>
+        <span>tailnet and lan only, no login of its own</span>
+        <span>hosts every 15s · probes every 20s · page every 5s</span>
+    </footer>
+</Base>
+
+<script>
+    import "../scripts/app";
+</script>

@@ -8,8 +8,8 @@ as_root() {
 
 self="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 
-if [ ! -f "$self/ytdl" ] || [ ! -f "$self/share" ]; then
-	echo "  ! no ytdl/share binary in this payload"
+if [ ! -f "$self/ytdl" ] || [ ! -f "$self/share" ] || [ ! -f "$self/dash" ] || [ ! -f "$self/dash-catalog.json" ]; then
+	echo "  ! no ytdl/share/dash binary in this payload"
 	echo "    they are built on your laptop, so run: bin/pi sync io --services"
 	exit 1
 fi
@@ -87,6 +87,42 @@ fi
 as_root install -d -o root -g root -m 755 /usr/local/libexec
 as_root install -o root -g root -m 755 "$self/transmission-done" /usr/local/libexec/transmission-done
 
+echo "▸ node-exporter: installing"
+as_root apk add prometheus-node-exporter prometheus-node-exporter-openrc
+
+echo "▸ victoria-metrics: installing"
+as_root apk add victoria-metrics victoria-metrics-openrc
+as_root install -d -o root -g root -m 755 /etc/victoria-metrics
+as_root install -o root -g root -m 644 "$self/scrape.yml" /etc/victoria-metrics/scrape.yml
+as_root install -o root -g root -m 644 "$self/victoria-metrics.confd" /etc/conf.d/victoria-metrics
+
+# grafana was tried and replaced by dash below; on a box that still has it
+# from an earlier install, tear it down rather than leaving it running unused
+if as_root sh -c 'command -v rc-service >/dev/null && rc-service grafana status >/dev/null 2>&1'; then
+	echo "▸ grafana: removing (replaced by dash)"
+	as_root rc-service grafana stop >/dev/null 2>&1 || true
+	as_root rc-update del grafana default >/dev/null 2>&1 || true
+	as_root apk del grafana grafana-openrc grafana-frontend >/dev/null 2>&1 || true
+	as_root rm -rf /var/lib/grafana /etc/grafana.ini
+fi
+
+echo "▸ dash: creating system user"
+as_root sh -c 'getent group dash >/dev/null || addgroup -S dash'
+as_root sh -c 'getent passwd dash >/dev/null || adduser -S -D -H -h /var/lib/dash -s /sbin/nologin -G dash dash'
+as_root install -d -o dash -g dash -m 755 /var/log/dash
+
+echo "▸ dash: installing the service"
+as_root rc-service dash stop >/dev/null 2>&1 || true
+as_root install -o root -g root -m 755 "$self/dash" /usr/local/bin/dash
+as_root install -o root -g root -m 755 "$self/dash.initd" /etc/init.d/dash
+as_root install -o root -g root -m 644 "$self/dash.confd" /etc/conf.d/dash
+
+# the fleet catalog: which hosts and services the page describes, and what to
+# probe for each. the binary embeds a copy, so this only has to exist to be
+# edited without a rebuild.
+as_root install -d -o root -g root -m 755 /etc/dash
+as_root install -o root -g root -m 644 "$self/dash-catalog.json" /etc/dash/catalog.json
+
 echo "▸ caddy: creating system user"
 as_root sh -c 'getent group caddy >/dev/null || addgroup -S caddy'
 as_root sh -c 'getent passwd caddy >/dev/null || adduser -S -D -H -h /var/lib/caddy -s /sbin/nologin -G caddy caddy'
@@ -112,10 +148,16 @@ as_root rc-update add share default
 as_root rc-update add jellyfin default
 as_root rc-update add transmission-daemon default
 as_root rc-update add caddy default
+as_root rc-update add node-exporter default
+as_root rc-update add victoria-metrics default
+as_root rc-update add dash default
 as_root rc-service ytdl start || as_root rc-service ytdl restart
 as_root rc-service share start || as_root rc-service share restart
 as_root rc-service jellyfin start || as_root rc-service jellyfin restart
 as_root rc-service transmission-daemon start || as_root rc-service transmission-daemon restart
+as_root rc-service node-exporter start || as_root rc-service node-exporter restart
+as_root rc-service victoria-metrics start || as_root rc-service victoria-metrics restart
+as_root rc-service dash start || as_root rc-service dash restart
 
 if as_root test -f /etc/caddy/caddy.env; then
 	# "start" on an already-running service just no-ops successfully, so it
@@ -134,8 +176,9 @@ else
 	echo "    then: ssh io 'sudo rc-service caddy start'"
 fi
 
-echo "  ! yt.elara.boo, share.elara.boo, jellyfin.elara.boo and torrent.elara.boo"
-echo "    need DNS rewrites in AdGuard Home pointing at io's Tailscale address:"
+echo "  ! yt.elara.boo, share.elara.boo, jellyfin.elara.boo, torrent.elara.boo and"
+echo "    dash.elara.boo need DNS rewrites in AdGuard Home pointing at io's"
+echo "    Tailscale address:"
 echo "      $(tailscale ip -4 2>/dev/null | head -1)"
 echo "  ! jellyfin needs its first-run setup wizard, can't be scripted:"
 echo "      http://jellyfin.elara.boo or http://<io's lan ip>:8096"
@@ -143,6 +186,17 @@ echo "      add /srv/media/video as a Home Videos library, /srv/media/music as M
 
 echo "  ! transmission's rpc has no login of its own, loopback bind + caddy's"
 echo "    tailnet/lan gate on torrent.elara.boo is the only thing guarding it"
+
+if as_root test ! -f /etc/dash/dash.env; then
+	echo "  ! no /etc/dash/dash.env yet"
+	echo "    adguard has no api tokens, only the web login, so dash needs the"
+	echo "    password to show the dns panel. without it that one panel stays"
+	echo "    empty and everything else works:"
+	echo "      ssh io 'sudo sh -c \"umask 077; cat > /etc/dash/dash.env\"'"
+	echo "      # paste DASH_ADGUARD_PASS=<password>, Enter, Ctrl-D"
+	echo "      ssh io 'sudo rc-service dash restart'"
+	echo "    this is deliberately not tracked in git, it's a live secret"
+fi
 
 if as_root test ! -f /var/lib/ytdl/cookies.txt; then
 	echo "  ! no /var/lib/ytdl/cookies.txt yet"

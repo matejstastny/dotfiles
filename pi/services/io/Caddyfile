@@ -75,3 +75,21 @@ share.elara.boo {
 		reverse_proxy 127.0.0.1:8091
 	}
 }
+
+dash.elara.boo {
+	tls {
+		dns cloudflare {env.CF_API_TOKEN}
+	}
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+	}
+
+	# read-only, no login of its own, same model as everything else here
+	@outside not remote_ip 100.64.0.0/10 192.168.250.0/24 127.0.0.1/32 ::1
+	route {
+		abort @outside
+		reverse_proxy 127.0.0.1:8092
+	}
+}
