@@ -1,10 +1,19 @@
-configs/tmux/plugins/
+**/__pycache__
+
+# sensitive
+**/*.env
 configs/remote/hosts.toml
 configs/halloy/soju-password
+
+# build files
+configs/tmux/plugins/
 fairydust/
+
+# agent slop
 configs/ai/skills/synced
 configs/ai/skills/.system
-**/__pycache__
+
+# pi
 pi/services/io/build/
 pi/services/io/web/node_modules/
 pi/services/io/web/.astro/

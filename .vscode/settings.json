@@ -20,7 +20,9 @@
 
     "files.exclude": {
         "**/.mypy_cache": true,
-        "**/__pycache__": true
+        "**/__pycache__": true,
+        "**/node_modules": true,
+        "**/.astro": true
     },
 
     "qt-qml.qmlls.additionalImportPaths": ["/usr/lib64/qt6/qml"]
