@@ -44,7 +44,7 @@ def parser() -> "argparse.ArgumentParser":
     p = argparse.ArgumentParser(
         prog="pi",
         description="Manage the Raspberry Pis in pi/ over Tailscale.",
-        epilog="Examples:\n  pi sync io --services\n  pi ping\n  pi ip thebe\n  pi reboot leda\n  pi ssh io 'journalctl -u caddy'",
+        epilog="Examples:\n  pi sync io --services\n  pi ping\n  pi ip thebe\n  pi reboot leda\n  pi ssh io 'journalctl -u caddy'\n  pi magnet 'magnet:?xt=...'",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     p.add_argument("-V", "--version", action="version", version="pi 1.0")
@@ -68,6 +68,9 @@ def parser() -> "argparse.ArgumentParser":
     ssh.add_argument("ssh_command", nargs=argparse.REMAINDER, metavar="COMMAND", help="command to run, default: interactive shell")
 
     commands.add_parser("hosts", help="list configured Pi hosts")
+
+    magnet = commands.add_parser("magnet", help="queue a magnet link on io's transmission, like dropping a .torrent in ~/torrents")
+    magnet.add_argument("link", metavar="MAGNET", help="a magnet: link")
     return p
 
 
@@ -373,6 +376,19 @@ def ip_host(name: str, host: dict[str, str]) -> bool:
     return True
 
 
+def magnet_host(host: dict[str, str], link: str) -> bool:
+    # rpc is loopback-only (see io's install), so this has to run on the box itself
+    res = run_ssh(host, "io", f"transmission-remote localhost:9091 --add {shlex.quote(link)}")
+    out = res.stdout.decode().strip()
+    if out:
+        print("\n".join(f"  {ln}" for ln in out.splitlines()))
+    if res.returncode != 0:
+        error(f"io: magnet add failed: {res.stderr.decode().strip()}")
+        return False
+    log("io: magnet queued")
+    return True
+
+
 def reboot_host(name: str, host: dict[str, str]) -> bool:
     password = sudo_password(host)
     res = run_ssh(host, name, 'IFS= read -r SUDO_PASS; printf "%s\\n" "$SUDO_PASS" | sudo -S -p "" reboot', stdin=password.encode() + b"\n")
@@ -442,6 +458,14 @@ def main() -> int:
         if not args.hosts and not args.host_flags and not args.all:
             p.error("pi reboot needs at least one HOST, or --all")
         return command_for_hosts(args, reboot_host)
+    if args.command == "magnet":
+        if not args.link.startswith("magnet:"):
+            p.error("not a magnet link (expected it to start with 'magnet:')")
+        names, hosts = config_hosts()
+        if "io" not in hosts:
+            error("no remote-hosts entry for io")
+            return 1
+        return 0 if magnet_host(hosts["io"], args.link) else 1
     if args.command == "ssh":
         names, hosts = config_hosts()
         if args.host not in names:

@@ -13,7 +13,7 @@ spotifyd airplay bridge|pyatv-bridge|relay.sh
 thebe_services='
 leds|leds|-
 tailscale subnet router|tailscale|tailscaled
-unbound recursive resolver|unbound|unbound
+unbound resolver|unbound|unbound
 adguard home|adguardhome|adguardhome
 caddy proxy|caddy|caddy
 ntfy|ntfy|ntfy

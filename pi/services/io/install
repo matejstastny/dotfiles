@@ -61,7 +61,7 @@ as_root apk add jellyfin jellyfin-web jellyfin-openrc
 as_root install -o root -g root -m 644 "$self/jellyfin.confd" /etc/conf.d/jellyfin
 
 echo "▸ transmission: installing"
-as_root apk add transmission-daemon transmission-daemon-openrc
+as_root apk add transmission-daemon transmission-daemon-openrc transmission-remote
 
 # it only writes into the library through the done script below, but that
 # still needs group write access to /srv/media/video
