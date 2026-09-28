@@ -30,9 +30,13 @@ dns:
   ratelimit_whitelist: []
   refuse_any: true
   upstream_dns:
-    - 127.0.0.1:5335
+    - https://dns10.quad9.net/dns-query
   upstream_dns_file: ""
-  bootstrap_dns: []
+  bootstrap_dns:
+    - 9.9.9.10
+    - 149.112.112.10
+    - 2620:fe::10
+    - 2620:fe::fe:10
   fallback_dns: []
   upstream_mode: load_balance
   fastest_timeout: 1s

@@ -3,6 +3,7 @@
 # display name|openrc service|process name
 leda_services='
 leds|leds|-
+adguard home|adguardhome|adguardhome
 soju chat|soju|soju
 tailscale exit node|tailscale|tailscaled
 spotifyd|spotifyd|spotifyd
@@ -12,6 +13,7 @@ spotifyd airplay bridge|pyatv-bridge|relay.sh
 thebe_services='
 leds|leds|-
 tailscale subnet router|tailscale|tailscaled
+unbound recursive resolver|unbound|unbound
 adguard home|adguardhome|adguardhome
 caddy proxy|caddy|caddy
 ntfy|ntfy|ntfy

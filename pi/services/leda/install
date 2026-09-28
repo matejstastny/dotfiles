@@ -6,15 +6,56 @@ as_root() {
 	printf '%s\n' "${SUDO_PASS:-}" | sudo -S -p '' "$@"
 }
 
+self="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+
 echo "▸ enabling community repo"
 as_root sh -c 'grep -q "^[^#]*/community" /etc/apk/repositories || sed -i "s|^#\(.*/community\)\$|\1|" /etc/apk/repositories'
 as_root apk update >/dev/null
+
+echo "▸ adguardhome: installing package"
+as_root apk add adguardhome adguardhome-openrc
+
+if as_root test ! -f /var/lib/adguardhome/AdGuardHome.yaml; then
+	echo "▸ adguardhome: seeding config (first install only)"
+	as_root install -d -o adguardhome -g adguardhome -m 755 /var/lib/adguardhome
+	as_root install -o adguardhome -g adguardhome -m 640 "$self/AdGuardHome.yaml" /var/lib/adguardhome/AdGuardHome.yaml
+else
+	echo "▸ adguardhome: config already present, leaving live state alone"
+	if as_root grep -Fqx '  rewrites: []' /var/lib/adguardhome/AdGuardHome.yaml; then
+		echo "  adding the fleet DNS rewrites to the fallback resolver"
+		as_root sed -i '/^  rewrites: \[\]$/c\
+  rewrites:\
+    - domain: dns.elara.boo\
+      answer: 100.67.68.68\
+      enabled: true\
+    - domain: ntfy.elara.boo\
+      answer: 100.67.68.68\
+      enabled: true\
+    - domain: yt.elara.boo\
+      answer: 100.88.15.123\
+      enabled: true\
+    - domain: jellyfin.elara.boo\
+      answer: 100.88.15.123\
+      enabled: true\
+    - domain: torrent.elara.boo\
+      answer: 100.88.15.123\
+      enabled: true\
+    - domain: share.elara.boo\
+      answer: 100.88.15.123\
+      enabled: true\
+    - domain: dash.elara.boo\
+      answer: 100.88.15.123\
+      enabled: true' /var/lib/adguardhome/AdGuardHome.yaml
+	fi
+fi
 
 echo "▸ node-exporter: installing"
 as_root apk add prometheus-node-exporter prometheus-node-exporter-openrc
 
 echo "▸ enabling and starting services"
+as_root rc-update add adguardhome default
 as_root rc-update add node-exporter default
+as_root rc-service adguardhome restart || as_root rc-service adguardhome start
 as_root rc-service node-exporter start || as_root rc-service node-exporter restart
 
 echo "▸ services install done on $(hostname)"

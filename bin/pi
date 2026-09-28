@@ -21,6 +21,9 @@ PULLABLE = {
         "/var/lib/adguardhome/AdGuardHome.yaml": "AdGuardHome.yaml",
         "/etc/ntfy/server.yml": "ntfy-server.yml",
     },
+    "leda": {
+        "/var/lib/adguardhome/AdGuardHome.yaml": "AdGuardHome.yaml",
+    },
 }
 
 SSH_OPTS = [
@@ -250,7 +253,7 @@ def sync_host(name: str, host: dict[str, str], bootstrap: bool, services: bool, 
             if bootstrap:
                 print("  + bootstrap (apk install, login shell)")
             if services and has_services:
-                print("  + services install (caddy, adguardhome)")
+                print("  + services install")
             return True
 
         probe = run_ssh(host, name, "true")

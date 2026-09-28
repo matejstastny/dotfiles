@@ -47,6 +47,11 @@
       "probe": "tcp://thebe:53"
     },
     {
+      "name": "unbound",
+      "host": "thebe",
+      "blurb": "recursive DNS behind AdGuard Home, loopback only"
+    },
+    {
       "name": "caddy",
       "host": "thebe",
       "blurb": "ingress + DNS-01 certs for the public names",
@@ -79,6 +84,13 @@
       "probe": "tcp://thebe:22"
     },
 
+    {
+      "name": "adguard home",
+      "host": "leda",
+      "blurb": "independent fallback resolver, forwarded over Quad9 DoH",
+      "link": "http://leda:3000",
+      "probe": "tcp://leda:53"
+    },
     {
       "name": "soju",
       "host": "leda",

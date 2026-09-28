@@ -12,6 +12,14 @@ echo "▸ enabling community repo"
 as_root sh -c 'grep -q "^[^#]*/community" /etc/apk/repositories || sed -i "s|^#\(.*/community\)\$|\1|" /etc/apk/repositories'
 as_root apk update >/dev/null
 
+echo "▸ unbound: installing recursive resolver"
+as_root apk add unbound unbound-openrc
+
+echo "▸ unbound: installing loopback config"
+as_root install -d -o root -g root -m 755 /etc/unbound/unbound.conf.d
+as_root install -o root -g root -m 644 "$self/unbound.conf" /etc/unbound/unbound.conf.d/adguard.conf
+as_root /usr/sbin/unbound-checkconf -f /etc/unbound/unbound.conf
+
 echo "▸ caddy: creating system user"
 as_root sh -c 'getent group caddy >/dev/null || addgroup -S caddy'
 as_root sh -c 'getent passwd caddy >/dev/null || adduser -S -D -H -h /var/lib/caddy -s /sbin/nologin -G caddy caddy'
@@ -44,6 +52,12 @@ if as_root test ! -f /var/lib/adguardhome/AdGuardHome.yaml; then
 	as_root install -o adguardhome -g adguardhome -m 640 "$self/AdGuardHome.yaml" /var/lib/adguardhome/AdGuardHome.yaml
 else
 	echo "▸ adguardhome: config already present, leaving live state alone"
+	if as_root grep -Fqx '    - https://dns10.quad9.net/dns-query' /var/lib/adguardhome/AdGuardHome.yaml; then
+		echo "  migrating AdGuard Home upstream from Quad9 to local unbound"
+		as_root sed -i 's|    - https://dns10.quad9.net/dns-query|    - 127.0.0.1:5335|' /var/lib/adguardhome/AdGuardHome.yaml
+		as_root sed -i '/^  bootstrap_dns:$/,/^  fallback_dns: \[\]$/ { /^  bootstrap_dns:$/! { /^  fallback_dns: \[\]$/!d; } }' /var/lib/adguardhome/AdGuardHome.yaml
+		as_root sed -i '/^  bootstrap_dns:$/a\    []' /var/lib/adguardhome/AdGuardHome.yaml
+	fi
 fi
 
 echo "▸ ntfy: installing package"
@@ -64,11 +78,13 @@ echo "▸ node-exporter: installing"
 as_root apk add prometheus-node-exporter prometheus-node-exporter-openrc
 
 echo "▸ enabling and starting services"
+as_root rc-update add unbound default
 as_root rc-update add caddy default
 as_root rc-update add adguardhome default
 as_root rc-update add ntfy default
 as_root rc-update add node-exporter default
-as_root rc-service adguardhome start || as_root rc-service adguardhome restart
+as_root rc-service unbound start || as_root rc-service unbound restart
+as_root rc-service adguardhome restart
 as_root rc-service ntfy start || as_root rc-service ntfy restart
 as_root rc-service node-exporter start || as_root rc-service node-exporter restart
 if as_root test -f /etc/caddy/caddy.env; then

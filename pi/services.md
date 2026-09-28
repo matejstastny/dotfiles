@@ -3,7 +3,7 @@
 |                                 |                                                                                                        |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | DONE `adguardhome`              | primary resolver                                                                                       |
-| `unbound`                       | recursive resolver behind AGH, so no upstream sees your query log                                      |
+| DONE `unbound`                  | recursive resolver behind AGH, so no upstream sees your query log                                      |
 | DONE `tailscale`                | subnet router advertising `192.168.250.0/24`, full LAN from anywhere                                   |
 | DONE `caddy`                    | reverse proxy for everything on both pis, real names instead of `:3000`                                |
 | DONE `ntfy`                     | push target for your scripts; same shape as your `notify-send "✦ topic"` convention, but on your phone |
@@ -13,7 +13,7 @@
 
 |                                  |                                                                          |
 | -------------------------------- | ------------------------------------------------------------------------ |
-| `adguardhome`                    | secondary resolver                                                       |
+| DONE `adguardhome`               | secondary resolver, independently forwards over Quad9 DoH                |
 | DONE `soju`                      | persistent IRC bouncer (saw the irc commit, this is the obvious fit)     |
 | DONE `prometheus-node-exporter`  | metrics scrape target for this box, ships to `victoria-metrics` on io    |
 | DONE `tailscale`                 | exit node, kept off thebe so bulk traffic doesn't compete with DNS       |
