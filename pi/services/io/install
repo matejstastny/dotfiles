@@ -8,9 +8,9 @@ as_root() {
 
 self="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 
-if [ ! -f "$self/ytdl" ]; then
-	echo "  ! no ytdl binary in this payload"
-	echo "    it is built on your laptop, so run: bin/pi-sync --host io --services"
+if [ ! -f "$self/ytdl" ] || [ ! -f "$self/share" ]; then
+	echo "  ! no ytdl/share binary in this payload"
+	echo "    they are built on your laptop, so run: bin/pi sync io --services"
 	exit 1
 fi
 
@@ -22,30 +22,6 @@ as_root apk update >/dev/null 2>&1 || echo "  ! apk update failed, carrying on w
 
 echo "▸ ytdl: installing yt-dlp and ffmpeg"
 as_root apk add yt-dlp ffmpeg
-
-echo "▸ anisette-v3: installing container runtime"
-as_root apk add docker docker-openrc git
-as_root rc-update add docker default
-as_root rc-service docker start || as_root rc-service docker restart
-
-# build the current upstream source rather than trust its older prebuilt image
-# the commit is deliberately pinned: upgrades are reviewed by changing this value
-anisette_rev=684895737aaf1a1c4586fcd5b67509ffd500a36c
-anisette_image="local/anisette-v3:${anisette_rev}"
-if ! as_root docker image inspect "$anisette_image" >/dev/null 2>&1; then
-	echo "▸ anisette-v3: building pinned upstream source"
-	as_root docker build --pull -t "$anisette_image" "https://github.com/Dadoum/anisette-v3-server.git#${anisette_rev}"
-fi
-
-echo "▸ anisette-v3: creating persistent state and service"
-as_root install -d -o 1000 -g 1000 -m 700 /var/lib/anisette-v3
-as_root docker rm -f anisette-v3 >/dev/null 2>&1 || true
-as_root docker create --name anisette-v3 --restart no \
-	-p 127.0.0.1:6969:6969 \
-	-v /var/lib/anisette-v3:/home/Alcoholic/.config/anisette-v3 \
-	"$anisette_image" >/dev/null
-as_root install -o root -g root -m 755 "$self/anisette-v3.initd" /etc/init.d/anisette-v3
-as_root rc-update add anisette-v3 default
 
 echo "▸ ytdl: creating system user"
 as_root sh -c 'getent group ytdl >/dev/null || addgroup -S ytdl'
@@ -66,6 +42,19 @@ as_root rc-service ytdl stop >/dev/null 2>&1 || true
 as_root install -o root -g root -m 755 "$self/ytdl" /usr/local/bin/ytdl
 as_root install -o root -g root -m 755 "$self/ytdl.initd" /etc/init.d/ytdl
 as_root install -o root -g root -m 644 "$self/ytdl.confd" /etc/conf.d/ytdl
+
+echo "▸ share: creating system user"
+as_root sh -c 'getent group share >/dev/null || addgroup -S share'
+as_root sh -c 'getent passwd share >/dev/null || adduser -S -D -H -h /var/lib/share -s /sbin/nologin -G share share'
+
+echo "▸ share: creating directories"
+as_root install -d -o share -g share -m 755 /var/lib/share /var/lib/share/files /var/log/share
+
+echo "▸ share: installing the service"
+as_root rc-service share stop >/dev/null 2>&1 || true
+as_root install -o root -g root -m 755 "$self/share" /usr/local/bin/share
+as_root install -o root -g root -m 755 "$self/share.initd" /etc/init.d/share
+as_root install -o root -g root -m 644 "$self/share.confd" /etc/conf.d/share
 
 echo "▸ jellyfin: installing"
 as_root apk add jellyfin jellyfin-web jellyfin-openrc
@@ -119,11 +108,12 @@ as_root install -o root -g root -m 644 "$self/caddy.confd" /etc/conf.d/caddy
 
 echo "▸ enabling and starting services"
 as_root rc-update add ytdl default
+as_root rc-update add share default
 as_root rc-update add jellyfin default
 as_root rc-update add transmission-daemon default
 as_root rc-update add caddy default
-as_root rc-service anisette-v3 start || as_root rc-service anisette-v3 restart
 as_root rc-service ytdl start || as_root rc-service ytdl restart
+as_root rc-service share start || as_root rc-service share restart
 as_root rc-service jellyfin start || as_root rc-service jellyfin restart
 as_root rc-service transmission-daemon start || as_root rc-service transmission-daemon restart
 
@@ -144,13 +134,9 @@ else
 	echo "    then: ssh io 'sudo rc-service caddy start'"
 fi
 
-echo "  ! yt.elara.boo, jellyfin.elara.boo and torrent.elara.boo need DNS rewrites"
-echo "    in AdGuard Home pointing at io's Tailscale address:"
+echo "  ! yt.elara.boo, share.elara.boo, jellyfin.elara.boo and torrent.elara.boo"
+echo "    need DNS rewrites in AdGuard Home pointing at io's Tailscale address:"
 echo "      $(tailscale ip -4 2>/dev/null | head -1)"
-echo "  ! anisette.elara.boo must point at io's LAN address, so SideStore works"
-echo "    on home Wi-Fi without also requiring Tailscale on the phone:"
-echo "      $(ip -4 -o addr show wlan0 2>/dev/null | awk '{ print $4 }' | cut -d/ -f1)"
-
 echo "  ! jellyfin needs its first-run setup wizard, can't be scripted:"
 echo "      http://jellyfin.elara.boo or http://<io's lan ip>:8096"
 echo "      add /srv/media/video as a Home Videos library, /srv/media/music as Music"

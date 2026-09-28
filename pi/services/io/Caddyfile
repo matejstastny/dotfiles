@@ -57,9 +57,7 @@ torrent.elara.boo {
 	}
 }
 
-anisette.elara.boo {
-	# sidestore only contacts this from the house lan or tailnet. Caddy gives
-	# the phone a trusted HTTPS endpoint while the container stays loopback-only.
+share.elara.boo {
 	tls {
 		dns cloudflare {env.CF_API_TOKEN}
 	}
@@ -69,15 +67,11 @@ anisette.elara.boo {
 		Referrer-Policy no-referrer
 	}
 
+	# uploads have no auth of their own; loopback bind + this gate is the only
+	# thing standing between the endpoint and the tailnet
 	@outside not remote_ip 100.64.0.0/10 192.168.250.0/24 127.0.0.1/32 ::1
 	route {
 		abort @outside
-		handle /servers.json {
-			header Content-Type application/json
-			respond `{ "servers": [{ "name": "io (private)", "address": "https://anisette.elara.boo" }] }`
-		}
-		handle {
-			reverse_proxy 127.0.0.1:6969
-		}
+		reverse_proxy 127.0.0.1:8091
 	}
 }

@@ -2,6 +2,7 @@
 
 # display name|openrc service|process name
 leda_services='
+leds|leds|-
 soju chat|soju|soju
 tailscale exit node|tailscale|tailscaled
 spotifyd|spotifyd|spotifyd
@@ -9,6 +10,7 @@ spotifyd airplay bridge|pyatv-bridge|relay.sh
 '
 
 thebe_services='
+leds|leds|-
 tailscale subnet router|tailscale|tailscaled
 adguard home|adguardhome|adguardhome
 caddy proxy|caddy|caddy
@@ -17,12 +19,13 @@ elara.boo tunnel|elara-boo-tunnel|cloudflared
 '
 
 io_services='
+leds|leds|-
 tailscale|tailscale|tailscaled
 ytdl downloader|ytdl|ytdl
+quickshare|share|share
 jellyfin|jellyfin|jellyfin
 transmission|transmission-daemon|transmission-daemon
 caddy proxy|caddy|caddy
-sidestore anisette|anisette-v3|docker
 '
 
 host=${1:-$(hostname)}
@@ -87,6 +90,16 @@ else
 	system_info="up ${uptime_text}   load ${load}   root ${root_used}"
 fi
 
+led_state=''
+if command -v leds >/dev/null 2>&1; then
+	led_state=$(leds state 2>/dev/null || echo unknown)
+fi
+
+case "$led_state" in
+on) system_info="${system_info}   led on" ;;
+off) system_info="${system_info}   led off" ;;
+esac
+
 printf '\n'
 printf '%b%s  %b%s%b · service pulse%b\n' "$accent" "$glyph" "$bright" "$host" "$accent" "$reset"
 printf '%b╭────────────────────────────────────────────────────────╮%b\n' "$accent" "$reset"
@@ -97,6 +110,31 @@ printf '%b%-24s %-12s %-12s %s%b\n' "$dim" 'SERVICE' 'STATUS' 'ON BOOT' 'PROCESS
 failed=0
 while IFS='|' read -r label service process; do
 	[ -n "$service" ] || continue
+
+	if [ "$service" = leds ]; then
+		if [ -n "$led_state" ] && [ "$led_state" != unknown ]; then
+			state_color=$green
+			state_text='running'
+		else
+			state_color=$red
+			state_text='stopped'
+			failed=1
+		fi
+
+		if [ -x /etc/local.d/leds.start ]; then
+			boot_color=$accent
+			boot_text='enabled'
+		else
+			boot_color=$dim
+			boot_text='manual'
+		fi
+
+		printf '%b%-24s%b %b● %-10s%b %b%-12s%b %s\n' \
+			"$bright" "$label" "$reset" \
+			"$state_color" "$state_text" "$reset" \
+			"$boot_color" "$boot_text" "$reset" '—'
+		continue
+	fi
 
 	if rc-service "$service" status >/dev/null 2>&1; then
 		state_color=$green

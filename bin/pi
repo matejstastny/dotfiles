@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#@ push pi/ to every raspberry pi over tailscale
+#@ manage raspberry pis over tailscale
 
 import os
 import re
@@ -31,6 +31,43 @@ SSH_OPTS = [
 ]
 
 
+def parser() -> "argparse.ArgumentParser":
+    import argparse
+
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument("hosts", nargs="*", metavar="HOST", help="host names (default: all)")
+    common.add_argument("--host", action="append", dest="host_flags", metavar="HOST", help="select a host (may be repeated)")
+
+    p = argparse.ArgumentParser(
+        prog="pi",
+        description="Manage the Raspberry Pis in pi/ over Tailscale.",
+        epilog="Examples:\n  pi sync io --services\n  pi ping\n  pi ip thebe\n  pi reboot leda\n  pi ssh io 'journalctl -u caddy'",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p.add_argument("-V", "--version", action="version", version="pi 1.0")
+    commands = p.add_subparsers(dest="command", metavar="COMMAND")
+
+    sync = commands.add_parser("sync", parents=[common], help="push config to hosts")
+    sync.add_argument("-n", "--dry-run", action="store_true", help="show files and actions without changing hosts")
+    sync.add_argument("-b", "--bootstrap", action="store_true", help="also run the host bootstrap script")
+    sync.add_argument("-s", "--services", action="store_true", help="build and install host services")
+
+    fetch = commands.add_parser("fetch", aliases=["pull"], parents=[common], help="fetch tracked service configs from hosts")
+    fetch.add_argument("-n", "--dry-run", action="store_true", help="show files without writing them")
+
+    commands.add_parser("ping", parents=[common], help="ping hosts over the network")
+    commands.add_parser("ip", parents=[common], help="show each host's local IP addresses")
+    reboot = commands.add_parser("reboot", parents=[common], help="reboot hosts")
+    reboot.add_argument("--all", action="store_true", help="reboot every host")
+
+    ssh = commands.add_parser("ssh", help="run a command over SSH")
+    ssh.add_argument("host", metavar="HOST", help="host name")
+    ssh.add_argument("ssh_command", nargs=argparse.REMAINDER, metavar="COMMAND", help="command to run, default: interactive shell")
+
+    commands.add_parser("hosts", help="list configured Pi hosts")
+    return p
+
+
 def log(msg: str):
     print(f"\033[32m{msg}\033[0m", flush=True)
 
@@ -48,12 +85,22 @@ def error(msg: str):
 def parse_hosts(path: Path) -> dict[str, dict[str, str]]:
     hosts: dict[str, dict[str, str]] = {}
     current: dict[str, str] = {}
+    pending_rootpsw: str | None = None
     if not path.exists():
         return hosts
     for line in path.read_text().splitlines():
         line = line.strip()
+        # "# rootpsw: ..." above a host carries its sudo password without
+        # making rmt treat the host as password-auth (that's the "password" key)
+        m = re.match(r'^#\s*rootpsw:\s*(.+)$', line)
+        if m:
+            pending_rootpsw = m.group(1).strip()
+            continue
         if line == "[[hosts]]":
             current = {}
+            if pending_rootpsw is not None:
+                current["rootpsw"] = pending_rootpsw
+                pending_rootpsw = None
             continue
         m = re.match(r'^(\w+)\s*=\s*"(.*)"$', line)
         if m and current is not None:
@@ -61,6 +108,10 @@ def parse_hosts(path: Path) -> dict[str, dict[str, str]]:
             if m.group(1) == "name":
                 hosts[m.group(2)] = current
     return hosts
+
+
+def sudo_password(host: dict[str, str]) -> str:
+    return host.get("rootpsw") or host.get("password", "")
 
 
 def prepare_services(name: str) -> bool:
@@ -132,10 +183,12 @@ def stage(name: str, staging: Path, services: bool = False):
                     (services_dst / f.name).chmod(0o755)
 
 
-def run_ssh(host: dict[str, str], name: str, remote_cmd: str, stdin: bytes | None = None) -> subprocess.CompletedProcess:
-    target = f"{host['user']}@{name}"
+def run_ssh(host: dict[str, str], name: str, remote_cmd: str | None, stdin: bytes | None = None) -> subprocess.CompletedProcess:
+    target = f"{host['user']}@{host.get('host', name)}"
     env = dict(os.environ)
-    cmd = ["ssh", *SSH_OPTS, target, remote_cmd]
+    cmd = ["ssh", *SSH_OPTS, target]
+    if remote_cmd is not None:
+        cmd.append(remote_cmd)
     if "password" in host:
         env["SSHPASS"] = host["password"]
         cmd = ["sshpass", "-e", *cmd]
@@ -156,7 +209,7 @@ def pull_host(name: str, host: dict[str, str], dry_run: bool) -> bool:
         if dry_run:
             continue
 
-        password = host.get("password", "")
+        password = sudo_password(host)
         remote_cmd = (
             'IFS= read -r SUDO_PASS; '
             f'printf "%s\\n" "$SUDO_PASS" | sudo -S -p "" cat {shlex.quote(remote_path)}'
@@ -220,7 +273,7 @@ def sync_host(name: str, host: dict[str, str], bootstrap: bool, services: bool, 
 
     if bootstrap:
         script = (PI_DIR / "bootstrap").read_bytes()
-        password = host.get("password", "")
+        password = sudo_password(host)
         # first stdin line is the sudo password so it never reaches the remote process list
         payload = password.encode() + b"\n" + script
         res = run_ssh(host, name, 'IFS= read -r SUDO_PASS; export SUDO_PASS; exec sh -s', stdin=payload)
@@ -233,7 +286,7 @@ def sync_host(name: str, host: dict[str, str], bootstrap: bool, services: bool, 
         log("  bootstrap ok")
 
     if services and has_services:
-        password = host.get("password", "")
+        password = sudo_password(host)
         remote_cmd = (
             'IFS= read -r SUDO_PASS; export SUDO_PASS; '
             'exec sh ~/.local/share/pi-services/%s/install' % name
@@ -250,33 +303,89 @@ def sync_host(name: str, host: dict[str, str], bootstrap: bool, services: bool, 
     return True
 
 
-def main():
-    args = sys.argv[1:]
-    dry_run = "--dry-run" in args
-    bootstrap = "--bootstrap" in args
-    services = "--services" in args
-    pull = "--pull" in args
-    only = None
-    if "--host" in args:
-        i = args.index("--host") + 1
-        if i >= len(args):
-            sys.exit("--host needs a name")
-        only = args[i]
+def selected_hosts(args, names: list[str]) -> list[str]:
+    selected = [*getattr(args, "hosts", []), *(getattr(args, "host_flags", None) or [])]
+    if not selected:
+        return names
+    unknown = sorted(set(selected) - set(names))
+    if unknown:
+        sys.exit(f"unknown host: {', '.join(unknown)} (have: {', '.join(names)})")
+    return list(dict.fromkeys(selected))
 
+
+def config_hosts() -> tuple[list[str], dict[str, dict[str, str]]]:
     if not PI_DIR.is_dir():
         sys.exit(f"pi/ directory not found at {PI_DIR}")
-
     names = sorted(p.stem for p in (PI_DIR / "hosts").glob("*.toml"))
-    if only:
-        if only not in names:
-            sys.exit(f"unknown host: {only} (have: {', '.join(names)})")
-        names = [only]
+    return names, parse_hosts(HOSTS_FILE)
 
-    hosts = parse_hosts(HOSTS_FILE)
+
+def command_for_hosts(args, action) -> int:
+    names, hosts = config_hosts()
+    names = selected_hosts(args, names)
+    passed, failed = [], []
+    for name in names:
+        host = hosts.get(name)
+        if host is None:
+            error(f"no remote-hosts entry for {name}")
+            failed.append(name)
+            continue
+        try:
+            if action(name, host):
+                passed.append(name)
+            else:
+                failed.append(name)
+        except Exception as exc:
+            error(f"{name}: {exc}")
+            failed.append(name)
+    if passed:
+        log(f"ok: {', '.join(passed)}")
+    if failed:
+        error(f"failed: {', '.join(failed)}")
+    return 1 if failed else 0
+
+
+def ping_host(name: str, host: dict[str, str]) -> bool:
+    address = host.get("host", name)
+    res = subprocess.run(
+        ["ping", "-c", "1", "-W", str(CONNECT_TIMEOUT), address],
+        capture_output=True,
+        text=True,
+    )
+    if res.returncode == 0:
+        log(f"{name}: reachable")
+        return True
+    lines = res.stdout.strip().splitlines()
+    detail = res.stderr.strip() or (lines[-1] if lines else "")
+    warn(f"{name}: unreachable{': ' + detail if detail else ''}")
+    return False
+
+
+def ip_host(name: str, host: dict[str, str]) -> bool:
+    res = run_ssh(host, name, "hostname -I")
+    if res.returncode != 0:
+        warn(f"{name}: unreachable{': ' + res.stderr.decode().strip() if res.stderr else ''}")
+        return False
+    print(f"{name}: {' '.join(res.stdout.decode().split()) or '(no addresses)'}")
+    return True
+
+
+def reboot_host(name: str, host: dict[str, str]) -> bool:
+    password = sudo_password(host)
+    res = run_ssh(host, name, 'IFS= read -r SUDO_PASS; printf "%s\\n" "$SUDO_PASS" | sudo -S -p "" reboot', stdin=password.encode() + b"\n")
+    if res.returncode != 0:
+        error(f"{name}: reboot failed: {res.stderr.decode().strip()}")
+        return False
+    log(f"{name}: rebooting")
+    return True
+
+
+def run_sync(args, pull: bool = False) -> int:
+    names, hosts = config_hosts()
+    names = selected_hosts(args, names)
     if shutil.which("sshpass") is None:
         warn("sshpass not found, only key-auth hosts will work")
-
-    if dry_run:
+    if args.dry_run:
         print("[dry run]")
 
     synced, skipped, failed = [], [], []
@@ -287,7 +396,7 @@ def main():
             failed.append(name)
             continue
         try:
-            ok = pull_host(name, host, dry_run) if pull else sync_host(name, host, bootstrap, services, dry_run)
+            ok = pull_host(name, host, args.dry_run) if pull else sync_host(name, host, args.bootstrap, args.services, args.dry_run)
         except Exception as exc:  # one bad host must never take the others down
             error(f"{name}: {exc}")
             failed.append(name)
@@ -303,8 +412,42 @@ def main():
         error(f"failed: {', '.join(failed)}")
 
     # offline boxes are expected, a real error is not
-    sys.exit(1 if failed or not synced else 0)
+    return 1 if failed or not synced else 0
+
+
+def main() -> int:
+    p = parser()
+    args = p.parse_args()
+    if args.command is None:
+        p.print_help()
+        return 0
+    if args.command == "hosts":
+        names, hosts = config_hosts()
+        for name in names:
+            host = hosts.get(name, {})
+            print(f"{name}\t{host.get('user', '?')}@{host.get('host', name)}")
+        return 0
+    if args.command == "sync":
+        return run_sync(args)
+    if args.command in {"fetch", "pull"}:
+        return run_sync(args, pull=True)
+    if args.command == "ping":
+        return command_for_hosts(args, ping_host)
+    if args.command == "ip":
+        return command_for_hosts(args, ip_host)
+    if args.command == "reboot":
+        if not args.hosts and not args.host_flags and not args.all:
+            p.error("pi reboot needs at least one HOST, or --all")
+        return command_for_hosts(args, reboot_host)
+    if args.command == "ssh":
+        names, hosts = config_hosts()
+        if args.host not in names:
+            p.error(f"unknown host: {args.host} (have: {', '.join(names)})")
+        command = " ".join(args.ssh_command) if args.ssh_command else None
+        res = run_ssh(hosts[args.host], args.host, command)
+        return res.returncode
+    p.error(f"unknown command: {args.command}")
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

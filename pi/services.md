@@ -22,14 +22,14 @@
 
 **io = storage plane** Storage heavy services
 
-|                                |                                                                                                                 |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------- |
-| DONE `tailscale`               | joined the tailnet                                                                                              |
-| DONE `yt-dlp` + custom ui      | `yt.elara.boo`, mp4/mp3 with a web ui, 20 GB cache + `/srv/media` library, tailnet-only                         |
-| DONE `caddy`                   | reverse proxy + DNS-01 cert for `yt.elara.boo`, so bulk downloads never transit thebe                           |
-| `forgejo`                      | self-hosted git, moved off leda's SD card, git packs are exactly the write churn a card hates                   |
-| DONE `jellyfin`                | media server at `jellyfin.elara.boo`, video side of the yt-dlp output, no hw transcode                          |
-| `navidrome`                    | streams the mp3 side of the yt-dlp output, same idea as jellyfin but audio                                      |
-| DONE `transmission-daemon`     | torrent client at `torrent.elara.boo`, `script-torrent-done` hardlinks finished video into jellyfin's library   |
-| `victoria-metrics` + `grafana` | TODO                                                                                                            |
-| `anisette-v3` for `SideStore`  | private signing-data endpoint for a custom IPA; SideStore refreshes itself and the app on the iPhone over Wi-Fi |
+|                                |                                                                                                               |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| DONE `tailscale`               | joined the tailnet                                                                                            |
+| DONE `yt-dlp` + custom ui      | `yt.elara.boo`, mp4/mp3 with a web ui, 20 GB cache + `/srv/media` library, tailnet-only                       |
+| DONE `share` custom quickshare | `share.elara.boo`, upload via web ui or the `share` script, keeps the last 10 files, tailnet-only              |
+| DONE `caddy`                   | reverse proxy + DNS-01 cert for `yt.elara.boo`, so bulk downloads never transit thebe                         |
+| `forgejo`                      | self-hosted git, moved off leda's SD card, git packs are exactly the write churn a card hates                 |
+| DONE `jellyfin`                | media server at `jellyfin.elara.boo`, video side of the yt-dlp output, no hw transcode                        |
+| `navidrome`                    | streams the mp3 side of the yt-dlp output, same idea as jellyfin but audio                                    |
+| DONE `transmission-daemon`     | torrent client at `torrent.elara.boo`, `script-torrent-done` hardlinks finished video into jellyfin's library |
+| `victoria-metrics` + `grafana` | TODO                                                                                                          |

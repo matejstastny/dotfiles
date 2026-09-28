@@ -1,7 +1,7 @@
 # io services
 
-`ytdl`, `jellyfin` and `transmission-daemon` on io, all reachable only from the
-tailnet and the house lan.
+`ytdl`, `share`, `jellyfin` and `transmission-daemon` on io, all reachable only
+from the tailnet and the house lan.
 
 ## shape
 
@@ -11,8 +11,14 @@ tailnet and the house lan.
   static web root.
 - `web/` — astro + vanilla ts, builds into `server/dist/`. same palette and
   font as elara.boo, io's purple accent from `pi/hosts/io.toml`.
-- `prepare` — builds the ytdl binary and ui, on this machine, into `build/ytdl`
-  (linux/arm64). jellyfin and transmission are apk packages, nothing to build.
+- `share-server/` — go service backing quickshare, stdlib only. same
+  `go:embed` shape as `server/`, keeps at most `SHARE_MAX_FILES` uploads and
+  evicts the oldest once a new one lands.
+- `share-web/` — astro + vanilla ts, builds into `share-server/dist/`. same
+  layout system as `web/`, just the one page.
+- `prepare` — builds the ytdl and share binaries and uis, on this machine,
+  into `build/ytdl` and `build/share` (linux/arm64). jellyfin and transmission
+  are apk packages, nothing to build.
 - `install` — runs on io: apk deps, users, dirs, openrc services, caddy.
 - `jellyfin.confd` — the one line jellyfin's default conf.d needs changed
   (turns the bundled web client back on).
@@ -20,13 +26,11 @@ tailnet and the house lan.
   first run only; transmission owns the file after that.
 - `transmission-done` — transmission's `script-torrent-done` hook, hardlinks
   finished videos into jellyfin's library.
-- `anisette-v3.initd` - OpenRC wrapper around the private SideStore anisette
-  container. Caddy is its only network listener.
 
 ## deploying
 
 ```sh
-bin/pi-sync --host io --services
+bin/pi sync io --services
 ```
 
 that runs `prepare` here, pushes the binaries and configs, then runs `install`
@@ -40,6 +44,18 @@ youtube to mp4/mp3 with a web ui, at `yt.elara.boo`.
 first past 20 GB) and the library (`/srv/media/{video,music}`, never evicted,
 group `media` so jellyfin can read it). picking both is a hardlink, so it
 costs nothing on the same filesystem.
+
+## share
+
+quickshare at `share.elara.boo`: drop a file in from the web ui, or run
+`share <file>` on a laptop already on the tailnet. either way you get back a
+`share.elara.boo/dl/<id>/<name>` link, copied to the clipboard by the script.
+
+files live in `/var/lib/share/files`, `SHARE_MAX_FILES` (default 10) of them
+at a time — the oldest is evicted the moment a new upload would push the count
+over that, so it is a rolling window rather than a cache with a manual clear.
+`SHARE_MAX_FILESIZE_GB` (default 5) caps any one upload. there is no auth on
+the endpoint beyond network-level gating, same model as ytdl and transmission.
 
 ## jellyfin
 
@@ -90,54 +106,14 @@ that laptop's key in io's `~/.ssh/authorized_keys` (not tracked, added by
 hand the same way the caddy env token is) so the mount doesn't sit there
 asking for a password.
 
-## SideStore
-
-`anisette-v3` lets SideStore obtain signing data from io rather than a shared
-endpoint. It is loopback-only on `:6969`; Caddy serves it as
-`https://anisette.elara.boo` to the house LAN and tailnet, and also serves the
-SideStore server list at `https://anisette.elara.boo/servers.json`.
-
-The container image is built from a pinned upstream source revision on io, and
-its provisioning state is in `/var/lib/anisette-v3` rather than the container.
-To deliberately upgrade it, update `anisette_rev` in `install` after reviewing
-the upstream change, then redeploy with `bin/pi-sync --host io --services`.
-
-### first phone setup
-
-1. Add the AdGuard Home DNS rewrite `anisette.elara.boo` → io's LAN IP. Do
-   not use io's Tailscale IP here: SideStore needs home Wi-Fi and LocalDevVPN,
-   and should not also depend on Tailscale being active on the phone.
-2. On a Linux desktop or laptop, install `usbmuxd`, download `iloader`, connect
-   the unlocked iPhone over USB, trust the computer, and choose **Install
-   SideStore (Stable)**. This is the only USB/computer step.
-3. On the iPhone, trust the developer profile in **Settings → General → VPN &
-   Device Management**. On iOS 16+, enable **Developer Mode** in **Privacy &
-   Security** and allow the restart.
-4. Install and connect **LocalDevVPN** from the App Store. Leave it connected
-   whenever SideStore installs, updates, or refreshes apps.
-5. Open SideStore, sign in with the same Apple Account used in iloader, then
-   refresh SideStore once from **My Apps**.
-6. In **Settings → Anisette Servers**, replace the list URL with
-   `https://anisette.elara.boo/servers.json`, refresh the list, and select
-   **io (private)**.
-7. Share the custom IPA to SideStore from Files, or use SideStore's `+` button
-   to choose it. Keep Wi-Fi and LocalDevVPN enabled and SideStore will attempt
-   background refreshes before the seven-day signing window ends.
-
-Use a separate Apple Account for personal signing. Do not put that account,
-pairing material, or `/var/lib/anisette-v3` in git. If a phone update or reset
-invalidates the pairing file, reconnect it to Linux and use iloader to replace
-the pairing, then refresh SideStore again.
-
 ## the manual bits
 
 all live secrets or live state, so none of it is tracked here:
 
 1. `/etc/caddy/caddy.env` on io with `CF_API_TOKEN=<cloudflare token>`, for the
    DNS-01 cert. same token thebe uses.
-2. DNS rewrites in AdGuard Home: `yt.elara.boo`, `jellyfin.elara.boo` and
-   `torrent.elara.boo` → io's Tailscale address. `anisette.elara.boo` → io's
-   LAN address, so SideStore works on home Wi-Fi without a second VPN.
+2. DNS rewrites in AdGuard Home: `yt.elara.boo`, `share.elara.boo`,
+   `jellyfin.elara.boo` and `torrent.elara.boo` → io's Tailscale address.
 3. jellyfin's first-run setup wizard (admin account, add the two libraries) —
    inherently a one-time manual step, visit `jellyfin.elara.boo` after install.
 4. any laptop's public key in io's `~/.ssh/authorized_keys`, for a passwordless
@@ -163,4 +139,7 @@ all live secrets or live state, so none of it is tracked here:
 ```sh
 cd server && go run .            # api on :8090, serves whatever is in dist/
 cd web && pnpm dev               # ui on :4321, proxies /api to :8090
+
+cd share-server && go run .      # api on :8091, serves whatever is in dist/
+cd share-web && pnpm dev         # ui on :4322, proxies /api and /dl to :8091
 ```

@@ -1,0 +1,12 @@
+[Unit]
+Description=ntfy push notifications as desktop notifications
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=%h/dotfiles/scripts/ntfy-listen.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target

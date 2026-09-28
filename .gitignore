@@ -10,3 +10,7 @@ pi/services/io/web/node_modules/
 pi/services/io/web/.astro/
 pi/services/io/server/dist/*
 !pi/services/io/server/dist/.gitkeep
+pi/services/io/share-web/node_modules/
+pi/services/io/share-web/.astro/
+pi/services/io/share-server/dist/*
+!pi/services/io/share-server/dist/.gitkeep

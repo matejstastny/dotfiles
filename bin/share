@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+#@ push a file to io's quickshare and copy the link
+
+set -euo pipefail
+
+file="${1:?usage: share <file>}"
+[ -f "$file" ] || { echo "not a file: $file" >&2; exit 1; }
+
+name="$(basename "$file")"
+
+response="$(curl --fail-with-body --progress-bar -F "file=@${file};filename=${name}" https://share.elara.boo/api/files)" || {
+	message="$(jq -r '.error // empty' <<<"$response" 2>/dev/null)"
+	echo "upload failed: ${message:-see the curl error above}" >&2
+	exit 1
+}
+
+id="$(jq -r '.id' <<<"$response")"
+stored="$(jq -r '.name' <<<"$response")"
+link="https://share.elara.boo/dl/${id}/$(jq -rn --arg n "$stored" '$n | @uri')"
+
+if command -v wl-copy >/dev/null 2>&1; then
+	wl-copy <<<"$link"
+fi
+
+notify-send -t 4000 "✦ share" "${stored} → clipboard"
+echo "$link"
