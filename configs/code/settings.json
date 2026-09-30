@@ -178,5 +178,6 @@
     },
     "workbench.experimental.modernUI": false,
     "qt-core.showWelcomePageOnActivation": false,
-    "update.showReleaseNotes": false
+    "update.showReleaseNotes": false,
+    "C_Cpp.intelliSenseEngine": "disabled"
 }

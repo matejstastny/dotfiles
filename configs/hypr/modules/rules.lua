@@ -89,6 +89,7 @@ hl.window_rule({ name = "joint-gui-float", match = { class = "^Tk$", title = "^J
 hl.window_rule({ name = "joint-gui-size", match = { class = "^Tk$", title = "^Joint GUI$" }, size = "420 191" })
 hl.window_rule({ name = "joint-gui-topleft", match = { class = "^Tk$", title = "^Joint GUI$" }, move = "8 46" })
 hl.window_rule({ name = "rviz-workspace", match = { class = "^rviz2$" }, workspace = "8 silent" })
+hl.window_rule({ name = "qgc-workspace", match = { class = "^QGroundControl$" }, workspace = "8 silent" })
 
 hl.window_rule({ name = "gazebo-scroll", match = { class = "^Gazebo GUI$" }, scroll_touchpad = 0.1 })
 

@@ -3,6 +3,7 @@
 # display name|openrc service|process name
 leda_services='
 leds|leds|-
+fans|fans|-
 adguard home|adguardhome|adguardhome
 soju chat|soju|soju
 tailscale exit node|tailscale|tailscaled
@@ -12,6 +13,7 @@ spotifyd airplay bridge|pyatv-bridge|relay.sh
 
 thebe_services='
 leds|leds|-
+fans|fans|-
 tailscale subnet router|tailscale|tailscaled
 unbound resolver|unbound|unbound
 adguard home|adguardhome|adguardhome
@@ -22,6 +24,7 @@ elara.boo tunnel|elara-boo-tunnel|cloudflared
 
 io_services='
 leds|leds|-
+fans|fans|-
 tailscale|tailscale|tailscaled
 ytdl downloader|ytdl|ytdl
 quickshare|share|share
@@ -102,6 +105,16 @@ on) system_info="${system_info}   led on" ;;
 off) system_info="${system_info}   led off" ;;
 esac
 
+fan_state=''
+if command -v fans >/dev/null 2>&1; then
+	fan_state=$(fans state 2>/dev/null || echo unknown)
+fi
+
+case "$fan_state" in
+on) system_info="${system_info}   fan on" ;;
+off) system_info="${system_info}   fan off" ;;
+esac
+
 printf '\n'
 printf '%b%s  %b%s%b · service pulse%b\n' "$accent" "$glyph" "$bright" "$host" "$accent" "$reset"
 printf '%b╭────────────────────────────────────────────────────────╮%b\n' "$accent" "$reset"
@@ -124,6 +137,31 @@ while IFS='|' read -r label service process; do
 		fi
 
 		if [ -x /etc/local.d/leds.start ]; then
+			boot_color=$accent
+			boot_text='enabled'
+		else
+			boot_color=$dim
+			boot_text='manual'
+		fi
+
+		printf '%b%-24s%b %b● %-10s%b %b%-12s%b %s\n' \
+			"$bright" "$label" "$reset" \
+			"$state_color" "$state_text" "$reset" \
+			"$boot_color" "$boot_text" "$reset" '—'
+		continue
+	fi
+
+	if [ "$service" = fans ]; then
+		if [ -n "$fan_state" ] && [ "$fan_state" != unknown ]; then
+			state_color=$green
+			state_text='running'
+		else
+			state_color=$red
+			state_text='stopped'
+			failed=1
+		fi
+
+		if [ -x /etc/local.d/fans.start ]; then
 			boot_color=$accent
 			boot_text='enabled'
 		else
