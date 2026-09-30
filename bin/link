@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+set -euo pipefail
+shopt -s nullglob
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+configs="$root/config"
+conf="$root/link.conf"
+target="$HOME/.config"
+
+err() { printf 'error: %s\n' "$1" >&2; }
+
+lns() {
+	local src dst
+	src=$(realpath "$1")
+	dst="${2/#\~/$HOME}"
+	if [[ -L "$dst" ]]; then
+		[[ "$(realpath "$dst")" == "$src" ]] && return
+		err "skip (exists, different target): $dst"
+		return
+	fi
+	[[ -e "$dst" ]] && {
+		err "skip (not a symlink): $dst"
+		return
+	}
+	mkdir -p "$(dirname "$dst")"
+	ln -s "$src" "$dst"
+}
+
+section() {
+	[[ -f "$conf" ]] && sed -n "/^\[$1\]/,/^\[/{/^\[/d;/^$/d;/^[#;]/d;p}" "$conf"
+	return 0
+}
+
+vals() { section "$1" | awk -F= -v k="$2" '$1==k{print substr($0,length(k)+2)}'; }
+
+[[ -d "$configs" ]] || {
+	err "configs dir not found: $configs"
+	exit 1
+}
+
+for src in "$configs"/*/; do
+	name=$(basename "$src")
+	if grep -q "^$name=" <(section file_overrides); then
+		while IFS= read -r t; do
+			t="${t/#\~/$HOME}"
+			for f in "$src"*; do lns "$f" "$t/$(basename "$f")"; done
+		done < <(vals file_overrides "$name")
+	elif grep -q "^$name=" <(section path_overrides); then
+		while IFS= read -r t; do lns "${src%/}" "$t"; done < <(vals path_overrides "$name")
+	else
+		lns "${src%/}" "$target/$name"
+	fi
+done
+
+while IFS='=' read -r rel t; do
+	[[ -z "$rel" ]] && continue
+	s="$configs/$rel"
+	[[ -e "$s" ]] || {
+		err "skip (source does not exist): $s"
+		continue
+	}
+	lns "$s" "$t"
+done < <(section file_links)
