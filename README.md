@@ -2,16 +2,16 @@
 
 # elara
 
-personal fedora asahi setup, the desktop shell it runs, and a little pi
-fleet behind it.
+personal fedora asahi setup and the desktop shell it runs.
+
+the pi fleet lives in its own repo, [`rpi`](https://github.com/matejstastny/rpi).
+other machines live on their own branches with unrelated history: `macos`,
+`ubuntu`, and `arch`.
 
 ## start here
 
 - [`configs/quickshell`](configs/quickshell) is the qml desktop shell, about
   7,000 lines of the visible desktop.
-- [`pi/services/io`](pi/services/io) holds the go + astro services on io:
-  ytdl, quickshare, and a fleet dashboard.
-- [`pi/services.md`](pi/services.md) is the short map of the three pis.
 - [`configs`](configs) is everything linked into `~/.config`.
 - [`scripts`](scripts) contains the desktop actions, while [`bin`](bin) is
   longer-lived command-line tooling.
@@ -28,8 +28,8 @@ just check
 just fmt
 ```
 
-`just check` parses the scripts, vets the go services, and typechecks each
-astro app. it needs `just`, python, go, and pnpm. `just fmt` needs `shfmt`.
+`just check` parses the shell and python. it needs `just` and python.
+`just fmt` needs `shfmt`.
 
 ## stack
 

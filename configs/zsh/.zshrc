@@ -17,6 +17,7 @@ export BUN_INSTALL="$HOME/.bun"
 typeset -U path
 path=(
 	"$HOME/dotfiles/bin"
+	"$HOME/devel/rpi"
 	"$GOPATH/bin"
 	"$BUN_INSTALL/bin"
 	"$PROTO_HOME/shims"
