@@ -74,6 +74,8 @@ alias dockerc='docker system prune --all --volumes'
 
 alias n='clear && fastfetch'
 
+alias stbuild='sudo make -C ~/.config/st clean install'
+
 alias cc='clear && claude --dangerously-skip-permissions'
 alias ccc='clear && claude --dangerously-skip-permissions --continue'
 

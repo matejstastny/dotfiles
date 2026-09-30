@@ -1,0 +1,24 @@
+[user]
+	email = matysta@outlook.com
+	name = Matej Stastny
+
+[init]
+  defaultBranch = main
+
+[merge]
+  conflictstyle = diff3
+
+[diff]
+  colorMoved = default
+
+[pull]
+	rebase = true
+
+[push]
+	autoSetupRemote = true
+
+[rebase]
+	autoStash = true
+
+[feature]
+	manyFiles = true
