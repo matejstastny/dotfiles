@@ -27,6 +27,8 @@ alias lsa='echo && eza --color=always --long --git --icons=always'
 alias lsaa='echo && eza --color=always --long --git --icons=always -a'
 alias lst='echo && eza --color=always --tree --git --no-filesize --icons=always --no-time --no-user --no-permissions'
 
+alias stbuild='sudo make -C ~/.config/st clean install'
+
 # plugins
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
