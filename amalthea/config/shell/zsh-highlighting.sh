@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 ZSH_HIGHLIGHT_STYLES[command]='fg=#7878c8,bold'
 ZSH_HIGHLIGHT_STYLES[builtin]='fg=#7878c8,bold'
 ZSH_HIGHLIGHT_STYLES[alias]='fg=#7878c8,bold'

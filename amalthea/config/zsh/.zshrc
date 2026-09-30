@@ -32,7 +32,7 @@ eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
 source $HOME/.config/shell/zsh-highlighting.sh || echo "error: zsh-syntax-highliting failed to source"
-source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#9b8ab0,italic"
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
@@ -56,4 +56,4 @@ bindkey -e
 # history
 HISTSIZE=1000000
 SAVEHIST=1000000
-HISTFILE="$XDG_CACHE_HOME/zsh_history"
+HISTFILE="${XDG_CACHE_HOME:-$HOME/.cache}/zsh_history"
