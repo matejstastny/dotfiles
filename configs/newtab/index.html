@@ -22,6 +22,13 @@
                 --text: #dce0f4;
                 --dim: #9898c0;
                 --bright: #f0f0ff;
+
+                /* accent ramp, rose → purple, cycled across groups */
+                --a1: #c47ab8;
+                --a2: #b07fc8;
+                --a3: #9898e0;
+                --a4: #8488d4;
+                --a5: #7878c8;
             }
 
             *,
@@ -64,11 +71,8 @@
             .page {
                 position: relative;
                 z-index: 1;
-                width: min(680px, calc(100vw - 48px));
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 36px;
+                width: min(1080px, calc(100vw - 56px));
+                max-height: calc(100vh - 56px);
                 animation: rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
             }
 
@@ -83,191 +87,115 @@
                 }
             }
 
-            /* ── clock ── */
-            .clock-wrap {
-                text-align: center;
-                user-select: none;
-            }
-
-            #clock {
-                font-size: clamp(60px, 9vw, 92px);
-                font-weight: 300;
-                letter-spacing: -3px;
-                line-height: 1;
-                background: linear-gradient(
-                    130deg,
-                    var(--rose) 0%,
-                    var(--lila) 52%,
-                    var(--purple) 100%
-                );
-                -webkit-background-clip: text;
-                background-clip: text;
-                color: transparent;
-            }
-
-            #date {
-                margin-top: 10px;
-                color: var(--dim);
-                font-size: 10px;
-                letter-spacing: 3px;
-                text-transform: uppercase;
-            }
-
-            /* ── rule ── */
-            .rule {
-                width: 100%;
-                display: flex;
-                align-items: center;
-                gap: 14px;
-                color: var(--muted);
-                font-size: 10px;
-                letter-spacing: 2px;
-            }
-            .rule::before,
-            .rule::after {
-                content: "";
-                flex: 1;
-                height: 1px;
-            }
-            .rule::before {
-                background: linear-gradient(
-                    to right,
-                    transparent,
-                    var(--muted)
-                );
-            }
-            .rule::after {
-                background: linear-gradient(to left, transparent, var(--muted));
-            }
-
             /* ── link groups ── */
             .links {
-                width: 100%;
                 display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                gap: 12px;
+                grid-template-columns: repeat(auto-fit, minmax(188px, 1fr));
+                gap: 28px 14px;
+                align-items: start;
             }
 
             .group {
-                padding: 16px 16px 14px;
-                border-radius: 12px;
-                border: 1px solid rgba(120, 120, 200, 0.1);
-                background: rgba(24, 24, 37, 0.55);
-                backdrop-filter: blur(14px);
-                -webkit-backdrop-filter: blur(14px);
-                transition:
-                    border-color 0.2s ease,
-                    box-shadow 0.2s ease;
-            }
-            .group:hover {
-                border-color: rgba(120, 120, 200, 0.22);
-                box-shadow: 0 0 0 1px rgba(120, 120, 200, 0.06) inset;
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
             }
 
             .group-name {
+                display: flex;
+                align-items: center;
+                gap: 7px;
+                margin: 0 2px 6px;
+                color: var(--accent);
                 font-size: 10px;
                 font-weight: 600;
                 letter-spacing: 2.5px;
                 text-transform: uppercase;
-                margin-bottom: 12px;
-                display: flex;
-                align-items: center;
-                gap: 5px;
+                user-select: none;
             }
             .group-name::before {
                 content: "✦";
                 font-size: 7px;
-                opacity: 0.75;
+                letter-spacing: 0;
+                opacity: 0.8;
             }
-
-            .c-rose {
-                color: var(--rose);
-            }
-            .c-purple {
-                color: var(--purple);
-            }
-            .c-lila {
-                color: var(--lila);
-            }
-            .c-dim {
-                color: var(--dim);
+            .group-name::after {
+                content: "";
+                flex: 1;
+                height: 1px;
+                background: linear-gradient(
+                    to right,
+                    color-mix(in srgb, var(--accent) 28%, transparent),
+                    transparent
+                );
             }
 
             a {
-                display: block;
-                color: var(--dim);
-                font-size: 12px;
-                text-decoration: none;
-                padding: 3px 0;
-                transition:
-                    color 0.15s ease,
-                    transform 0.15s ease;
-            }
-            a:hover {
-                color: var(--bright);
-                transform: translateX(5px);
-            }
-
-            /* ── search ── */
-            .search-wrap {
-                width: 100%;
                 position: relative;
-            }
-
-            form {
-                display: contents;
-            }
-
-            .search-icon {
-                position: absolute;
-                left: 18px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: var(--muted);
-                font-size: 11px;
-                pointer-events: none;
-                user-select: none;
-                z-index: 1;
-            }
-
-            input[type="text"] {
-                width: 100%;
-                padding: 13px 120px 13px 44px;
-                border-radius: 100px;
-                border: 1px solid rgba(120, 120, 200, 0.14);
-                background: rgba(24, 24, 37, 0.6);
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                padding: 12px 14px;
+                border-radius: 11px;
+                border: 1px solid rgba(120, 120, 200, 0.1);
+                background: rgba(24, 24, 37, 0.55);
                 backdrop-filter: blur(14px);
                 -webkit-backdrop-filter: blur(14px);
                 color: var(--text);
-                font-family: inherit;
                 font-size: 13px;
+                text-decoration: none;
                 outline: none;
                 transition:
-                    border-color 0.2s ease,
-                    background 0.2s ease;
-                caret-color: var(--purple);
-            }
-            input[type="text"]::placeholder {
-                color: var(--muted);
-            }
-            input[type="text"]:focus {
-                border-color: rgba(152, 152, 224, 0.32);
-                background: rgba(37, 37, 58, 0.75);
+                    color 0.16s ease,
+                    border-color 0.16s ease,
+                    background 0.16s ease,
+                    box-shadow 0.16s ease,
+                    transform 0.16s cubic-bezier(0.16, 1, 0.3, 1);
             }
 
-            #hint {
-                position: absolute;
-                right: 18px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: var(--muted);
-                font-size: 11px;
-                pointer-events: none;
-                user-select: none;
-                white-space: nowrap;
+            /* accent dot, grows into a bar on hover */
+            a::before {
+                content: "";
+                width: 4px;
+                height: 4px;
+                flex: none;
+                border-radius: 100px;
+                background: var(--accent);
+                opacity: 0.45;
+                transition:
+                    height 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+                    opacity 0.16s ease;
             }
-            #hint .arrow {
-                color: var(--rose);
+
+            a:hover,
+            a:focus-visible {
+                color: var(--bright);
+                background: rgba(37, 37, 58, 0.72);
+                border-color: color-mix(in srgb, var(--accent) 42%, transparent);
+                box-shadow:
+                    0 6px 18px -8px rgba(0, 0, 0, 0.55),
+                    0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent);
+                transform: translateY(-2px);
+            }
+            a:hover::before,
+            a:focus-visible::before {
+                height: 15px;
+                opacity: 1;
+            }
+
+            a:focus-visible {
+                border-color: var(--accent);
+            }
+
+            a:active {
+                transform: translateY(0);
+                background: rgba(24, 24, 37, 0.8);
+            }
+
+            #error {
+                color: var(--muted);
+                font-size: 12px;
+                text-align: center;
             }
         </style>
     </head>
@@ -275,75 +203,10 @@
         <canvas id="canvas"></canvas>
 
         <div class="page">
-            <div class="clock-wrap">
-                <div id="clock">00:00</div>
-                <div id="date">─</div>
-            </div>
-
-            <div class="rule">✦ ✧ ✦</div>
-
-            <div class="links">
-                <div class="group">
-                    <div class="group-name c-rose">me</div>
-                    <a href="https://github.com/matejstastny">github</a>
-                    <a href="https://github.com/matejstastny/dotfiles"
-                        >dotfiles</a
-                    >
-                </div>
-                <div class="group">
-                    <div class="group-name c-purple">trickfire</div>
-                    <a href="https://github.com/TrickfireRobotics">org</a>
-                    <a href="https://github.com/TrickfireRobotics/dashboard"
-                        >dashboard</a
-                    >
-                    <a href="https://github.com/TrickfireRobotics/docs">docs</a>
-                    <a
-                        href="https://github.com/TrickfireRobotics/gazebo-simulations"
-                        >simulation</a
-                    >
-                </div>
-                <div class="group">
-                    <div class="group-name c-lila">repos</div>
-                    <a href="https://github.com/TrickfireRobotics/trickfire-urc"
-                        >urc</a
-                    >
-                    <a href="https://github.com/TrickfireRobotics/ak-series-lib"
-                        >motors</a
-                    >
-                    <a
-                        href="https://github.com/TrickfireRobotics/trickfire-drone"
-                        >drone</a
-                    >
-                </div>
-                <div class="group">
-                    <div class="group-name c-dim">web</div>
-                    <a href="http://trickfirerobotics.com/">website</a>
-                    <a href="http://docs.trickfirerobotics.com/">docs</a>
-                    <a href="http://dashboard.trickfirerobotics.com/"
-                        >dashboard</a
-                    >
-                </div>
-            </div>
-
-            <div class="search-wrap">
-                <span class="search-icon">✦</span>
-                <form
-                    action="https://www.duckduckgo.com/"
-                    method="get"
-                    id="search-form"
-                >
-                    <input
-                        id="search"
-                        type="text"
-                        name="q"
-                        autofocus
-                        autocomplete="off"
-                        spellcheck="false"
-                        placeholder="search or jump..."
-                    />
-                </form>
-                <span id="hint"></span>
-            </div>
+            <div
+                class="links"
+                id="links"
+            ></div>
         </div>
 
         <script src="script.js"></script>

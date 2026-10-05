@@ -1,16 +1,3 @@
-const DAYS   = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
-const MONTHS = ["january","february","march","april","may","june","july","august","september","october","november","december"];
-
-function tick() {
-  const now = new Date();
-  const p = n => String(n).padStart(2, "0");
-  document.getElementById("clock").textContent = `${p(now.getHours())}:${p(now.getMinutes())}`;
-  document.getElementById("date").textContent =
-    `${DAYS[now.getDay()]}  ·  ${now.getDate()} ${MONTHS[now.getMonth()]}  ·  ${now.getFullYear()}`;
-}
-tick();
-setInterval(tick, 1000);
-
 const canvas = document.getElementById("canvas");
 const ctx    = canvas.getContext("2d");
 let W, H, stars;
@@ -61,55 +48,40 @@ window.addEventListener("resize", resize);
 resize();
 requestAnimationFrame(draw);
 
-const commands = {
-  gh:        ["github",     "https://github.com/matejstastny"],
-  github:    ["github",     "https://github.com/matejstastny"],
-  df:        ["dotfiles",   "https://github.com/matejstastny/dotfiles"],
-  dotfiles:  ["dotfiles",   "https://github.com/matejstastny/dotfiles"],
-  tf:        ["trickfire",  "https://github.com/TrickfireRobotics"],
-  org:       ["trickfire",  "https://github.com/TrickfireRobotics"],
-  trickfire: ["trickfire",  "https://github.com/TrickfireRobotics"],
-  dash:      ["dashboard",  "http://dashboard.trickfirerobotics.com/"],
-  dashboard: ["dashboard",  "http://dashboard.trickfirerobotics.com/"],
-  docs:      ["docs",       "http://docs.trickfirerobotics.com/"],
-  web:       ["website",    "http://trickfirerobotics.com/"],
-  site:      ["website",    "http://trickfirerobotics.com/"],
-  urc:       ["urc",        "https://github.com/TrickfireRobotics/trickfire-urc"],
-  motors:    ["motors",     "https://github.com/TrickfireRobotics/ak-series-lib"],
-  drone:     ["drone",      "https://github.com/TrickfireRobotics/trickfire-drone"],
-  sim:       ["simulation", "https://github.com/TrickfireRobotics/simulations"],
-};
+const ACCENTS = ["--a1", "--a2", "--a3", "--a4", "--a5"];
 
-function resolve(v) { return commands[v.trim().toLowerCase()] ?? null; }
+function render(groups) {
+  const root = document.getElementById("links");
+  root.replaceChildren();
 
-const input = document.getElementById("search");
-const hint  = document.getElementById("hint");
+  Object.entries(groups).forEach(([name, links], i) => {
+    const group = document.createElement("div");
+    group.className = "group";
+    group.style.setProperty("--accent", `var(${ACCENTS[i % ACCENTS.length]})`);
 
-function updateHint() {
-  const m = resolve(input.value);
-  hint.innerHTML = m ? `<span class="arrow">→</span> ${m[0]}` : "";
+    const title = document.createElement("div");
+    title.className = "group-name";
+    title.textContent = name.replace(/[-_]/g, " ");
+    group.append(title);
+
+    Object.entries(links).forEach(([label, url]) => {
+      const a = document.createElement("a");
+      a.href = url;
+      const text = document.createElement("span");
+      text.textContent = label;
+      a.append(text);
+      group.append(a);
+    });
+
+    root.append(group);
+  });
 }
 
-input.addEventListener("input", updateHint);
-
-document.getElementById("search-form").addEventListener("submit", e => {
-  const m = resolve(input.value);
-  if (m) { e.preventDefault(); window.location.href = m[1]; }
-});
-
-document.addEventListener("keydown", e => {
-  if (document.activeElement === input) return;
-  if (e.ctrlKey || e.metaKey || e.altKey) return;
-  if (e.key === "Backspace") {
-    e.preventDefault();
-    input.value = input.value.slice(0, -1);
-  } else if (e.key.length === 1) {
-    e.preventDefault();
-    input.value += e.key;
-  } else { return; }
-  input.focus();
-  updateHint();
-});
-
-window.addEventListener("focus", () => input.focus());
-input.focus();
+fetch("links.json")
+  .then(r => r.json())
+  .then(render)
+  .catch(err => {
+    console.error("links.json:", err);
+    document.getElementById("links").innerHTML =
+      `<p id="error">could not load links.json</p>`;
+  });

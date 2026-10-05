@@ -179,5 +179,8 @@
     "workbench.experimental.modernUI": false,
     "qt-core.showWelcomePageOnActivation": false,
     "update.showReleaseNotes": false,
-    "C_Cpp.intelliSenseEngine": "disabled"
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "[java]": {
+        "editor.defaultFormatter": "redhat.java"
+    }
 }

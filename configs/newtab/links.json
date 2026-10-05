@@ -1,0 +1,32 @@
+{
+    "services": {
+        "dashboard": "https://dash.elara.boo",
+        "ytdl": "https://yt.elara.boo",
+        "transmition": "https://torrent.elara.boo",
+        "jellyfin": "https://jellyfin.elara.boo",
+        "share": "https://share.elara.boo"
+    },
+    "github-me": {
+        "profile": "https://github.com/matejstastny",
+        "dotfiles": "https://github.com/matejstastny/dotfiles",
+        "rpi": "https://github.com/matejstastny/rpi",
+        "modrinth": "https://modrinth.com/dashboard/projects"
+    },
+    "trickfire-me": {
+        "simulations": "https://github.com/TrickfireRobotics/simulations",
+        "docs": "https://github.com/TrickfireRobotics/docs",
+        "dashboard": "https://github.com/TrickfireRobotics/dashboard",
+        "trickfire-urc": "https://github.com/TrickfireRobotics/trickfire-urc"
+    },
+    "trickfire-all": {
+        "org": "https://github.com/TrickfireRobotics",
+        "urc-2023": "https://github.com/TrickfireRobotics/urc-2023",
+        "motors": "https://github.com/TrickfireRobotics/ak-series",
+        "drone": "https://github.com/TrickfireRobotics/corvus"
+    },
+    "trickfire-web": {
+        "dashboard": "https://dashboard.trickfirerobotics.com",
+        "docs": "https://docs.trickfirerobotics.com",
+        "site": "https://trickfirerobotics.com"
+    }
+}
