@@ -58,6 +58,7 @@ PopupWindow {
         if (network.connected) {
             network.device.disconnect()
         } else if (network.known || network.security === WifiSecurityType.Open) {
+            root.pendingNetwork = network
             network.connect()
         } else {
             root.pendingSsid = network.name
@@ -79,7 +80,12 @@ PopupWindow {
     Connections {
         target: root.pendingNetwork
         function onConnectionFailed(reason) {
-            root.passwordError = "wrong password ✧"
+            if (reason !== ConnectionFailReason.NoSecrets) return
+            const alreadyPrompting = root.pendingSsid.length > 0
+            root.pendingSsid = root.pendingNetwork.name
+            root.passwordError = alreadyPrompting ? "wrong password ✧" : ""
+            passwordField.clear()
+            passwordField.focusInput()
         }
         function onConnectedChanged() {
             if (root.pendingNetwork && root.pendingNetwork.connected) {

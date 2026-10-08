@@ -1,0 +1,211 @@
+#!/usr/bin/env bash
+#@ prettyprint docker images, containers, volumes, networks and disk usage
+
+set -euo pipefail
+
+RED=$'\033[0;31m'
+GREEN=$'\033[0;32m'
+YELLOW=$'\033[0;33m'
+CYAN=$'\033[0;36m'
+GRAY=$'\033[0;90m'
+BOLD=$'\033[1m'
+RESET=$'\033[0m'
+
+usage() {
+	cat <<'EOF'
+dockerls - prettyprint docker images, containers, volumes, networks and disk usage
+
+Usage:
+  dockerls
+EOF
+}
+
+[[ "${1:-}" != "-h" && "${1:-}" != "--help" ]] || {
+	usage
+	exit 0
+}
+
+command -v docker >/dev/null 2>&1 || {
+	echo "${RED}✗${RESET} docker not found in PATH" >&2
+	exit 1
+}
+docker info >/dev/null 2>&1 || {
+	echo "${RED}✗${RESET} docker daemon not reachable" >&2
+	exit 1
+}
+
+header() {
+	echo
+	echo "${BOLD}${CYAN}$*${RESET}"
+}
+
+trunc() {
+	local s="$1" max="$2"
+	if ((${#s} > max)); then
+		printf '%s…' "${s:0:$((max - 1))}"
+	else
+		printf '%s' "$s"
+	fi
+}
+
+# docker prints sizes like "24GB" / "270kB" / "0B", used as a sort key
+human2bytes() {
+	local s="$1" num unit
+	[[ "$s" =~ ^([0-9.]+)([A-Za-z]+) ]] || {
+		echo 0
+		return
+	}
+	num="${BASH_REMATCH[1]}"
+	unit="${BASH_REMATCH[2]}"
+	case "$unit" in
+	B) printf '%.0f' "$num" ;;
+	kB) awk -v n="$num" 'BEGIN { printf "%.0f", n * 1000 }' ;;
+	MB) awk -v n="$num" 'BEGIN { printf "%.0f", n * 1000000 }' ;;
+	GB) awk -v n="$num" 'BEGIN { printf "%.0f", n * 1000000000 }' ;;
+	TB) awk -v n="$num" 'BEGIN { printf "%.0f", n * 1000000000000 }' ;;
+	*) echo 0 ;;
+	esac
+}
+
+bytes2human() {
+	awk -v b="$1" 'BEGIN {
+		split("B kB MB GB TB", units, " ")
+		u = 1
+		while (b >= 1000 && u < 5) { b /= 1000; u++ }
+		printf "%.2f%s", b, units[u]
+	}'
+}
+
+summary_section() {
+	header "disk usage"
+	printf "  %s%-16s %6s %8s %10s %16s%s\n" "$BOLD" "TYPE" "TOTAL" "ACTIVE" "SIZE" "RECLAIMABLE" "$RESET"
+
+	local total_reclaim=0
+	local type total active size reclaim
+	while IFS=$'\t' read -r type total active size reclaim; do
+		local reclaim_size="${reclaim%% *}"
+		local size_bytes reclaim_bytes pct rcolor
+		size_bytes=$(human2bytes "$size")
+		reclaim_bytes=$(human2bytes "$reclaim_size")
+		total_reclaim=$((total_reclaim + reclaim_bytes))
+		pct=0
+		((size_bytes > 0)) && pct=$((reclaim_bytes * 100 / size_bytes))
+		if ((pct >= 50)); then
+			rcolor="$RED"
+		elif ((pct >= 20)); then
+			rcolor="$YELLOW"
+		else
+			rcolor="$GREEN"
+		fi
+		printf "  %-16s %6s %8s %10s %s%16s%s\n" "$type" "$total" "$active" "$size" "$rcolor" "$reclaim" "$RESET"
+	done < <(docker system df --format '{{.Type}}\t{{.TotalCount}}\t{{.Active}}\t{{.Size}}\t{{.Reclaimable}}')
+
+	echo
+	echo "  ${BOLD}reclaimable total: $(bytes2human "$total_reclaim")${RESET}  ${GRAY}(dockerc -> docker system prune --all --volumes)${RESET}"
+}
+
+images_section() {
+	header "images"
+	local raw
+	raw=$(docker images --format '{{.Repository}}:{{.Tag}}\t{{.ID}}\t{{.CreatedSince}}\t{{.Size}}')
+	if [[ -z "$raw" ]]; then
+		echo "  (none)"
+		return
+	fi
+
+	printf "  %s%-46s %-12s %-16s %10s%s\n" "$BOLD" "REPOSITORY:TAG" "IMAGE ID" "CREATED" "SIZE" "$RESET"
+
+	local repo id created size color
+	while IFS=$'\t' read -r repo id created size; do
+		color="$RESET"
+		[[ "$repo" == "<none>:<none>" ]] && color="$GRAY"
+		printf "  %s%-46s%s %-12s %-16s %10s\n" \
+			"$color" "$(trunc "$repo" 46)" "$RESET" "$id" "$(trunc "$created" 16)" "$size"
+	done < <(
+		while IFS=$'\t' read -r repo id created size; do
+			printf '%s\t%s\t%s\t%s\t%s\n' "$(human2bytes "$size")" "$repo" "$id" "$created" "$size"
+		done <<<"$raw" | sort -t$'\t' -k1,1 -rn | cut -f2-
+	)
+}
+
+containers_section() {
+	header "containers"
+	local raw
+	raw=$(docker ps -a -s --format '{{.Names}}\t{{.Status}}\t{{.Image}}\t{{.Size}}')
+	if [[ -z "$raw" ]]; then
+		echo "  (none)"
+		return
+	fi
+
+	printf "  %s%-22s %-24s %-38s %10s %10s%s\n" "$BOLD" "NAME" "STATUS" "IMAGE" "SIZE" "VIRTUAL" "$RESET"
+
+	local size_re='^([^[:space:]]+) \(virtual ([^)]+)\)$'
+	local name status image own virt scolor
+	while IFS=$'\t' read -r name status image own virt; do
+		scolor="$RESET"
+		case "$status" in
+		Up*) scolor="$GREEN" ;;
+		"Exited (0)"*) scolor="$GRAY" ;;
+		Exited*) scolor="$RED" ;;
+		Restarting* | Paused*) scolor="$YELLOW" ;;
+		esac
+		printf "  %-22s %s%-24s%s %-38s %10s %10s\n" \
+			"$(trunc "$name" 22)" "$scolor" "$(trunc "$status" 24)" "$RESET" "$(trunc "$image" 38)" "$own" "$virt"
+	done < <(
+		while IFS=$'\t' read -r name status image sizefield; do
+			own="$sizefield"
+			virt="-"
+			if [[ "$sizefield" =~ $size_re ]]; then
+				own="${BASH_REMATCH[1]}"
+				virt="${BASH_REMATCH[2]}"
+			fi
+			printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$(human2bytes "$own")" "$name" "$status" "$image" "$own" "$virt"
+		done <<<"$raw" | sort -t$'\t' -k1,1 -rn | cut -f2-
+	)
+}
+
+volumes_section() {
+	header "volumes"
+	local raw
+	raw=$(docker system df -v 2>/dev/null | awk '
+		/^Local Volumes space usage:/ { state = 1; next }
+		state == 1 && /^$/ { next }
+		state == 1 { state = 2; next }
+		state == 2 && /^$/ { state = 0; next }
+		state == 2 { print }
+	')
+	if [[ -z "$raw" ]]; then
+		echo "  (none)"
+		return
+	fi
+
+	printf "  %s%-22s %6s %10s%s\n" "$BOLD" "NAME" "LINKS" "SIZE" "$RESET"
+
+	local name links size color
+	while read -r name links size; do
+		color="$RESET"
+		[[ "$links" == "0" ]] && color="$YELLOW"
+		printf "  %s%-22s%s %6s %10s\n" "$color" "$(trunc "$name" 22)" "$RESET" "$links" "$size"
+	done < <(
+		while read -r name links size; do
+			printf '%s\t%s\t%s\t%s\n' "$(human2bytes "$size")" "$name" "$links" "$size"
+		done <<<"$raw" | sort -t$'\t' -k1,1 -rn | cut -f2-
+	)
+}
+
+networks_section() {
+	header "networks"
+	printf "  %s%-34s %-10s %-8s%s\n" "$BOLD" "NAME" "DRIVER" "SCOPE" "$RESET"
+
+	local name driver scope
+	while IFS=$'\t' read -r name driver scope; do
+		printf "  %-34s %-10s %-8s\n" "$(trunc "$name" 34)" "$driver" "$scope"
+	done < <(docker network ls --format '{{.Name}}\t{{.Driver}}\t{{.Scope}}')
+}
+
+summary_section
+images_section
+containers_section
+volumes_section
+networks_section
+echo

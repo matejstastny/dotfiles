@@ -153,7 +153,7 @@
     // Rest of unsorted autogened settings slop :3
     "prettier.trailingComma": "none",
     "lldb.suppressUpdateNotifications": true,
-    "shfmt.executablePath": "/home/elara/.local/bin/shfmt",
+    "shfmt.executablePath": "\"/home/elara/.local/bin/shfmt\"",
     "redhat.telemetry.enabled": false,
     "makefile.configureOnOpen": true,
     "cmake.ignoreCMakeListsMissing": true,
@@ -182,5 +182,6 @@
     "C_Cpp.intelliSenseEngine": "disabled",
     "[java]": {
         "editor.defaultFormatter": "redhat.java"
-    }
+    },
+    "terminal.integrated.initialHint": false
 }

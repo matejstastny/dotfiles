@@ -20,7 +20,7 @@
     },
     "trickfire-all": {
         "org": "https://github.com/TrickfireRobotics",
-        "urc-2023": "https://github.com/TrickfireRobotics/urc-2023",
+        "viator": "https://github.com/TrickfireRobotics/viator",
         "motors": "https://github.com/TrickfireRobotics/ak-series",
         "drone": "https://github.com/TrickfireRobotics/corvus"
     },

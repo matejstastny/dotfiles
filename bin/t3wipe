@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+#@ wipe t3code chat history (threads/messages/turns/events + attachments), keeps projects/settings
+
+set -euo pipefail
+
+RED=$'\033[0;31m'
+GREEN=$'\033[0;32m'
+YELLOW=$'\033[0;33m'
+BOLD=$'\033[1m'
+RESET=$'\033[0m'
+
+DATA_DIR="$HOME/.t3/userdata"
+DB="$DATA_DIR/state.sqlite"
+ATTACHMENTS="$DATA_DIR/attachments"
+
+usage() {
+	cat <<'EOF'
+t3wipe - wipe t3code chat history, keeps projects/workspaces and settings intact
+
+Deletes all threads, messages, turns, activities, sessions, proposed plans,
+pending approvals, checkpoints and their orchestration events, then VACUUMs
+the db and clears attachment files. A timestamped backup of state.sqlite is
+made first.
+
+Usage:
+  t3wipe          prompt for confirmation, then wipe
+  t3wipe --yes    skip the confirmation prompt
+EOF
+}
+
+[[ "${1:-}" != "-h" && "${1:-}" != "--help" ]] || {
+	usage
+	exit 0
+}
+
+assume_yes=false
+[[ "${1:-}" == "--yes" || "${1:-}" == "-y" ]] && assume_yes=true
+
+command -v sqlite3 >/dev/null 2>&1 || {
+	echo "${RED}✗${RESET} sqlite3 not found in PATH" >&2
+	exit 1
+}
+
+[[ -f "$DB" ]] || {
+	echo "${RED}✗${RESET} no state.sqlite at $DB" >&2
+	exit 1
+}
+
+if pgrep -f '/t3code( |$)' >/dev/null 2>&1; then
+	echo "${RED}✗${RESET} t3code is running, quit it first (the db is live while the app holds it open)" >&2
+	exit 1
+fi
+
+if ! $assume_yes; then
+	echo "${YELLOW}this permanently deletes all t3code chat history (threads, messages, turns, attachments).${RESET}"
+	echo "projects, settings and auth stay untouched. a backup of state.sqlite is made first."
+	read -r -p "continue? [y/N] " reply
+	[[ "$reply" =~ ^[Yy]$ ]] || {
+		echo "aborted"
+		exit 0
+	}
+fi
+
+backup="$DB.bak-$(date +%Y%m%d%H%M%S)"
+cp -a "$DB" "$backup"
+echo "${GREEN}✓${RESET} backed up db to $backup"
+
+sqlite3 "$DB" <<'SQL'
+BEGIN;
+DELETE FROM projection_thread_messages;
+DELETE FROM projection_turns;
+DELETE FROM projection_thread_activities;
+DELETE FROM projection_thread_sessions;
+DELETE FROM projection_thread_proposed_plans;
+DELETE FROM projection_pending_approvals;
+DELETE FROM provider_session_runtime;
+DELETE FROM checkpoint_diff_blobs;
+DELETE FROM projection_threads;
+DELETE FROM orchestration_events WHERE aggregate_kind = 'thread';
+DELETE FROM orchestration_command_receipts WHERE aggregate_kind = 'thread';
+COMMIT;
+VACUUM;
+SQL
+echo "${GREEN}✓${RESET} cleared thread/message/event rows and vacuumed"
+
+if [[ -d "$ATTACHMENTS" ]]; then
+	find "$ATTACHMENTS" -mindepth 1 -delete
+	echo "${GREEN}✓${RESET} cleared attachments"
+fi
+
+echo
+echo "${BOLD}done.${RESET} restore with: cp -a \"$backup\" \"$DB\""
