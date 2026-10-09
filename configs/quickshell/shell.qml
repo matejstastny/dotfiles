@@ -36,6 +36,17 @@ ShellRoot {
         root.drawerScreen = Hyprland.focusedMonitor?.name ?? Quickshell.screens[0]?.name ?? "";
     }
 
+    // the command surfaces, in no particular order - only one is ever open, so
+    // the first open one is the one the drawer should be showing
+    readonly property var commands: [launcher, wifiMenu, bluetoothMenu, cursorMenu, clipPicker, todoPicker, notesPicker, capturePicker, screenrecordPicker, codePicker, emojiPicker, keyboardPicker]
+
+    readonly property var activeCommand: {
+        for (let i = 0; i < root.commands.length; i++)
+            if (root.commands[i].open)
+                return root.commands[i];
+        return null;
+    }
+
     function clearNotifications(): void {
         for (const notification of notifServer.trackedNotifications.values.slice())
             notification.dismiss();
@@ -68,26 +79,36 @@ ShellRoot {
         id: launcherPopout
         name: "launcher"
         about: "Toggle the app launcher"
+        aims: true
+        onAimRequested: root.aimDrawers()
     }
     Popout {
         id: wifiPopout
         name: "wifimenu"
         about: "Toggle the wifi menu"
+        aims: true
+        onAimRequested: root.aimDrawers()
     }
     Popout {
         id: bluetoothPopout
         name: "bluetoothmenu"
         about: "Toggle the bluetooth menu"
+        aims: true
+        onAimRequested: root.aimDrawers()
     }
     Popout {
         id: cursorPopout
         name: "cursormenu"
         about: "Toggle the cursor theme picker"
+        aims: true
+        onAimRequested: root.aimDrawers()
     }
     Popout {
         id: clipPopout
         name: "clip"
         about: "Toggle clipboard history"
+        aims: true
+        onAimRequested: root.aimDrawers()
     }
     Popout {
         id: todoPopout
@@ -103,41 +124,56 @@ ShellRoot {
                 value: "stars"
             }
         ]
+        aims: true
+        onAimRequested: root.aimDrawers()
     }
     Popout {
         id: notesPopout
         name: "notes"
         about: "Toggle the notes picker"
+        aims: true
+        onAimRequested: root.aimDrawers()
     }
     Popout {
         id: capturePopout
         name: "capture"
         about: "Toggle quick capture"
+        aims: true
+        onAimRequested: root.aimDrawers()
     }
     Popout {
         id: screenrecordPopout
         name: "screenrecord"
         about: "Toggle the screen recorder"
+        aims: true
+        onAimRequested: root.aimDrawers()
     }
     Popout {
         id: codePopout
         name: "code"
         about: "Toggle the project picker"
+        aims: true
+        onAimRequested: root.aimDrawers()
     }
     Popout {
         id: emojiPopout
         name: "emoji"
         about: "Toggle the emoji picker"
+        aims: true
+        onAimRequested: root.aimDrawers()
     }
     Popout {
         id: keyboardPopout
         name: "keyboard"
         about: "Toggle the keyboard layout picker"
+        aims: true
+        onAimRequested: root.aimDrawers()
     }
     Popout {
         id: cavaPopout
         name: "cava"
         about: "Toggle the desktop visualiser"
+        exclusive: false
     }
 
     readonly property var audioSink: Pipewire.defaultAudioSink
@@ -158,38 +194,6 @@ ShellRoot {
         root.osdPct = root.audioSinkReady ? Math.round(root.audioSink.audio.volume * 100) : 0;
         root.osdMuted = root.audioSinkReady && root.audioSink.audio.muted;
         root.revealOsd();
-    }
-
-    // the drawers live inside Surface rather than in PopupWindows of their own,
-    // so they opt into the one-popout-at-a-time rule here instead of inheriting it
-    Connections {
-        target: panelPopout
-        function onShownChanged() {
-            if (panelPopout.shown)
-                PopoutState.current = "panel";
-            else if (PopoutState.current === "panel")
-                PopoutState.current = "";
-        }
-    }
-
-    Connections {
-        target: powermenuPopout
-        function onShownChanged() {
-            if (powermenuPopout.shown)
-                PopoutState.current = "powermenu";
-            else if (PopoutState.current === "powermenu")
-                PopoutState.current = "";
-        }
-    }
-
-    Connections {
-        target: PopoutState
-        function onCurrentChanged() {
-            if (PopoutState.current !== "panel")
-                panelPopout.shown = false;
-            if (PopoutState.current !== "powermenu")
-                powermenuPopout.shown = false;
-        }
     }
 
     // rendered inside each screen's Surface so the notification shape can
@@ -448,62 +452,74 @@ ShellRoot {
     }
 
     Launcher {
+        id: launcher
         open: launcherPopout.shown
         onCloseRequested: launcherPopout.shown = false
     }
 
     WifiMenu {
+        id: wifiMenu
         open: wifiPopout.shown
         onCloseRequested: wifiPopout.shown = false
     }
 
     BluetoothMenu {
+        id: bluetoothMenu
         open: bluetoothPopout.shown
         onCloseRequested: bluetoothPopout.shown = false
     }
 
     CursorMenu {
+        id: cursorMenu
         open: cursorPopout.shown
         onCloseRequested: cursorPopout.shown = false
     }
 
     ClipPicker {
+        id: clipPicker
         open: clipPopout.shown
         onCloseRequested: clipPopout.shown = false
     }
 
     TodoPicker {
+        id: todoPicker
         open: todoPopout.shown
         profile: todoPopout.variant || "personal"
         onCloseRequested: todoPopout.shown = false
     }
 
     NotesPicker {
+        id: notesPicker
         open: notesPopout.shown
         onCloseRequested: notesPopout.shown = false
     }
 
     CapturePicker {
+        id: capturePicker
         open: capturePopout.shown
         onCloseRequested: capturePopout.shown = false
     }
 
     ScreenrecordPicker {
+        id: screenrecordPicker
         open: screenrecordPopout.shown
         onCloseRequested: screenrecordPopout.shown = false
     }
 
     CodePicker {
+        id: codePicker
         open: codePopout.shown
         onCloseRequested: codePopout.shown = false
     }
 
     EmojiPicker {
+        id: emojiPicker
         open: emojiPopout.shown
         onCloseRequested: emojiPopout.shown = false
     }
 
     KeyboardPicker {
+        id: keyboardPicker
         open: keyboardPopout.shown
         onCloseRequested: keyboardPopout.shown = false
     }
@@ -528,6 +544,7 @@ ShellRoot {
                 panelOpen: panelPopout.shown && scope.modelData.name === root.drawerScreen
                 powerMenuOpen: powermenuPopout.shown && scope.modelData.name === root.drawerScreen
                 wallpaperOpen: wallpaperPopout.shown && scope.modelData.name === root.drawerScreen
+                command: scope.modelData.name === root.drawerScreen ? root.activeCommand : null
                 osdOpen: root.osdOpen && scope.modelData.name === root.drawerScreen
                 osdKind: root.osdKind
                 osdPct: root.osdPct
@@ -543,6 +560,8 @@ ShellRoot {
                 onPanelCloseRequested: panelPopout.shown = false
                 onPowerMenuCloseRequested: powermenuPopout.shown = false
                 onWallpaperCloseRequested: wallpaperPopout.shown = false
+                // a click outside closes whatever is up, whichever surface it is
+                onDismissRequested: PopoutState.current = ""
                 onToggleDnd: root.dndEnabled = !root.dndEnabled
                 onToggleCaffeinate: root.caffeinateEnabled = !root.caffeinateEnabled
                 onToggleKbdBacklight: {

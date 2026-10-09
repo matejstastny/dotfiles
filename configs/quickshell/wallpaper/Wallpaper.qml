@@ -252,7 +252,7 @@ Item {
                     z: 10
                     text: cell.favorite ? "✦" : "✧"
                     color: cell.favorite ? Theme.purple : Theme.bright
-                    font.pixelSize: 14
+                    font.pixelSize: Theme.iconSmall
                     font.family: Theme.fontMono
                     opacity: cell.favorite || applyArea.containsMouse ? 1 : 0
                     Behavior on opacity { NumberAnimation { duration: 120 } }
@@ -273,7 +273,7 @@ Item {
                     z: 10
                     text: "✕"
                     color: Theme.rose
-                    font.pixelSize: 12
+                    font.pixelSize: Theme.sizeLabel
                     font.family: Theme.fontMono
                     opacity: applyArea.containsMouse ? 1 : 0
                     Behavior on opacity { NumberAnimation { duration: 120 } }
@@ -305,7 +305,7 @@ Item {
                         anchors.centerIn: parent
                         text: "▶ live"
                         color: Theme.bright
-                        font.pixelSize: 10
+                        font.pixelSize: Theme.sizeMicro
                         font.family: Theme.fontMono
                     }
                 }
@@ -314,9 +314,9 @@ Item {
             Text {
                 anchors.centerIn: parent
                 visible: wallpaperModel.count === 0
-                text: "no wallpapers found ✧"
+                text: "no wallpapers found"
                 color: Theme.dim
-                font.pixelSize: 12
+                font.pixelSize: Theme.sizeLabel
                 font.family: Theme.fontMono
                 font.weight: Font.Normal
             }

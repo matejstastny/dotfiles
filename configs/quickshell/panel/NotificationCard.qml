@@ -125,7 +125,7 @@ SquircleRect {
                         anchors.centerIn: parent
                         text: "✦"
                         color: root.critical ? Theme.rose : Theme.purple
-                        font.pixelSize: 22
+                        font.pixelSize: Theme.iconLarge
                         font.family: Theme.fontMono
                     }
                 }
@@ -143,7 +143,7 @@ SquircleRect {
                         text: notification ? (notification.appName || notification.summary) + "  •  now" : ""
                         color: Theme.dim
                         font.pixelSize: Theme.sizeLabel
-                        font.family: Theme.fontMono
+                        font.family: Theme.fontSans
                         elide: Text.ElideRight
                     }
 
@@ -163,7 +163,7 @@ SquircleRect {
                     visible: text !== ""
                     color: Theme.bright
                     font.pixelSize: Theme.sizeBody
-                    font.family: Theme.fontMono
+                    font.family: Theme.fontSans
                     font.weight: Theme.weightHeading
                     wrapMode: Text.WordWrap
                     maximumLineCount: root.expanded ? 2 : 1
@@ -176,7 +176,7 @@ SquircleRect {
                     visible: text !== ""
                     color: Theme.text
                     font.pixelSize: Theme.sizeLabel
-                    font.family: Theme.fontMono
+                    font.family: Theme.fontSans
                     font.weight: Theme.weightBody
                     wrapMode: Text.WordWrap
                     maximumLineCount: root.expanded ? (root.compact ? 4 : 6) : 1
@@ -205,7 +205,7 @@ SquircleRect {
                         text: modelData.text
                         color: Theme.text
                         font.pixelSize: Theme.sizeLabel
-                        font.family: Theme.fontMono
+                        font.family: Theme.fontSans
                     }
 
                     MouseArea {

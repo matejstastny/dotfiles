@@ -22,6 +22,19 @@ BlobRect {
     // flush and settles back, which is what makes the surface read as elastic
     property real progress: open ? 1 : 0
 
+    // ...except at the flush end, where carrying past means lifting the drawer
+    // off the band it came out of. the overshoot peaks around 1.0012, which on
+    // a 330px drawer is four tenths of a pixel of daylight between the two -
+    // not motion anyone can see, but enough to antialias into a hairline gap
+    // along the whole join. positioning clamps; the easing keeps its shape
+    readonly property real reach: Math.min(1, progress)
+
+    // how far the leading edge sinks past the inner wall when fully out. two
+    // shapes that merely touch have nothing for the sdf union to work with, so
+    // any sub-pixel rounding - and this display is on a fractional scale -
+    // opens a seam. sinking the edge in means there is always overlap
+    property int sink: 0
+
     readonly property bool horizontal: edge === "left" || edge === "right"
     readonly property real travel: (horizontal ? width : height) + Theme.drawerPark
 
@@ -41,17 +54,17 @@ BlobRect {
 
     x: {
         if (edge === "left")
-            return area.x - travel * (1 - progress);
+            return area.x - sink - travel * (1 - reach);
         if (edge === "right")
-            return area.x + area.width - width + travel * (1 - progress);
+            return area.x + area.width - width + sink + travel * (1 - reach);
         return area.x + (area.width - width) / 2;
     }
 
     y: {
         if (edge === "top")
-            return area.y - travel * (1 - progress);
+            return area.y - sink - travel * (1 - reach);
         if (edge === "bottom")
-            return area.y + area.height - height + travel * (1 - progress);
+            return area.y + area.height - height + sink + travel * (1 - reach);
         return area.y + (area.height - height) / 2;
     }
 

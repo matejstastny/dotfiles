@@ -81,7 +81,7 @@ Item {
                         implicitWidth: root.buttonSize
                         implicitHeight: root.buttonSize
                         icon: entry.modelData.icon
-                        iconSize: 30
+                        iconSize: Theme.iconHuge
                         danger: entry.modelData.danger
                         active: entry.index === root.currentIndex
                         onClicked: root.fire(entry.index)

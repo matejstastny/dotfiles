@@ -6,7 +6,7 @@ Item {
 
     property string icon: ""
     property string label: ""
-    property int iconSize: 18
+    property int iconSize: Theme.iconBody
     property bool active: false
     property bool danger: false
     signal clicked()
@@ -42,7 +42,7 @@ Item {
                 visible: root.label.length > 0
                 text: root.label
                 color: Theme.dim
-                font.pixelSize: 10
+                font.pixelSize: Theme.sizeMicro
                 font.family: Theme.fontMono
             }
         }

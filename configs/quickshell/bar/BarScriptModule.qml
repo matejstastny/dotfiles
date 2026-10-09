@@ -139,7 +139,7 @@ Item {
                 width: parent.width
                 text: root.headline
                 color: root.statusClass === "offline" ? Theme.rose : Theme.bright
-                font.pixelSize: Theme.sizeBody + 1
+                font.pixelSize: Theme.sizeBody
                 font.family: Theme.fontSans
                 font.weight: Theme.weightHeading
                 elide: Text.ElideRight

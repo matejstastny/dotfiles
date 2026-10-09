@@ -4,64 +4,113 @@ import Quickshell.Bluetooth
 import "../"
 import "../common"
 
-PopupWindow {
+CommandPicker {
     id: root
+
     popoutName: "bluetoothmenu"
-    title: "bluetooth"
-    popupWidth: 420
-    popupHeight: 500
+    placeholder: "bluetooth"
+
+    // listOrFreeText purely so alt+s still reaches a handler when the filter
+    // has left no row selected to hang the action off
+    mode: "listOrFreeText"
+
+    // connecting / paired / battery is live state on every row
+    quietSubtitles: false
+
+    emptyText: root.adapter && root.adapter.discovering ? "scanning…" : "no devices"
+
+    notice: !root.adapter ? "no adapter found" : (!root.adapter.enabled ? "bluetooth is off" : "")
+
+    actions: [
+        {
+            key: "scan",
+            code: Qt.Key_S,
+            hint: root.adapter && root.adapter.discovering ? "alt+s  stop scanning" : "alt+s  scan"
+        },
+        {
+            // forget used to be a button that appeared on hover, which is no
+            // use at all to a keyboard
+            key: "forget",
+            code: Qt.Key_Backspace,
+            hint: "alt+backspace  forget"
+        }
+    ]
 
     readonly property var adapter: Bluetooth.defaultAdapter
     property var deviceRows: []
 
-    function rank(d) {
-        if (d.connected) return 0
-        if (d.paired) return 1
-        return 2
+    function rank(d: var): int {
+        if (d.connected)
+            return 0;
+        if (d.paired)
+            return 1;
+        return 2;
     }
 
-    function refreshDeviceRows() {
-        const scanning = root.adapter && root.adapter.discovering
-        const rows = Bluetooth.devices.values.filter(d => d.name.length > 0 && (d.paired || scanning))
-        rows.sort((a, b) => {
-            const r = root.rank(a) - root.rank(b)
-            return r !== 0 ? r : a.name.localeCompare(b.name)
-        })
-        root.deviceRows = rows
+    function statusText(d: var): string {
+        if (d.pairing)
+            return "pairing…";
+        if (d.state === BluetoothDeviceState.Connecting)
+            return "connecting…";
+        if (d.state === BluetoothDeviceState.Disconnecting)
+            return "disconnecting…";
+        if (d.connected)
+            return "connected" + (d.batteryAvailable ? "  " + Math.round(d.battery * 100) + "%" : "");
+        if (d.paired)
+            return "paired";
+        return "new";
     }
 
-    function statusText(d) {
-        if (d.pairing) return "pairing…"
-        if (d.state === BluetoothDeviceState.Connecting) return "connecting…"
-        if (d.state === BluetoothDeviceState.Disconnecting) return "disconnecting…"
-        if (d.connected) return "connected" + (d.batteryAvailable ? "  " + Math.round(d.battery * 100) + "%" : "")
-        if (d.paired) return "paired"
-        return "new"
+    function refreshDeviceRows(): void {
+        const scanning = root.adapter && root.adapter.discovering;
+        const devices = Bluetooth.devices.values.filter(d => d.name.length > 0 && (d.paired || scanning));
+        devices.sort((a, b) => {
+            const r = root.rank(a) - root.rank(b);
+            return r !== 0 ? r : a.name.localeCompare(b.name);
+        });
+        const out = [];
+        for (const d of devices)
+            out.push({
+                key: d.address ?? d.name,
+                label: d.name,
+                icon: d.connected ? "󰂱" : "󰂯",
+                subtitle: root.statusText(d),
+                highlighted: d.connected,
+                ref: d
+            });
+        root.deviceRows = out;
     }
 
-    function primaryAction(d) {
-        if (d.pairing || d.state === BluetoothDeviceState.Connecting || d.state === BluetoothDeviceState.Disconnecting) return
-        if (!d.paired) { d.pair(); return }
-        if (d.connected) d.disconnect()
-        else d.connect()
+    function primaryAction(d: var): void {
+        if (d.pairing || d.state === BluetoothDeviceState.Connecting || d.state === BluetoothDeviceState.Disconnecting)
+            return;
+        if (!d.paired) {
+            d.pair();
+            return;
+        }
+        if (d.connected)
+            d.disconnect();
+        else
+            d.connect();
     }
 
-    function forget(d) { d.forget() }
+    rows: root.deviceRows
 
     Connections {
         target: Bluetooth.devices
-        function onValuesChanged() { root.refreshDeviceRows() }
-    }
-    Connections {
-        target: root.adapter
-        function onDiscoveringChanged() { root.refreshDeviceRows() }
-        function onEnabledChanged() { root.refreshDeviceRows() }
+        function onValuesChanged() {
+            root.refreshDeviceRows();
+        }
     }
 
-    Component.onCompleted: refreshDeviceRows()
-    onOpenChanged: {
-        if (open) root.refreshDeviceRows()
-        else if (root.adapter && root.adapter.discovering) root.adapter.discovering = false
+    Connections {
+        target: root.adapter
+        function onDiscoveringChanged() {
+            root.refreshDeviceRows();
+        }
+        function onEnabledChanged() {
+            root.refreshDeviceRows();
+        }
     }
 
     Timer {
@@ -71,155 +120,32 @@ PopupWindow {
         onTriggered: root.refreshDeviceRows()
     }
 
-    Text {
-        id: caption
-        anchors.top: parent.top
-        anchors.left: parent.left
-        text: !root.adapter ? "no adapter found ✧"
-            : (!root.adapter.enabled ? "bluetooth is off" : "paired & nearby devices")
-        color: Theme.dim
-        font.pixelSize: 10
-        font.family: Theme.fontMono
+    Component.onCompleted: root.refreshDeviceRows()
+
+    onOpenChanged: {
+        if (root.open)
+            root.refreshDeviceRows();
+        else if (root.adapter && root.adapter.discovering)
+            root.adapter.discovering = false;
     }
 
-    Text {
-        id: scanIndicator
-        anchors.verticalCenter: caption.verticalCenter
-        anchors.right: parent.right
-        visible: root.adapter && root.adapter.enabled
-        text: root.adapter && root.adapter.discovering ? "󰑐 scanning…" : "alt+s scan"
-        color: root.adapter && root.adapter.discovering ? Theme.purple : Theme.dim
-        font.pixelSize: 10
-        font.family: Theme.fontMono
-    }
-
-    ListView {
-        id: list
-        anchors.top: caption.bottom
-        anchors.topMargin: 6
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        clip: true
-        spacing: 2
-        model: root.deviceRows
-        boundsBehavior: Flickable.StopAtBounds
-        keyNavigationEnabled: true
-        keyNavigationWraps: true
-        highlightMoveDuration: 60
-        highlightMoveVelocity: -1
-
-        delegate: Item {
-            id: cell
-            required property var modelData
-            required property int index
-            readonly property bool current: ListView.isCurrentItem
-            width: list.width
-            height: 40
-            opacity: cell.modelData.paired ? 1.0 : 0.7
-
-            Rectangle {
-                anchors.fill: parent
-                radius: Theme.radiusSmall
-                color: cell.modelData.connected
-                    ? Qt.rgba(Theme.purple.r, Theme.purple.g, Theme.purple.b, cell.current ? 0.28 : 0.16)
-                    : (cell.current ? Qt.rgba(Theme.purple.r, Theme.purple.g, Theme.purple.b, 0.18) : "transparent")
-                border.width: cell.modelData.connected ? Theme.borderWidth : 0
-                border.color: Theme.purple
-            }
-
-            Text {
-                id: icon
-                anchors.left: parent.left
-                anchors.leftMargin: 10
-                anchors.verticalCenter: parent.verticalCenter
-                text: cell.modelData.connected ? "󰂱" : "󰂯"
-                color: cell.modelData.connected ? Theme.purple : Theme.dim
-                font.pixelSize: cell.modelData.connected ? 16 : 14
-                font.family: Theme.fontMono
-            }
-
-            Text {
-                id: statusPill
-                anchors.right: (forgetBtn.visible && rowMouse.containsMouse) ? forgetBtn.left : parent.right
-                anchors.rightMargin: 8
-                anchors.verticalCenter: parent.verticalCenter
-                text: root.statusText(cell.modelData)
-                color: (cell.modelData.connected || cell.modelData.pairing) ? Theme.purple : Theme.dim
-                font.pixelSize: 10
-                font.family: Theme.fontMono
-                font.weight: cell.modelData.connected ? Theme.weightHeading : Theme.weightBody
-            }
-
-            Text {
-                text: cell.modelData.name
-                color: cell.modelData.connected ? Theme.bright : (cell.current ? Theme.bright : Theme.text)
-                font.pixelSize: 13
-                font.family: Theme.fontMono
-                font.weight: cell.modelData.connected ? Theme.weightHeading : Theme.weightBody
-                elide: Text.ElideRight
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: icon.right
-                anchors.leftMargin: 8
-                anchors.right: statusPill.left
-                anchors.rightMargin: 8
-            }
-
-            MouseArea {
-                id: rowMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    list.currentIndex = cell.index
-                    root.primaryAction(cell.modelData)
-                }
-            }
-
-            Item {
-                id: forgetBtn
-                visible: cell.modelData.paired
-                anchors.right: parent.right
-                anchors.rightMargin: 10
-                anchors.verticalCenter: parent.verticalCenter
-                width: 36
-                height: 20
-                opacity: rowMouse.containsMouse ? 1 : 0
-                Behavior on opacity { NumberAnimation { duration: 120 } }
-
-                Text {
-                    anchors.centerIn: parent
-                    text: "forget"
-                    color: Theme.rose
-                    font.pixelSize: 9
-                    font.family: Theme.fontMono
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: root.forget(cell.modelData)
-                }
-            }
+    onSelected: (item, action) => {
+        if (action === "scan") {
+            if (root.adapter && root.adapter.enabled)
+                root.adapter.discovering = !root.adapter.discovering;
+            return;
         }
-
-        Keys.onReturnPressed: if (list.currentIndex >= 0) root.primaryAction(root.deviceRows[list.currentIndex])
-        Keys.onEscapePressed: root.closeRequested()
-        Keys.onPressed: event => {
-            if ((event.modifiers & Qt.AltModifier) && event.key === Qt.Key_S) {
-                if (root.adapter && root.adapter.enabled) root.adapter.discovering = !root.adapter.discovering
-                event.accepted = true
-            }
+        if (action === "forget") {
+            if (item.ref.paired)
+                item.ref.forget();
+            return;
         }
-        focus: root.open
+        root.primaryAction(item.ref);
     }
 
-    Text {
-        anchors.centerIn: list
-        visible: root.deviceRows.length === 0
-        text: root.adapter && root.adapter.discovering ? "scanning…" : "no devices ✧"
-        color: Theme.dim
-        font.pixelSize: 12
-        font.family: Theme.fontMono
+    // alt+s has to work with nothing selected too, which `selected` cannot do
+    onFreeTextSubmitted: (text, action) => {
+        if (action === "scan" && root.adapter && root.adapter.enabled)
+            root.adapter.discovering = !root.adapter.discovering;
     }
 }

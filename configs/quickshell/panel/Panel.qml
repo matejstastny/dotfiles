@@ -5,7 +5,18 @@ import "../"
 import "../common"
 
 // content only - the surface under this is the drawer it sits in, drawn by the
-// blob field along with the bar it hangs off
+// blob field along with the bar it hangs off.
+//
+// one surface, not a box of boxes. the old panel put a bordered card around the
+// calendar, another around the media, five more around the toggles, and then
+// sat all of that inside a bordered drawer. everything here is laid straight on
+// the drawer and separated by space and hairlines instead, which is the same
+// argument the blob field makes about the bar.
+//
+// the left rail is the answer to "what is going on right now" - the date, what
+// is playing, the five switches. notifications are the only thing that is a
+// list of discrete objects, so they are the only things that keep their cards,
+// and they get a column that only exists when there is something in it
 Item {
     id: root
 
@@ -29,6 +40,34 @@ Item {
     property int notifCount: notifications ? notifications.values.length : 0
     property var notificationGroups: []
 
+    // which app groups are open, by group key. rebuilding the group array on
+    // every incoming notification used to reset this, so one new notification
+    // collapsed everything you had expanded
+    property var expandedGroups: ({})
+
+    readonly property int railWidth: 320
+    readonly property int notifWidth: 340
+    readonly property int notifMaxHeight: 420
+    readonly property bool hasNotifications: root.notifCount > 0
+
+    // whoever is playing, else whoever is there. matches what the bar shows
+    readonly property var player: {
+        const players = Mpris.players.values;
+        for (let i = 0; i < players.length; i++)
+            if (players[i].isPlaying)
+                return players[i];
+        for (let i = 0; i < players.length; i++)
+            if (players[i].playbackState !== MprisPlaybackState.Stopped)
+                return players[i];
+        return null;
+    }
+
+    implicitWidth: root.railWidth + Theme.paddingLarge * 2 + root.notifWidth
+    implicitHeight: Math.max(rail.implicitHeight, notifColumn.implicitHeight)
+
+    focus: root.open
+    Keys.onEscapePressed: root.closeRequested()
+
     function rebuildNotificationGroups(): void {
         const groups = [];
         const byApp = {};
@@ -49,168 +88,128 @@ Item {
         root.notificationGroups = groups;
     }
 
+    function groupExpanded(group: var): bool {
+        // a group of one has nothing to expand into, so it is always open
+        if (group.items.length === 1)
+            return true;
+        return root.expandedGroups[group.key] === true;
+    }
+
+    function toggleGroup(group: var): void {
+        const next = Object.assign({}, root.expandedGroups);
+        next[group.key] = !(next[group.key] === true);
+        root.expandedGroups = next;
+    }
+
     Connections {
         target: root.notifications
         function onValuesChanged() {
-            root.notifCount = root.notifications.values.length
-            root.rebuildNotificationGroups()
+            root.notifCount = root.notifications.values.length;
+            root.rebuildNotificationGroups();
         }
     }
 
     onNotificationsChanged: root.rebuildNotificationGroups()
 
-    readonly property int columnGap: 24
+    Column {
+        id: rail
 
-    Rectangle {
         anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: 1
-        color: Theme.muted
-        opacity: 0.5
-    }
-
-    Item {
-        id: leftColumn
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
         anchors.left: parent.left
-        width: (parent.width - root.columnGap) / 2
-        focus: root.open
-        Keys.onEscapePressed: root.closeRequested()
+        width: root.railWidth
+        spacing: Theme.gapLarge
 
-        Item {
-            id: header
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            height: avatar.height
+        DateBlock {
+            width: parent.width
+            visible: root.open
+        }
 
-            Avatar {
-                id: avatar
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                size: 40
-                source: "file://" + Quickshell.env("HOME") + "/pictures/pfp.JPEG"
-            }
+        Hairline {
+            width: parent.width
+        }
 
-            Column {
-                anchors.left: avatar.right
-                anchors.leftMargin: 10
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.right: parent.right
-                spacing: 2
+        // a Loader rather than a hidden item: with nothing playing there is no
+        // player object to dereference, and bindings in an invisible item are
+        // evaluated just the same
+        Loader {
+            id: media
 
-                Text {
-                    text: {
-                        const h = new Date().getHours()
-                        const greeting = h < 5 ? "still up" : h < 12 ? "good morning" : h < 18 ? "good afternoon" : h < 23 ? "good evening" : "good night"
-                        return greeting + " ✦"
-                    }
-                    color: Theme.purple
-                    font.pixelSize: 15
-                    font.family: Theme.fontMono
-                    font.weight: Theme.weightHeading
-                    elide: Text.ElideRight
-                    width: parent.width
-                }
+            width: parent.width
+            active: root.player !== null
+            visible: media.active
+            sourceComponent: nowPlaying
+        }
 
-                Text {
-                    text: Quickshell.env("USER")
-                    color: Theme.dim
-                    font.pixelSize: 11
-                    font.family: Theme.fontMono
-                    font.weight: Font.Normal
-                    elide: Text.ElideRight
-                    width: parent.width
-                }
-            }
+        Hairline {
+            width: parent.width
+            visible: media.active
         }
 
         Row {
             id: toggles
-            anchors.top: header.bottom
-            anchors.topMargin: 14
-            anchors.left: parent.left
-            anchors.right: parent.right
-            spacing: 10
+
+            width: parent.width
+            spacing: Theme.gapSmall
 
             readonly property int toggleWidth: (width - spacing * 4) / 5
 
             QuickToggle {
                 icon: "󰂛"
-                width: toggles.toggleWidth
-                height: width
+                implicitWidth: toggles.toggleWidth
                 checked: root.dndEnabled
                 onToggled: root.toggleDnd()
             }
             QuickToggle {
                 icon: "󰅶"
-                width: toggles.toggleWidth
-                height: width
+                implicitWidth: toggles.toggleWidth
                 checked: root.caffeinateEnabled
                 onToggled: root.toggleCaffeinate()
             }
             QuickToggle {
                 icon: "󰌌"
-                width: toggles.toggleWidth
-                height: width
+                implicitWidth: toggles.toggleWidth
                 checked: root.kbdBacklightEnabled
                 onToggled: root.toggleKbdBacklight()
             }
             QuickToggle {
                 icon: "󰏩"
-                width: toggles.toggleWidth
-                height: width
+                implicitWidth: toggles.toggleWidth
                 checked: root.typingSoundEnabled
                 onToggled: root.toggleTypingSound()
             }
             QuickToggle {
                 icon: "󰎇"
-                width: toggles.toggleWidth
-                height: width
+                implicitWidth: toggles.toggleWidth
                 checked: root.cavaEnabled
                 onToggled: root.toggleCava()
             }
         }
+    }
 
-        Calendar {
-            id: calendar
-            anchors.top: toggles.bottom
-            anchors.topMargin: 14
-            anchors.left: parent.left
-            anchors.right: parent.right
-        }
-
-        Column {
-            id: mediaColumn
-            anchors.top: calendar.bottom
-            anchors.topMargin: 14
-            anchors.left: parent.left
-            anchors.right: parent.right
-            spacing: 10
-
-            Repeater {
-                model: Mpris.players.values
-                delegate: MediaCard {
-                    required property var modelData
-                    width: mediaColumn.width
-                    visible: modelData.playbackState !== MprisPlaybackState.Stopped
-                    player: modelData
-                }
-            }
-        }
+    // a vertical hairline rather than a column of its own width: the two halves
+    // have no reason to be the same size, so nothing here is centred on a split
+    Rectangle {
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: rail.right
+        anchors.leftMargin: Theme.paddingLarge
+        width: Theme.borderWidth
+        color: Theme.muted
+        opacity: 0.4
     }
 
     Item {
-        id: rightColumn
+        id: notifColumn
+
         anchors.top: parent.top
-        anchors.bottom: parent.bottom
         anchors.right: parent.right
-        width: (parent.width - root.columnGap) / 2
+        width: root.notifWidth
+        implicitHeight: notifHeader.height + Theme.gap + Math.max(Theme.rowHeight, Math.min(root.notifMaxHeight, list.contentHeight))
+        height: implicitHeight
 
         Item {
             id: notifHeader
+
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
@@ -219,31 +218,42 @@ Item {
             Text {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                text: "notifications" + (root.notifCount > 0 ? " · " + root.notifCount : "")
+                text: "✦ notifications · " + root.notifCount
                 color: Theme.purple
-                font.pixelSize: 13
+                font.pixelSize: Theme.sizeBody
                 font.family: Theme.fontMono
                 font.weight: Theme.weightHeading
             }
 
             Text {
-                id: clearText
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
-                text: "clear ✧"
-                color: clearArea.pressed ? Theme.purple : Theme.dim
-                font.pixelSize: 11
+                visible: root.hasNotifications
+                text: "clear all"
+                color: clearArea.pressed ? Theme.rose : (clearArea.containsMouse ? Theme.bright : Theme.dim)
+                font.pixelSize: Theme.sizeLabel
                 font.family: Theme.fontMono
-                font.weight: Font.Normal
-                scale: clearArea.pressed ? 0.92 : 1
+                scale: clearArea.pressed ? 0.94 : 1
 
-                Behavior on color { ColorAnimation { duration: 100 } }
-                Behavior on scale { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
+                Behavior on color {
+                    ColorAnimation {
+                        duration: Theme.snapDuration
+                    }
+                }
+                Behavior on scale {
+                    NumberAnimation {
+                        duration: Theme.snapDuration
+                        easing.type: Easing.OutCubic
+                    }
+                }
 
+                // "destroy everything" was an 11px word with a six pixel slop
+                // around it and no hover state at all
                 MouseArea {
                     id: clearArea
                     anchors.fill: parent
-                    anchors.margins: -6
+                    anchors.margins: -Theme.gap
+                    hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: root.clearAll()
                 }
@@ -252,38 +262,39 @@ Item {
 
         ListView {
             id: list
+
             anchors.top: notifHeader.bottom
-            anchors.topMargin: 10
+            anchors.topMargin: Theme.gap
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             clip: true
-            spacing: 10
+            spacing: Theme.gap
             model: root.notificationGroups
             boundsBehavior: Flickable.StopAtBounds
 
             delegate: Column {
                 id: groupDelegate
-                required property var modelData
-                width: list.width
-                spacing: 6
-                property bool expanded: modelData.items.length === 1
 
-                Rectangle {
+                required property var modelData
+
+                readonly property bool grouped: groupDelegate.modelData.items.length > 1
+                readonly property bool expanded: root.groupExpanded(groupDelegate.modelData)
+
+                width: list.width
+                spacing: Theme.gapSmall
+
+                Item {
                     width: parent.width
-                    height: 30
-                    radius: Theme.radiusSmall
-                    color: groupHeaderArea.containsMouse ? Theme.overlay : Theme.surface
-                    border.width: Theme.borderWidth
-                    border.color: Theme.muted
+                    height: groupDelegate.grouped ? 22 : 0
+                    visible: groupDelegate.grouped
 
                     Image {
                         id: groupIcon
                         anchors.left: parent.left
-                        anchors.leftMargin: 9
                         anchors.verticalCenter: parent.verticalCenter
-                        width: 16
-                        height: 16
+                        width: Theme.iconSmall
+                        height: Theme.iconSmall
                         visible: source !== ""
                         source: groupDelegate.modelData.appIcon ? Quickshell.iconPath(groupDelegate.modelData.appIcon, true) : ""
                         fillMode: Image.PreserveAspectFit
@@ -291,25 +302,30 @@ Item {
 
                     Text {
                         anchors.left: groupIcon.visible ? groupIcon.right : parent.left
-                        anchors.leftMargin: groupIcon.visible ? 7 : 10
+                        anchors.leftMargin: groupIcon.visible ? Theme.gapSmall : 0
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: groupCount.left
-                        anchors.rightMargin: 8
+                        anchors.rightMargin: Theme.gapSmall
                         text: groupDelegate.modelData.appName
-                        color: Theme.bright
+                        color: groupHeaderArea.containsMouse ? Theme.bright : Theme.dim
                         font.pixelSize: Theme.sizeLabel
                         font.family: Theme.fontSans
                         font.weight: Theme.weightHeading
                         elide: Text.ElideRight
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: Theme.snapDuration
+                            }
+                        }
                     }
 
                     Text {
                         id: groupCount
                         anchors.right: parent.right
-                        anchors.rightMargin: 10
                         anchors.verticalCenter: parent.verticalCenter
-                        text: groupDelegate.modelData.items.length > 1 ? groupDelegate.modelData.items.length + "  " + (groupDelegate.expanded ? "⌃" : "⌄") : ""
-                        color: Theme.dim
+                        text: groupDelegate.modelData.items.length + "  " + (groupDelegate.expanded ? "⌃" : "⌄")
+                        color: Theme.muted
                         font.pixelSize: Theme.sizeMicro
                         font.family: Theme.fontMono
                     }
@@ -318,11 +334,8 @@ Item {
                         id: groupHeaderArea
                         anchors.fill: parent
                         hoverEnabled: true
-                        cursorShape: groupDelegate.modelData.items.length > 1 ? Qt.PointingHandCursor : Qt.ArrowCursor
-                        onClicked: {
-                            if (groupDelegate.modelData.items.length > 1)
-                                groupDelegate.expanded = !groupDelegate.expanded;
-                        }
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.toggleGroup(groupDelegate.modelData)
                     }
                 }
 
@@ -340,18 +353,38 @@ Item {
             }
 
             displaced: Transition {
-                NumberAnimation { properties: "y"; duration: 180; easing.type: Easing.OutCubic }
-            }
-
-            Text {
-                anchors.centerIn: parent
-                visible: root.notifCount === 0
-                text: "nothing here ✧"
-                color: Theme.dim
-                font.pixelSize: 12
-                font.family: Theme.fontMono
-                font.weight: Font.Normal
+                NumberAnimation {
+                    properties: "y"
+                    duration: Theme.spatialDuration
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Theme.easingSpatial
+                }
             }
         }
+
+        Text {
+            anchors.top: list.top
+            anchors.topMargin: Theme.gapSmall
+            anchors.left: parent.left
+            visible: !root.hasNotifications
+            text: "nothing here"
+            color: Theme.muted
+            font.pixelSize: Theme.sizeBody
+            font.family: Theme.fontMono
+        }
+    }
+
+    Component {
+        id: nowPlaying
+
+        NowPlaying {
+            player: root.player
+        }
+    }
+
+    component Hairline: Rectangle {
+        height: Theme.borderWidth
+        color: Theme.muted
+        opacity: 0.4
     }
 }

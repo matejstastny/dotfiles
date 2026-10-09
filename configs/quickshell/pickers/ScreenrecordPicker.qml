@@ -1,55 +1,54 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "../"
 import "../common"
 
-PopupWindow {
+CommandPicker {
     id: root
+
     popoutName: "screenrecord"
-    title: "recordings"
-    popupWidth: 480
-    popupHeight: 520
+    placeholder: "recordings"
+    emptyText: "no recordings"
 
     readonly property string recDir: Quickshell.env("HOME") + "/pictures/screenrecord"
 
-    ListModel { id: model }
+    actions: [
+        {
+            key: "copy",
+            code: Qt.Key_D,
+            hint: "alt+d  copy"
+        }
+    ]
+
+    property var recordings: []
 
     Process {
         id: lister
         command: ["bash", "-c", "ls -t '" + root.recDir + "' 2>/dev/null"]
-        stdout: SplitParser {
-            onRead: data => {
-                if (data.length === 0) return
-                model.append({ key: data, label: data, subtitle: "", icon: "󰃽" })
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const out = [];
+                for (const line of text.split("\n")) {
+                    if (line.length === 0)
+                        continue;
+                    out.push({ key: line, label: line, icon: "󰃽" });
+                }
+                root.recordings = out;
             }
         }
     }
 
-    onOpenChanged: {
-        if (open) {
-            model.clear()
-            lister.running = true
-        }
-    }
+    rows: root.recordings
 
-    ListMenuPopup {
-        anchors.fill: parent
-        active: root.open
-        items: model
-        emptyText: "no recordings found ✧"
-        placeholder: "search recordings..."
+    onOpenChanged: if (root.open)
+        lister.running = true
 
-        tertiaryActionKey: "copy"
-        tertiaryActionHint: "Alt+D copy"
-
-        onSelected: (item, action) => {
-            if (action === "copy") {
-                Quickshell.execDetached(["bash", "-c", "printf 'file://%s' \"$1\" | wl-copy --type text/uri-list", "_", root.recDir + "/" + item.key])
-            } else {
-                Quickshell.execDetached(["mpv", root.recDir + "/" + item.key])
-            }
-            root.closeRequested()
-        }
-        onCloseRequested: root.closeRequested()
+    onSelected: (item, action) => {
+        if (action === "copy")
+            Quickshell.execDetached(["bash", "-c", "printf 'file://%s' \"$1\" | wl-copy --type text/uri-list", "_", root.recDir + "/" + item.key]);
+        else
+            Quickshell.execDetached(["mpv", root.recDir + "/" + item.key]);
+        root.closeRequested();
     }
 }
