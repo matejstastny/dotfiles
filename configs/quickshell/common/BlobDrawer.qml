@@ -33,7 +33,7 @@ BlobRect {
     // shapes that merely touch have nothing for the sdf union to work with, so
     // any sub-pixel rounding - and this display is on a fractional scale -
     // opens a seam. sinking the edge in means there is always overlap
-    property int sink: 0
+    property int sink: Theme.drawerOverlap
 
     readonly property bool horizontal: edge === "left" || edge === "right"
     readonly property real travel: (horizontal ? width : height) + Theme.drawerPark - sink

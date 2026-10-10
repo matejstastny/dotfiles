@@ -64,6 +64,12 @@ Item {
 
     readonly property int shownRows: Math.min(root.maxRows, root.filtered.length)
     readonly property bool listVisible: root.mode !== "freeText"
+
+    // an empty list is still worth one row: the emptyText line has to sit
+    // somewhere, and a card that reserves nothing for it leaves it on top of
+    // the hint line, a hair above the drawer's bottom edge
+    readonly property int listRows: root.listVisible ? Math.max(1, root.shownRows) : 0
+
     // a picker whose marks are pictures rather than glyphs needs a wider column.
     // 0 means work it out from the rows
     property int iconColumnWidth: 0
@@ -94,7 +100,7 @@ Item {
 
     readonly property int headHeight: root.queryHeight + (hintText.visible ? Theme.gapSmall + hintText.implicitHeight : 0)
 
-    implicitHeight: root.headHeight + (root.listVisible && root.shownRows > 0 ? Theme.gap + root.shownRows * root.rowHeight : 0)
+    implicitHeight: root.headHeight + (root.listRows > 0 ? Theme.gap + root.listRows * root.rowHeight : 0)
 
     function refilter(): void {
         const query = input.text.trim();
@@ -402,7 +408,11 @@ Item {
         anchors.topMargin: Theme.gap
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
+        // sized rather than anchored to the bottom: the drawer animates towards
+        // the card's new height, so for the first frames of every open and every
+        // resize the bottom sits above this top, and the view is handed a
+        // negative height to clip itself to
+        height: Math.max(0, root.height - list.y)
         clip: true
         interactive: false
         model: root.filtered
@@ -457,7 +467,9 @@ Item {
 
     Text {
         anchors.centerIn: list
-        visible: root.listVisible && root.filtered.length === 0
+        // nothing is clipping this one, so while the card is still growing into
+        // its new height it would hang out over the wallpaper
+        visible: root.listVisible && root.filtered.length === 0 && list.height > 0
         text: root.emptyText
         color: Theme.muted
         font.pixelSize: Theme.sizeBody

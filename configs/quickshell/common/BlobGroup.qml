@@ -108,16 +108,33 @@ Item {
         }
         return false;
     }
+    // a sync is queued for the end of this tick rather than run on the spot:
+    // a resizing drawer lands x, y, width and height as four separate changes,
+    // and rebuilding the whole field on each one is four times the work for the
+    // same answer
+    property bool resyncQueued: false
 
-    onAnimatingChanged: sync(0)
-    onShapesChanged: sync(0)
-    onWidthChanged: sync(0)
-    onHeightChanged: sync(0)
+    onAnimatingChanged: geometryChanged()
+    onShapesChanged: geometryChanged()
+    onWidthChanged: geometryChanged()
+    onHeightChanged: geometryChanged()
     Component.onCompleted: sync(0)
 
     FrameAnimation {
         running: root.animating
         onTriggered: root.sync(frameTime)
+    }
+
+    function geometryChanged(): void {
+        if (root.resyncQueued)
+            return;
+        root.resyncQueued = true;
+        Qt.callLater(root.resync);
+    }
+
+    function resync(): void {
+        root.resyncQueued = false;
+        root.sync(0);
     }
 
     function smoothstep(edge0: real, edge1: real, x: real): real {
@@ -233,11 +250,11 @@ Item {
             Connections {
                 target: slot.index < root.shapes.length ? root.shapes[slot.index] : null
 
-                function onXChanged(): void { root.sync(0); }
-                function onYChanged(): void { root.sync(0); }
-                function onWidthChanged(): void { root.sync(0); }
-                function onHeightChanged(): void { root.sync(0); }
-                function onVisibleChanged(): void { root.sync(0); }
+                function onXChanged(): void { root.geometryChanged(); }
+                function onYChanged(): void { root.geometryChanged(); }
+                function onWidthChanged(): void { root.geometryChanged(); }
+                function onHeightChanged(): void { root.geometryChanged(); }
+                function onVisibleChanged(): void { root.geometryChanged(); }
             }
         }
     }

@@ -110,6 +110,7 @@ QtObject {
     // blend has nothing left to round off, shallow enough that the pocket the
     // band opens for it never shows
     readonly property int drawerPark: 4
+    readonly property int drawerOverlap: 2
 
     // drawers get their own motion: easingSpatial overshoots by about 8%, which
     // is a pleasant nudge on a button and a 50px lurch on something 600px tall.
