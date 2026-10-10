@@ -109,15 +109,15 @@ QtObject {
     // how far a closed drawer sits behind the outline. deep enough that the
     // blend has nothing left to round off, shallow enough that the pocket the
     // band opens for it never shows
-    readonly property int drawerPark: 5
+    readonly property int drawerPark: 4
 
     // drawers get their own motion: easingSpatial overshoots by about 8%, which
     // is a pleasant nudge on a button and a 50px lurch on something 600px tall.
     // this curve settles about 1.5% past flush instead, and the deform is halved
     // so the spring has less to ring out once the slide has finished
-    readonly property int drawerDuration: 20000
+    readonly property int drawerDuration: 220
     // drawers should feel fluid without visibly stretching past their final size
-    readonly property var easingDrawer: [0.33, 0.33, 0.67, 0.67, 1.0, 1.0]
+    readonly property var easingDrawer: [0.25, 1.08, 0.45, 1.0, 1.0, 1.0]
     readonly property real drawerDeformScale: blobDeformScale * 0.5
 
     // the command surface - launcher and every picker - is not a dialog. it

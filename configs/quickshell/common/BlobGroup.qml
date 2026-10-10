@@ -229,6 +229,16 @@ Item {
             y: slot.area.y
             width: slot.area.width
             height: slot.area.height
+
+            Connections {
+                target: slot.index < root.shapes.length ? root.shapes[slot.index] : null
+
+                function onXChanged(): void { root.sync(0); }
+                function onYChanged(): void { root.sync(0); }
+                function onWidthChanged(): void { root.sync(0); }
+                function onHeightChanged(): void { root.sync(0); }
+                function onVisibleChanged(): void { root.sync(0); }
+            }
         }
     }
 

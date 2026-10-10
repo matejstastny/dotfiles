@@ -36,7 +36,7 @@ BlobRect {
     property int sink: 0
 
     readonly property bool horizontal: edge === "left" || edge === "right"
-    readonly property real travel: (horizontal ? width : height) + Theme.drawerPark
+    readonly property real travel: (horizontal ? width : height) + Theme.drawerPark - sink
 
     radius: Theme.frameRadius
     deformScale: Theme.drawerDeformScale
