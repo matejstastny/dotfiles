@@ -69,6 +69,18 @@ const float FAR = 1e9;
 // how deep a circular smin closes a gap at a == b, as a fraction of k
 const float BLEND_DEPTH = 0.41421356;
 
+// how much nearer a surface has to be before it takes a pixel off whoever holds
+// it. every node rebuilds p from its own quad, so the same pixel lands a few
+// ulps apart in two of them, and on a pixel that is genuinely equidistant
+// between two surfaces those ulps are the entire decision - the two nodes pick
+// different owners and both discard it, leaving a hairline of nothing. a drawer
+// parks `sink` deep in a band, which puts an exact tie at sink/2 along the whole
+// join, and a fractional scale eventually lands a pixel centre right on it: at
+// 1.5, barHeight 37 and an 8 deep drawer tie at y 33, which is dead centre of a
+// device row. slack far wider than the noise settles every such tie the same way
+// in every node - first claim holds, so slots in order and the frame last
+const float OWNER_SLACK = 1.0 / 16.0;
+
 // r = (topRight, bottomRight, bottomLeft, topLeft)
 float sdRoundedBox(vec2 p, vec2 center, vec2 halfSize, vec4 r) {
     p -= center;
@@ -169,7 +181,7 @@ void main() {
     float owner = -2.0;
     float nearest = FAR;
     for (int i = 0; i < SLOTS; i++) {
-        if (dist[i] < smoothing && dist[i] < nearest) {
+        if (dist[i] < smoothing && dist[i] < nearest - OWNER_SLACK) {
             nearest = dist[i];
             owner = float(i);
         }
@@ -244,7 +256,7 @@ void main() {
         // smin is monotone in each argument, so folding the frame in once here is
         // the same field as sminning it against every box separately
         float dFrame = smaxSharpA(outer, -inner, k);
-        if (dFrame < smoothing && dFrame < nearest) {
+        if (dFrame < smoothing && dFrame < nearest - OWNER_SLACK) {
             nearest = dFrame;
             owner = -1.0;
         }

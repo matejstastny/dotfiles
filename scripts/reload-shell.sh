@@ -15,8 +15,11 @@ if [ -n "$errors" ]; then
 fi
 
 pkill -x quickshell 2>/dev/null || true
+pkill -x qs 2>/dev/null || true
 
-if ! pgrep -x qs > /dev/null; then
+sleep 0.5
+
+if ! pgrep -x qs >/dev/null; then
 	QT_QPA_PLATFORMTHEME=gtk3 qs &
 	disown
 fi
