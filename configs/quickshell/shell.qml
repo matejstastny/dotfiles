@@ -38,7 +38,7 @@ ShellRoot {
 
     // the command surfaces, in no particular order - only one is ever open, so
     // the first open one is the one the drawer should be showing
-    readonly property var commands: [launcher, wifiMenu, bluetoothMenu, cursorMenu, clipPicker, todoPicker, notesPicker, capturePicker, screenrecordPicker, codePicker, emojiPicker, keyboardPicker]
+    readonly property var commands: [launcher, wifiMenu, bluetoothMenu, cursorMenu, clipPicker, todoPicker, notesPicker, capturePicker, screenrecordPicker, codePicker, diffiePicker, emojiPicker, keyboardPicker]
 
     readonly property var activeCommand: {
         for (let i = 0; i < root.commands.length; i++)
@@ -152,6 +152,13 @@ ShellRoot {
         id: codePopout
         name: "code"
         about: "Toggle the project picker"
+        aims: true
+        onAimRequested: root.aimDrawers()
+    }
+    Popout {
+        id: diffiePopout
+        name: "diffie"
+        about: "Toggle the branch review picker"
         aims: true
         onAimRequested: root.aimDrawers()
     }
@@ -510,6 +517,12 @@ ShellRoot {
         id: codePicker
         open: codePopout.shown
         onCloseRequested: codePopout.shown = false
+    }
+
+    DiffiePicker {
+        id: diffiePicker
+        open: diffiePopout.shown
+        onCloseRequested: diffiePopout.shown = false
     }
 
     EmojiPicker {
