@@ -38,7 +38,7 @@ ShellRoot {
 
     // the command surfaces, in no particular order - only one is ever open, so
     // the first open one is the one the drawer should be showing
-    readonly property var commands: [launcher, wifiMenu, bluetoothMenu, cursorMenu, clipPicker, todoPicker, notesPicker, capturePicker, screenrecordPicker, codePicker, diffiePicker, emojiPicker, keyboardPicker]
+    readonly property var commands: [launcher, wifiMenu, bluetoothMenu, cursorMenu, clipPicker, todoPicker, notesPicker, capturePicker, screenrecordPicker, codePicker, diffiePicker, emojiPicker, keyboardPicker, tailnetPicker]
 
     readonly property var activeCommand: {
         for (let i = 0; i < root.commands.length; i++)
@@ -173,6 +173,13 @@ ShellRoot {
         id: keyboardPopout
         name: "keyboard"
         about: "Toggle the keyboard layout picker"
+        aims: true
+        onAimRequested: root.aimDrawers()
+    }
+    Popout {
+        id: tailnetPopout
+        name: "tailnet"
+        about: "Toggle the tailnet switcher"
         aims: true
         onAimRequested: root.aimDrawers()
     }
@@ -535,6 +542,12 @@ ShellRoot {
         id: keyboardPicker
         open: keyboardPopout.shown
         onCloseRequested: keyboardPopout.shown = false
+    }
+
+    TailnetPicker {
+        id: tailnetPicker
+        open: tailnetPopout.shown
+        onCloseRequested: tailnetPopout.shown = false
     }
 
     Variants {

@@ -18,6 +18,7 @@ hl.bind(mod .. " + L", hl.dsp.global("quickshell:panel"))
 hl.bind(mod .. " + Escape", hl.dsp.global("quickshell:powermenu"))
 hl.bind(mod .. " + SHIFT + T", hl.dsp.global("quickshell:todo-stars"))
 hl.bind(mod .. " + K", hl.dsp.global("quickshell:keyboard"))
+hl.bind(mod .. " + SHIFT + N", hl.dsp.global("quickshell:tailnet"))
 
 -- utils
 hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd(DOTS .. "/scripts/reload-shell.sh"))
