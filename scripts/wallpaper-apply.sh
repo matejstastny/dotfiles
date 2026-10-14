@@ -12,9 +12,27 @@ output="$2"
 cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/wallpaper-thumbs"
 mkdir -p "$cache_dir"
 
+# grow the new wallpaper out of a circle centred on the cursor, falling back
+# to the screen centre when hyprland can't be asked
+transition_pos=center
+if cursor=$(hyprctl -j cursorpos 2>/dev/null) && mon=$(hyprctl -j monitors 2>/dev/null); then
+	# awww reads integers as pixels and floats as fractions, so the clamp keeps
+	# both components strictly fractional
+	transition_pos=$(jq -nr --argjson c "$cursor" --argjson m "$mon" '
+		def clamp: [[., 0.001] | max, 0.999] | min;
+		($m[] | select(.focused)) as $f
+		| (($c.x - $f.x) / ($f.width / $f.scale) | clamp) as $x
+		| (($c.y - $f.y) / ($f.height / $f.scale) | clamp) as $y
+		| "\($x),\($y)"
+	' 2>/dev/null) || transition_pos=center
+fi
+
 awww_args=(
-	--transition-type simple
-	--transition-step 2
+	--transition-type grow
+	--transition-pos "$transition_pos"
+	--invert-y
+	--transition-duration 0.9
+	--transition-bezier .25,.1,.25,1
 	--transition-fps 60
 )
 [ -n "$output" ] && awww_args+=(-o "$output")

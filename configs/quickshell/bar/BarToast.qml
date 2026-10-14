@@ -108,7 +108,7 @@ Item {
                         anchors.centerIn: parent
                         text: "✦"
                         color: root.critical ? Theme.rose : Theme.purple
-                        font.pixelSize: 22
+                        font.pixelSize: Theme.iconLarge
                         font.family: Theme.fontMono
                     }
                 }
@@ -126,7 +126,7 @@ Item {
                         text: root.notification ? (root.notification.appName || root.notification.summary) + "  •  now" : ""
                         color: Theme.dim
                         font.pixelSize: Theme.sizeLabel
-                        font.family: Theme.fontMono
+                        font.family: Theme.fontSans
                         elide: Text.ElideRight
                     }
 
@@ -146,7 +146,7 @@ Item {
                     visible: text !== ""
                     color: root.critical ? Theme.rose : Theme.bright
                     font.pixelSize: Theme.sizeBody
-                    font.family: Theme.fontMono
+                    font.family: Theme.fontSans
                     font.weight: Theme.weightHeading
                     wrapMode: Text.WordWrap
                     maximumLineCount: root.expanded ? 2 : 1
@@ -159,7 +159,7 @@ Item {
                     visible: text !== ""
                     color: Theme.text
                     font.pixelSize: Theme.sizeLabel
-                    font.family: Theme.fontMono
+                    font.family: Theme.fontSans
                     wrapMode: Text.WordWrap
                     maximumLineCount: root.expanded ? 6 : 1
                     elide: Text.ElideRight
@@ -187,7 +187,7 @@ Item {
                         text: modelData.text
                         color: Theme.text
                         font.pixelSize: Theme.sizeLabel
-                        font.family: Theme.fontMono
+                        font.family: Theme.fontSans
                     }
 
                     MouseArea {

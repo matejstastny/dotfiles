@@ -36,7 +36,7 @@ Item {
 
         text: root.glyph
         color: root.muted ? Theme.rose : Theme.purple
-        font.pixelSize: 15
+        font.pixelSize: Theme.sizeTitle
         font.family: Theme.fontMono
 
         Behavior on color {
@@ -56,7 +56,7 @@ Item {
 
         text: root.pct
         color: root.muted ? Theme.dim : Theme.bright
-        font.pixelSize: 11
+        font.pixelSize: Theme.sizeLabel
         font.family: Theme.fontMono
         font.weight: Font.DemiBold
 

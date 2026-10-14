@@ -1,46 +1,43 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "../"
 import "../common"
 
-PopupWindow {
+CommandPicker {
     id: root
+
     popoutName: "notes"
-    title: "notes"
-    popupWidth: 480
-    popupHeight: 520
+    placeholder: "notes"
+    emptyText: "no notes"
 
-    ListModel { id: model }
+    property var notes: []
 
+    // collected whole rather than appended line by line: a SplitParser feeding
+    // rows in one at a time made the list visibly build itself on every open
     Process {
         id: lister
         command: ["bash", "-c", "cd ~/notes && rg --files -g '*.md' 2>/dev/null | sort"]
-        stdout: SplitParser {
-            onRead: data => {
-                if (data.length === 0) return
-                model.append({ key: data, label: data, subtitle: "", icon: "󰎞" })
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const out = [];
+                for (const line of text.split("\n")) {
+                    if (line.length === 0)
+                        continue;
+                    out.push({ key: line, label: line, icon: "󰎞" });
+                }
+                root.notes = out;
             }
         }
     }
 
-    onOpenChanged: {
-        if (open) {
-            model.clear()
-            lister.running = true
-        }
-    }
+    rows: root.notes
 
-    ListMenuPopup {
-        anchors.fill: parent
-        active: root.open
-        items: model
-        emptyText: "no notes found ✧"
-        placeholder: "search notes..."
+    onOpenChanged: if (root.open)
+        lister.running = true
 
-        onSelected: (item, action) => {
-            Quickshell.execDetached([Quickshell.env("HOME") + "/dotfiles/scripts/open-note.sh", item.key])
-            root.closeRequested()
-        }
-        onCloseRequested: root.closeRequested()
+    onSelected: item => {
+        Quickshell.execDetached([Quickshell.env("HOME") + "/dotfiles/scripts/open-note.sh", item.key]);
+        root.closeRequested();
     }
 }

@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
+import "../"
 
 // one surface's entire outside world: the ipc target scripts call, and the
 // hyprland global shortcut the keybind fires. both are named after the surface,
@@ -23,6 +24,12 @@ Scope {
 
     property bool shown: false
 
+    // every command surface and drawer is mutually exclusive: two of them would
+    // each take a hyprland focus grab, and the second grab cancels the first,
+    // whose clear then closes the drawer again. the visualiser is the one
+    // surface here that is a persistent toggle rather than a popout
+    property bool exclusive: true
+
     // surfaces that come in flavours (the todo list is either the personal or
     // the stars file) get one extra shortcut per flavour rather than an ipc
     // argument, so every ipc function in the shell keeps the same no-arg shape.
@@ -31,6 +38,23 @@ Scope {
     property string variant: ""
 
     signal aimRequested
+
+    onShownChanged: {
+        if (!root.exclusive)
+            return;
+        if (root.shown)
+            PopoutState.current = root.name;
+        else if (PopoutState.current === root.name)
+            PopoutState.current = "";
+    }
+
+    Connections {
+        target: PopoutState
+        function onCurrentChanged() {
+            if (root.exclusive && root.shown && PopoutState.current !== root.name)
+                root.shown = false;
+        }
+    }
 
     function set(value: bool): void {
         if (value && root.aims)

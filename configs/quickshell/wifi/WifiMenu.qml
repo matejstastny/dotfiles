@@ -4,12 +4,15 @@ import Quickshell.Networking
 import "../"
 import "../common"
 
-PopupWindow {
+// two bodies in one drawer, and both of them are the same prompt: the network
+// list, and the password line you get when a closed network wants one. there is
+// no second kind of text field and no dialog - the list is replaced in place
+CommandPicker {
     id: root
+
     popoutName: "wifimenu"
-    title: "wifi"
-    popupWidth: 420
-    popupHeight: 520
+
+    readonly property bool prompting: root.pendingSsid.length > 0
 
     property var wifiDevice: null
     property var networkRows: []
@@ -18,89 +21,121 @@ PopupWindow {
     property string passwordError: ""
     property bool scanning: false
 
-    function signalGlyph(strength) {
-        const pct = strength <= 1.0 ? strength * 100 : strength
-        if (pct >= 80) return "󰤨"
-        if (pct >= 60) return "󰤥"
-        if (pct >= 40) return "󰤢"
-        if (pct >= 20) return "󰤟"
-        return "󰤯"
+    function signalGlyph(strength: real): string {
+        const pct = strength <= 1.0 ? strength * 100 : strength;
+        if (pct >= 80)
+            return "󰤨";
+        if (pct >= 60)
+            return "󰤥";
+        if (pct >= 40)
+            return "󰤢";
+        if (pct >= 20)
+            return "󰤟";
+        return "󰤯";
     }
 
-    function findWifiDevice() {
-        let found = null
+    function findWifiDevice(): void {
+        let found = null;
         for (const d of Networking.devices.values) {
-            if (d.type === DeviceType.Wifi) { found = d; break }
+            if (d.type === DeviceType.Wifi) {
+                found = d;
+                break;
+            }
         }
-        root.wifiDevice = found
-        if (root.wifiDevice) root.wifiDevice.scannerEnabled = true
-        root.refreshNetworkRows()
+        root.wifiDevice = found;
+        if (root.wifiDevice)
+            root.wifiDevice.scannerEnabled = true;
+        root.refreshNetworkRows();
     }
 
-    function refreshNetworkRows() {
-        if (!root.wifiDevice) { root.networkRows = []; return }
-        const nets = root.wifiDevice.networks.values.slice()
+    function refreshNetworkRows(): void {
+        if (!root.wifiDevice) {
+            root.networkRows = [];
+            return;
+        }
+        const nets = root.wifiDevice.networks.values.slice();
         nets.sort((a, b) => {
-            if (a.connected !== b.connected) return a.connected ? -1 : 1
-            return (b.signalStrength || 0) - (a.signalStrength || 0)
-        })
-        root.networkRows = nets
+            if (a.connected !== b.connected)
+                return a.connected ? -1 : 1;
+            return (b.signalStrength || 0) - (a.signalStrength || 0);
+        });
+        const out = [];
+        for (const n of nets)
+            out.push({
+                key: n.name,
+                label: n.name,
+                icon: root.signalGlyph(n.signalStrength),
+                subtitle: (n.connected ? "connected" : (n.known ? "saved" : "")) + (n.security !== WifiSecurityType.Open ? " 󰌾" : ""),
+                highlighted: n.connected,
+                ref: n
+            });
+        root.networkRows = out;
     }
 
-    function doScan() {
-        if (!root.wifiDevice) return
-        root.scanning = true
-        root.refreshNetworkRows()
-        scanIndicatorTimer.start()
+    function doScan(): void {
+        if (!root.wifiDevice)
+            return;
+        root.scanning = true;
+        root.refreshNetworkRows();
+        scanIndicatorTimer.start();
     }
 
-    function activate(network) {
+    function activate(network: var): void {
         if (network.connected) {
-            network.device.disconnect()
+            network.device.disconnect();
         } else if (network.known || network.security === WifiSecurityType.Open) {
-            root.pendingNetwork = network
-            network.connect()
+            root.pendingNetwork = network;
+            network.connect();
         } else {
-            root.pendingSsid = network.name
-            root.pendingNetwork = network
-            root.passwordError = ""
-            passwordField.clear()
-            passwordField.focusInput()
+            root.pendingSsid = network.name;
+            root.pendingNetwork = network;
+            root.passwordError = "";
         }
+    }
+
+    function cancelPrompt(): void {
+        root.pendingSsid = "";
+        root.pendingNetwork = null;
+        root.passwordError = "";
     }
 
     Connections {
         target: Networking.devices
-        function onValuesChanged() { root.findWifiDevice() }
-    }
-    Connections {
-        target: root.wifiDevice ? root.wifiDevice.networks : null
-        function onValuesChanged() { root.refreshNetworkRows() }
-    }
-    Connections {
-        target: root.pendingNetwork
-        function onConnectionFailed(reason) {
-            if (reason !== ConnectionFailReason.NoSecrets) return
-            const alreadyPrompting = root.pendingSsid.length > 0
-            root.pendingSsid = root.pendingNetwork.name
-            root.passwordError = alreadyPrompting ? "wrong password ✧" : ""
-            passwordField.clear()
-            passwordField.focusInput()
-        }
-        function onConnectedChanged() {
-            if (root.pendingNetwork && root.pendingNetwork.connected) {
-                root.pendingSsid = ""
-                root.pendingNetwork = null
-            }
+        function onValuesChanged() {
+            root.findWifiDevice();
         }
     }
 
-    Component.onCompleted: findWifiDevice()
+    Connections {
+        target: root.wifiDevice ? root.wifiDevice.networks : null
+        function onValuesChanged() {
+            root.refreshNetworkRows();
+        }
+    }
+
+    Connections {
+        target: root.pendingNetwork
+        function onConnectionFailed(reason) {
+            if (reason !== ConnectionFailReason.NoSecrets)
+                return;
+            const alreadyPrompting = root.pendingSsid.length > 0;
+            root.pendingSsid = root.pendingNetwork.name;
+            root.passwordError = alreadyPrompting ? "wrong password" : "";
+            if (root.view)
+                root.view.reset();
+        }
+        function onConnectedChanged() {
+            if (root.pendingNetwork && root.pendingNetwork.connected)
+                root.cancelPrompt();
+        }
+    }
+
+    Component.onCompleted: root.findWifiDevice()
+
     onOpenChanged: {
-        if (open) {
-            root.pendingSsid = ""
-            root.pendingNetwork = null
-            root.findWifiDevice()
+        if (root.open) {
+            root.cancelPrompt();
+            root.findWifiDevice();
         }
     }
 
@@ -118,170 +153,65 @@ PopupWindow {
         onTriggered: root.scanning = false
     }
 
-    // -- network list view --
-    Item {
-        anchors.fill: parent
-        visible: root.pendingSsid.length === 0
+    body: Component {
+        Item {
+            id: wifiBody
 
-        Text {
-            id: caption
-            anchors.top: parent.top
-            anchors.left: parent.left
-            text: "networks"
-            color: Theme.dim
-            font.pixelSize: 10
-            font.family: Theme.fontMono
-        }
+            implicitWidth: root.surfaceWidth
+            implicitHeight: root.prompting ? password.implicitHeight : networks.implicitHeight
 
-        Text {
-            id: scanIndicator
-            anchors.verticalCenter: caption.verticalCenter
-            anchors.right: parent.right
-            visible: root.scanning
-            text: "󰑐 refreshing…"
-            color: Theme.purple
-            font.pixelSize: 10
-            font.family: Theme.fontMono
-        }
+            CommandList {
+                id: networks
 
-        ListView {
-            id: list
-            anchors.top: caption.bottom
-            anchors.topMargin: 6
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            clip: true
-            spacing: 2
-            model: root.networkRows
-            boundsBehavior: Flickable.StopAtBounds
-            keyNavigationEnabled: true
-            keyNavigationWraps: true
-            highlightMoveDuration: 60
-            highlightMoveVelocity: -1
+                anchors.fill: parent
+                visible: !root.prompting
+                active: root.open && !root.prompting
 
-            delegate: Item {
-                id: cell
-                required property var modelData
-                required property int index
-                readonly property bool current: ListView.isCurrentItem
-                width: list.width
-                height: 40
+                rows: root.networkRows
+                placeholder: "wifi"
+                emptyText: "no networks"
+                // connected / saved is live state, not an explanation of the row
+                // the cursor happens to be on
+                quietSubtitles: false
+                notice: root.scanning ? "󰑐 refreshing…" : ""
 
-                Rectangle {
-                    anchors.fill: parent
-                    radius: Theme.radiusSmall
-                    color: cell.current ? Qt.rgba(Theme.purple.r, Theme.purple.g, Theme.purple.b, 0.18) : "transparent"
-                }
+                Component.onCompleted: if (!root.prompting)
+                    root.view = networks
 
-                Text {
-                    id: sig
-                    anchors.left: parent.left
-                    anchors.leftMargin: 10
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: root.signalGlyph(cell.modelData.signalStrength)
-                    color: cell.current ? Theme.purple : Theme.dim
-                    font.pixelSize: 14
-                    font.family: Theme.fontMono
-                }
-
-                Text {
-                    id: statusPill
-                    anchors.right: parent.right
-                    anchors.rightMargin: 10
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: (cell.modelData.connected ? "connected" : (cell.modelData.known ? "saved" : ""))
-                        + (cell.modelData.security !== WifiSecurityType.Open ? " 󰌾" : "")
-                    color: cell.modelData.connected ? Theme.purple : Theme.dim
-                    font.pixelSize: 10
-                    font.family: Theme.fontMono
-                }
-
-                Text {
-                    text: cell.modelData.name
-                    color: cell.current ? Theme.bright : Theme.text
-                    font.pixelSize: 13
-                    font.family: Theme.fontMono
-                    elide: Text.ElideRight
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: sig.right
-                    anchors.leftMargin: 8
-                    anchors.right: statusPill.left
-                    anchors.rightMargin: 8
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: { list.currentIndex = cell.index; root.activate(cell.modelData) }
-                }
+                onSelected: item => root.activate(item.ref)
+                onCloseRequested: root.closeRequested()
             }
 
-            Keys.onReturnPressed: if (list.currentIndex >= 0) root.activate(root.networkRows[list.currentIndex])
-            Keys.onEnterPressed: if (list.currentIndex >= 0) root.activate(root.networkRows[list.currentIndex])
-            Keys.onEscapePressed: root.closeRequested()
-            focus: root.open && root.pendingSsid.length === 0
-        }
+            CommandList {
+                id: password
 
-        Text {
-            anchors.centerIn: list
-            visible: root.networkRows.length === 0
-            text: "no networks found ✧"
-            color: Theme.dim
-            font.pixelSize: 12
-            font.family: Theme.fontMono
-        }
-    }
+                anchors.fill: parent
+                visible: root.prompting
+                active: root.open && root.prompting
 
-    // -- inline password sub-view --
-    Item {
-        anchors.fill: parent
-        visible: root.pendingSsid.length > 0
+                mode: "freeText"
+                password: true
+                placeholder: "󰌾 password for " + root.pendingSsid
+                notice: root.passwordError
 
-        Text {
-            id: pwTitle
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            text: "🔒 password for " + root.pendingSsid
-            color: Theme.purple
-            font.pixelSize: 13
-            font.family: Theme.fontMono
-            font.weight: Theme.weightHeading
-            elide: Text.ElideRight
-        }
-
-        SearchField {
-            id: passwordField
-            anchors.top: pwTitle.bottom
-            anchors.topMargin: 14
-            anchors.left: parent.left
-            anchors.right: parent.right
-            placeholder: "password..."
-            password: true
-
-            onEscapePressed: {
-                root.pendingSsid = ""
-                root.pendingNetwork = null
+                onFreeTextSubmitted: text => {
+                    if (root.pendingNetwork && text.length > 0) {
+                        root.passwordError = "";
+                        root.pendingNetwork.connectWithPsk(text);
+                    }
+                }
+                // escape backs out to the list rather than closing the surface
+                onCloseRequested: root.cancelPrompt()
             }
-            onAccepted: {
-                if (root.pendingNetwork && text.length > 0) {
-                    root.passwordError = ""
-                    root.pendingNetwork.connectWithPsk(text)
+
+            // whichever body is up owns the prompt, so a picker-level reset or
+            // query read reaches the right one
+            Connections {
+                target: root
+                function onPromptingChanged() {
+                    root.view = root.prompting ? password : networks;
                 }
             }
-        }
-
-        Text {
-            anchors.top: passwordField.bottom
-            anchors.topMargin: 10
-            anchors.left: parent.left
-            anchors.right: parent.right
-            visible: root.passwordError.length > 0
-            text: root.passwordError
-            color: Theme.rose
-            font.pixelSize: 11
-            font.family: Theme.fontMono
         }
     }
 }

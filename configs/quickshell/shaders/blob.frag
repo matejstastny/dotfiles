@@ -30,6 +30,7 @@ layout(std140, binding = 0) uniform buf {
     vec4 box11;
     vec4 box12;
     vec4 box13;
+    vec4 box14;
     vec4 rad0;
     vec4 rad1;
     vec4 rad2;
@@ -44,6 +45,7 @@ layout(std140, binding = 0) uniform buf {
     vec4 rad11;
     vec4 rad12;
     vec4 rad13;
+    vec4 rad14;
     vec4 def0;
     vec4 def1;
     vec4 def2;
@@ -58,13 +60,26 @@ layout(std140, binding = 0) uniform buf {
     vec4 def11;
     vec4 def12;
     vec4 def13;
+    vec4 def14;
 };
 
-const int SLOTS = 14;
+const int SLOTS = 15;
 const float FAR = 1e9;
 
 // how deep a circular smin closes a gap at a == b, as a fraction of k
 const float BLEND_DEPTH = 0.41421356;
+
+// how much nearer a surface has to be before it takes a pixel off whoever holds
+// it. every node rebuilds p from its own quad, so the same pixel lands a few
+// ulps apart in two of them, and on a pixel that is genuinely equidistant
+// between two surfaces those ulps are the entire decision - the two nodes pick
+// different owners and both discard it, leaving a hairline of nothing. a drawer
+// parks `sink` deep in a band, which puts an exact tie at sink/2 along the whole
+// join, and a fractional scale eventually lands a pixel centre right on it: at
+// 1.5, barHeight 37 and an 8 deep drawer tie at y 33, which is dead centre of a
+// device row. slack far wider than the noise settles every such tie the same way
+// in every node - first claim holds, so slots in order and the frame last
+const float OWNER_SLACK = 1.0 / 16.0;
 
 // r = (topRight, bottomRight, bottomLeft, topLeft)
 float sdRoundedBox(vec2 p, vec2 center, vec2 halfSize, vec4 r) {
@@ -107,9 +122,9 @@ void main() {
     // position from its own uv rather than assuming it spans the whole surface
     vec2 p = quad.xy + qt_TexCoord0 * quad.zw;
 
-    vec4 boxes[SLOTS] = vec4[SLOTS](box0, box1, box2, box3, box4, box5, box6, box7, box8, box9, box10, box11, box12, box13);
-    vec4 radii[SLOTS] = vec4[SLOTS](rad0, rad1, rad2, rad3, rad4, rad5, rad6, rad7, rad8, rad9, rad10, rad11, rad12, rad13);
-    vec4 defs[SLOTS] = vec4[SLOTS](def0, def1, def2, def3, def4, def5, def6, def7, def8, def9, def10, def11, def12, def13);
+    vec4 boxes[SLOTS] = vec4[SLOTS](box0, box1, box2, box3, box4, box5, box6, box7, box8, box9, box10, box11, box12, box13, box14);
+    vec4 radii[SLOTS] = vec4[SLOTS](rad0, rad1, rad2, rad3, rad4, rad5, rad6, rad7, rad8, rad9, rad10, rad11, rad12, rad13, rad14);
+    vec4 defs[SLOTS] = vec4[SLOTS](def0, def1, def2, def3, def4, def5, def6, def7, def8, def9, def10, def11, def12, def13, def14);
 
     float innerTop = frameInner.y - frameInner.w;
     float innerBottom = frameInner.y + frameInner.w;
@@ -166,7 +181,7 @@ void main() {
     float owner = -2.0;
     float nearest = FAR;
     for (int i = 0; i < SLOTS; i++) {
-        if (dist[i] < smoothing && dist[i] < nearest) {
+        if (dist[i] < smoothing && dist[i] < nearest - OWNER_SLACK) {
             nearest = dist[i];
             owner = float(i);
         }
@@ -241,7 +256,7 @@ void main() {
         // smin is monotone in each argument, so folding the frame in once here is
         // the same field as sminning it against every box separately
         float dFrame = smaxSharpA(outer, -inner, k);
-        if (dFrame < smoothing && dFrame < nearest) {
+        if (dFrame < smoothing && dFrame < nearest - OWNER_SLACK) {
             nearest = dFrame;
             owner = -1.0;
         }

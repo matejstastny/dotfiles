@@ -6,7 +6,7 @@ Item {
 
     // Qt 6 cannot bind a uniform array from QML, so the field is a fixed set of
     // slots rather than caelestia's dynamic rect list
-    readonly property int slotCount: 14
+    readonly property int slotCount: 15
 
     property color color: Theme.base
     property color borderColor: "transparent"
@@ -66,6 +66,7 @@ Item {
     property vector4d box11: Qt.vector4d(0, 0, 0, 0)
     property vector4d box12: Qt.vector4d(0, 0, 0, 0)
     property vector4d box13: Qt.vector4d(0, 0, 0, 0)
+    property vector4d box14: Qt.vector4d(0, 0, 0, 0)
 
     property vector4d rad0: Qt.vector4d(0, 0, 0, 0)
     property vector4d rad1: Qt.vector4d(0, 0, 0, 0)
@@ -81,6 +82,7 @@ Item {
     property vector4d rad11: Qt.vector4d(0, 0, 0, 0)
     property vector4d rad12: Qt.vector4d(0, 0, 0, 0)
     property vector4d rad13: Qt.vector4d(0, 0, 0, 0)
+    property vector4d rad14: Qt.vector4d(0, 0, 0, 0)
 
     property vector4d def0: Qt.vector4d(1, 0, 1, 1)
     property vector4d def1: Qt.vector4d(1, 0, 1, 1)
@@ -96,6 +98,7 @@ Item {
     property vector4d def11: Qt.vector4d(1, 0, 1, 1)
     property vector4d def12: Qt.vector4d(1, 0, 1, 1)
     property vector4d def13: Qt.vector4d(1, 0, 1, 1)
+    property vector4d def14: Qt.vector4d(1, 0, 1, 1)
 
     readonly property bool animating: {
         for (let i = 0; i < shapes.length; i++) {
@@ -105,16 +108,33 @@ Item {
         }
         return false;
     }
+    // a sync is queued for the end of this tick rather than run on the spot:
+    // a resizing drawer lands x, y, width and height as four separate changes,
+    // and rebuilding the whole field on each one is four times the work for the
+    // same answer
+    property bool resyncQueued: false
 
-    onAnimatingChanged: sync(0)
-    onShapesChanged: sync(0)
-    onWidthChanged: sync(0)
-    onHeightChanged: sync(0)
+    onAnimatingChanged: geometryChanged()
+    onShapesChanged: geometryChanged()
+    onWidthChanged: geometryChanged()
+    onHeightChanged: geometryChanged()
     Component.onCompleted: sync(0)
 
     FrameAnimation {
         running: root.animating
         onTriggered: root.sync(frameTime)
+    }
+
+    function geometryChanged(): void {
+        if (root.resyncQueued)
+            return;
+        root.resyncQueued = true;
+        Qt.callLater(root.resync);
+    }
+
+    function resync(): void {
+        root.resyncQueued = false;
+        root.sync(0);
     }
 
     function smoothstep(edge0: real, edge1: real, x: real): real {
@@ -226,6 +246,16 @@ Item {
             y: slot.area.y
             width: slot.area.width
             height: slot.area.height
+
+            Connections {
+                target: slot.index < root.shapes.length ? root.shapes[slot.index] : null
+
+                function onXChanged(): void { root.geometryChanged(); }
+                function onYChanged(): void { root.geometryChanged(); }
+                function onWidthChanged(): void { root.geometryChanged(); }
+                function onHeightChanged(): void { root.geometryChanged(); }
+                function onVisibleChanged(): void { root.geometryChanged(); }
+            }
         }
     }
 
@@ -291,6 +321,7 @@ Item {
         property vector4d box11: root.box11
         property vector4d box12: root.box12
         property vector4d box13: root.box13
+        property vector4d box14: root.box14
 
         property vector4d rad0: root.rad0
         property vector4d rad1: root.rad1
@@ -306,6 +337,7 @@ Item {
         property vector4d rad11: root.rad11
         property vector4d rad12: root.rad12
         property vector4d rad13: root.rad13
+        property vector4d rad14: root.rad14
 
         property vector4d def0: root.def0
         property vector4d def1: root.def1
@@ -321,6 +353,7 @@ Item {
         property vector4d def11: root.def11
         property vector4d def12: root.def12
         property vector4d def13: root.def13
+        property vector4d def14: root.def14
 
         vertexShader: Qt.resolvedUrl("../shaders/blob.vert.qsb")
         fragmentShader: Qt.resolvedUrl("../shaders/blob.frag.qsb")

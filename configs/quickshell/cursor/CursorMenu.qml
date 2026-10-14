@@ -4,300 +4,295 @@ import Quickshell.Io
 import "../"
 import "../common"
 
-PopupWindow {
+// was a grid of cramped bordered tiles that never took focus and never set a
+// starting index, so the arrow keys did nothing. it is a list now, like every
+// other surface here: searchable, keyboard-first, with the preview sitting in
+// the same column every other picker puts its mark in
+CommandPicker {
     id: root
+
     popoutName: "cursormenu"
-    title: "cursor"
-    popupWidth: 520
-    popupHeight: 430
+    placeholder: "cursor theme"
+    emptyText: "no cursor themes"
+
+    // the previews are pictures, so the mark column has to be wider than a
+    // glyph and the rows taller than a line of text
+    iconColumnWidth: 44
+    rowHeight: 42
+    maxRows: 6
+
+    // which theme is live is state, not an explanation of the current row
+    quietSubtitles: false
 
     readonly property string homeDir: Quickshell.env("HOME")
     readonly property string setCursorScript: homeDir + "/dotfiles/scripts/set-cursor.sh"
     readonly property string thumbsScript: homeDir + "/dotfiles/scripts/cursor-thumbs.sh"
 
+    readonly property int minSize: 16
+    readonly property int maxSize: 96
+    readonly property int sizeStep: 4
+
     property string currentTheme: ""
     property int currentSize: 24
+    property var themes: []
 
-    function applyCursor(name, size) {
-        Quickshell.execDetached([root.setCursorScript, name, String(size)])
-        root.currentTheme = name
-        root.currentSize = size
-        cursorModel.setCurrent(name)
-        root.closeRequested()
+    actions: [
+        {
+            key: "smaller",
+            code: Qt.Key_Minus,
+            hint: "alt+− / alt+=  size"
+        },
+        {
+            key: "bigger",
+            code: Qt.Key_Equal
+        },
+        {
+            key: "bigger",
+            code: Qt.Key_Plus
+        }
+    ]
+
+    function applyCursor(name: string, size: int): void {
+        Quickshell.execDetached([root.setCursorScript, name, String(size)]);
+        root.currentTheme = name;
+        root.currentSize = size;
+        root.closeRequested();
     }
 
-    onOpenChanged: {
-        if (open) {
-            cursorModel.clear()
-            lister.running = true
-        }
+    function nudgeSize(delta: int): void {
+        if (root.currentTheme.length === 0)
+            return;
+        const next = Math.max(root.minSize, Math.min(root.maxSize, root.currentSize + delta));
+        if (next === root.currentSize)
+            return;
+        root.currentSize = next;
+        root.commitSize(next);
     }
 
-    ListModel {
-        id: cursorModel
-        function setCurrent(name) {
-            for (let i = 0; i < count; i++) setProperty(i, "current", get(i).name === name)
-        }
-        function setSize(name, size) {
-            for (let i = 0; i < count; i++) if (get(i).name === name) setProperty(i, "size", size)
-        }
+    function commitSize(size: int): void {
+        applyProc.command = [root.setCursorScript, root.currentTheme, String(size)];
+        applyProc.running = true;
     }
 
     Process {
         id: lister
         command: [root.thumbsScript]
-        stdout: SplitParser {
-            onRead: data => {
-                if (data.length === 0) return
-                const parts = data.split("\t")
-                if (parts.length < 4) return
-                const size = parseInt(parts[3]) || 24
-                cursorModel.append({ current: parts[0] === "1", name: parts[1], thumb: parts[2], size: size })
-                if (cursorModel.count === 1) grid.currentIndex = 0
-                if (parts[0] === "1") {
-                    root.currentTheme = parts[1]
-                    root.currentSize = size
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const out = [];
+                for (const line of text.split("\n")) {
+                    if (line.length === 0)
+                        continue;
+                    const parts = line.split("\t");
+                    if (parts.length < 4)
+                        continue;
+                    const live = parts[0] === "1";
+                    const size = parseInt(parts[3]) || 24;
+                    if (live) {
+                        root.currentTheme = parts[1];
+                        root.currentSize = size;
+                    }
+                    out.push({
+                        key: parts[1],
+                        label: parts[1],
+                        iconImage: "file://" + parts[2],
+                        subtitle: live ? "✦ active" : "",
+                        highlighted: live,
+                        themeSize: size
+                    });
                 }
+                root.themes = out;
             }
         }
     }
 
-    GridView {
-        id: grid
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: sizeRow.top
-        anchors.bottomMargin: 10
-        clip: true
-        cellWidth: 122
-        cellHeight: 108
-        model: cursorModel
-        boundsBehavior: Flickable.StopAtBounds
+    Process {
+        id: applyProc
+        // hyprland only repaints the on-screen cursor when a surface requests a
+        // differently-*named* shape - applying a new theme/size alone doesn't
+        // trigger that. flipping a cursorShape twice (deferred a tick apart so
+        // each change is a distinct request, not coalesced) forces two real
+        // shape transitions once the new theme/size is actually live
+        onExited: nudgeStep1.start()
+    }
 
-        focus: root.open
-        keyNavigationEnabled: true
-        highlightFollowsCurrentItem: true
-        highlightMoveDuration: 100
-        highlight: Rectangle {
-            width: grid.cellWidth - 8
-            height: grid.cellHeight - 8
-            radius: Theme.radiusSmall
-            color: "transparent"
-            border.width: 2
-            border.color: Theme.purple
-            z: 10
-        }
-        Keys.onEscapePressed: root.closeRequested()
-        function confirmCurrent() {
-            if (grid.currentIndex >= 0) {
-                const item = cursorModel.get(grid.currentIndex)
-                root.applyCursor(item.name, item.size)
-            }
-        }
-        Keys.onReturnPressed: confirmCurrent()
-        Keys.onEnterPressed: confirmCurrent()
+    property bool nudged: false
 
-        delegate: Item {
-            id: cell
-            required property string name
-            required property string thumb
-            required property bool current
-            required property int size
-            required property int index
-            width: grid.cellWidth - 8
-            height: grid.cellHeight - 8
-
-            Rectangle {
-                anchors.fill: parent
-                radius: Theme.radiusSmall
-                color: Theme.surface
-                border.width: Theme.borderWidth
-                border.color: cell.current ? Theme.purple : Theme.muted
-                clip: true
-
-                Image {
-                    id: preview
-                    anchors.top: parent.top
-                    anchors.topMargin: 10
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    width: 48
-                    height: 48
-                    source: "file://" + cell.thumb
-                    fillMode: Image.PreserveAspectFit
-                    asynchronous: true
-                    smooth: true
-                    cache: true
-                    sourceSize.width: width
-                    sourceSize.height: height
-                }
-
-                Text {
-                    anchors.top: preview.bottom
-                    anchors.topMargin: 6
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.margins: 4
-                    horizontalAlignment: Text.AlignHCenter
-                    text: cell.name
-                    color: cell.current ? Theme.purple : Theme.bright
-                    font.pixelSize: 9
-                    font.family: Theme.fontMono
-                    font.weight: Font.Normal
-                    wrapMode: Text.WrapAnywhere
-                    maximumLineCount: 2
-                    elide: Text.ElideRight
-                }
-
-                Text {
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.margins: 5
-                    z: 10
-                    text: "✦"
-                    color: Theme.purple
-                    font.pixelSize: 12
-                    font.family: Theme.fontMono
-                    visible: cell.current
-                }
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    grid.currentIndex = index
-                    root.applyCursor(cell.name, cell.size)
-                }
-            }
-        }
-
-        Text {
-            anchors.centerIn: parent
-            visible: cursorModel.count === 0
-            text: "no cursor themes found ✧"
-            color: Theme.dim
-            font.pixelSize: 12
-            font.family: Theme.fontMono
-            font.weight: Font.Normal
+    Timer {
+        id: nudgeStep1
+        interval: 0
+        onTriggered: {
+            root.nudged = !root.nudged;
+            nudgeStep2.start();
         }
     }
 
-    Item {
-        id: sizeRow
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        height: 20
+    Timer {
+        id: nudgeStep2
+        interval: 0
+        onTriggered: root.nudged = !root.nudged
+    }
 
-        readonly property int minSize: 16
-        readonly property int maxSize: 96
-        readonly property real fraction: (root.currentSize - minSize) / (maxSize - minSize)
+    rows: root.themes
 
-        function valueForX(x, w) {
-            const t = Math.max(0, Math.min(1, x / w))
-            return Math.round(minSize + t * (maxSize - minSize))
-        }
+    onOpenChanged: if (root.open)
+        lister.running = true
 
-        function previewSize(size) {
-            root.currentSize = size
+    onSelected: (item, action) => {
+        if (action === "smaller") {
+            root.nudgeSize(-root.sizeStep);
+            return;
         }
+        if (action === "bigger") {
+            root.nudgeSize(root.sizeStep);
+            return;
+        }
+        root.applyCursor(item.key, root.currentSize);
+    }
 
-        function commitSize(size) {
-            applyProc.command = [root.setCursorScript, root.currentTheme, String(size)]
-            applyProc.running = true
-            cursorModel.setSize(root.currentTheme, size)
-        }
+    // the size keys still have to land when the filter has left nothing selected
+    onFreeTextSubmitted: (text, action) => {
+        if (action === "smaller")
+            root.nudgeSize(-root.sizeStep);
+        else if (action === "bigger")
+            root.nudgeSize(root.sizeStep);
+    }
 
-        Process {
-            id: applyProc
-            // hyprland only repaints the on-screen cursor when a surface requests a
-            // differently-*named* shape - applying a new theme/size alone doesn't
-            // trigger that. flipping trackHit's cursorShape twice (deferred a tick
-            // apart so each change is a distinct request, not coalesced) forces two
-            // real shape transitions once the new theme/size is actually live.
-            onExited: nudgeStep1.start()
-        }
-        Timer {
-            id: nudgeStep1
-            interval: 0
-            onTriggered: {
-                trackHit.nudged = !trackHit.nudged
-                nudgeStep2.start()
-            }
-        }
-        Timer {
-            id: nudgeStep2
-            interval: 0
-            onTriggered: trackHit.nudged = !trackHit.nudged
-        }
+    mode: "listOrFreeText"
 
-        Text {
-            id: sizeLabel
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            text: "size"
-            color: Theme.dim
-            font.pixelSize: 11
-            font.family: Theme.fontMono
-            font.weight: Font.Normal
-        }
-
+    body: Component {
         Item {
-            id: trackHit
-            anchors.left: sizeLabel.right
-            anchors.leftMargin: 10
-            anchors.right: valueLabel.left
-            anchors.rightMargin: 10
-            anchors.verticalCenter: parent.verticalCenter
-            height: parent.height
+            id: cursorBody
 
-            property bool nudged: false
+            implicitWidth: root.surfaceWidth
+            implicitHeight: list.implicitHeight + Theme.gapLarge + sizeRow.height
 
-            Rectangle {
-                id: track
+            CommandList {
+                id: list
+
+                anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                height: 6
-                radius: 3
-                color: Theme.overlay
+                height: implicitHeight
 
-                Rectangle {
+                active: root.open
+                rows: root.rows
+                actions: root.actions
+                mode: root.mode
+                placeholder: root.placeholder
+                emptyText: root.emptyText
+                quietSubtitles: root.quietSubtitles
+                rowHeight: root.rowHeight
+                maxRows: root.maxRows
+                iconColumnWidth: root.iconColumnWidth
+
+                Component.onCompleted: root.view = list
+                Component.onDestruction: if (root.view === list)
+                    root.view = null
+
+                onSelected: (item, action) => root.selected(item, action)
+                onFreeTextSubmitted: (text, action) => root.freeTextSubmitted(text, action)
+                onCloseRequested: root.closeRequested()
+            }
+
+            // a hairline, not a card edge. the drawer is already one surface
+            Rectangle {
+                anchors.bottom: sizeRow.top
+                anchors.bottomMargin: Theme.gap
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: Theme.borderWidth
+                color: Theme.muted
+                opacity: 0.4
+            }
+
+            Item {
+                id: sizeRow
+
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                height: Theme.iconLarge
+
+                readonly property real fraction: (root.currentSize - root.minSize) / (root.maxSize - root.minSize)
+
+                Text {
+                    id: sizeLabel
+
                     anchors.left: parent.left
+                    anchors.leftMargin: Theme.rowGutter
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "size"
+                    color: Theme.muted
+                    font.pixelSize: Theme.sizeLabel
+                    font.family: Theme.fontMono
+                }
+
+                Item {
+                    id: trackHit
+
+                    anchors.left: sizeLabel.right
+                    anchors.leftMargin: Theme.gapLarge
+                    anchors.right: valueLabel.left
+                    anchors.rightMargin: Theme.gapLarge
                     anchors.verticalCenter: parent.verticalCenter
                     height: parent.height
-                    radius: parent.radius
-                    width: Math.max(radius * 2, parent.width * Math.max(0, Math.min(1, sizeRow.fraction)))
-                    color: Theme.purple
-                    Behavior on width { NumberAnimation { duration: 80; easing.type: Easing.OutCubic } }
+
+                    Rectangle {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        height: 3
+                        radius: height / 2
+                        color: Theme.overlay
+
+                        Rectangle {
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
+                            height: parent.height
+                            radius: parent.radius
+                            width: Math.max(parent.height, parent.width * Math.max(0, Math.min(1, sizeRow.fraction)))
+                            color: Theme.purple
+
+                            Behavior on width {
+                                NumberAnimation {
+                                    duration: Theme.snapDuration
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        enabled: root.currentTheme.length > 0
+                        cursorShape: root.nudged ? Qt.SizeAllCursor : Qt.SizeHorCursor
+                        function pick(x) {
+                            const t = Math.max(0, Math.min(1, x / trackHit.width));
+                            root.currentSize = Math.round(root.minSize + t * (root.maxSize - root.minSize));
+                        }
+                        onPressed: mouse => pick(mouse.x)
+                        onPositionChanged: mouse => {
+                            if (pressed)
+                                pick(mouse.x);
+                        }
+                        onReleased: root.commitSize(root.currentSize)
+                    }
+                }
+
+                Text {
+                    id: valueLabel
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 40
+                    horizontalAlignment: Text.AlignRight
+                    text: root.currentSize + "px"
+                    color: Theme.bright
+                    font.pixelSize: Theme.sizeLabel
+                    font.family: Theme.fontMono
                 }
             }
-
-            MouseArea {
-                anchors.fill: parent
-                enabled: root.currentTheme.length > 0
-                cursorShape: trackHit.nudged ? Qt.SizeAllCursor : Qt.SizeHorCursor
-                onPressed: mouse => sizeRow.previewSize(sizeRow.valueForX(mouse.x, trackHit.width))
-                onPositionChanged: mouse => {
-                    if (pressed) sizeRow.previewSize(sizeRow.valueForX(mouse.x, trackHit.width))
-                }
-                onReleased: sizeRow.commitSize(root.currentSize)
-            }
-        }
-
-        Text {
-            id: valueLabel
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            width: 34
-            horizontalAlignment: Text.AlignRight
-            text: root.currentSize + "px"
-            color: Theme.bright
-            font.pixelSize: 11
-            font.family: Theme.fontMono
-            font.weight: Font.Normal
         }
     }
 }

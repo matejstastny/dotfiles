@@ -1,62 +1,63 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "../"
 import "../common"
 
-PopupWindow {
+CommandPicker {
     id: root
+
     popoutName: "keyboard"
-    title: "keyboard"
-    popupWidth: 340
-    popupHeight: 220
+    placeholder: "keyboard layout"
+    mode: "list"
+
+    // which layout is live is state, not an explanation of the row you happen
+    // to be on, so it stays visible on every row
+    quietSubtitles: false
 
     readonly property var layouts: [
-        { key: "us", label: "english", subtitle: "us" },
-        { key: "cz", label: "czech (qwerty)", subtitle: "cz" }
+        {
+            key: "us",
+            label: "english",
+            code: "us"
+        },
+        {
+            key: "cz",
+            label: "czech (qwerty)",
+            code: "cz"
+        }
     ]
 
-    ListModel { id: model }
+    property string activeKeymap: ""
 
-    function refresh() {
-        model.clear()
+    rows: {
+        const out = [];
         for (let i = 0; i < root.layouts.length; i++) {
-            const l = root.layouts[i]
-            model.append({ key: l.key, layoutIndex: i, label: l.label, subtitle: l.subtitle, icon: "󰌌" })
+            const l = root.layouts[i];
+            out.push({
+                key: l.key,
+                label: l.label,
+                subtitle: root.activeKeymap.includes(l.code) ? "active" : l.code,
+                icon: "󰌌",
+                layoutIndex: i
+            });
         }
+        return out;
     }
 
     Process {
         id: activeCheck
         command: ["bash", "-c", "hyprctl devices -j | jq -r '.keyboards[0].active_keymap'"]
-        stdout: SplitParser {
-            onRead: data => {
-                const active = data.trim().toLowerCase()
-                for (let i = 0; i < model.count; i++) {
-                    const row = model.get(i)
-                    model.setProperty(i, "subtitle", active.includes(row.key) ? "active" : row.key)
-                }
-            }
+        stdout: StdioCollector {
+            onStreamFinished: root.activeKeymap = text.trim().toLowerCase()
         }
     }
 
-    onOpenChanged: {
-        if (open) {
-            root.refresh()
-            activeCheck.running = true
-        }
-    }
+    onOpenChanged: if (root.open)
+        activeCheck.running = true
 
-    ListMenuPopup {
-        anchors.fill: parent
-        active: root.open
-        mode: "list"
-        items: model
-        placeholder: "switch layout..."
-
-        onSelected: (item) => {
-            Quickshell.execDetached(["hyprctl", "switchxkblayout", "all", item.layoutIndex.toString()])
-            root.closeRequested()
-        }
-        onCloseRequested: root.closeRequested()
+    onSelected: item => {
+        Quickshell.execDetached(["hyprctl", "switchxkblayout", "all", item.layoutIndex.toString()]);
+        root.closeRequested();
     }
 }
