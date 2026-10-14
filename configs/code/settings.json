@@ -107,6 +107,7 @@
     // why tf is this a thing, I trust them bro
     "security.workspace.trust.untrustedFiles": "open",
     "json.schemaDownload.trustedDomains": {
+        "https://biomejs.dev": true,
         "https://developer.microsoft.com/json-schemas/": true,
         "https://docs.trickfirerobotics.com": true,
         "https://github.com": true,
@@ -116,6 +117,7 @@
         "https://raw.githubusercontent.com/devcontainers/spec/": true,
         "https://raw.githubusercontent.com/microsoft/vscode/": true,
         "https://schemastore.azurewebsites.net/": true,
+        "https://spec.openapis.org/": true,
         "https://www.schemastore.org/": true
     },
 
@@ -183,5 +185,6 @@
     "[java]": {
         "editor.defaultFormatter": "redhat.java"
     },
-    "terminal.integrated.initialHint": false
+    "terminal.integrated.initialHint": false,
+    "remote.autoForwardPortsSource": "hybrid"
 }
