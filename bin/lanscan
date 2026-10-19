@@ -1,0 +1,623 @@
+#!/usr/bin/env python3
+"""local network scanner: discovery, identification, and sighting history"""
+
+import argparse
+import concurrent.futures as cf
+import ipaddress
+import json
+import os
+import re
+import shutil
+import socket
+import subprocess
+import sys
+import time
+from collections import defaultdict
+from datetime import datetime, timezone
+from pathlib import Path
+
+STATE = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share")) / "lanscan"
+HISTORY = STATE / "history.json"
+
+TTY = sys.stdout.isatty()
+NO_COLOR = bool(os.environ.get("NO_COLOR"))
+
+
+def c(code):
+    return "" if (not TTY or NO_COLOR) else f"\033[{code}m"
+
+
+R, B, D = c("0"), c("1"), c("2")
+GRN, YEL, MAG, CYN = c("32"), c("33"), c("35"), c("36")
+
+
+def run(cmd, timeout=25):
+    """capture stdout as lenient text, keeping partial output if we time out"""
+    stderr = None if (cmd[0] == "sudo" and sys.stdin.isatty()) else subprocess.DEVNULL
+    try:
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=stderr)
+    except (FileNotFoundError, PermissionError):
+        return ""
+    try:
+        out, _ = p.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        p.kill()
+        out, _ = p.communicate()
+    return (out or b"").decode("utf-8", errors="replace")
+
+
+def have(tool):
+    return shutil.which(tool) is not None
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def ago(iso):
+    try:
+        dt = datetime.fromisoformat(iso)
+    except (ValueError, TypeError):
+        return "?"
+    secs = (datetime.now(timezone.utc) - dt).total_seconds()
+    for div, unit in ((86400 * 365, "y"), (86400 * 30, "mo"), (86400, "d"), (3600, "h"), (60, "m")):
+        if secs >= div:
+            return f"{int(secs / div)}{unit} ago"
+    return "just now"
+
+
+# ---------- network context ----------
+
+def net_context(iface=None):
+    ctx = {"iface": iface, "gateway": None, "self_ip": None, "cidr": None, "ssid": None}
+    routes = run(["ip", "-j", "route"])
+    try:
+        for r in json.loads(routes or "[]"):
+            if r.get("dst") == "default":
+                ctx["gateway"] = r.get("gateway")
+                ctx["iface"] = iface or r.get("dev")
+                break
+    except json.JSONDecodeError:
+        pass
+    if not ctx["iface"]:
+        sys.exit("could not determine an interface, pass one explicitly")
+
+    addrs = run(["ip", "-j", "-4", "addr", "show", ctx["iface"]])
+    try:
+        for a in json.loads(addrs or "[]"):
+            for info in a.get("addr_info", []):
+                if info.get("family") == "inet":
+                    ctx["self_ip"] = info["local"]
+                    ctx["cidr"] = f"{info['local']}/{info['prefixlen']}"
+                    break
+    except json.JSONDecodeError:
+        pass
+    if not ctx["cidr"]:
+        sys.exit(f"no ipv4 address on {ctx['iface']}")
+
+    for line in run(["nmcli", "-t", "-f", "ACTIVE,SSID", "dev", "wifi"]).splitlines():
+        if line.startswith("yes:"):
+            ctx["ssid"] = line.split(":", 1)[1]
+            break
+    return ctx
+
+
+# ---------- discovery ----------
+
+ARP_NOTE = []
+
+
+def arp_scan(iface, retries):
+    """authoritative layer-2 sweep, needs root"""
+    hosts = {}
+    if not have("arp-scan"):
+        ARP_NOTE.append("arp-scan not installed")
+        return hosts
+    cmd = ["arp-scan", f"--interface={iface}", "--localnet", f"--retry={retries}", "--plain"]
+    if os.geteuid() != 0:
+        # prompt when a human is watching, fail fast when scripted
+        cmd = ["sudo"] + ([] if sys.stdin.isatty() else ["-n"]) + cmd
+    out = run(cmd, timeout=90)
+    if not out.strip():
+        ARP_NOTE.append("arp-scan returned nothing (needs root)")
+    for line in out.splitlines():
+        parts = line.split("\t")
+        if len(parts) < 2:
+            continue
+        ip, mac = parts[0].strip(), parts[1].strip().lower()
+        vendor = parts[2].strip() if len(parts) > 2 else ""
+        try:
+            ipaddress.ip_address(ip)
+        except ValueError:
+            continue
+        if "(DUP" in vendor:
+            continue
+        hosts.setdefault(ip, {"ip": ip, "mac": mac, "vendor": vendor})
+    return hosts
+
+
+def ping_sweep(cidr, workers=256):
+    net = ipaddress.ip_network(cidr, strict=False)
+    if net.num_addresses > 1024:
+        return set()
+    alive = set()
+
+    def ping(ip):
+        p = subprocess.run(["ping", "-c", "1", "-W", "1", str(ip)],
+                           capture_output=True)
+        return str(ip) if p.returncode == 0 else None
+
+    with cf.ThreadPoolExecutor(max_workers=workers) as ex:
+        for res in ex.map(ping, net.hosts()):
+            if res:
+                alive.add(res)
+    return alive
+
+
+def neigh_table(iface):
+    hosts = {}
+    for line in run(["ip", "-4", "neigh", "show", "dev", iface]).splitlines():
+        f = line.split()
+        if len(f) >= 4 and f[1] == "dev" and "lladdr" in f:
+            i = f.index("lladdr")
+            hosts[f[0]] = {"ip": f[0], "mac": f[i + 1].lower(), "vendor": ""}
+    return hosts
+
+
+# ---------- mdns ----------
+
+SERVICE_MAP = {
+    "_ipp": "printer", "_ipps": "printer", "_printer": "printer",
+    "_pdl-datastream": "printer", "_scanner": "scanner", "_uscan": "scanner",
+    "_uscans": "scanner", "_googlecast": "cast", "_googlezone": "cast",
+    "_airplay": "airplay", "_raop": "speaker", "_sonos": "speaker",
+    "_spotify-connect": "speaker", "_hap": "smarthome", "_matter": "smarthome",
+    "_matterc": "smarthome", "_homekit": "smarthome", "_ssh": "server",
+    "_sftp-ssh": "server", "_smb": "fileshare", "_nfs": "fileshare",
+    "_afpovertcp": "fileshare", "_workstation": "computer",
+    "_device-info": "computer", "_companion-link": "apple",
+    "_rdlink": "apple", "_sleep-proxy": "apple", "_touch-able": "appletv",
+    "_airport": "router", "_eerogw": "router", "_http": "webui",
+    "_https": "webui", "_nvstream": "gaming", "_steam": "gaming",
+    "_psia": "camera", "_rtsp": "camera", "_onvif": "camera",
+    "_octoprint": "3dprinter", "_prusalink": "3dprinter",
+    "_home-assistant": "smarthome", "_esphomelib": "smarthome",
+    "_plexmediasvr": "media", "_jellyfin": "media", "_kodi": "media",
+    "_adisk": "backup", "_time-machine": "backup", "_tivo": "media",
+}
+MODEL_KEYS = ("model", "md", "ty", "product", "usb_MDL", "am", "fn", "device")
+DEC_ESCAPE = re.compile(r"\\(\d{3})")
+# internal plumbing service types that say nothing about what a device is
+NOISE_TAGS = {
+    "meshcop", "trel", "nrd", "dnssd-server", "srpl-tls", "sleep-proxy",
+    "infra-analytics", "googcrossdevice", "googzone", "companion-link",
+    "rdlink", "touch-able", "appletv-v2", "sleep-proxy-udp", "mediaremotetv",
+    "airport", "udisks-ssh", "device-info", "tcp", "udp",
+}
+# raop/airplay instance names look like "AABBCCDDEEFF@Living Room"
+MAC_PREFIX = re.compile(r"^[0-9A-F]{12}@", re.I)
+
+
+def unescape(s):
+    s = DEC_ESCAPE.sub(lambda m: chr(int(m.group(1))), s)
+    return s.replace("\\\\", "\\")
+
+
+def prettify(name):
+    return MAC_PREFIX.sub("", unescape(name)).strip()
+
+
+def mdns_scan(timeout):
+    """parse avahi-browse resolved records into per-ip facts"""
+    data = defaultdict(lambda: {"names": set(), "hosts": set(), "types": set(),
+                                "models": set(), "admin": set()})
+    if not have("avahi-browse"):
+        return data
+    out = run(["avahi-browse", "-artpk"], timeout=timeout + 5)
+    for line in out.splitlines():
+        if not line.startswith("="):
+            continue
+        f = line.split(";")
+        if len(f) < 9:
+            continue
+        _, _, proto, name, stype, _domain, host, ip, _port = f[:9]
+        txt = f[9] if len(f) > 9 else ""
+        if proto != "IPv4" or not ip:
+            continue
+        d = data[ip]
+        d["names"].add(prettify(name))
+        if host:
+            d["hosts"].add(host.rstrip("."))
+        base = stype.split(".")[0]
+        d["types"].add(SERVICE_MAP.get(base, base.lstrip("_")))
+        for kv in re.findall(r'"([^"]*)"', txt):
+            if "=" not in kv:
+                continue
+            k, v = kv.split("=", 1)
+            if k in MODEL_KEYS and v and v not in ("", "()"):
+                d["models"].add(v.strip("()"))
+            elif k == "adminurl" and v:
+                d["admin"].add(v)
+    return data
+
+
+# ---------- name resolution ----------
+
+def resolve_names(ips, workers=48):
+    names = {}
+
+    def rev(ip):
+        try:
+            return ip, socket.gethostbyaddr(ip)[0]
+        except (OSError, socket.herror):
+            return ip, None
+
+    with cf.ThreadPoolExecutor(max_workers=workers) as ex:
+        for ip, name in ex.map(rev, ips):
+            if name:
+                names[ip] = name
+    return names
+
+
+def avahi_resolve(ips, workers=24):
+    names = {}
+    if not have("avahi-resolve"):
+        return names
+
+    def one(ip):
+        out = run(["avahi-resolve", "-a", ip], timeout=4)
+        parts = out.split()
+        return ip, (parts[1].rstrip(".") if len(parts) > 1 else None)
+
+    with cf.ThreadPoolExecutor(max_workers=workers) as ex:
+        for ip, name in ex.map(one, ips):
+            if name:
+                names[ip] = name
+    return names
+
+
+# ---------- ports ----------
+
+def port_scan(ips, top, aggressive):
+    """one nmap invocation for every host"""
+    res = defaultdict(list)
+    osguess = {}
+    if not have("nmap") or not ips:
+        return res, osguess
+    cmd = ["nmap", "-Pn", "-n", "--top-ports", str(top), "--open", "-oX", "-"]
+    if aggressive:
+        cmd[1:1] = ["-sS", "-sV", "--version-light", "-O", "--osscan-limit"]
+    if os.geteuid() != 0 and aggressive:
+        cmd = ["sudo"] + ([] if sys.stdin.isatty() else ["-n"]) + cmd
+    xml = run(cmd + list(ips), timeout=600)
+    if not xml:
+        return res, osguess
+    import xml.etree.ElementTree as ET
+    try:
+        root = ET.fromstring(xml)
+    except ET.ParseError:
+        return res, osguess
+    for host in root.findall("host"):
+        addr = host.find("address")
+        if addr is None:
+            continue
+        ip = addr.get("addr")
+        for p in host.findall("./ports/port"):
+            st = p.find("state")
+            if st is None or st.get("state") != "open":
+                continue
+            svc = p.find("service")
+            label = p.get("portid")
+            if svc is not None and svc.get("name"):
+                label += f"/{svc.get('name')}"
+                if svc.get("product"):
+                    label += f" {svc.get('product')}"
+            res[ip].append(label)
+        m = host.find("./os/osmatch")
+        if m is not None:
+            osguess[ip] = f"{m.get('name')} ({m.get('accuracy')}%)"
+    return res, osguess
+
+
+# ---------- history ----------
+
+def load_history():
+    try:
+        return json.loads(HISTORY.read_text())
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def save_history(db):
+    STATE.mkdir(parents=True, exist_ok=True)
+    tmp = HISTORY.with_suffix(".tmp")
+    tmp.write_text(json.dumps(db, indent=1, sort_keys=True))
+    tmp.replace(HISTORY)
+
+
+def merge_history(db, hosts, ssid):
+    ts = now()
+    for h in hosts:
+        key = h["mac"] or h["ip"]
+        rec = db.setdefault(key, {"first_seen": ts, "ips": [], "names": [],
+                                  "vendor": "", "networks": [], "seen_count": 0})
+        rec["last_seen"] = ts
+        rec["seen_count"] = rec.get("seen_count", 0) + 1
+        if h["vendor"] and h["vendor"] not in ("(Unknown)",):
+            rec["vendor"] = h["vendor"]
+        for field, val in (("ips", h["ip"]), ("names", h.get("name")),
+                           ("networks", ssid)):
+            if val and val not in rec[field]:
+                rec[field].append(val)
+        h["first_seen"] = rec["first_seen"]
+        h["seen_count"] = rec["seen_count"]
+        h["is_new"] = rec["seen_count"] == 1
+        h["prior_ips"] = [i for i in rec["ips"] if i != h["ip"]]
+    return db
+
+
+# ---------- identification ----------
+
+RANDOM_MAC = re.compile(r"^.[26ae]:", re.I)
+
+
+UGLY = (
+    re.compile(r"^[0-9a-f]{12,}$", re.I),
+    re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-", re.I),
+    re.compile(r"^[0-9A-F]{16,}-", re.I),
+)
+
+
+def ugly(name):
+    """mac- and uuid-derived hostnames identify nothing, prefer a product name"""
+    base = re.sub(r"\.local$", "", name or "")
+    return not base or any(p.match(base) for p in UGLY)
+
+
+def pick_name(mdns, ptr_name, local_name, all_names):
+    candidates = []
+    candidates += sorted(mdns.get("hosts", []), key=len)
+    candidates += [local_name, ptr_name]
+    models = sorted(mdns.get("models", []), key=len, reverse=True)
+    svc = sorted((n for n in mdns.get("names", []) if n), key=len)
+    candidates += models + svc + sorted(all_names, key=len)
+
+    clean = [c for c in candidates if c and not ugly(c)]
+    fallback = [c for c in candidates if c]
+    best = (clean or fallback or [""])[0]
+    return re.sub(r"\.local$", "", best)
+
+
+def classify(h):
+    tags = set(h.get("mdns_types", []))
+    vendor = (h.get("vendor") or "").lower()
+    name = " ".join(filter(None, [h.get("name") or "", " ".join(h.get("models", []))])).lower()
+    blob = f"{vendor} {name}"
+    for needle, tag in (
+        ("raspberry", "rpi"), ("sonos", "speaker"), ("google", "google"),
+        ("apple", "apple"), ("amazon", "amazon"), ("espressif", "esp/iot"),
+        ("ubiquiti", "network"), ("tp-link", "network"), ("netgear", "network"),
+        ("eero", "router"), ("synology", "nas"), ("qnap", "nas"),
+        ("brother", "printer"), ("hewlett", "printer"), ("canon", "printer"),
+        ("epson", "printer"), ("samsung", "samsung"), ("intel", "computer"),
+        ("realtek", "computer"), ("sony", "media"), ("roku", "media"),
+        ("tuya", "iot"), ("shelly", "iot"), ("sonoff", "iot"),
+    ):
+        if needle in blob:
+            tags.add(tag)
+    tags -= NOISE_TAGS
+    if h.get("is_gateway"):
+        tags.add("gateway")
+    if h.get("is_self"):
+        tags.add("this host")
+    # device-kind tags carry more signal than bare protocol names
+    priority = {"gateway": 0, "this host": 0, "router": 1, "printer": 1,
+                "nas": 1, "camera": 1, "3dprinter": 1, "scanner": 1,
+                "speaker": 2, "cast": 2, "media": 2, "smarthome": 2,
+                "server": 2, "computer": 2, "rpi": 2, "iot": 2, "esp/iot": 2}
+    return sorted(tags, key=lambda t: (priority.get(t, 5), t))
+
+
+# ---------- rendering ----------
+
+def human_row_color(h):
+    if h.get("is_self"):
+        return CYN
+    if h.get("is_gateway"):
+        return MAG
+    if h.get("is_new"):
+        return GRN
+    return ""
+
+
+def render(hosts, show_ports, width):
+    cols = [("IP", "ip"), ("MAC", "mac"), ("VENDOR", "vendor"),
+            ("NAME", "name"), ("TAGS", "tags"), ("SEEN", "seen")]
+    if show_ports:
+        cols.append(("OPEN PORTS", "ports"))
+
+    rows = []
+    for h in hosts:
+        rows.append({
+            "ip": h["ip"],
+            "mac": h["mac"] + ("*" if h.get("random_mac") else ""),
+            "vendor": h.get("vendor") or "-",
+            "name": h.get("name") or "-",
+            "tags": ",".join(h.get("tags", [])) or "-",
+            "seen": "NEW" if h.get("is_new") else ago(h.get("first_seen", "")),
+            "ports": ", ".join(h.get("open_ports", [])) or "-",
+            "_color": human_row_color(h),
+        })
+
+    budget = {"ip": 15, "mac": 18, "vendor": 24, "name": 26, "tags": 20,
+              "seen": 11, "ports": 40}
+    widths = {}
+    for title, key in cols:
+        natural = max([len(title)] + [len(r[key]) for r in rows] or [0])
+        widths[key] = min(natural, budget[key])
+
+    total = sum(widths.values()) + 2 * (len(cols) - 1)
+    if total > width:
+        for key in ("ports", "vendor", "name", "tags"):
+            if key in widths and total > width:
+                cut = min(total - width, max(0, widths[key] - 8))
+                widths[key] -= cut
+                total -= cut
+
+    def cell(text, w):
+        return text if len(text) <= w else text[: max(1, w - 1)] + "…"
+
+    head = "  ".join(f"{B}{t:<{widths[k]}}{R}" for t, k in cols)
+    print(head)
+    print(f"{D}" + "  ".join("─" * widths[k] for _, k in cols) + f"{R}")
+    for r in rows:
+        line = "  ".join(f"{cell(r[k], widths[k]):<{widths[k]}}" for _, k in cols)
+        print(f"{r['_color']}{line}{R}" if r["_color"] else line)
+
+
+def render_detail(hosts):
+    for h in hosts:
+        title = h.get("name") or h.get("vendor") or h["ip"]
+        print(f"\n{B}{h['ip']}{R}  {title}")
+        bits = [
+            ("mac", h["mac"] + (f" {D}(randomized){R}" if h.get("random_mac") else "")),
+            ("vendor", h.get("vendor")),
+            ("hostnames", ", ".join(sorted(h.get("all_names", [])))),
+            ("models", ", ".join(sorted(h.get("models", [])))),
+            ("services", ", ".join(sorted(h.get("mdns_types", [])))),
+            ("admin url", ", ".join(sorted(h.get("admin", [])))),
+            ("open ports", ", ".join(h.get("open_ports", []))),
+            ("os guess", h.get("os")),
+            ("first seen", f"{h.get('first_seen', '?')} ({ago(h.get('first_seen', ''))})"),
+            ("sightings", str(h.get("seen_count", 1))),
+            ("prior ips", ", ".join(h.get("prior_ips", []))),
+        ]
+        for label, val in bits:
+            if val:
+                print(f"  {D}{label:<11}{R}{val}")
+
+
+def main():
+    ap = argparse.ArgumentParser(description="scan the local network and remember what it finds")
+    ap.add_argument("iface", nargs="?", help="interface (default: from default route)")
+    ap.add_argument("-p", "--ports", action="store_true", help="scan top ports on each host")
+    ap.add_argument("-a", "--aggressive", action="store_true",
+                    help="with -p: service versions + os fingerprint (slow, needs root)")
+    ap.add_argument("--top", type=int, default=100, help="how many top ports (default 100)")
+    ap.add_argument("-l", "--long", action="store_true", help="per-host detail blocks")
+    ap.add_argument("-m", "--mdns-timeout", type=int, default=6, help="seconds to listen for mdns")
+    ap.add_argument("-r", "--retry", type=int, default=2, help="arp-scan retries")
+    ap.add_argument("--ping", action="store_true", help="also icmp sweep (finds hosts arp missed)")
+    ap.add_argument("-j", "--json", action="store_true", help="machine-readable output")
+    ap.add_argument("--no-history", action="store_true", help="do not read or write the history db")
+    ap.add_argument("--absent", action="store_true", help="also list known devices not seen now")
+    args = ap.parse_args()
+
+    t0 = time.time()
+    ctx = net_context(args.iface)
+    quiet = args.json
+
+    if not quiet:
+        bits = [f"{B}{ctx['iface']}{R}", ctx["cidr"]]
+        if ctx["ssid"]:
+            bits.append(f"ssid {B}{ctx['ssid']}{R}")
+        if ctx["gateway"]:
+            bits.append(f"gw {ctx['gateway']}")
+        print(f"\n{CYN}scanning{R} " + f" {D}·{R} ".join(bits) + "\n")
+
+    with cf.ThreadPoolExecutor(max_workers=4) as ex:
+        f_arp = ex.submit(arp_scan, ctx["iface"], args.retry)
+        f_mdns = ex.submit(mdns_scan, args.mdns_timeout)
+        f_ping = ex.submit(ping_sweep, ctx["cidr"]) if args.ping else None
+        arp = f_arp.result()
+        mdns = f_mdns.result()
+        pinged = f_ping.result() if f_ping else set()
+
+    hosts = dict(neigh_table(ctx["iface"]))
+    hosts.update(arp)
+    for ip in list(mdns.keys()) + list(pinged):
+        try:
+            if ipaddress.ip_address(ip) in ipaddress.ip_network(ctx["cidr"], strict=False):
+                hosts.setdefault(ip, {"ip": ip, "mac": "", "vendor": ""})
+        except ValueError:
+            continue
+    if ctx["self_ip"]:
+        hosts.setdefault(ctx["self_ip"], {"ip": ctx["self_ip"], "mac": "", "vendor": ""})
+
+    ips = sorted(hosts, key=lambda x: ipaddress.ip_address(x))
+    ptr = resolve_names(ips)
+    local = avahi_resolve([i for i in ips if i not in ptr])
+
+    ports, osguess = ({}, {})
+    if args.ports:
+        if not quiet:
+            print(f"{D}port scanning {len(ips)} hosts...{R}", file=sys.stderr)
+        ports, osguess = port_scan(ips, args.top, args.aggressive)
+
+    enriched = []
+    for ip in ips:
+        h = dict(hosts[ip])
+        m = mdns.get(ip, {})
+        h["models"] = sorted(m.get("models", []))
+        h["mdns_types"] = sorted(m.get("types", []))
+        h["admin"] = sorted(m.get("admin", []))
+        names = set(m.get("hosts", set())) | set(m.get("names", set()))
+        if ip in ptr:
+            names.add(ptr[ip])
+        if ip in local:
+            names.add(local[ip])
+        h["all_names"] = sorted(names)
+        h["name"] = pick_name(m, ptr.get(ip), local.get(ip), names)
+        h["is_gateway"] = ip == ctx["gateway"]
+        h["is_self"] = ip == ctx["self_ip"]
+        h["random_mac"] = bool(h["mac"] and RANDOM_MAC.match(h["mac"]))
+        h["open_ports"] = ports.get(ip, [])
+        h["os"] = osguess.get(ip)
+        if not h.get("vendor") or h["vendor"] == "(Unknown)":
+            h["vendor"] = "" if h["random_mac"] else h.get("vendor", "")
+        h["tags"] = classify(h)
+        enriched.append(h)
+
+    db = {} if args.no_history else load_history()
+    if not args.no_history:
+        db = merge_history(db, enriched, ctx["ssid"])
+        save_history(db)
+
+    if args.json:
+        print(json.dumps({"context": ctx, "hosts": enriched,
+                          "elapsed": round(time.time() - t0, 2)}, indent=2, default=str))
+        return
+
+    width = shutil.get_terminal_size((120, 24)).columns
+    render(enriched, args.ports, width)
+    if args.long:
+        render_detail(enriched)
+
+    for note in dict.fromkeys(ARP_NOTE):
+        print(f"\n{YEL}note{R} {note}, so mac/vendor columns may be empty")
+
+    new = [h for h in enriched if h.get("is_new")]
+    summary = [f"{len(enriched)} hosts", f"{time.time() - t0:.1f}s"]
+    if new:
+        summary.append(f"{GRN}{len(new)} new{R}")
+    print(f"\n{D}" + f" {D}·{R}{D} ".join(summary) + f"{R}")
+    legend = [f"{CYN}this host{R}", f"{MAG}gateway{R}", f"{GRN}new device{R}", f"{D}* randomized mac{R}"]
+    print(f"{D}" + "  ".join(legend) + f"{R}")
+
+    if args.absent and not args.no_history:
+        seen_keys = {h["mac"] or h["ip"] for h in enriched}
+        gone = [(k, v) for k, v in db.items()
+                if k not in seen_keys and ctx["ssid"] in v.get("networks", [])]
+        if gone:
+            print(f"\n{YEL}known on this network but not responding:{R}")
+            for k, v in sorted(gone, key=lambda kv: kv[1].get("last_seen", ""), reverse=True):
+                label = v.get("vendor") or (v.get("names") or ["?"])[0]
+                ips_s = ",".join(v.get("ips", [])[-2:])
+                print(f"  {D}{k}{R}  {label:<26} {D}last {ago(v.get('last_seen', ''))} at {ips_s}{R}")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit(130)

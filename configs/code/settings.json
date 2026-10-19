@@ -186,5 +186,11 @@
         "editor.defaultFormatter": "redhat.java"
     },
     "terminal.integrated.initialHint": false,
-    "remote.autoForwardPortsSource": "hybrid"
+    "remote.autoForwardPortsSource": "hybrid",
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }

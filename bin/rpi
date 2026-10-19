@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#@ open my raspberry pi development workspace
+
+if [[ -z ${TMUX:-} ]]; then
+	printf 'rpi must be run from inside tmux\n' >&2
+	exit 1
+fi
+
+top_left=$(tmux display-message -p '#{pane_id}')
+tmux kill-pane -a -t "$top_left"
+
+bottom_left=$(tmux split-window -d -v -t "$top_left" -P -F '#{pane_id}')
+top_right=$(tmux split-window -d -h -t "$top_left" -P -F '#{pane_id}')
+bottom_right=$(tmux split-window -d -h -t "$bottom_left" -P -F '#{pane_id}')
+
+tmux send-keys -t "$top_left" 'rmt leda' Enter
+tmux send-keys -t "$top_right" 'rmt thebe' Enter
+tmux send-keys -t "$bottom_left" 'rmt io' Enter
+tmux send-keys -t "$bottom_right" 'cd ~/devel/rpi && clear' Enter
+tmux select-pane -t "$bottom_right"
