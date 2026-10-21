@@ -192,5 +192,6 @@
     },
     "[jsonc]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
+    },
+    "go.toolsManagement.autoUpdate": true
 }
