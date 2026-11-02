@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+#@ wrapper for freecad launch: fixes cursor theme and HiDPI scale under XWayland
+
+state="${XDG_STATE_HOME:-$HOME/.local/state}/cursor"
+sizes="${XDG_STATE_HOME:-$HOME/.local/state}/cursor-sizes"
+
+if [[ -f "$state" ]]; then
+	theme=$(head -n1 "$state")
+	size=""
+	[[ -f "$sizes" ]] && size=$(awk -F'\t' -v t="$theme" '$1 == t { print $2 }' "$sizes")
+	export XCURSOR_THEME="$theme"
+	export XCURSOR_SIZE="${size:-24}"
+fi
+
+# force_zero_scaling makes xwayland always report scale 1.0, so qt never
+# picks up the monitor's real scale on its own
+scale=$(hyprctl monitors -j 2>/dev/null | jq -r '.[] | select(.focused) | .scale' 2>/dev/null)
+export QT_SCALE_FACTOR="${scale:-1}"
+export QT_SCALE_FACTOR_ROUNDING_POLICY=PassThrough
+
+exec /home/elara/.local/bin/freecad "$@"

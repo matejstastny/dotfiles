@@ -113,6 +113,7 @@
         "https://github.com": true,
         "https://json-schema.org/": true,
         "https://json.schemastore.org/": true,
+        "https://jsonresume.org": true,
         "https://raw.githubusercontent.com": true,
         "https://raw.githubusercontent.com/devcontainers/spec/": true,
         "https://raw.githubusercontent.com/microsoft/vscode/": true,
@@ -193,5 +194,9 @@
     "[jsonc]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "go.toolsManagement.autoUpdate": true
+    "go.toolsManagement.autoUpdate": true,
+    "java.debug.settings.vmArgs": "-ea",
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }

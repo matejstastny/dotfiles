@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+#@ menu for install/*.sh and install/*.py setup scripts
+
+set -euo pipefail
+
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+INSTALL_DIR="$DOTFILES_DIR/install"
+
+R="\033[0m"
+BOLD="\033[1m"
+DIM="\033[2m"
+CYAN="\033[96m"
+WHITE="\033[97m"
+GRAY="\033[90m"
+RED="\033[91m"
+
+describe() {
+	sed -n '1,10p' "$1" | grep -m1 '^#@' | sed 's/^#@[[:space:]]*//' || true
+}
+
+scripts() {
+	find "$INSTALL_DIR" -maxdepth 1 -type f \( -name '*.sh' -o -name '*.py' \) | sort
+}
+
+name_of() {
+	basename "$1" | sed -E 's/\.(sh|py)$//'
+}
+
+find_script() {
+	local name="$1" ext
+	for ext in sh py; do
+		if [ -f "$INSTALL_DIR/$name.$ext" ]; then
+			echo "$INSTALL_DIR/$name.$ext"
+			return 0
+		fi
+	done
+	return 1
+}
+
+print_help() {
+	echo ""
+	echo -e "${BOLD}${CYAN}✦ install${R} ${DIM}— Fedora Asahi dotfiles setup scripts${R}"
+	echo ""
+
+	local width=0 names=() descs=() f n d
+	while IFS= read -r f; do
+		n=$(name_of "$f")
+		names+=("$n")
+		descs+=("$(describe "$f")")
+		if ((${#n} > width)); then
+			width=${#n}
+		fi
+	done < <(scripts)
+
+	for i in "${!names[@]}"; do
+		n="${names[$i]}"
+		d="${descs[$i]}"
+		if [ -n "$d" ]; then
+			printf "  ${BOLD}${CYAN}%-${width}s${R}  ${WHITE}%s${R}\n" "$n" "$d"
+		else
+			printf "  ${BOLD}${CYAN}%-${width}s${R}  ${GRAY}(no description)${R}\n" "$n"
+		fi
+	done
+
+	echo ""
+	echo -e "${DIM}usage:${R}"
+	echo -e "  install <name>    run install/<name>.sh (or .py)"
+	echo -e "  install -i        pick a script from an fzf menu"
+	echo ""
+}
+
+run_menu() {
+	command -v fzf >/dev/null 2>&1 || {
+		echo "install: fzf not found" >&2
+		exit 1
+	}
+
+	local menu="" f n d
+	while IFS= read -r f; do
+		n=$(name_of "$f")
+		d=$(describe "$f")
+		menu+="$n\t$(printf '\033[1;96m%s\033[0m \033[2m%s\033[0m' "$n" "${d:-no description}")\n"
+	done < <(scripts)
+
+	local chosen
+	chosen=$(printf '%b' "$menu" | fzf \
+		--ansi --no-multi \
+		--delimiter='\t' --with-nth=2.. \
+		--prompt='install ❯ ' --pointer='▶' --gutter=' ' \
+		--header='run a dotfiles install script' \
+		--height=~40% --layout=reverse --border=rounded \
+		--color='fg+:15,bg+:-1,hl:6,hl+:6,pointer:5,prompt:6,border:8,header:8')
+
+	[ -z "$chosen" ] && exit 0
+	run_script "$(cut -f1 <<<"$chosen")"
+}
+
+run_script() {
+	local name="$1" target
+	if ! target=$(find_script "$name"); then
+		echo -e "${RED}install: no such script:${R} $name" >&2
+		print_help
+		exit 1
+	fi
+	exec "$target"
+}
+
+case "${1:-}" in
+"") print_help ;;
+-h | --help) print_help ;;
+-i | menu) run_menu ;;
+*) run_script "$1" ;;
+esac

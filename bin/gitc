@@ -116,10 +116,23 @@ confirm_or_exit() {
 
 delete_branches() {
 	local branches=("$@")
-	local branch
+	local branch merged_pr
 	for branch in "${branches[@]}"; do
-		if git branch -d "$branch"; then
-			:
+		if git branch -d "$branch" 2>/dev/null; then
+			continue
+		fi
+
+		# Squash/rebase merges on GitHub give main a new commit SHA, so -d's
+		# ancestry check fails even though the branch is fully merged. Fall
+		# back to asking GitHub whether a PR from this branch was merged.
+		merged_pr=""
+		if command -v gh >/dev/null 2>&1; then
+			merged_pr=$(gh pr list --state merged --head "$branch" --json number -q '.[0].number' 2>/dev/null || true)
+		fi
+
+		if [[ -n "$merged_pr" ]]; then
+			info "'$branch' was merged via PR #$merged_pr (squash/rebase) - force deleting"
+			git branch -D "$branch"
 		else
 			echo "[WRN] Could not delete '$branch' with -d (not fully merged?)" >&2
 		fi

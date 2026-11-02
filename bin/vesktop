@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#@ wrapper for vesktop launch
+
+exec /opt/Vesktop/vesktop "$@"

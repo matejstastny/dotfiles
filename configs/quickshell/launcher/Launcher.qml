@@ -15,12 +15,11 @@ CommandPicker {
     pinned: root.calcRows
     boost: root.mruBoost
 
-    // no hint: this is the surface that opens most, and a permanent line
-    // explaining alt+d is exactly the kind of chrome the launcher does without
     actions: [
         {
             key: "edit",
-            code: Qt.Key_D
+            code: Qt.Key_D,
+            hint: "alt+d  edit .desktop"
         }
     ]
 
