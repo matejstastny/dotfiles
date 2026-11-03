@@ -4,9 +4,14 @@
 #
 #   real run:   sudo tmux new -s bk ~/dotfiles/asahi-backup.sh
 #   self test:  sudo ~/dotfiles/asahi-backup.sh --test
+#   paranoid:   sudo tmux new -s bk ~/dotfiles/asahi-backup.sh --verify-full
 #
 # asks nothing once started. root is required at launch because it snapshots
 # btrfs subvolumes, mounts subvolid=5 and images partitions.
+#
+# the destination must be an rclone crypt remote: this archive contains
+# /etc/shadow, ~/.ssh and the login keyrings, and it refuses to upload in
+# plaintext. the passphrase is NOT inside the backup, keep it elsewhere.
 #
 # this does NOT produce a bootable image. the asahi boot chain lives in a
 # LocalPolicy in nvme0n1p1 signed against this machine's secure enclave plus
@@ -22,20 +27,23 @@ DISK=/dev/nvme0n1
 BTRFS_PART="${DISK}p6"
 RAW_PARTS=(1 3 4 5)              # iboot container, asahi apfs stub, esp, /boot
 TOP=/mnt/asahi-bk-top
-STAGE=/var/tmp/asahi-backup
+STAGE="${ASAHI_BK_STAGE:-/var/tmp/asahi-backup}"
 SPLIT_SIZE=2G
-REMOTE_BASE="onedrive:backups"
+RCLONE_REMOTE="onedrive-crypt"        # must be type=crypt, enforced below
+REMOTE_BASE="$RCLONE_REMOTE:backups"
 MIN_FREE_GIB=110
 RCLONE_CONF="/home/$OWNER/.config/rclone/rclone.conf"
 ZSTD_LEVEL=3
 
 TEST=0
 PURGE_STAGE=0
+VERIFY_FULL=0
 for a in "${@:-}"; do
   case "$a" in
     ""|--) ;;
     --test)        TEST=1 ;;
     --purge-stage) PURGE_STAGE=1 ;;
+    --verify-full) VERIFY_FULL=1 ;;
     -h|--help)     sed -n '2,20p' "$0"; exit 0 ;;
     *) echo "unknown argument: $a" >&2; exit 2 ;;
   esac
@@ -55,7 +63,7 @@ if [[ -z "${ASAHI_BK_INHIBITED:-}" ]]; then
 fi
 
 if (( TEST )); then
-  REMOTE_BASE="onedrive:_asahi_backup_test"
+  REMOTE_BASE="$RCLONE_REMOTE:_asahi_backup_test"
   STAGE=/var/tmp/asahi-backup-test
   SPLIT_SIZE=16M
   MIN_FREE_GIB=3
@@ -113,6 +121,17 @@ make_tar() {
   for e in "$@"; do args+=( "--exclude=$e" ); done
 
   echo ">>> archiving $label"
+  # a resumed run would otherwise leave stale higher-numbered parts behind from
+  # a longer previous attempt, and cat label.tar.zst.* would splice them back in
+  rm -f "$STAGE/$label".tar.zst.*
+
+  local free; free=$(df -BG --output=avail "$STAGE" | tail -1 | tr -dc '0-9')
+  if (( free < 20 )); then
+    echo "!! only ${free} GiB free on the staging fs, stopping before $label"
+    echo "   set ASAHI_BK_STAGE to a path on an external disk and rerun"
+    return 1
+  fi
+
   set +e
   tar -C "$src" "${args[@]}" -cf - "$member" 2>"$M/tar-$label.err" \
     | zstd -T0 "-$ZSTD_LEVEL" -q -c \
@@ -144,8 +163,31 @@ FREE_GIB=$(df -BG --output=avail "$STAGE" | tail -1 | tr -dc '0-9')
 echo "    free space on staging fs: ${FREE_GIB} GiB (need ${MIN_FREE_GIB})"
 (( FREE_GIB >= MIN_FREE_GIB )) || { echo "!! not enough free space to stage the archive"; exit 1; }
 
-echo "    checking onedrive auth and quota"
-rc rclone about onedrive: || { echo "!! rclone cannot reach onedrive"; exit 1; }
+echo "    checking $RCLONE_REMOTE is encrypted"
+if [[ "$(rc rclone config show "$RCLONE_REMOTE" 2>/dev/null | awk -F ' = ' '/^type/{print $2}')" != crypt ]]; then
+  echo "!! $RCLONE_REMOTE is not an rclone crypt remote."
+  echo "   this archive contains /etc/shadow, ~/.ssh and your login keyrings."
+  echo "   refusing to upload it in plaintext. see RESTORE.md section 1."
+  exit 1
+fi
+
+echo "    checking remote auth and quota"
+rc rclone about "$RCLONE_REMOTE:" || { echo "!! rclone cannot reach $RCLONE_REMOTE"; exit 1; }
+
+# a wrong or regenerated passphrase uploads perfectly happily and hands back
+# garbage months later, so prove one file survives the trip before committing
+echo "    crypt round trip"
+PROBE=$(mktemp -d /var/tmp/asahi-bk-probe.XXXXXX)
+printf '%s\n' "$NAME" > "$PROBE/probe"
+chown -R "$OWNER:$OWNER" "$PROBE"
+if rc rclone copy "$PROBE/probe" "$REMOTE_BASE/.probe" >/dev/null 2>&1 \
+   && rc rclone cat "$REMOTE_BASE/.probe/probe" 2>/dev/null | grep -qxF "$NAME"; then
+  echo "    crypt round trip OK"
+else
+  echo "!! crypt round trip failed, not uploading"; rm -rf "$PROBE"; exit 1
+fi
+rc rclone purge "$REMOTE_BASE/.probe" >/dev/null 2>&1 || true
+rm -rf "$PROBE"
 
 #--------------------------------------------------------------------- archive
 if [[ -f "$STATE/archives-complete" ]]; then
@@ -169,6 +211,7 @@ else
   btrfs subvolume list /                      > "$M/btrfs-subvols.txt" 2>/dev/null || true
   efibootmgr -v                               > "$M/efibootmgr.txt" 2>/dev/null || true
   find /boot/efi -maxdepth 4                  > "$M/boot-efi-tree.txt" 2>/dev/null || true
+  cp /boot/config-*                             "$M/" 2>/dev/null || true
   rpm -qa | sort                              > "$M/rpm-all.txt"
   dnf repoquery --userinstalled --qf '%{name}\n' 2>/dev/null | sort \
                                               > "$M/dnf-userinstalled.txt" || true
@@ -194,6 +237,12 @@ else
     g log --oneline -40      > "$M/fairydust-log.txt"      2>/dev/null || true
     g status --porcelain     > "$M/fairydust-status.txt"    2>/dev/null || true
     g diff HEAD              > "$M/fairydust-uncommitted.patch" 2>/dev/null || true
+    # .config is gitignored (.gitignore matches .*), so it rides in neither the
+    # .git tar nor the untracked tar, and /boot carries no config-7.1.13-fairydust+.
+    # meta/ is its only copy in this backup.
+    cp "$LIVE_LFD/.config"       "$M/fairydust-kernel.config"     2>/dev/null || true
+    cp "$LIVE_LFD/.config.old"   "$M/fairydust-kernel.config.old" 2>/dev/null || true
+    cp "$LIVE_LFD"/localversion* "$M/" 2>/dev/null || true
     g ls-files --others --exclude-standard -z \
                              > "$STATE/fairydust-untracked.nul" 2>/dev/null || true
     if [[ -s "$STATE/fairydust-untracked.nul" ]]; then
@@ -224,7 +273,7 @@ else
   # nested subvolumes appear as empty dirs inside a snapshot, so their contents
   # would be silently missed. say so loudly rather than pretend.
   NESTED=$(btrfs subvolume list "$TOP" | awk '{print $NF}' \
-           | grep -vxE 'root|home' | grep -v '^\.bk-' || true)
+           | grep -vxE 'root|home|root/var/swap' | grep -v '^\.bk-' || true)
   if [[ -n "$NESTED" ]]; then
     echo "!! WARNING: nested subvolumes are NOT captured by these snapshots:"
     printf '%s\n' "$NESTED" | sed 's/^/     /'
@@ -282,11 +331,13 @@ swap invalidates them regardless. Restore is therefore: reinstall, then unpack.
 | `root.tar.zst.*`          | the `root` btrfs subvolume, incl. `/usr`, `/etc`, `/opt`, `/var` |
 | `home.tar.zst.*`          | the `home` btrfs subvolume (`/home/elara`) |
 | `fairydust-git.tar.zst.*` | the `.git` of the kernel tree, build output excluded |
-| `fairydust-untracked.tar.zst` | untracked non-ignored files from the kernel tree |
+| `fairydust-untracked.tar.zst` | untracked non-ignored files from the kernel tree, if any |
 | `nvme0n1p1.img.zst`       | iBootSystemContainer, reference only, not restorable |
 | `nvme0n1p3.img.zst`       | Asahi APFS stub, reference only, not restorable |
 | `nvme0n1p4.img.zst`       | the EFI system partition (m1n1 + u-boot + grub) |
-| `nvme0n1p5.img.zst`       | `/boot` (kernels + initramfs) |
+| `nvme0n1p5.img.zst`       | `/boot` (kernels + initramfs + dtbs) |
+| `meta/fairydust-kernel.config` | the exact `.config` of the running custom kernel |
+| `meta/config-*`           | the `/boot` configs of the stock and older kernels |
 | `meta/`                   | partition table, package lists, UUIDs, unit state |
 | `SHA256SUMS`              | checksums for everything above |
 
@@ -295,32 +346,69 @@ Excluded on purpose, all regenerable: `~/.cache`, the 8G swapfile,
 `factorio`, Steam `steamapps`, `/var/{cache,tmp,log}`, and the kernel build
 output. PrismLauncher and `/usr` are included in full.
 
+Note that `~/linux-fairydust` is excluded as a tree. What survives of it is the
+`.git` tarball, `meta/fairydust-uncommitted.patch` for the dirty worktree, and
+`meta/fairydust-kernel.config`. A full rebuild is required after restore.
+
 ## 1. pull it back down
 
-    rclone copy onedrive:backups/<NAME> ./restore --transfers 4 --onedrive-chunk-size 100M
+The destination is an `rclone crypt` remote, so all of the above was encrypted
+client side before upload. **The passphrase is not in this backup.** The rclone
+config that holds it lives inside `home.tar.zst`, which is itself encrypted, so
+there is no way in without the passphrase from the password manager.
+
+On a fresh machine, recreate both remotes first:
+
+    rclone config create onedrive onedrive                  # runs the oauth flow
+    rclone config create onedrive-crypt crypt               \
+        remote onedrive:backups-enc                         \
+        filename_encryption off directory_name_encryption false \
+        password '<passphrase>' --obscure
+
+    rclone copy onedrive-crypt:backups/<NAME> ./restore \
+        --transfers 4 --onedrive-chunk-size 100M
     cd restore && sha256sum -c SHA256SUMS
+
+`SHA256SUMS` is the authoritative integrity check. `rclone check` against a
+crypt remote cannot compare hashes (OneDrive's QuickXorHash does not survive
+the encryption layer), so the backup script only verified sizes plus a random
+sample. Run the `sha256sum -c` above and believe that instead.
+
+Filename encryption is deliberately off. The names leak nothing interesting and
+being able to see and selectively fetch a single `nvme0n1p5.img.zst` from the
+OneDrive web UI is worth more during a disaster than hiding the string
+`root.tar.zst`.
 
 ## 2. reinstall asahi
 
 Boot macOS, run the Asahi installer, and give the Linux partition **at least as
 much space as before** (it was 363.5 GiB). Let it complete and boot into the
-fresh Fedora Asahi install. Check `meta/os-release` for the release to match.
+fresh Fedora Asahi install once, to confirm its own boot chain works. Check
+`meta/os-release` for the release to match.
 
 ## 3. unpack over the fresh install
 
-From a live USB or a root shell, with the new install's subvolumes mounted.
-Mount the btrfs top level and unpack into the subvolumes directly:
+Do this from a live USB or a rescue shell, not from the install you are about to
+replace. **Replace the subvolumes, do not extract on top of them.** Extracting
+over the fresh subvolumes leaves a union of two systems: every file the fresh
+install has that this backup does not would survive, which for `/etc` gives you
+a config set that matches neither system.
 
     mkdir -p /mnt/top
     mount -o subvolid=5 /dev/nvme0n1p6 /mnt/top    # confirm the device first
 
+    btrfs subvolume delete /mnt/top/root
+    btrfs subvolume delete /mnt/top/home
+    btrfs subvolume create /mnt/top/root
+    btrfs subvolume create /mnt/top/home
+
     cat root.tar.zst.* | zstd -dc | \
       tar -C /mnt/top/root --numeric-owner --xattrs --xattrs-include='*' \
-          --selinux --acls -p --same-owner --overwrite -xf -
+          --selinux --acls -p --same-owner -xf -
 
     cat home.tar.zst.* | zstd -dc | \
       tar -C /mnt/top/home --numeric-owner --xattrs --xattrs-include='*' \
-          --selinux --acls -p --same-owner --overwrite -xf -
+          --selinux --acls -p --same-owner -xf -
 
 The `--xattrs-include='*' --selinux` flags are **mandatory**. This system runs
 SELinux in Enforcing mode; drop those flags and every file loses its security
@@ -333,7 +421,7 @@ setgid bits on extract, which silently breaks all 27 setuid binaries in `/usr`,
 
     find /usr -xdev -type f \( -perm -4000 -o -perm -2000 \) | sort
 
-## 4. fix up fstab and boot
+## 4. fix up fstab and the swapfile
 
 New partitions get new UUIDs. The restored `/etc/fstab` carries the *old* ones,
 so it must be rewritten:
@@ -342,33 +430,69 @@ so it must be rewritten:
     cat meta/fstab               # the old file, for the structure and options
 
 Keep the mount options exactly as they were, in particular
-`compress=zstd:1,subvol=root` and `subvol=home`. Then regenerate the swapfile,
-which was deliberately not backed up:
+`compress=zstd:1,subvol=root` and `subvol=home`. Then recreate the swap, which
+was deliberately not backed up. `/var/swap` was its own subvolume, so that it
+stays out of snapshots of `root`:
 
-    btrfs filesystem mkswapfile --size 8g /var/swap/swapfile
+    btrfs subvolume create /mnt/top/root/var/swap
+    btrfs filesystem mkswapfile --size 8g /mnt/top/root/var/swap/swapfile
 
-## 5. relabel, then reinstall packages if anything is off
+## 5. put the custom kernel back
+
+The root tar restored `/usr/lib/modules/7.1.13-fairydust+` and its siblings,
+but the kernel image, initramfs and dtbs live on the ext4 `/boot` partition,
+which the fresh install rewrote. Pull them out of the old image rather than
+dd'ing the whole thing back:
+
+    zstd -d nvme0n1p5.img.zst -o p5.img
+    mkdir -p /mnt/oldboot && mount -o ro,loop p5.img /mnt/oldboot
+    cp -a /mnt/oldboot/vmlinuz-7.1.13-fairydust+        /boot/
+    cp -a /mnt/oldboot/initramfs-7.1.13-fairydust+.img  /boot/
+    cp -a /mnt/oldboot/dtbs/7.1.13-fairydust+           /boot/dtbs/
+
+Then regenerate the boot entries using the *new* install's grub:
+
+    grub2-mkconfig -o /boot/grub2/grub.cfg
+
+Keep the stock `kernel-core` entry in the list. It is the way back in if the
+fairydust kernel does not come up on the replacement machine.
+
+To rebuild from source instead, `meta/fairydust-kernel.config` is the exact
+config that produced the running kernel, and it is the only copy anywhere:
+`/boot` never had a `config-7.1.13-fairydust+` and `CONFIG_IKCONFIG_PROC` is
+off, so there is no `/proc/config.gz` to fall back on.
+
+    make olddefconfig          # after copying meta/fairydust-kernel.config to .config
+
+## 6. relabel, then reinstall packages if anything is off
 
     touch /.autorelabel && reboot      # safety net if any label looks wrong
 
+The root tar already carried `/var/lib/rpm`, so packages are restored as real
+installed files and the rpmdb agrees with them. The lists below are a
+cross-check, not the restore path. Use them only if something is actually
+missing:
+
+    rpm -Va --nofiledigest | head -50
     dnf install $(cat meta/dnf-userinstalled.txt)
     # flatpaks: see meta/flatpak-remotes.txt then meta/flatpak-all.txt
     # enabled units: meta/systemd-enabled.txt
 
-## 6. the kernel tree
+## 7. the kernel tree
 
     mkdir linux-fairydust && cd linux-fairydust
     cat ../fairydust-git.tar.zst.* | zstd -dc | tar -p --same-owner -xf -
     git checkout .                     # restore the worktree from .git
     git apply ../meta/fairydust-uncommitted.patch   # if non-empty
     tar -xf ../fairydust-untracked.tar.zst          # if present
+    cp ../meta/fairydust-kernel.config .config
 
 ## note on p4 and p5
 
 The ESP and `/boot` images are from the *old* install. A fresh Asahi install
 writes its own working versions of both. Do not blindly dd these back, you will
-usually break the new boot chain. Treat them as a reference for recovering a
-specific kernel, initramfs or grub config.
+usually break the new boot chain. Treat them as a read-only source to copy
+individual files out of, as in section 5.
 MD
 
   printf '%s\n' "$NAME" > "$STAGE/BACKUP-NAME.txt"
@@ -420,11 +544,38 @@ rc rclone copy "$STAGE" "$DEST" "${RC_EXCL[@]}" \
   --retries 10 --retries-sleep 20s --low-level-retries 20 \
   --stats 30s --stats-one-line
 
-echo ">>> verifying remote against local (hash compare)"
-if rc rclone check "$STAGE" "$DEST" "${RC_EXCL[@]}" --one-way; then
-  echo "    remote verification OK"
+# rclone crypt cannot pass onedrive's QuickXorHash through to the plaintext
+# layer, so a plain `rclone check` here degrades to a size compare without
+# saying so. ask for size-only explicitly, then prove content separately.
+echo ">>> verifying every file arrived at full size"
+if rc rclone check "$STAGE" "$DEST" "${RC_EXCL[@]}" --one-way --size-only; then
+  echo "    presence and size OK"
 else
-  echo "!! remote verification FAILED"; FAIL=1
+  echo "!! remote size verification FAILED"; FAIL=1
+fi
+
+if (( VERIFY_FULL )); then
+  echo ">>> full content verification, this downloads the whole backup back"
+  if rc rclone check "$STAGE" "$DEST" "${RC_EXCL[@]}" --one-way --download; then
+    echo "    full content verification OK"
+  else
+    echo "!! full content verification FAILED"; FAIL=1
+  fi
+else
+  echo ">>> spot-checking content: downloading a random sample back through crypt"
+  mapfile -t SAMPLE < <(cd "$STAGE" && find . -maxdepth 2 -type f \
+      ! -name SHA256SUMS ! -name backup.log ! -path './.state/*' -printf '%P\n' \
+    | shuf -n 3)
+  for f in "${SAMPLE[@]}"; do
+    want=$(awk -v f="./$f" '$2==f{print $1}' "$STAGE/SHA256SUMS")
+    got=$(rc rclone cat "$DEST/$f" 2>/dev/null | sha256sum | cut -d' ' -f1)
+    if [[ -n "$want" && "$want" == "$got" ]]; then
+      echo "    $f OK"
+    else
+      echo "!! $f MISMATCH (local ${want:-?}, remote ${got:-?})"; FAIL=1
+    fi
+  done
+  echo "    sample verified. for a full content check rerun with --verify-full"
 fi
 
 rc rclone copy "$STAGE/backup.log" "$DEST" >/dev/null 2>&1 || true
