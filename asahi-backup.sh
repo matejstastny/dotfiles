@@ -31,7 +31,7 @@ STAGE="${ASAHI_BK_STAGE:-/var/tmp/asahi-backup}"
 SPLIT_SIZE=2G
 RCLONE_REMOTE="onedrive-crypt"        # must be type=crypt, enforced below
 REMOTE_BASE="$RCLONE_REMOTE:backups"
-MIN_FREE_GIB=110
+MIN_FREE_GIB=75
 RCLONE_CONF="/home/$OWNER/.config/rclone/rclone.conf"
 ZSTD_LEVEL=3
 
@@ -151,6 +151,82 @@ make_tar() {
   return 0
 }
 
+# verify_label <label>: prove the staged parts read back as a tar
+verify_label() {
+  local label="$1"
+  local -a parts
+  shopt -s nullglob; parts=( "$STAGE/$label".tar.zst.* ); shopt -u nullglob
+  (( ${#parts[@]} )) || { echo "!! no parts staged for $label"; return 1; }
+  printf '    %-14s ' "readback"
+  if cat "${parts[@]}" | zstd -dc -q | tar -tf - >/dev/null 2>&1; then
+    echo OK
+  else
+    echo FAILED; return 1
+  fi
+}
+
+# sums_label <label>: record checksums while the parts still exist locally
+sums_label() {
+  local label="$1"
+  ( cd "$STAGE" && sha256sum ./"$label".tar.zst.* ) > "$STATE/sums-$label"
+}
+
+# upload_label <label>: push just this label, size check it, then prove content
+upload_label() {
+  local label="$1"
+  local -a inc=( --include "/$label.tar.zst.*" )
+  echo ">>> uploading $label"
+  chown -R "$OWNER:$OWNER" "$STAGE"
+  rc rclone copy "$STAGE" "$DEST" "${inc[@]}" \
+    --onedrive-chunk-size 100M \
+    --transfers 8 \
+    --retries 10 --retries-sleep 20s --low-level-retries 20 \
+    --stats 30s --stats-one-line || return 1
+
+  rc rclone check "$STAGE" "$DEST" "${inc[@]}" --one-way --size-only || return 1
+
+  if (( VERIFY_FULL )); then
+    echo "    full content verification of $label, downloading it back"
+    rc rclone check "$STAGE" "$DEST" "${inc[@]}" --one-way --download || return 1
+    echo "    full content verification OK"
+    return 0
+  fi
+
+  # crypt cannot pass hashes through, so sample one part and hash it for real
+  local pick want got
+  pick=$(cd "$STAGE" && ls "$label".tar.zst.* | shuf -n 1)
+  want=$(awk -v f="./$pick" '$2==f{print $1}' "$STATE/sums-$label")
+  got=$(rc rclone cat "$DEST/$pick" 2>/dev/null | sha256sum | cut -d' ' -f1)
+  if [[ -n "$want" && "$want" == "$got" ]]; then
+    echo "    content spot check on $pick OK"
+  else
+    echo "!! content spot check on $pick MISMATCH (local ${want:-?}, remote ${got:-?})"
+    return 1
+  fi
+}
+
+# stage_one <label> <srcdir> <member> [exclude...]
+# archive, verify, checksum, upload, then drop the local copy. staging only ever
+# holds one archive at a time: the full set does not fit beside the live data.
+stage_one() {
+  local label="$1"
+  if [[ -f "$STATE/done-$label" ]]; then
+    echo ">>> $label already uploaded by an earlier run, skipping"
+    return 0
+  fi
+  make_tar "$@"      || return 1
+  verify_label "$label" || return 1
+  sums_label   "$label"
+  upload_label "$label" || return 1
+  if (( TEST )); then
+    echo "    test mode: keeping $label staged for the selinux round trip"
+  else
+    rm -f "$STAGE/$label".tar.zst.*
+  fi
+  touch "$STATE/done-$label"
+  echo "    $label done, $(df -BG --output=avail "$STAGE" | tail -1 | tr -dc '0-9') GiB free on staging again"
+}
+
 #--------------------------------------------------------------------- preflight
 echo ">>> preflight"
 for t in btrfs tar zstd split pv sfdisk rclone runuser getfattr; do
@@ -190,132 +266,150 @@ rc rclone purge "$REMOTE_BASE/.probe" >/dev/null 2>&1 || true
 rm -rf "$PROBE"
 
 #--------------------------------------------------------------------- archive
-if [[ -f "$STATE/archives-complete" ]]; then
-  echo ">>> archives already staged, skipping straight to upload"
+mkdir -p "$M"
+cp "$0" "$M/asahi-backup.sh"
+
+echo ">>> collecting metadata"
+sfdisk -d "$DISK"                           > "$M/partition-table.sfdisk"
+sfdisk -l "$DISK"                           > "$M/partition-table.txt" 2>/dev/null || true
+lsblk -o NAME,SIZE,TYPE,FSTYPE,LABEL,PARTLABEL,UUID,PARTUUID,MOUNTPOINT \
+                                            > "$M/lsblk.txt"
+blkid                                       > "$M/blkid.txt" 2>/dev/null || true
+cat /proc/mounts                            > "$M/proc-mounts.txt"
+cp /etc/fstab                                 "$M/fstab"
+cp /etc/os-release                            "$M/os-release"
+uname -a                                    > "$M/uname.txt"
+getenforce                                  > "$M/selinux-mode.txt" 2>/dev/null || true
+btrfs filesystem usage /                    > "$M/btrfs-usage.txt" 2>/dev/null || true
+btrfs subvolume list /                      > "$M/btrfs-subvols.txt" 2>/dev/null || true
+efibootmgr -v                               > "$M/efibootmgr.txt" 2>/dev/null || true
+find /boot/efi -maxdepth 4                  > "$M/boot-efi-tree.txt" 2>/dev/null || true
+cp /boot/config-*                             "$M/" 2>/dev/null || true
+docker images --digests                     > "$M/docker-images.txt" 2>/dev/null || true
+docker ps -a                                > "$M/docker-ps.txt"     2>/dev/null || true
+docker volume ls                            > "$M/docker-volumes.txt" 2>/dev/null || true
+# so a future run can see at a glance what made the root archive big. btrfs
+# reports shared extents once, tar does not, so these numbers are a floor.
+du -xh --max-depth=2 / 2>/dev/null | sort -rh | head -40 \
+                                            > "$M/root-usage-top40.txt" || true
+du -xsh /var/lib/docker /var/lib/containers /var/lib/libvirt 2>/dev/null \
+                                            > "$M/container-store-sizes.txt" || true
+rpm -qa | sort                              > "$M/rpm-all.txt"
+dnf repoquery --userinstalled --qf '%{name}\n' 2>/dev/null | sort \
+                                            > "$M/dnf-userinstalled.txt" || true
+dnf repolist --all                          > "$M/dnf-repolist.txt" 2>/dev/null || true
+flatpak list --columns=application,origin,branch,installation \
+                                            > "$M/flatpak-all.txt" 2>/dev/null || true
+flatpak remotes --columns=name,url           > "$M/flatpak-remotes.txt" 2>/dev/null || true
+systemctl list-unit-files --state=enabled --no-pager \
+                                            > "$M/systemd-enabled.txt" 2>/dev/null || true
+find / -xdev -type f \( -perm -4000 -o -perm -2000 \) -printf '%M %u %g %p\n' 2>/dev/null \
+  | sort                                    > "$M/setuid-setgid-files.txt" || true
+getcap -r /usr /opt                         > "$M/file-capabilities.txt" 2>/dev/null || true
+asuser systemctl --user list-unit-files --state=enabled --no-pager \
+                                            > "$M/systemd-user-enabled.txt" 2>/dev/null || true
+
+# uncommitted kernel work, read from the live tree so git can touch its index
+LIVE_LFD="/home/$OWNER/linux-fairydust"
+if [[ -d "$LIVE_LFD/.git" ]]; then
+  echo ">>> capturing linux-fairydust git state"
+  g() { asuser git --no-optional-locks -C "$LIVE_LFD" "$@"; }
+  g remote -v              > "$M/fairydust-remotes.txt"  2>/dev/null || true
+  g branch -vv             > "$M/fairydust-branches.txt" 2>/dev/null || true
+  g log --oneline -40      > "$M/fairydust-log.txt"      2>/dev/null || true
+  g status --porcelain     > "$M/fairydust-status.txt"    2>/dev/null || true
+  g diff HEAD              > "$M/fairydust-uncommitted.patch" 2>/dev/null || true
+  # .config is gitignored (.gitignore matches .*), so it rides in neither the
+  # .git tar nor the untracked tar, and /boot carries no config-7.1.13-fairydust+.
+  # meta/ is its only copy in this backup.
+  cp "$LIVE_LFD/.config"       "$M/fairydust-kernel.config"     2>/dev/null || true
+  cp "$LIVE_LFD/.config.old"   "$M/fairydust-kernel.config.old" 2>/dev/null || true
+  cp "$LIVE_LFD"/localversion* "$M/" 2>/dev/null || true
+  g ls-files --others --exclude-standard -z \
+                           > "$STATE/fairydust-untracked.nul" 2>/dev/null || true
+  if [[ -s "$STATE/fairydust-untracked.nul" ]]; then
+    tar -C "$LIVE_LFD" --null -T "$STATE/fairydust-untracked.nul" \
+        --numeric-owner --xattrs --xattrs-include='*' -cf - 2>/dev/null \
+      | zstd -T0 "-$ZSTD_LEVEL" -q -o "$STAGE/fairydust-untracked.tar.zst" -f || true
+  fi
+fi
+
+echo ">>> imaging small partitions"
+for p in "${RAW_PARTS[@]}"; do
+  dev="${DISK}p${p}"
+  [[ -b "$dev" ]] || { echo "    skip $dev (absent)"; continue; }
+  echo "    $dev -> nvme0n1p${p}.img.zst"
+  dd if="$dev" bs=4M status=none \
+    | zstd -T0 "-$ZSTD_LEVEL" -q -o "$STAGE/nvme0n1p${p}.img.zst" -f
+done
+
+echo ">>> mounting btrfs top level and snapshotting"
+mkdir -p "$TOP"
+mountpoint -q "$TOP" || mount -o subvolid=5 "$BTRFS_PART" "$TOP"
+for s in root home; do
+  [[ -e "$TOP/.bk-$s" ]] && btrfs subvolume delete "$TOP/.bk-$s" >/dev/null
+  btrfs subvolume snapshot -r "$TOP/$s" "$TOP/.bk-$s" >/dev/null
+  echo "    snapshot: .bk-$s"
+done
+
+# nested subvolumes appear as empty dirs inside a snapshot, so their contents
+# would be silently missed. say so loudly rather than pretend.
+NESTED=$(btrfs subvolume list "$TOP" | awk '{print $NF}' \
+         | grep -vxE 'root|home|root/var/swap' | grep -v '^\.bk-' || true)
+if [[ -n "$NESTED" ]]; then
+  echo "!! WARNING: nested subvolumes are NOT captured by these snapshots:"
+  printf '%s\n' "$NESTED" | sed 's/^/     /'
+  printf '%s\n' "$NESTED" > "$M/NESTED-SUBVOLS-NOT-BACKED-UP.txt"
+fi
+
+ROOT_EXCL=(
+  ./proc ./sys ./dev ./run ./tmp ./home ./lost+found
+  ./var/cache ./var/tmp ./var/log ./var/swap
+  ./var/lib/systemd/coredump
+  # the whole docker tree goes, and volumes come back as their own archive
+  # below. layer stores are heavily reflinked, so btrfs counts a shared extent
+  # once while tar writes out every reference: this machine held ~94 GiB on
+  # disk for ~194 GiB logical. naming the layer dirs directly is a trap too,
+  # they move between versions (overlay2 for the classic graphdriver,
+  # containerd/ for the overlayfs snapshotter), so take the lot.
+  ./var/lib/docker
+  ./var/lib/containers
+)
+HOME_EXCL=(
+  "./$OWNER/.cache"
+  "./$OWNER/.local/share/pnpm/store"
+  "./$OWNER/.local/share/Steam/steamapps"
+  "./$OWNER/.npm/_cacache"
+  "./$OWNER/.cargo/registry"
+  "./$OWNER/.cargo/git"
+  "./$OWNER/.rustup/toolchains"
+  "./$OWNER/.gradle/caches"
+  "./$OWNER/factorio"
+  "./$OWNER/linux-fairydust"
+  "./$OWNER/.var/app/*/cache"
+  '*/node_modules'
+  '*/target/debug'
+  '*/target/release'
+  '*/__pycache__'
+  '*/.venv'
+  '*/.next/cache'
+)
+
+if (( TEST )); then
+  stage_one root "$TOP/.bk-root" ./etc
 else
-  mkdir -p "$M"
-  cp "$0" "$M/asahi-backup.sh"
-
-  echo ">>> collecting metadata"
-  sfdisk -d "$DISK"                           > "$M/partition-table.sfdisk"
-  sfdisk -l "$DISK"                           > "$M/partition-table.txt" 2>/dev/null || true
-  lsblk -o NAME,SIZE,TYPE,FSTYPE,LABEL,PARTLABEL,UUID,PARTUUID,MOUNTPOINT \
-                                              > "$M/lsblk.txt"
-  blkid                                       > "$M/blkid.txt" 2>/dev/null || true
-  cat /proc/mounts                            > "$M/proc-mounts.txt"
-  cp /etc/fstab                                 "$M/fstab"
-  cp /etc/os-release                            "$M/os-release"
-  uname -a                                    > "$M/uname.txt"
-  getenforce                                  > "$M/selinux-mode.txt" 2>/dev/null || true
-  btrfs filesystem usage /                    > "$M/btrfs-usage.txt" 2>/dev/null || true
-  btrfs subvolume list /                      > "$M/btrfs-subvols.txt" 2>/dev/null || true
-  efibootmgr -v                               > "$M/efibootmgr.txt" 2>/dev/null || true
-  find /boot/efi -maxdepth 4                  > "$M/boot-efi-tree.txt" 2>/dev/null || true
-  cp /boot/config-*                             "$M/" 2>/dev/null || true
-  rpm -qa | sort                              > "$M/rpm-all.txt"
-  dnf repoquery --userinstalled --qf '%{name}\n' 2>/dev/null | sort \
-                                              > "$M/dnf-userinstalled.txt" || true
-  dnf repolist --all                          > "$M/dnf-repolist.txt" 2>/dev/null || true
-  flatpak list --columns=application,origin,branch,installation \
-                                              > "$M/flatpak-all.txt" 2>/dev/null || true
-  flatpak remotes --columns=name,url           > "$M/flatpak-remotes.txt" 2>/dev/null || true
-  systemctl list-unit-files --state=enabled --no-pager \
-                                              > "$M/systemd-enabled.txt" 2>/dev/null || true
-  find / -xdev -type f \( -perm -4000 -o -perm -2000 \) -printf '%M %u %g %p\n' 2>/dev/null \
-    | sort                                    > "$M/setuid-setgid-files.txt" || true
-  getcap -r /usr /opt                         > "$M/file-capabilities.txt" 2>/dev/null || true
-  asuser systemctl --user list-unit-files --state=enabled --no-pager \
-                                              > "$M/systemd-user-enabled.txt" 2>/dev/null || true
-
-  # uncommitted kernel work, read from the live tree so git can touch its index
-  LIVE_LFD="/home/$OWNER/linux-fairydust"
-  if [[ -d "$LIVE_LFD/.git" ]]; then
-    echo ">>> capturing linux-fairydust git state"
-    g() { asuser git --no-optional-locks -C "$LIVE_LFD" "$@"; }
-    g remote -v              > "$M/fairydust-remotes.txt"  2>/dev/null || true
-    g branch -vv             > "$M/fairydust-branches.txt" 2>/dev/null || true
-    g log --oneline -40      > "$M/fairydust-log.txt"      2>/dev/null || true
-    g status --porcelain     > "$M/fairydust-status.txt"    2>/dev/null || true
-    g diff HEAD              > "$M/fairydust-uncommitted.patch" 2>/dev/null || true
-    # .config is gitignored (.gitignore matches .*), so it rides in neither the
-    # .git tar nor the untracked tar, and /boot carries no config-7.1.13-fairydust+.
-    # meta/ is its only copy in this backup.
-    cp "$LIVE_LFD/.config"       "$M/fairydust-kernel.config"     2>/dev/null || true
-    cp "$LIVE_LFD/.config.old"   "$M/fairydust-kernel.config.old" 2>/dev/null || true
-    cp "$LIVE_LFD"/localversion* "$M/" 2>/dev/null || true
-    g ls-files --others --exclude-standard -z \
-                             > "$STATE/fairydust-untracked.nul" 2>/dev/null || true
-    if [[ -s "$STATE/fairydust-untracked.nul" ]]; then
-      tar -C "$LIVE_LFD" --null -T "$STATE/fairydust-untracked.nul" \
-          --numeric-owner --xattrs --xattrs-include='*' -cf - 2>/dev/null \
-        | zstd -T0 "-$ZSTD_LEVEL" -q -o "$STAGE/fairydust-untracked.tar.zst" -f || true
-    fi
+  stage_one root "$TOP/.bk-root" . "${ROOT_EXCL[@]}"
+  stage_one home "$TOP/.bk-home" . "${HOME_EXCL[@]}"
+  if [[ -d "$TOP/.bk-home/$OWNER/linux-fairydust/.git" ]]; then
+    stage_one fairydust-git "$TOP/.bk-home/$OWNER/linux-fairydust" .git
   fi
-
-  echo ">>> imaging small partitions"
-  for p in "${RAW_PARTS[@]}"; do
-    dev="${DISK}p${p}"
-    [[ -b "$dev" ]] || { echo "    skip $dev (absent)"; continue; }
-    echo "    $dev -> nvme0n1p${p}.img.zst"
-    dd if="$dev" bs=4M status=none \
-      | zstd -T0 "-$ZSTD_LEVEL" -q -o "$STAGE/nvme0n1p${p}.img.zst" -f
-  done
-
-  echo ">>> mounting btrfs top level and snapshotting"
-  mkdir -p "$TOP"
-  mountpoint -q "$TOP" || mount -o subvolid=5 "$BTRFS_PART" "$TOP"
-  for s in root home; do
-    [[ -e "$TOP/.bk-$s" ]] && btrfs subvolume delete "$TOP/.bk-$s" >/dev/null
-    btrfs subvolume snapshot -r "$TOP/$s" "$TOP/.bk-$s" >/dev/null
-    echo "    snapshot: .bk-$s"
-  done
-
-  # nested subvolumes appear as empty dirs inside a snapshot, so their contents
-  # would be silently missed. say so loudly rather than pretend.
-  NESTED=$(btrfs subvolume list "$TOP" | awk '{print $NF}' \
-           | grep -vxE 'root|home|root/var/swap' | grep -v '^\.bk-' || true)
-  if [[ -n "$NESTED" ]]; then
-    echo "!! WARNING: nested subvolumes are NOT captured by these snapshots:"
-    printf '%s\n' "$NESTED" | sed 's/^/     /'
-    printf '%s\n' "$NESTED" > "$M/NESTED-SUBVOLS-NOT-BACKED-UP.txt"
+  # named volumes are the one part of /var/lib/docker that is not re-pullable
+  if [[ -d "$TOP/.bk-root/var/lib/docker/volumes" ]]; then
+    stage_one docker-volumes "$TOP/.bk-root/var/lib/docker" volumes
   fi
+fi
 
-  ROOT_EXCL=(
-    ./proc ./sys ./dev ./run ./tmp ./home ./lost+found
-    ./var/cache ./var/tmp ./var/log ./var/swap
-    ./var/lib/systemd/coredump
-  )
-  HOME_EXCL=(
-    "./$OWNER/.cache"
-    "./$OWNER/.local/share/pnpm/store"
-    "./$OWNER/.local/share/Steam/steamapps"
-    "./$OWNER/.npm/_cacache"
-    "./$OWNER/.cargo/registry"
-    "./$OWNER/.cargo/git"
-    "./$OWNER/.rustup/toolchains"
-    "./$OWNER/.gradle/caches"
-    "./$OWNER/factorio"
-    "./$OWNER/linux-fairydust"
-    "./$OWNER/.var/app/*/cache"
-    '*/node_modules'
-    '*/target/debug'
-    '*/target/release'
-    '*/__pycache__'
-    '*/.venv'
-    '*/.next/cache'
-  )
-
-  if (( TEST )); then
-    make_tar root "$TOP/.bk-root" ./etc
-  else
-    make_tar root "$TOP/.bk-root" . "${ROOT_EXCL[@]}"
-    make_tar home "$TOP/.bk-home" . "${HOME_EXCL[@]}"
-    if [[ -d "$TOP/.bk-home/$OWNER/linux-fairydust/.git" ]]; then
-      make_tar fairydust-git "$TOP/.bk-home/$OWNER/linux-fairydust" .git
-    fi
-  fi
-
-  cat > "$STAGE/RESTORE.md" <<'MD'
+cat > "$STAGE/RESTORE.md" <<'MD'
 # restoring this backup
 
 This backup is **not a bootable image** and cannot be dd'd back into place.
@@ -332,6 +426,7 @@ swap invalidates them regardless. Restore is therefore: reinstall, then unpack.
 | `home.tar.zst.*`          | the `home` btrfs subvolume (`/home/elara`) |
 | `fairydust-git.tar.zst.*` | the `.git` of the kernel tree, build output excluded |
 | `fairydust-untracked.tar.zst` | untracked non-ignored files from the kernel tree, if any |
+| `docker-volumes.tar.zst.*` | `/var/lib/docker/volumes`, the only non-re-pullable part of docker |
 | `nvme0n1p1.img.zst`       | iBootSystemContainer, reference only, not restorable |
 | `nvme0n1p3.img.zst`       | Asahi APFS stub, reference only, not restorable |
 | `nvme0n1p4.img.zst`       | the EFI system partition (m1n1 + u-boot + grub) |
@@ -345,6 +440,28 @@ Excluded on purpose, all regenerable: `~/.cache`, the 8G swapfile,
 `node_modules`, `target/{debug,release}`, pnpm/npm/cargo/rustup/gradle caches,
 `factorio`, Steam `steamapps`, `/var/{cache,tmp,log}`, and the kernel build
 output. PrismLauncher and `/usr` are included in full.
+
+`/var/lib/docker` is excluded wholesale, and `/var/lib/docker/volumes` is
+archived separately as `docker-volumes.tar.zst.*`. GNU tar cannot include a
+subdirectory of an excluded parent, hence the separate archive.
+
+The reason for excluding it: layer stores are heavily reflinked, so btrfs counts
+a shared extent once while `tar` writes out every reference. This machine held
+~94 GiB of docker on disk for ~194 GiB logical (64 GB images, 122 GB build
+cache), which inflated the root archive to 90.7 GiB and filled the staging
+filesystem. Layer dir names also move between docker versions (`overlay2` for
+the classic graphdriver, `containerd/` for the overlayfs snapshotter), so the
+whole tree is excluded rather than named subdirectories.
+
+Images and build cache are re-pullable. `meta/docker-images.txt`,
+`meta/docker-ps.txt` and `meta/docker-volumes.txt` record what was present.
+To restore the volumes:
+
+    cat docker-volumes.tar.zst.* | zstd -dc | \
+      tar -C /mnt/top/root/var/lib/docker -p --same-owner --xattrs -xf -
+
+    docker image ls              # empty, re-pull or rebuild from
+    cat meta/docker-images.txt   # this inventory
 
 Note that `~/linux-fairydust` is excluded as a tree. What survives of it is the
 `.git` tarball, `meta/fairydust-uncommitted.patch` for the dirty worktree, and
@@ -495,48 +612,41 @@ usually break the new boot chain. Treat them as a read-only source to copy
 individual files out of, as in section 5.
 MD
 
-  printf '%s\n' "$NAME" > "$STAGE/BACKUP-NAME.txt"
-  date -Is                > "$STAGE/BACKUP-DATE.txt"
+printf '%s\n' "$NAME" > "$STAGE/BACKUP-NAME.txt"
+date -Is                > "$STAGE/BACKUP-DATE.txt"
 
-  echo ">>> checksumming"
-  ( cd "$STAGE" && find . -maxdepth 2 -type f \
-      ! -name SHA256SUMS ! -name backup.log ! -path './.state/*' -print0 \
-    | sort -z | xargs -0 sha256sum > SHA256SUMS )
-
-  touch "$STATE/archives-complete"
-  echo ">>> archive stage complete: $(du -sh "$STAGE" | cut -f1)"
-fi
-
-#--------------------------------------------------------------------- verify local
-echo ">>> verifying local archives read back cleanly"
+#------------------------------------------------- images, metadata and the sums
+# the big tars are already uploaded and gone from staging by this point. what is
+# left is small: partition images, meta/, the docs and the single-file archives.
+echo ">>> verifying images and single-file archives"
 shopt -s nullglob
-for label in root home fairydust-git; do
-  parts=( "$STAGE/$label".tar.zst.* )
-  (( ${#parts[@]} )) || continue
-  printf '    %-14s ' "$label"
-  if cat "${parts[@]}" | zstd -dc -q | tar -tf - >/dev/null 2>&1; then
-    echo OK
-  else
-    echo FAILED; FAIL=1
-  fi
-done
 for f in "$STAGE"/*.img.zst "$STAGE"/*.tar.zst; do
-  printf '    %-14s ' "$(basename "$f")"
+  printf '    %-24s ' "$(basename "$f")"
   if zstd -t -q "$f" 2>/dev/null; then echo OK; else echo FAILED; FAIL=1; fi
 done
 shopt -u nullglob
 
 if (( FAIL )); then
-  echo "!! local verification failed, refusing to upload a bad archive"
+  echo "!! local verification failed, refusing to finish"
   exit 1
 fi
 
-#--------------------------------------------------------------------- upload
+# per-label sums were recorded before each archive was deleted, so SHA256SUMS
+# still covers the whole backup even though most of it is no longer on disk
+echo ">>> assembling SHA256SUMS"
+( cd "$STAGE" && find . -maxdepth 2 -type f \
+    ! -name SHA256SUMS ! -name backup.log ! -path './.state/*' -print0 \
+  | sort -z | xargs -0 sha256sum ) > "$STAGE/SHA256SUMS"
+cat "$STATE"/sums-* >> "$STAGE/SHA256SUMS" 2>/dev/null || true
+# -u because in test mode the parts are kept, so find and sums-* both see them
+sort -u -k2 -o "$STAGE/SHA256SUMS" "$STAGE/SHA256SUMS"
+echo "    $(wc -l < "$STAGE/SHA256SUMS") files covered"
+
 # the log is excluded because it keeps growing while we work, which would make
 # rclone check report a spurious mismatch. it is uploaded last, on its own.
 RC_EXCL=( --exclude '/.state/**' --exclude '/backup.log' )
 
-echo ">>> uploading to $DEST"
+echo ">>> uploading metadata, images and docs"
 chown -R "$OWNER:$OWNER" "$STAGE"
 rc rclone copy "$STAGE" "$DEST" "${RC_EXCL[@]}" \
   --onedrive-chunk-size 100M \
@@ -544,10 +654,11 @@ rc rclone copy "$STAGE" "$DEST" "${RC_EXCL[@]}" \
   --retries 10 --retries-sleep 20s --low-level-retries 20 \
   --stats 30s --stats-one-line
 
-# rclone crypt cannot pass onedrive's QuickXorHash through to the plaintext
-# layer, so a plain `rclone check` here degrades to a size compare without
-# saying so. ask for size-only explicitly, then prove content separately.
-echo ">>> verifying every file arrived at full size"
+# crypt cannot pass onedrive's QuickXorHash through to the plaintext layer, so a
+# plain `rclone check` degrades to a size compare without saying so. each big
+# archive already had a part downloaded and hashed at upload time; this covers
+# the small files that are still on disk.
+echo ">>> final presence and size check on what is still staged"
 if rc rclone check "$STAGE" "$DEST" "${RC_EXCL[@]}" --one-way --size-only; then
   echo "    presence and size OK"
 else
@@ -555,14 +666,14 @@ else
 fi
 
 if (( VERIFY_FULL )); then
-  echo ">>> full content verification, this downloads the whole backup back"
+  echo ">>> full content verification of the small files"
   if rc rclone check "$STAGE" "$DEST" "${RC_EXCL[@]}" --one-way --download; then
     echo "    full content verification OK"
   else
     echo "!! full content verification FAILED"; FAIL=1
   fi
 else
-  echo ">>> spot-checking content: downloading a random sample back through crypt"
+  echo ">>> spot-checking the small files"
   mapfile -t SAMPLE < <(cd "$STAGE" && find . -maxdepth 2 -type f \
       ! -name SHA256SUMS ! -name backup.log ! -path './.state/*' -printf '%P\n' \
     | shuf -n 3)
@@ -575,7 +686,6 @@ else
       echo "!! $f MISMATCH (local ${want:-?}, remote ${got:-?})"; FAIL=1
     fi
   done
-  echo "    sample verified. for a full content check rerun with --verify-full"
 fi
 
 rc rclone copy "$STAGE/backup.log" "$DEST" >/dev/null 2>&1 || true
@@ -616,11 +726,12 @@ if (( TEST )); then
 else
   echo " RESULT: OK"
   echo " uploaded: $DEST"
-  echo " size:     $(du -sh "$STAGE" | cut -f1)"
+  echo " size:     $(rc rclone size "$DEST" 2>/dev/null | tail -1)"
   echo " restore:  see RESTORE.md inside the backup"
   echo
-  echo " staging is still on disk. reclaim the space with:"
-  echo "   sudo rm -rf $STAGE"
+  echo " the big archives were deleted from staging as they uploaded."
+  echo " what is left is metadata and partition images: $(du -sh "$STAGE" 2>/dev/null | cut -f1)"
+  echo "   sudo rm -rf $STAGE    # to clear the rest"
   if (( PURGE_STAGE )); then
     echo " --purge-stage given, removing staging now"
     rm -rf "$STAGE"
