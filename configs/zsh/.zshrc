@@ -12,6 +12,7 @@ export LC_ALL="en_US.UTF-8"
 export GOPATH="$HOME/go"
 export PROTO_HOME="$HOME/.proto"
 export BUN_INSTALL="$HOME/.bun"
+export NPM_CONFIG_PREFIX="$HOME/.npm-global"
 
 # path
 typeset -U path
@@ -23,6 +24,7 @@ path=(
 	"$PROTO_HOME/shims"
 	"$PROTO_HOME/bin"
 	"$HOME/.local/bin"
+	"$NPM_CONFIG_PREFIX/bin"
 	"$HOME/.cargo/bin"
 	"$HOME/.devcontainers/bin"
 	"$HOME/.pixi/bin"

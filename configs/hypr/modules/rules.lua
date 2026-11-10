@@ -77,13 +77,18 @@ end)
 
 -- ros sim tools
 hl.window_rule({ name = "chrono-sim", match = { class = "^vsg::Windo$" }, workspace = "7" })
-hl.window_rule({ name = "gazebo-workspace", match = { class = "^Gazebo GUI$" }, workspace = "7" })
+hl.window_rule({
+    name = "gazebo-workspace",
+    match = { class = "^Gazebo GUI$" },
+    workspace = "7",
+    fullscreen = true,
+})
 hl.window_rule({ name = "tigervnc-workspace", match = { class = "^Vncviewer$" }, workspace = "7 silent" })
 hl.window_rule({ name = "tigervnc-float", match = { class = "^Vncviewer$" }, float = true, center = true })
 hl.window_rule({
     name = "joint-gui-workspace",
     match = { class = "^Tk$", title = "^Joint GUI$" },
-    workspace = "7 silent",
+    workspace = "3 silent",
 })
 hl.window_rule({ name = "joint-gui-float", match = { class = "^Tk$", title = "^Joint GUI$" }, float = true })
 hl.window_rule({ name = "joint-gui-size", match = { class = "^Tk$", title = "^Joint GUI$" }, size = "420 191" })
