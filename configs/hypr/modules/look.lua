@@ -26,7 +26,7 @@ hl.config({
         hy3 = {
             tab_first_window = false,
             autotab_rules =
-            "2:^(com.microsoft.VSCode|codium)$;4:^(vesktop|org\\.squidowl\\.halloy|com\\.ktechpit\\.whatsie)$",
+            "2:^(com.microsoft.VSCode|codium)$;4:^(vesktop|org\\.squidowl\\.halloy|com\\.ktechpit\\.whatsie)$;7:^(Gazebo GUI|rviz2)$",
             tabs = {  
                 height       = 22,
                 padding      = 4,

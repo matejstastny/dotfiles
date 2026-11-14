@@ -36,6 +36,7 @@ hl.bind("CTRL + SHIFT + P", hl.dsp.global("quickshell:screenrecord"))
 -- session
 hl.bind(mod .. " + SHIFT + O", hl.dsp.exec_cmd(DOTS .. "/scripts/session.sh"))
 hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd(DOTS .. "/scripts/close-session.sh"))
+hl.bind(mod .. " + SHIFT + G", hl.dsp.exec_cmd(DOTS .. "/scripts/logout.sh"))
 
 -- window managment
 hl.bind(mod .. " + W", hl.dsp.window.close())

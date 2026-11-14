@@ -1,5 +1,5 @@
 hl.monitor({ output = "eDP-1", mode = "2560x1664@60.00", position = "0x160", scale = 1.60, disabled = false })
-hl.monitor({ output = "DP-1", mode = "preferred", position = "-1280x320", scale = 1.50, disabled = false })
+hl.monitor({ output = "DP-1", mode = "preferred", position = "1600x0", scale = 1.50, disabled = false })
 
 -- the portable sim one
 hl.monitor({ output = "desc:XYM M156F1", mode = "preferred", position = "-1920x140", scale = 1.0 })
