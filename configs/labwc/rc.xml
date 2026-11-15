@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<labwc_config>
+  <core>
+    <decoration>server</decoration>
+    <gap>0</gap>
+    <adaptiveSync>fullscreen</adaptiveSync>
+    <reuseOutputMode>yes</reuseOutputMode>
+    <autoEnableOutputs>yes</autoEnableOutputs>
+  </core>
+
+  <theme>
+    <cornerRadius>0</cornerRadius>
+    <font place="ActiveWindow">
+      <name>Maple Mono NF</name>
+      <size>11</size>
+    </font>
+    <font place="InactiveWindow">
+      <name>Maple Mono NF</name>
+      <size>11</size>
+    </font>
+    <font place="OnScreenDisplay">
+      <name>Maple Mono NF</name>
+      <size>11</size>
+    </font>
+  </theme>
+
+  <focus>
+    <followMouse>yes</followMouse>
+    <followMouseRequiresMovement>yes</followMouseRequiresMovement>
+    <raiseOnFocus>yes</raiseOnFocus>
+  </focus>
+
+  <placement>
+    <policy>center</policy>
+  </placement>
+
+  <keyboard>
+    <repeatRate>30</repeatRate>
+    <repeatDelay>190</repeatDelay>
+
+    <!-- window switching, the whole reason this isn't cage anymore -->
+    <keybind key="A-Tab">
+      <action name="NextWindow" />
+    </keybind>
+    <keybind key="A-S-Tab">
+      <action name="PreviousWindow" />
+    </keybind>
+
+    <keybind key="A-Return">
+      <action name="Execute" command="kitty" />
+    </keybind>
+    <keybind key="A-W">
+      <action name="Close" />
+    </keybind>
+    <keybind key="A-F">
+      <action name="ToggleFullscreen" />
+    </keybind>
+    <keybind key="A-M">
+      <action name="ToggleMaximize" />
+    </keybind>
+    <keybind key="A-S-Left">
+      <action name="SnapToEdge" direction="left" />
+    </keybind>
+    <keybind key="A-S-Right">
+      <action name="SnapToEdge" direction="right" />
+    </keybind>
+    <keybind key="A-S-Up">
+      <action name="SnapToEdge" direction="up" />
+    </keybind>
+    <keybind key="A-S-Down">
+      <action name="SnapToEdge" direction="down" />
+    </keybind>
+
+    <!-- hand every key to the game, press again to get the wm back -->
+    <keybind key="A-S-K">
+      <action name="ToggleKeybinds" />
+    </keybind>
+    <!-- last resort for a game that stops drawing -->
+    <keybind key="A-S-Escape">
+      <action name="Kill" />
+    </keybind>
+
+    <keybind key="A-S-R">
+      <action name="Reconfigure" />
+    </keybind>
+    <keybind key="A-S-G">
+      <action name="Exit" />
+    </keybind>
+
+    <keybind key="XF86AudioRaiseVolume">
+      <action name="Execute" command="wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+" />
+    </keybind>
+    <keybind key="XF86AudioLowerVolume">
+      <action name="Execute" command="wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-" />
+    </keybind>
+    <keybind key="XF86AudioMute">
+      <action name="Execute" command="wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle" />
+    </keybind>
+    <keybind key="XF86AudioPlay">
+      <action name="Execute" command="playerctl play-pause" />
+    </keybind>
+    <keybind key="XF86AudioNext">
+      <action name="Execute" command="playerctl next" />
+    </keybind>
+    <keybind key="XF86AudioPrev">
+      <action name="Execute" command="playerctl previous" />
+    </keybind>
+    <keybind key="XF86MonBrightnessUp">
+      <action name="Execute" command="brightnessctl set 5%+" />
+    </keybind>
+    <keybind key="XF86MonBrightnessDown">
+      <action name="Execute" command="brightnessctl set 5%-" />
+    </keybind>
+  </keyboard>
+
+  <libinput>
+    <device category="touchpad">
+      <naturalScroll>yes</naturalScroll>
+      <tap>yes</tap>
+      <tapAndDrag>yes</tapAndDrag>
+      <dragLock>yes</dragLock>
+      <clickMethod>clickfinger</clickMethod>
+      <accelProfile>flat</accelProfile>
+      <pointerSpeed>0.1</pointerSpeed>
+      <disableWhileTyping>no</disableWhileTyping>
+    </device>
+  </libinput>
+
+  <windowRules>
+    <!-- gamescope and steam big picture own the screen, no titlebar -->
+    <windowRule identifier="gamescope" serverDecoration="no" />
+    <windowRule identifier="steam*" serverDecoration="no" />
+  </windowRules>
+</labwc_config>

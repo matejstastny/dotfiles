@@ -1,0 +1,26 @@
+# elara palette, matches kitty
+border.width: 2
+padding.height: 3
+titlebar.height: 24
+
+window.active.title.bg.color: #11111b
+window.active.label.text.color: #dce0f4
+window.active.border.color: #7878c8
+window.active.button.unpressed.image.color: #dce0f4
+
+window.inactive.title.bg.color: #11111b
+window.inactive.label.text.color: #585b70
+window.inactive.border.color: #1e1e2e
+window.inactive.button.unpressed.image.color: #585b70
+
+osd.bg.color: #11111b
+osd.border.color: #7878c8
+osd.border.width: 2
+osd.label.text.color: #dce0f4
+osd.window-switcher.width: 600
+osd.window-switcher.item.active.bg.color: #7878c8
+
+menu.items.bg.color: #11111b
+menu.items.text.color: #dce0f4
+menu.items.active.bg.color: #7878c8
+menu.items.active.text.color: #11111b
