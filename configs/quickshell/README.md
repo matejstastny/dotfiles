@@ -1,13 +1,14 @@
 # quickshell
 
-my desktop shell, written in qml. bar, panels, menus, pickers, lock screen
-integration, wallpaper browser, notifications, media controls, and the small
-things around them all live here.
+my desktop shell, written in qml. bar, panels, menus, pickers, lock screen and
+polkit authentication, wallpaper browser, notifications, media controls, and
+the small things around them all live here.
 
 - `shell.qml` is the entry point and ipc surface.
 - `surface/` owns one shell surface per monitor: the screen outline, the bar
   that forms its top side, the toast stack and the drawers that slide out of it.
 - `bar/`, `panel/`, and `osd/` are the always-visible pieces.
+- `polkit/` owns the modal authentication agent and its controls.
 - `launcher/`, `pickers/`, `wifi/`, `bluetooth/`, and `cursor/` are command
   surfaces. they all share one drawer in `surface/`, so whichever keybind you
   hit, the answer is pulled out of the same edge of the outline.

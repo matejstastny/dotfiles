@@ -51,7 +51,6 @@ sudo dnf install -y \
 log "Installing system integration..."
 sudo dnf install -y \
 	polkit \
-	lxqt-policykit \
 	gnome-keyring \
 	network-manager-applet \
 	blueman \

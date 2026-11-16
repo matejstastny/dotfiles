@@ -14,6 +14,7 @@ import "./bluetooth"
 import "./cursor"
 import "./pickers"
 import "./cava"
+import "./polkit"
 
 ShellRoot {
     id: root
@@ -463,6 +464,10 @@ ShellRoot {
     Cava {
         id: cava
         open: cavaPopout.shown
+    }
+
+    PolkitPrompt {
+        onAuthenticationRequested: PopoutState.current = ""
     }
 
     Launcher {
