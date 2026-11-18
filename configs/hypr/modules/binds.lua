@@ -26,6 +26,7 @@ hl.bind(mod .. " + SHIFT + B", hl.dsp.global("quickshell:wallpaper"))
 hl.bind(mod .. " + SHIFT + M", hl.dsp.global("quickshell:cursormenu"))
 hl.bind(mod .. " + SHIFT + L", hl.dsp.exec_cmd(DOTS .. "/scripts/lock.sh"))
 hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"))
+hl.bind(mod .. " + SHIFT + P", hl.dsp.exec_cmd(DOTS .. "/scripts/usb-port-kick.sh"))
 
 -- screenshot / record
 hl.bind("CTRL + SHIFT + 4", hl.dsp.exec_cmd(DOTS .. "/scripts/screenshot.sh"))
