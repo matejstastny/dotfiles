@@ -1,5 +1,5 @@
 # defaults
-export WHICH_CODE="codium"
+export WHICH_CODE="code"
 export EDITOR="nvim"
 export BROWSER="helium"
 export DOTFILES_DIR="$HOME/dotfiles"
@@ -42,10 +42,12 @@ alias sr='source ~/.zshrc && echo "shell reloaded"'
 
 alias lg='lazygit'
 alias gs='git status -sb'
+alias gsw='git switch'
 alias ga='git add'
 alias gp='git push'
-alias gl='git log --oneline --graph --decorate -20'
+alias gl='git pull'
 alias gd='git diff'
+alias gcl='git clean -fd && git reset --hard'
 alias gb='gh browse'
 
 alias ani='ani-cli'
