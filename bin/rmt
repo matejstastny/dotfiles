@@ -18,6 +18,7 @@ class Host:
     tags: list[str] = None
     password: str = ""
     jump: str = ""
+    os: str = "posix"
 
 def main() -> None:
     hosts = load_hosts()
@@ -50,6 +51,15 @@ def load_hosts() -> list[Host]:
     hosts_data = data.get("hosts", [])
     return [Host(**host) for host in hosts_data]
 
+def remote_command(host: Host) -> str:
+    if host.os == "windows":
+        # default shell is powershell; nest one with -NoExit so it stays interactive
+        return (
+            "powershell -NoLogo -NoExit -Command "
+            f"\"Set-Location '{host.path}'; Clear-Host\""
+        )
+    return f"TERM=xterm-256color sh -c 'clear; cd {host.path} 2>/dev/null; exec $SHELL'"
+
 def connect_to_host(host: Host) -> None:
     if not host.user or not host.host or not host.path:
         print("Missing required fields: user, host, or path.")
@@ -64,10 +74,7 @@ def connect_to_host(host: Host) -> None:
     ]
     if host.jump:
         ssh_cmd += ["-J", host.jump]
-    ssh_cmd += [
-        f"{host.user}@{host.host}",
-        f"TERM=xterm-256color sh -c 'clear; cd {host.path} 2>/dev/null; exec $SHELL'"
-    ]
+    ssh_cmd += [f"{host.user}@{host.host}", remote_command(host)]
     if host.password:
         subprocess.run(["sshpass", "-p", host.password] + ssh_cmd)
     else:

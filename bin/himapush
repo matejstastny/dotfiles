@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+#@ push big directories to himalia (windows) over sftp: parallel, resumable, incremental
+
+set -euo pipefail
+
+HOST_ALIAS=himalia
+CONFIG="$HOME/.config/remote/hosts.toml"
+KEY="$HOME/.ssh/id_ed25519"
+KNOWN="$HOME/.ssh/known_hosts"
+
+DEST_BASE="C:/xfer"
+TRANSFERS=8
+MIRROR=0
+DRYRUN=0
+
+usage() {
+	cat <<EOF
+usage: himapush [options] <local-dir> [remote-subdir]
+
+copies <local-dir> into himalia:C:/xfer over sftp using your ssh key.
+parallel, resumable, and incremental (re-runs only send what changed).
+
+options:
+  -d DEST   remote base dir (default: $DEST_BASE)
+  -m        mirror: also delete remote files missing locally (rclone sync)
+  -n        dry run, show what would transfer without doing it
+  -t N      parallel transfers (default: $TRANSFERS)
+  -h        this help
+
+examples:
+  himapush ~/Videos/project           -> C:/xfer/project
+  himapush ~/Videos/project clips      -> C:/xfer/clips
+  himapush -m ~/backup backup          mirror a folder (deletes extras on himalia)
+  himapush -n ~/big                    preview only
+EOF
+}
+
+while getopts ":d:mnt:h" opt; do
+	case "$opt" in
+		d) DEST_BASE="$OPTARG" ;;
+		m) MIRROR=1 ;;
+		n) DRYRUN=1 ;;
+		t) TRANSFERS="$OPTARG" ;;
+		h) usage; exit 0 ;;
+		:) echo "himapush: -$OPTARG needs an argument" >&2; exit 2 ;;
+		*) echo "himapush: unknown option -$OPTARG" >&2; usage >&2; exit 2 ;;
+	esac
+done
+shift $((OPTIND - 1))
+
+SRC="${1:-}"
+SUB="${2:-}"
+
+if [[ -z "$SRC" ]]; then usage >&2; exit 2; fi
+if [[ ! -d "$SRC" ]]; then echo "himapush: not a directory: $SRC" >&2; exit 1; fi
+command -v rclone >/dev/null || { echo "himapush: rclone not installed" >&2; exit 1; }
+
+# strip trailing slash, default remote subdir to the source folder name
+SRC="${SRC%/}"
+[[ -z "$SUB" ]] && SUB="$(basename "$SRC")"
+
+# pull user/host for himalia straight from hosts.toml so it stays in sync
+read -r RUSER RHOST < <(python3 -I - "$CONFIG" "$HOST_ALIAS" <<'PY'
+import tomllib, sys
+cfg, name = sys.argv[1], sys.argv[2]
+try:
+    d = tomllib.load(open(cfg, "rb"))
+except Exception:
+    d = {}
+h = next((x for x in d.get("hosts", []) if x.get("name") == name), {})
+print(h.get("user", "elara"), h.get("host", name))
+PY
+)
+
+DEST=":sftp:${DEST_BASE%/}/$SUB"
+CMD=(rclone)
+[[ $MIRROR -eq 1 ]] && CMD+=(sync) || CMD+=(copy)
+CMD+=("$SRC" "$DEST"
+	--sftp-host "$RHOST" --sftp-user "$RUSER"
+	--sftp-key-file "$KEY"
+	--sftp-known-hosts-file "$KNOWN"
+	--sftp-shell-type powershell
+	--transfers "$TRANSFERS" --checkers "$((TRANSFERS > 4 ? TRANSFERS : 4))"
+	--progress --stats 1s --stats-one-line)
+[[ $DRYRUN -eq 1 ]] && CMD+=(--dry-run)
+
+echo "himapush: $([[ $MIRROR -eq 1 ]] && echo mirror || echo copy) $SRC -> ${RHOST}:${DEST_BASE%/}/$SUB  (${TRANSFERS}x)"
+[[ $DRYRUN -eq 1 ]] && echo "himapush: DRY RUN, nothing will be written"
+exec "${CMD[@]}"

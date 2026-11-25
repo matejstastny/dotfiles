@@ -2,11 +2,7 @@
 
 # elara
 
-personal fedora asahi setup and the desktop shell it runs.
-
-the pi fleet lives in its own repo, [`rpi`](https://github.com/matejstastny/rpi).
-other machines live on their own branches with unrelated history: `macos`,
-`ubuntu`, and `arch`.
+personal fedora asahi setup
 
 ## start here
 

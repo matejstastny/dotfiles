@@ -18,7 +18,7 @@ export NPM_CONFIG_PREFIX="$HOME/.npm-global"
 typeset -U path
 path=(
 	"$HOME/dotfiles/bin"
-	"$HOME/devel/rpi"
+	"$HOME/devel/homelab"
 	"$GOPATH/bin"
 	"$BUN_INSTALL/bin"
 	"$PROTO_HOME/shims"
@@ -70,6 +70,10 @@ alias lsaa='echo && eza --color=always --long --git --icons=always -a'
 alias lst='echo && eza --color=always --tree --git --no-filesize --icons=always --no-time --no-user --no-permissions'
 
 alias lip="hostname -I | cut -d ' ' -f 1"
+
+function open() {
+	nautilus "${1:-.}" &>/dev/null &!
+}
 
 alias q='tmux detach'
 alias qa='tmux kill-server'
